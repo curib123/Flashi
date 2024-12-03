@@ -1,28 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 
 // Reusable Snackbar function
 void showCustomSnackbar({
   required BuildContext context,
-  required String title,
   required String message,
-  required ContentType contentType, // Content type, e.g., success or failure
+  Duration duration = const Duration(seconds: 2), // Default duration
 }) {
+
+  final colorScheme =  Theme.of(context).colorScheme;
   final snackBar = SnackBar(
-    duration:const Duration(milliseconds: 500),
-    margin: EdgeInsets.symmetric(vertical: 10),
-    elevation: 0,
-    behavior: SnackBarBehavior.floating,
-    backgroundColor: Colors.transparent, // Makes the Snackbar's background transparent
-    content: AwesomeSnackbarContent(
-      title: title,
-      message: message,
-      contentType: contentType, // Options: ContentType.success, ContentType.failure, etc.
+    content: Text(
+      message,
+      style: TextStyle(color:colorScheme.primary), // Message text style
     ),
+    backgroundColor: colorScheme.primaryContainer,
+    duration: duration,
+    behavior: SnackBarBehavior.floating,
+    margin: const EdgeInsets.symmetric(vertical: 70, horizontal: 20),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
   );
 
-  // Hide the current Snackbar (if any) and show the new one
+  // Show the Snackbar
   ScaffoldMessenger.of(context)
-    ..hideCurrentSnackBar()
+    ..hideCurrentSnackBar() // Ensure no duplicate Snackbars
     ..showSnackBar(snackBar);
 }

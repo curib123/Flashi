@@ -1,4 +1,4 @@
-import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+
 import 'package:flashlearn/presentation/widget/components/create_set_buttons.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_textfield_core.dart';
 import 'package:flashlearn/provider/quiz_set_provider.dart';
@@ -83,16 +83,16 @@ void CreateSetBottomModal({
                             'cards': [],
                             'numberOfQuiz': 0,
                           });
-                          showCustomSnackbar(context: context, title:  "Success", message: 'The Set $name is Created', contentType: ContentType.success);
+                          showCustomSnackbar(context: context, message: 'The Set $name is Created');
                         } else {
                           quizProvider.editQuizSet(setName, newName: name, newDescription: description);
-                          showCustomSnackbar(context: context, title:  "Success", message: 'The Set $name is Updated ', contentType: ContentType.success);
+                          showCustomSnackbar(context: context,  message: 'The Set $name is Updated ');
                         }
 
                         // Close the modal
                         Navigator.pop(context);
                       } else {
-                        showCustomSnackbar(context: context, title: 'Failure', message: 'Required Question', contentType: ContentType.failure);
+                        showCustomSnackbar(context: context, message: 'Required Question',);
                       }
                     },
                     buttonName: buttonName,

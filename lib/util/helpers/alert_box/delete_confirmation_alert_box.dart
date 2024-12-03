@@ -1,4 +1,4 @@
-import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+
 import 'package:flashlearn/util/helpers/snackbar/reusable_snackbar.dart';
 import 'package:flutter/material.dart';
 
@@ -55,7 +55,7 @@ void showDeleteConfirmationDialog({required BuildContext context,required String
               Navigator.of(context).pop(); // Close the dialog
               // Add your deletion logic here
               onDelete();
-              showCustomSnackbar(context: context, title: "Success", message: 'Remove', contentType: ContentType.success);
+              showCustomSnackbar(context: context,  message: 'Remove {$setName}',);
             },
           ),
         ],

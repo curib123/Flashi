@@ -7,7 +7,7 @@ class ThemeProvider extends ChangeNotifier {
   // Default theme settings
   FlexScheme _currentScheme = FlexScheme.blumineBlue;
   ThemeMode _themeMode = ThemeMode.system;
-  String _currentFont = 'Poppins'; // Default font
+  String _currentFont = 'Montserrat'; // Default font
 
   final Box _settingsBox = Hive.box('settings');
 
@@ -19,7 +19,7 @@ class ThemeProvider extends ChangeNotifier {
     _themeMode = ThemeMode.values[
     _settingsBox.get('themeMode', defaultValue: ThemeMode.system.index)
     ];
-    _currentFont = _settingsBox.get('currentFont', defaultValue: 'Poppins');
+    _currentFont = _settingsBox.get('currentFont', defaultValue: 'Montserrat');
   }
 
   // Getters for current theme properties
