@@ -1,0 +1,66 @@
+import 'package:flutter/material.dart';
+
+class ReusableTextfieldCore extends StatelessWidget {
+  final String name;
+  final String? hintText;
+  final TextEditingController? controller;
+
+  const ReusableTextfieldCore({
+    super.key,
+    required this.name,
+    this.hintText,
+    this.controller,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          name,
+          style: TextStyle(
+            color: colorScheme.secondary.withOpacity(.8),
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 8), // Add spacing between label and text field
+        Material(
+          elevation: 10,
+          shadowColor: colorScheme.shadow.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(10),
+          child: TextField(
+            controller: controller,
+            decoration: InputDecoration(
+              hintText: hintText ?? 'Enter $name',
+              hintStyle: TextStyle(color: colorScheme.onSurface.withOpacity(0.5)),
+              contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+              filled: true,
+              fillColor: colorScheme.surface,
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: colorScheme.outline,
+                  width: 1,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: colorScheme.primary,
+                  width: 2,
+                ),
+              ),
+            ),
+            style:  TextStyle(
+              color: Theme.of(context).colorScheme.primary, // Ensures the text value is black
+              fontSize: 16,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}

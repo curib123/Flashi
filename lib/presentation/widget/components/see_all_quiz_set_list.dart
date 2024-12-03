@@ -1,0 +1,117 @@
+import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_search_bar_core.dart';
+import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_create_set_button_position.dart';
+import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_quiz_set_list.dart';
+import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_sort_and_see_all.dart';
+import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
+import 'package:flashlearn/provider/quiz_set_provider.dart';
+import 'package:flashlearn/provider/sort_provider.dart';
+import 'package:flashlearn/util/helpers/modal/create_set_bottom_modal.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+class SeeAllQuizSetList extends StatelessWidget {
+  final String name;
+  final ColorScheme colorScheme;
+
+  const SeeAllQuizSetList({
+    super.key,
+    required this.name,
+    required this.colorScheme,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+
+    // Access both providers directly
+    final quizProvider = Provider.of<QuizProvider>(context);
+
+    return Scaffold(
+      appBar: AppBar(
+        foregroundColor: colorScheme.onPrimary, // For text and icons color
+        backgroundColor: colorScheme.primary, // Background color of the app bar
+        title: Text(name),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(20),
+            bottomRight: Radius.circular(20),
+          ),
+        ),
+        // Custom Back Arrow Icon
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios_new, // Custom Icon (back arrow)
+            color: colorScheme.onPrimary, // Custom color for the icon
+          ),
+          onPressed: () {
+            Navigator.pop(context); // Go back to the previous screen
+            quizProvider.searchController.text = quizProvider.searchQuery;
+            print(quizProvider.searchQuery);
+          },
+        ),
+      ),
+      body: _body(context),
+    );
+  }
+
+  Widget _body(BuildContext context) {
+    return Consumer2<QuizProvider, SortProvider>(
+      builder: (context, quizProvider, sortProvider, child) {
+        final filteredQuizSets = quizProvider.filteredQuizSets.reversed.toList();
+
+        return Stack(
+          children: [
+            ListView(
+              children: [
+                ReusableSearchBarCore(
+                  colorScheme: colorScheme,
+                  hintText: 'search set here',
+                  onChanged: (value) {
+                    quizProvider.updateSearchQuery(value);
+                  }, controller: quizProvider.searchController,
+                ),
+                ReusableSortAndSeeAll(
+                  dropdownValue: sortProvider.dropdownValue,
+                  sortOptions: sortProvider.sortOptions,
+                  onSortChanged: (newValue) {
+                    if (newValue != null) {
+                      sortProvider.updateSortValue(newValue);
+                      quizProvider.sortQuizSets(newValue); // Trigger sorting in the provider
+                    }
+                  },
+                  onSeeAllPressed: () {
+                    // Optional functionality if required
+                  },
+                  isShowSeeAllLink: false,
+                ),
+                SizedBox(
+                  width: MediaQuery.sizeOf(context).width,
+                  height: MediaQuery.sizeOf(context).height * 0.60,
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
+                    child: ReusableQuizSetList(
+                      quizSets: filteredQuizSets,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            // Create Button Position
+            ReusableCreateSetButtonPosition(
+              colorScheme: colorScheme,
+              name: 'Create Set',
+              onTap: () {
+                CreateSetBottomModal(
+                  context: context,
+                  buttonName: 'Save',
+                  isCreate: true,
+                  setName: '',
+                );
+              },
+            ),
+            ReusableThemeSettingPosition(colorScheme: colorScheme),
+          ],
+        );
+      },
+    );
+  }
+}

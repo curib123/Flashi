@@ -1,0 +1,108 @@
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+import 'package:flashlearn/presentation/widget/components/create_set_buttons.dart';
+import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_textfield_core.dart';
+import 'package:flashlearn/provider/quiz_set_provider.dart';
+import 'package:flashlearn/util/helpers/snackbar/reusable_snackbar.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+void CreateSetBottomModal({
+  required BuildContext context,
+  required String buttonName,
+  required bool isCreate,
+  required String setName,
+}) {
+  final colorScheme = Theme.of(context).colorScheme;
+
+  showModalBottomSheet(
+    context: context,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(
+        top: Radius.circular(20),
+      ),
+    ),
+    backgroundColor: Colors.white,
+    isScrollControlled: true, // Allows controlling the modal's height
+    builder: (BuildContext context) {
+      // Determine the keyboard height to adjust the modal content
+      double keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+
+      return Consumer<QuizProvider>(
+        builder: (context, quizProvider, child) {
+          if (isCreate) quizProvider.clearController();
+
+          return Container(
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+            height: 380 + keyboardHeight, // Fixed height, adjusting for the keyboard
+            child: Padding(
+              padding: EdgeInsets.only(bottom: keyboardHeight), // Padding adjusts with keyboard height
+              child: Column(
+                mainAxisSize: MainAxisSize.min, // Ensures the modal doesn't stretch more than necessary
+                children: [
+                  const SizedBox(height: 10),
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      isCreate ? "Create a Set" : 'Edit the set: $setName',
+                      style: TextStyle(
+                        color: colorScheme.primary,
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                        overflow: TextOverflow.ellipsis, // Handles text overflow
+                      ),
+                      maxLines: 1, // Ensures the title doesn't wrap onto multiple lines
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                  // TextField for Set Name
+                  ReusableTextfieldCore(
+                    name: "Set Name",
+                    controller: quizProvider.nameController,
+                  ),
+                  const SizedBox(height: 20),
+                  // TextField for Description
+                  ReusableTextfieldCore(
+                    name: "Description - Optional",
+                    controller: quizProvider.descriptionController,
+                  ),
+                  const SizedBox(height: 30),
+                  // Button to Create Set
+                  CreateSetButtons(
+                    createBtn: () {
+                      // Get the input data from the text controllers
+                      final String name = quizProvider.nameController.text;
+                      final String description = quizProvider.descriptionController.text;
+
+                      // Add the new set to the provider
+                      if (name.isNotEmpty) {
+                        if (isCreate) {
+                          quizProvider.addQuizSet({
+                            'name': name,
+                            'timestamp': DateTime.now(),
+                            'description': description,
+                            'cards': [],
+                            'numberOfQuiz': 0,
+                          });
+                          showCustomSnackbar(context: context, title:  "Success", message: 'The Set $name is Created', contentType: ContentType.success);
+                        } else {
+                          quizProvider.editQuizSet(setName, newName: name, newDescription: description);
+                          showCustomSnackbar(context: context, title:  "Success", message: 'The Set $name is Updated ', contentType: ContentType.success);
+                        }
+
+                        // Close the modal
+                        Navigator.pop(context);
+                      } else {
+                        showCustomSnackbar(context: context, title: 'Failure', message: 'Required Question', contentType: ContentType.failure);
+                      }
+                    },
+                    buttonName: buttonName,
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
+}
