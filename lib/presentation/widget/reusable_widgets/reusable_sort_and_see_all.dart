@@ -6,6 +6,8 @@ class ReusableSortAndSeeAll extends StatelessWidget {
   final ValueChanged<String?> onSortChanged;
   final VoidCallback onSeeAllPressed;
   final bool isShowSeeAllLink;
+  final bool isShowReviewLink;
+  final VoidCallback onShowReviewLink;
 
 
   const ReusableSortAndSeeAll({
@@ -15,6 +17,8 @@ class ReusableSortAndSeeAll extends StatelessWidget {
     required this.onSortChanged,
     required this.onSeeAllPressed,
     required this.isShowSeeAllLink,
+    required this.isShowReviewLink,
+    required this.onShowReviewLink,
   });
 
   @override
@@ -53,7 +57,7 @@ class ReusableSortAndSeeAll extends StatelessWidget {
               backgroundColor: WidgetStatePropertyAll(colorScheme.primary),
             ),
             onPressed: onSeeAllPressed,
-            child: Text(
+            child:const Text(
               "SEE ALL SETS",
               style: TextStyle(
                 color: Colors.white, // Assuming a contrasting text color
@@ -61,13 +65,27 @@ class ReusableSortAndSeeAll extends StatelessWidget {
               ),
             ),
           )
-              : Text(
+              : isShowReviewLink ? ElevatedButton.icon(
+            style: ButtonStyle().copyWith(
+              backgroundColor: WidgetStatePropertyAll(colorScheme.primary),
+              shape:WidgetStatePropertyAll( RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+            ),
+            onPressed: onShowReviewLink ,
+            icon: Icon(Icons.rate_review,color: colorScheme.onPrimary,),
+            label: Text(
+              "Review",
+              style: TextStyle(
+                color: colorScheme.onPrimary, // Assuming a contrasting text color
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ) : Text(
             "All",
             style: TextStyle(
               color: colorScheme.primary,
               fontWeight: FontWeight.bold,
             ),
-          )
+          ),
 
         ],
       ),

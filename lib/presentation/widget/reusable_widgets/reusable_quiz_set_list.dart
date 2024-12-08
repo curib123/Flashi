@@ -89,9 +89,9 @@ class ReusableQuizSetList extends StatelessWidget {
                           numberOfQuiz: cards.length,
                           isFavorate: favorite,
                           timestamp: timestamp,
-                          onTap: () => _navigateToQuizCards(context, name, set),
-                          onAddCard: () async => _addCard(context, name, set),
-                          onReview: () => showReviewSelection(context: context, heading:name),
+                          onTap: () => _navigateToQuizCards(context, name, set,index,set['cards']),
+                          onAddCard: () async => _addCard(context, name, set,index,set['cards']),
+                          onReview: () => showReviewSelection(context: context, heading:name, cards:set['cards'], setname: name ),
                           onDelete: () => showDeleteConfirmationDialog(
                             context: context,
                             setName: name,
@@ -108,7 +108,7 @@ class ReusableQuizSetList extends StatelessWidget {
                             );
                           },
                           onFavorate: () => quizProvider.toggleFavorite(set),
-                          onViewAllCards: () => _navigateToSeeAllQuizCard(context, name, set),
+                          onViewAllCards: () => _navigateToSeeAllQuizCard(context, name, set,index,set['cards']),
                         ),
                       ),
                     ),
@@ -123,7 +123,7 @@ class ReusableQuizSetList extends StatelessWidget {
   }
 
   /// Navigate to the quiz card screen.
-  void _navigateToQuizCards(BuildContext context, String name, Map<String, dynamic> set) {
+  void _navigateToQuizCards(BuildContext context, String name, Map<String, dynamic> set,int index,List<dynamic> cards) {
     print('Tapped on $name');
     Navigator.push(
       context,
@@ -132,13 +132,15 @@ class ReusableQuizSetList extends StatelessWidget {
           name: name,
           colorScheme: Theme.of(context).colorScheme,
           card: set,
+          index: index,
+          cards: cards,
         ),
       ),
     );
   }
 
   /// Add a card to a quiz set after a delay.
-  Future<void> _addCard(BuildContext context, String name, Map<String, dynamic> set) async {
+  Future<void> _addCard(BuildContext context, String name, Map<String, dynamic> set,int index,List<dynamic> cards) async {
     print('Add card to $name');
 
     // Navigate to the Add Card List screen
@@ -149,6 +151,8 @@ class ReusableQuizSetList extends StatelessWidget {
           name: name,
           colorScheme: Theme.of(context).colorScheme,
           card: set,
+          index: index,
+          cards: cards,
         ),
       ),
     );
@@ -167,7 +171,7 @@ class ReusableQuizSetList extends StatelessWidget {
   }
 
   /// Navigate to the Add Card List screen.
-  void _navigateToSeeAllQuizCard(BuildContext context, String name, Map<String, dynamic> set) {
+  void _navigateToSeeAllQuizCard(BuildContext context, String name, Map<String, dynamic> set,int index,List<dynamic> cards) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -175,6 +179,8 @@ class ReusableQuizSetList extends StatelessWidget {
           name: name,
           colorScheme: Theme.of(context).colorScheme,
           card: set,
+          index: index,
+          cards: cards,
         ),
       ),
     );

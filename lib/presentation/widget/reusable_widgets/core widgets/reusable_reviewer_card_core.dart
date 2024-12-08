@@ -16,7 +16,7 @@ class ReusableReviewerCardCore extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       contentPadding: EdgeInsets.symmetric(horizontal: 15,vertical: 10),
       leading: CircleAvatar(
-        backgroundColor: Theme.of(context).colorScheme.primaryContainer.withOpacity(.5),
+        backgroundColor: Theme.of(context).colorScheme.primaryContainer.withOpacity(.3),
         radius: 30,
         child:  Icon(iconData,size: 30,color: Theme.of(context).colorScheme.primary,),
       ),

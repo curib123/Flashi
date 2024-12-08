@@ -5,19 +5,23 @@ import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_theme_s
 import 'package:flashlearn/provider/quiz_provider.dart';
 import 'package:flashlearn/provider/sort_provider.dart';
 import 'package:flashlearn/util/helpers/alert_box/delete_confirmation_alert_box.dart';
+import 'package:flashlearn/util/helpers/alert_box/review_selection_alert_box.dart';
 import 'package:flashlearn/util/helpers/modal/create_card_bottom_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 class SeeAllQuizCard extends StatelessWidget {
   final String name;
+  final int index;
   final ColorScheme colorScheme;
   final  Map<String, dynamic> card;
+  final  List< dynamic> cards;
 
   const SeeAllQuizCard({
     super.key,
     required this.name,
     required this.colorScheme,
     required this.card,
+    required this.index, required this.cards,
   });
 
   @override
@@ -75,6 +79,10 @@ class SeeAllQuizCard extends StatelessWidget {
                     // Optional functionality if required
                   },
                   isShowSeeAllLink: false,
+                  isShowReviewLink: true,
+                  onShowReviewLink: () {
+                    showReviewSelection(context: context, heading: name, cards: cards, setname: name);
+                  },
                 ),
                 SizedBox(
                   width: MediaQuery.sizeOf(context).width,
@@ -111,6 +119,7 @@ class SeeAllQuizCard extends StatelessWidget {
               colorScheme: colorScheme,
               name: 'Create Card',
               onTap: () {
+
                 CreateCardBottomModal(context: context, buttonName: "Add Card", isCreate: true, cardName: '', card: card, name: name );
               },
             ),

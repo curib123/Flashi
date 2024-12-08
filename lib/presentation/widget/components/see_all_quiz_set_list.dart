@@ -82,6 +82,8 @@ class SeeAllQuizSetList extends StatelessWidget {
                     // Optional functionality if required
                   },
                   isShowSeeAllLink: false,
+                  isShowReviewLink: false,
+                  onShowReviewLink: () {  },
                 ),
                 SizedBox(
                   width: MediaQuery.sizeOf(context).width,

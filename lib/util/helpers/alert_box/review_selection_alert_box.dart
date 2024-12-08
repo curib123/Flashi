@@ -1,43 +1,61 @@
 import 'package:flashlearn/presentation/widget/components/reviewer_page.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_reviewer_card_core.dart';
 import 'package:flutter/material.dart';
-void showReviewSelection({required BuildContext context, required String heading}) {
+
+void showReviewSelection({
+  required BuildContext context,
+  required String heading,
+  required List<dynamic> cards,
+  required String setname,
+}) {
   final List<Map<String, dynamic>> reviewerList = [
     _createReviewerItem(
-      context: context, // Pass the context here
+      context: context,
       icon: Icons.library_books,
       title: 'Flashcard Review',
       subtitle: 'Review material using flashcards',
+      cards: cards,
+      setname: setname,
     ),
     _createReviewerItem(
-      context: context, // Pass the context here
+      context: context,
       icon: Icons.check_circle,
       title: 'Multiple Choice',
       subtitle: 'Choose the correct answer from options',
+      cards: cards,
+      setname: setname,
     ),
     _createReviewerItem(
-      context: context, // Pass the context here
+      context: context,
       icon: Icons.merge_type,
       title: 'Matching Type',
       subtitle: 'Match items to test your knowledge',
+      cards: cards,
+      setname: setname,
     ),
     _createReviewerItem(
-      context: context, // Pass the context here
+      context: context,
       icon: Icons.question_answer,
       title: 'Q&A Session',
       subtitle: 'Write your answer to the questions',
+      cards: cards,
+      setname: setname,
     ),
     _createReviewerItem(
-      context: context, // Pass the context here
+      context: context,
       icon: Icons.volume_up,
       title: 'Text-to-Speech Review',
       subtitle: 'Listen to prompts and review',
+      cards: cards,
+      setname: setname,
     ),
     _createReviewerItem(
-      context: context, // Pass the context here
+      context: context,
       icon: Icons.label,
       title: 'Keywords Review',
       subtitle: 'Create and review keywords',
+      cards: cards,
+      setname: setname,
     ),
   ];
 
@@ -65,26 +83,27 @@ void showReviewSelection({required BuildContext context, required String heading
 }
 
 Map<String, dynamic> _createReviewerItem({
-  required BuildContext context, // Add context as a parameter
+  required BuildContext context,
   required IconData icon,
   required String title,
   required String subtitle,
+  required List<dynamic> cards,
+  required String setname,
 }) {
   return {
     'iconData': icon,
     'title': title,
     'subtitle': subtitle,
-    'onTap': () => _handleTap(title, context), // Pass context to handleTap
+    'onTap': () => _handleTap(title, context, cards,setname),
   };
 }
 
-void _handleTap(String title, BuildContext context) {
+void _handleTap(String title, BuildContext context, List<dynamic> cards,  final String setname) {
   print('$title tapped');
-  // Navigate to ReviewerPage when tapped.
   Navigator.push(
     context,
     MaterialPageRoute(
-      builder: (context) => ReviewerPage(reviewer: title,),
+      builder: (context) => ReviewerPage(reviewer: title, cards: cards, setname: setname,) ,
     ),
   );
 }
@@ -102,7 +121,7 @@ class _DialogHeader extends StatelessWidget {
         color: Theme.of(context).colorScheme.primary,
         borderRadius: BorderRadius.circular(20.0),
       ),
-      child:  Row(
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(
@@ -116,24 +135,24 @@ class _DialogHeader extends StatelessWidget {
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
-                  overflow: TextOverflow.ellipsis, // Handles text overflow gracefully
-                  maxLines: 1, // Ensures text doesn't wrap to a new line
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
                 ),
-               Align(
-                 alignment: Alignment.topLeft,
-                 child:  Text(
-                   heading,
-                   style: TextStyle(
-                     color: Theme.of(context).colorScheme.onPrimary,
-                     fontSize: 15,
-                     fontWeight: FontWeight.bold,
-                   ),
-                   overflow: TextOverflow.ellipsis, // Handles text overflow gracefully
-                   maxLines: 1, // Ensures text doesn't wrap to a new line
-                 ),
-               )
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: Text(
+                    heading,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onPrimary,
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
+                ),
               ],
-            )
+            ),
           ),
           IconButton(
             icon: Icon(

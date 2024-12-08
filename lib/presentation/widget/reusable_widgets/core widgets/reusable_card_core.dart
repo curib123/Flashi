@@ -66,7 +66,7 @@ class ReusableCardCore extends StatelessWidget {
               ),
               subtitle: isIgnore
                   ? Text(
-                "This flashcard is ignored.",
+                "This card is ignored.",
                 style: TextStyle(
                   color: colorScheme.onSurface.withOpacity(0.6),
                 ),

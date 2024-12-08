@@ -8,7 +8,9 @@ import 'package:flutter/material.dart';
 
 class ReviewerPage extends StatelessWidget {
   final String reviewer;
-  const ReviewerPage({super.key, required this.reviewer});
+  final List<dynamic> cards;
+  final String setname;
+  const ReviewerPage({super.key, required this.reviewer, required this.cards, required this.setname});
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +42,7 @@ class ReviewerPage extends StatelessWidget {
   Widget reviewerCheck() {
     switch (reviewer) {
       case 'Flashcard Review':
-        return FlashcardReview(reviewer: reviewer,); // Assuming this is the correct widget to display for this review type
+        return FlashcardReview(reviewer: reviewer, cards: cards, setname: setname,);  // Assuming this is the correct widget to display for this review type
       case 'Multiple Choice':
       // Return the widget for multiple choice
         return MultipleChoiceReview(reviewer: reviewer); // Replace with the actual widget

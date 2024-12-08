@@ -60,7 +60,7 @@ class HomeScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "Flash Learn",
+                      "FlashLearn",
                       style: TextStyle(
                         color: colorScheme.onPrimary,
                         fontWeight: FontWeight.bold,
@@ -99,7 +99,7 @@ class HomeScreen extends StatelessWidget {
                         Align(
                           alignment: Alignment.center,
                           child: Text(
-                            "Learn with Customizable Flashcards",
+                          "Flashcards for Faster Learning",
                             style: TextStyle(
                               color: colorScheme.onPrimary,
                               fontWeight: FontWeight.w500,
@@ -150,6 +150,8 @@ class HomeScreen extends StatelessWidget {
                           gotoSeeAllQuizSetList();
                         },
                         isShowSeeAllLink: true,
+                        isShowReviewLink: false,
+                        onShowReviewLink: () {  },
                       ),
 
                       // Show a message if no quiz sets are available
