@@ -1,7 +1,9 @@
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_card_core.dart';
+import 'package:flashlearn/provider/quiz_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:provider/provider.dart';
 
 /// A reusable widget for displaying a list of quiz cards with animations and actions.
 class ReusableQuizCardList extends StatelessWidget {
@@ -23,12 +25,15 @@ class ReusableQuizCardList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Safely extract quiz sets from the provided card and reverse the list for display.
-    final quizSets = (card['cards'] as List?)
+    final quizSet = (card['cards'] as List?)
         ?.map((item) => item is Map<String, dynamic> ? item : Map<String, dynamic>.from(item))
-        .toList()
-        .reversed
-        .toList() ??
+        .toList().reversed.toList()
+        ??
         [];
+
+   final quizProvider = Provider.of<QuizProvider>(context);
+
+  final quizSets = quizProvider.sortQuizCard( quizSet:quizSet ).reversed.toList();
 
     return AnimationLimiter(
       child: Column(
@@ -78,6 +83,7 @@ class ReusableQuizCardList extends StatelessWidget {
                     ],
                   ),
                   child: ReusableCardCore(
+                    isUpdating: quizSet['isUpdating'] ?? false,
                     question: quizSet['question'] ?? 'No question provided',
                     answer: quizSet['answer'] ?? 'No answer provided',
                     timestamp: quizSet['timestamp'] ?? DateTime.now(),

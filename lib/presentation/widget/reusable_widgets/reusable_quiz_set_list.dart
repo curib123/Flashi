@@ -1,6 +1,6 @@
 import 'package:flashlearn/presentation/widget/components/see_all_quiz_card.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_set_core.dart';
-import 'package:flashlearn/provider/quiz_set_provider.dart';
+import 'package:flashlearn/provider/quiz_provider.dart';
 import 'package:flashlearn/util/helpers/alert_box/delete_confirmation_alert_box.dart';
 import 'package:flashlearn/util/helpers/alert_box/review_selection_alert_box.dart';
 import 'package:flashlearn/util/helpers/modal/create_card_bottom_modal.dart';

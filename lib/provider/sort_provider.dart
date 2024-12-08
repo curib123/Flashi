@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class SortProvider with ChangeNotifier {
-  String _dropdownValue = 'Newest';  // Default value
+  String _dropdownValueSet = 'Newest';  // Default value
+  String _dropdownValueCard = 'Newest';  // Default value
 
   // Box for storing the selected sort value
   Box<dynamic> _sortBox = Hive.box('settings');
 
-  final List<String> _sortOptions = [
+  final List<String> _sortOptionsSet = [
     'Newest',
     'Oldest',
     'Alphabetical',
@@ -15,23 +16,40 @@ class SortProvider with ChangeNotifier {
     'Number of Quizzes',
   ];
 
+
+  final List<String> _sortOptionsCard = [
+    'Newest',
+    'Oldest',
+    'Alphabetical',
+    'Reverse Alphabetical',
+  ];
+
   // Getter for dropdownValue
-  String get dropdownValue => _dropdownValue;
+  String get dropdownValueSet => _dropdownValueSet;
+  String get dropdownValueCard => _dropdownValueCard;
 
   // Getter for sortOptions
-  List<String> get sortOptions => _sortOptions;
+  List<String> get sortOptionsSet => _sortOptionsSet;
+  List<String> get sortOptionsCard => _sortOptionsCard;
 
   SortProvider() {
     // Load saved sort value or use default
-    _dropdownValue = _sortBox.get('selectedSort', defaultValue: 'Newest')!;
+    _dropdownValueSet = _sortBox.get('selectedSortSet', defaultValue: 'Newest')!;
+    _dropdownValueCard = _sortBox.get('selectedSortCard', defaultValue: 'Newest')!;
     notifyListeners();
   }
 
   // Update sort value and save it to Hive
   // Update sort value and notify listeners
-  void updateSortValue(String newValue) {
-    _dropdownValue = newValue;
-    _sortBox.put('selectedSort', newValue);  // Save to Hive
+  void updateSortValueSet(String newValue) {
+    _dropdownValueSet = newValue;
+    _sortBox.put('selectedSortSet', newValue);  // Save to Hive
+    notifyListeners();
+  }
+
+  void updateSortValueCard(String newValue) {
+    _dropdownValueCard = newValue;
+    _sortBox.put('selectedSortCard', newValue);  // Save to Hive
     notifyListeners();
   }
 }

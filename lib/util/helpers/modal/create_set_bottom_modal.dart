@@ -1,7 +1,7 @@
 
 import 'package:flashlearn/presentation/widget/components/create_set_buttons.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_textfield_core.dart';
-import 'package:flashlearn/provider/quiz_set_provider.dart';
+import 'package:flashlearn/provider/quiz_provider.dart';
 import 'package:flashlearn/util/helpers/snackbar/reusable_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

@@ -12,11 +12,12 @@ class QuizProvider with ChangeNotifier {
 
   List<Map<String, dynamic>> _quizSets = []; // List of maps to store quiz sets
   String _searchQuery = ""; // Variable to store the search query
+  String newValueCard = ""; // sort of cards
 
-
-  QuizProvider({required criterion}){
+  QuizProvider({required String criterionSet,required String criterionCard }){
     loadQuizSets();
-     sortQuizSets(criterion);
+     sortQuizSets(criterionSet);
+     toggleNewValueCard(criterionCard);
 
   }
 
@@ -81,6 +82,31 @@ class QuizProvider with ChangeNotifier {
       _quizSets.sort((a, b) => (b['timestamp'] ?? DateTime.now()).compareTo(a['timestamp'] ?? DateTime.now()));
     }
 
+    notifyListeners();
+  }
+
+  // Sort quiz sets based on the criterion
+  List<Map<String, dynamic>>  sortQuizCard({required final  List<Map<String, dynamic>> quizSet }) {
+    String criterion = newValueCard;
+    if (criterion == 'Alphabetical') {
+      quizSet.sort((a, b) => (b['question'] ?? '').toLowerCase().compareTo((a['question'] ?? '').toLowerCase()));
+    }  else if (criterion == 'Reverse Alphabetical') {
+      quizSet.sort((a, b) => (a['question'] ?? '').toLowerCase().compareTo((b['question'] ?? '').toLowerCase()));
+    } else if (criterion == 'Newest') {
+      quizSet.sort((a, b) => (a['timestamp'] ?? DateTime.now()).compareTo(b['timestamp'] ?? DateTime.now()));
+    } else if (criterion == 'Oldest') {
+      quizSet.sort((a, b) => (b['timestamp'] ?? DateTime.now()).compareTo(a['timestamp'] ?? DateTime.now()));
+    }
+
+    return quizSet;
+
+    notifyListeners();
+  }
+
+  //toggle sort card
+
+  void toggleNewValueCard(String newValueCard){
+    this.newValueCard = newValueCard;
     notifyListeners();
   }
 
@@ -199,6 +225,7 @@ class QuizProvider with ChangeNotifier {
       int cardIndex = quizSet['cards']?.indexWhere((card) => card['question'] == oldQuestion) ?? -1;
       if (cardIndex != -1) {
         quizSet['cards']?[cardIndex]['question'] = newQuestion;
+        quizSet['cards']?[cardIndex]['isUpdating'] = true;
         quizSet['cards']?[cardIndex]['answer'] = newAnswer;
         quizSet['cards']?[cardIndex]['timestamp'] = DateTime.now();
         quizSet['numberOfQuiz'] = quizSet['cards']?.length ?? 0;

@@ -73,7 +73,7 @@ class ReusableSetCore extends StatelessWidget {
                     width: 60,
                     height: 60,
                     decoration: BoxDecoration(
-                      color: colorScheme.primary.withOpacity(.3),
+                      color: colorScheme.primary.withOpacity(.1),
                       shape: BoxShape.circle,
                     ),
                     child: Center(

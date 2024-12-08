@@ -6,6 +6,7 @@ class ReusableCardCore extends StatelessWidget {
   final String answer;
   final bool isIgnore;
   final DateTime timestamp;
+  final bool isUpdating;
   final Function() onRemove;
   final Function() onEdit;
   final Function() onIgnore;
@@ -21,6 +22,7 @@ class ReusableCardCore extends StatelessWidget {
     required this.onRemove,
     required this.onEdit,
     required this.onIgnore,
+    required this.isUpdating,
   }) : super(key: key);
 
   @override
@@ -46,7 +48,7 @@ class ReusableCardCore extends StatelessWidget {
           child: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [colorScheme.primaryContainer, colorScheme.secondaryContainer],
+                colors: [colorScheme.tertiaryContainer, colorScheme.secondaryContainer],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -59,7 +61,7 @@ class ReusableCardCore extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
-                  color: colorScheme.onPrimary,
+                  color: colorScheme.primary.withOpacity(0.5),
                 ),
               ),
               subtitle: isIgnore
@@ -77,7 +79,11 @@ class ReusableCardCore extends StatelessWidget {
                     style: TextStyle(fontSize: 14, color: colorScheme.onSurface),
                   ),
                   const SizedBox(height: 8),
-                  Text(
+                  isUpdating ? Text(
+                    "Updated on: $formattedTimestamp",
+                    style: TextStyle(
+                        fontSize: 12, color: colorScheme.onSurface.withOpacity(0.6)),
+                  ) : Text(
                     "Created on: $formattedTimestamp",
                     style: TextStyle(
                         fontSize: 12, color: colorScheme.onSurface.withOpacity(0.6)),

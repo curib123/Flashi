@@ -4,7 +4,7 @@ import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_create_
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_quiz_set_list.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_sort_and_see_all.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
-import 'package:flashlearn/provider/quiz_set_provider.dart';
+import 'package:flashlearn/provider/quiz_provider.dart';
 import 'package:flashlearn/provider/sort_provider.dart';
 import 'package:flashlearn/util/helpers/modal/create_set_bottom_modal.dart';
 import 'package:flutter/material.dart';
@@ -137,10 +137,10 @@ class HomeScreen extends StatelessWidget {
                     children: [
                       // Sorting and "See All" button
                       ReusableSortAndSeeAll(
-                        dropdownValue: sortProvider.dropdownValue,
-                        sortOptions: sortProvider.sortOptions,
+                        dropdownValue: sortProvider.dropdownValueSet,
+                        sortOptions: sortProvider.sortOptionsSet,
                         onSortChanged: (newValue) {
-                          sortProvider.updateSortValue(newValue!);
+                          sortProvider.updateSortValueSet(newValue!);
                           quizProvider.sortQuizSets(newValue);
                         },
                         onSeeAllPressed: () {

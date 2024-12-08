@@ -2,7 +2,7 @@ import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_create_
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_quiz_card_list.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_sort_and_see_all.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
-import 'package:flashlearn/provider/quiz_set_provider.dart';
+import 'package:flashlearn/provider/quiz_provider.dart';
 import 'package:flashlearn/provider/sort_provider.dart';
 import 'package:flashlearn/util/helpers/alert_box/delete_confirmation_alert_box.dart';
 import 'package:flashlearn/util/helpers/modal/create_card_bottom_modal.dart';
@@ -57,19 +57,18 @@ class SeeAllQuizCard extends StatelessWidget {
   Widget _body(BuildContext context) {
     return Consumer2<QuizProvider, SortProvider>(
       builder: (context, quizProvider, sortProvider, child) {
-        final filteredQuizSets = quizProvider.filteredQuizSets.reversed.toList();
-
         return Stack(
           children: [
             ListView(
               children: [
                 ReusableSortAndSeeAll(
-                  dropdownValue: sortProvider.dropdownValue,
-                  sortOptions: sortProvider.sortOptions,
+                  dropdownValue: sortProvider.dropdownValueCard,
+                  sortOptions: sortProvider.sortOptionsCard,
                   onSortChanged: (newValue) {
                     if (newValue != null) {
-                      sortProvider.updateSortValue(newValue);
-                      quizProvider.sortQuizSets(newValue); // Trigger sorting in the provider
+                      sortProvider.updateSortValueCard(newValue);
+                      quizProvider.newValueCard = newValue; // Trigger sorting in the provider
+                      print(quizProvider.newValueCard);
                     }
                   },
                   onSeeAllPressed: () {

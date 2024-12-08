@@ -1,7 +1,7 @@
 
 import 'package:flashlearn/home.dart';
 import 'package:flashlearn/provider/bottom_navigation_provider.dart';
-import 'package:flashlearn/provider/quiz_set_provider.dart';
+import 'package:flashlearn/provider/quiz_provider.dart';
 import 'package:flashlearn/provider/sort_provider.dart';
 import 'package:flashlearn/provider/theme_provider.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +20,12 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => BottomNavigationProvider()), // Add BottomNavigationProvider
         ChangeNotifierProvider(create: (_) => ThemeProvider()), // Add ThemeProvider
         ChangeNotifierProvider(create: (_) => SortProvider()), // Add SortProvider
-        ChangeNotifierProvider(create: (context) => QuizProvider(criterion: Provider.of<SortProvider>(context,listen: false).dropdownValue)), // Add QuizProvider
+        ChangeNotifierProvider(
+            create: (context) => QuizProvider(
+                criterionSet: Provider.of<SortProvider>(context,listen: false).dropdownValueSet,
+                criterionCard: Provider.of<SortProvider>(context,listen: false).dropdownValueCard)
+
+        ), // Add QuizProvider
       ],
       child: const RocketLearn(),
     ),
