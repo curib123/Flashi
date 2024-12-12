@@ -269,6 +269,13 @@ class _MultipleChoiceReviewState extends State<MultipleChoiceReviewTimer> {
 
   @override
   Widget build(BuildContext context) {
+
+    if (widget.cards.isEmpty) {
+      return Center(
+        child: Text("No cards available", style: TextStyle(color: Theme.of(context).colorScheme.primary)),
+      );
+    }
+
     return ValueListenableBuilder<int>(
       valueListenable: _timerNotifier,
       builder: (context, timerValue, child) {

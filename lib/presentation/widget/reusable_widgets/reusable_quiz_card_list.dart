@@ -24,6 +24,9 @@ class ReusableQuizCardList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+
+
     // Safely extract quiz sets from the provided card and reverse the list for display.
     final quizSet = (card['cards'] as List?)
         ?.map((item) => item is Map<String, dynamic> ? item : Map<String, dynamic>.from(item))
@@ -34,6 +37,12 @@ class ReusableQuizCardList extends StatelessWidget {
    final quizProvider = Provider.of<QuizProvider>(context);
 
   final quizSets = quizProvider.sortQuizCard( quizSet:quizSet ).reversed.toList();
+
+    if (quizSets.isEmpty) {
+      return Center(
+        child: Text("No cards available", style: TextStyle(color: Theme.of(context).colorScheme.primary)),
+      );
+    }
 
     return AnimationLimiter(
       child: Column(

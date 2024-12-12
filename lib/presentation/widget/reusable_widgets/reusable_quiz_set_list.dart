@@ -124,7 +124,7 @@ class ReusableQuizSetList extends StatelessWidget {
 
   /// Navigate to the quiz card screen.
   void _navigateToQuizCards(BuildContext context, String name, Map<String, dynamic> set,int index,List<dynamic> cards) {
-    print('Tapped on $name');
+
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -141,7 +141,7 @@ class ReusableQuizSetList extends StatelessWidget {
 
   /// Add a card to a quiz set after a delay.
   Future<void> _addCard(BuildContext context, String name, Map<String, dynamic> set,int index,List<dynamic> cards) async {
-    print('Add card to $name');
+
 
     // Navigate to the Add Card List screen
     Navigator.push(
@@ -162,7 +162,7 @@ class ReusableQuizSetList extends StatelessWidget {
 
     CreateCardBottomModal(
       context: context,
-      buttonName: "Create Card",
+      buttonName: "Add Card",
       isCreate: true,
       cardName: '',
       name: name,

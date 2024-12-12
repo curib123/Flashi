@@ -149,7 +149,7 @@ class _MultipleChoiceCoreState extends State<MultipleChoiceCore> {
         style: TextStyle(
           color: isSelected || isCorrect
               ? colorScheme.onPrimary
-              : colorScheme.onSecondary,
+              : colorScheme.onPrimary,
           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
           fontSize: 18,
         ),

@@ -163,6 +163,13 @@ class _MultipleChoiceReviewState extends State<MultipleChoiceReviewBasic> {
 
   @override
   Widget build(BuildContext context) {
+
+    if (widget.cards.isEmpty) {
+      return Center(
+        child: Text("No cards available", style: TextStyle(color: Theme.of(context).colorScheme.primary)),
+      );
+    }
+
     return PageView.builder(
       controller: _pageController,
       itemCount: widget.cards.length,

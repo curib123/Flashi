@@ -36,6 +36,14 @@ class _FlashcardReviewState extends State<FlashcardReview> {
     // Access both providers directly
     final quizProvider = Provider.of<QuizProvider>(context);
 
+
+    if (widget.cards.isEmpty) {
+      return Center(
+        child: Text("No cards available", style: TextStyle(color: Theme.of(context).colorScheme.primary)),
+      );
+    }
+
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
