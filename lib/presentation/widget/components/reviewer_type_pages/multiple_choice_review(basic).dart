@@ -57,17 +57,21 @@ class _MultipleChoiceReviewState extends State<MultipleChoiceReviewBasic> {
         _score++;
       });
     }
+
     // Automatically navigate to the next page
     if (_pageController.page?.toInt() == widget.cards.length - 1) {
       // If it's the last question, show congratulations
       showCongratulationDialog();
     } else {
-      _pageController.nextPage(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeIn,
-      );
+      Future.delayed(Duration(seconds: 2), () {
+        _pageController.nextPage(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeIn,
+        );
+      });
     }
   }
+
 
   void showCongratulationDialog() {
     final theme = Theme.of(context);

@@ -64,7 +64,7 @@ class _FlipCardCoreState extends State<FlipCardCore> {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           child: Container(
             width: size.width * 0.90,
-            height: size.height * 0.70,
+            height: size.height * 0.80,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
               gradient: LinearGradient(

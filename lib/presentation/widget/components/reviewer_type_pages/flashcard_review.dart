@@ -31,24 +31,6 @@ class _FlashcardReviewState extends State<FlashcardReview> {
     super.dispose();
   }
 
-  void _previousPage() {
-    if (_currentPage > 0) {
-      _pageController.previousPage(
-        duration: Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-    }
-  }
-
-  void _nextPage() {
-    if (_currentPage < widget.cards.length - 1) {
-      _pageController.nextPage(
-        duration: Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     // Access both providers directly
@@ -98,54 +80,30 @@ class _FlashcardReviewState extends State<FlashcardReview> {
               ),
             ),
           ),
-          // Arrow buttons and indicator in a Row for horizontal alignment
+          // Indicator in a Row for horizontal alignment
           Padding(
-            padding: const EdgeInsets.only(top: 10.0), // Adds space between indicator and cards
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                GestureDetector(
-                  onTap: _previousPage,
-                  child: Icon(
-                    Icons.chevron_left,
-                    size: 60,
-                    color: Theme.of(context).colorScheme.secondary,
-                  ),
-                ),
-                // Wrap the indicator row in a SingleChildScrollView for horizontal scrolling
-                Expanded(
-                  child: Center(
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center, // Center the indicators
-                        children: List.generate(
-                          widget.cards.length,
-                              (index) => Container(
-                            margin: EdgeInsets.symmetric(horizontal: 2.0),
-                            width:  widget.cards.length <= 15 ? 10 : 6,
-                            height:  widget.cards.length <= 15 ? 10 : 6,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: _currentPage == index
-                                  ? Theme.of(context).colorScheme.secondary
-                                  : Colors.grey,
-                            ),
-                          ),
-                        ),
+            padding: const EdgeInsets.only(top: 5.0), // Adds space between indicator and cards
+            child: Center(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center, // Center the indicators
+                  children: List.generate(
+                    widget.cards.length,
+                        (index) => Container(
+                      margin: EdgeInsets.symmetric(horizontal: 2.0),
+                      width:  widget.cards.length <= 15 ? 10 : 6,
+                      height:  widget.cards.length <= 15 ? 10 : 6,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: _currentPage == index
+                            ? Theme.of(context).colorScheme.secondary
+                            : Colors.grey,
                       ),
                     ),
                   ),
                 ),
-                GestureDetector(
-                  onTap: _nextPage,
-                  child: Icon(
-                    Icons.chevron_right,
-                    size: 60,
-                    color: Theme.of(context).colorScheme.secondary,
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
         ],
