@@ -22,7 +22,99 @@ class QuizProvider with ChangeNotifier {
   }
 
   void loadQuizSets() {
-    var quizSetsFromStorage = _settingsBox.get('quizSets', defaultValue: []);
+
+    List<Map<String, dynamic>> defaultValue = [
+      {
+        'name': "Motivational Quotes",
+        'timestamp': DateTime.now(),
+        'description': "A collection of quotes to inspire and uplift.",
+        'cards': [
+          {
+            'isUpdating': false,
+            'question': "What motivates you in life?",
+            'answer': "Personal growth and success",
+            'isIgnore': false,
+            'timestamp': DateTime.now()
+          },
+          {
+            'isUpdating': false,
+            'question': "What are your favorite hobbies?",
+            'answer': "Reading, hiking, and gaming",
+            'isIgnore': false,
+            'timestamp': DateTime.now()
+          },
+          {
+            'isUpdating': false,
+            'question': "What is your dream travel destination?",
+            'answer': "Japan",
+            'isIgnore': false,
+            'timestamp': DateTime.now()
+          }
+        ],
+        'numberOfQuiz': 3,
+      },
+      {
+        'name': "Travel Destinations",
+        'timestamp': DateTime.now(),
+        'description': "Explore top travel destinations around the world.",
+        'cards': [
+          {
+            'isUpdating': false,
+            'question': "What motivates you in life?",
+            'answer': "Personal growth and success",
+            'isIgnore': false,
+            'timestamp': DateTime.now()
+          },
+          {
+            'isUpdating': false,
+            'question': "What are your favorite hobbies?",
+            'answer': "Reading, hiking, and gaming",
+            'isIgnore': false,
+            'timestamp': DateTime.now()
+          },
+          {
+            'isUpdating': false,
+            'question': "What is your dream travel destination?",
+            'answer': "Japan",
+            'isIgnore': false,
+            'timestamp': DateTime.now()
+          }
+        ],
+        'numberOfQuiz': 3,
+      },
+      {
+        'name': "General Knowledge",
+        'timestamp': DateTime.now(),
+        'description': "A variety of questions to test your general knowledge.",
+        'cards': [
+          {
+            'isUpdating': false,
+            'question': "What motivates you in life?",
+            'answer': "Personal growth and success",
+            'isIgnore': false,
+            'timestamp': DateTime.now()
+          },
+          {
+            'isUpdating': false,
+            'question': "What are your favorite hobbies?",
+            'answer': "Reading, hiking, and gaming",
+            'isIgnore': false,
+            'timestamp': DateTime.now()
+          },
+          {
+            'isUpdating': false,
+            'question': "What is your dream travel destination?",
+            'answer': "Japan",
+            'isIgnore': false,
+            'timestamp': DateTime.now()
+          }
+        ],
+        'numberOfQuiz': 3,
+      }
+    ];
+
+
+    var quizSetsFromStorage = _settingsBox.get('quizSets', defaultValue: defaultValue);
 
     if (quizSetsFromStorage is List) {
       _quizSets = List<Map<String, dynamic>>.from(
