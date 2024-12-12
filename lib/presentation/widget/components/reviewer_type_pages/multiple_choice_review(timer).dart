@@ -131,13 +131,14 @@ class _MultipleChoiceReviewState extends State<MultipleChoiceReviewTimer> {
         _score++;
       });
     }
-
     // Automatically navigate to the next page
     if (_pageController.page?.toInt() == widget.cards.length - 1) {
       // If it's the last question, show congratulations
       showCongratulationPage();
     } else {
+
       Future.delayed(Duration(seconds: 2), () {
+        resetTimer();
         _pageController.nextPage(
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeIn,
@@ -145,6 +146,7 @@ class _MultipleChoiceReviewState extends State<MultipleChoiceReviewTimer> {
       });
     }
   }
+
 
 
   void showCongratulationPage() {
