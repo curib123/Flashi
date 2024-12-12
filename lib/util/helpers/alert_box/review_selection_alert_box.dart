@@ -37,7 +37,7 @@ void showReviewSelection({
     _createReviewerItem(
       context: context,
       icon: Icons.merge_type,
-      title: 'Matching Type',
+      title: 'Matching Type(Coming Soon)',
       subtitle: 'Match items to test your knowledge',
       cards: cards,
       setname: setname,
@@ -45,7 +45,7 @@ void showReviewSelection({
     _createReviewerItem(
       context: context,
       icon: Icons.question_answer,
-      title: 'Q&A Session',
+      title: 'Q&A Session(Coming Soon)',
       subtitle: 'Write your answer to the questions',
       cards: cards,
       setname: setname,
@@ -53,7 +53,7 @@ void showReviewSelection({
     _createReviewerItem(
       context: context,
       icon: Icons.volume_up,
-      title: 'Text-to-Speech Review',
+      title: 'Text-to-Speech Review(Coming Soon)',
       subtitle: 'Listen to prompts and review',
       cards: cards,
       setname: setname,
@@ -61,7 +61,7 @@ void showReviewSelection({
     _createReviewerItem(
       context: context,
       icon: Icons.label,
-      title: 'Keywords Review',
+      title: 'Keywords Review(Coming Soon)',
       subtitle: 'Create and review keywords',
       cards: cards,
       setname: setname,

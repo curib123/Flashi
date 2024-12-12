@@ -28,10 +28,20 @@ class ReviewerPage extends StatelessWidget {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(reviewer,style: TextStyle(fontSize: 20),),
-            Icon(Icons.settings,color: Theme.of(context).colorScheme.onPrimary,)
+            Flexible(
+              child: Text(
+                reviewer,
+                style: TextStyle(fontSize: 20),
+                overflow: TextOverflow.ellipsis, // Adds ellipsis for text overflow
+              ),
+            ),
+            Icon(
+              Icons.settings,
+              color: Theme.of(context).colorScheme.onPrimary,
+            ),
           ],
         ),
+
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios_new, // Custom icon (back arrow)
@@ -57,16 +67,16 @@ class ReviewerPage extends StatelessWidget {
       case 'Multiple Choice (Timer)':
       // Return the widget for multiple choice
         return MultipleChoiceReviewTimer(reviewer: reviewer, cards: cards, setname: setname, timerDuration: 10,); // Replace with the actual widget
-      case 'Matching Type':
+      case 'Matching Type(Coming Soon)':
       // Return the widget for matching type
         return MatchingTypeReview(reviewer: reviewer); // Replace with the actual widget
-      case 'Q&A Session':
+      case 'Q&A Session(Coming Soon)':
       // Return the widget for Q&A session
         return QuestionAndAnswer(reviewer: reviewer); // Replace with the actual widget
-      case 'Text-to-Speech Review':
+      case 'Text-to-Speech Review(Coming Soon)':
       // Return the widget for text-to-speech review
         return TextToSpeechReview(reviewer: reviewer); // Replace with the actual widget
-      case 'Keywords Review':
+      case 'Keywords Review(Coming Soon)':
       // Return the widget for keywords review
         return KeywordsReview(reviewer: reviewer); // Replace with the actual widget
       default:
