@@ -9,6 +9,7 @@ import 'package:flashlearn/util/helpers/alert_box/review_selection_alert_box.dar
 import 'package:flashlearn/util/helpers/modal/create_card_bottom_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 class SeeAllQuizCard extends StatelessWidget {
   final String name;
   final int index;
@@ -81,7 +82,11 @@ class SeeAllQuizCard extends StatelessWidget {
                   isShowSeeAllLink: false,
                   isShowReviewLink: true,
                   onShowReviewLink: () {
-                    showReviewSelection(context: context, heading: name, cards: cards, setname: name);
+                    showReviewSelection(
+                        context: context,
+                        heading: name,
+                        cards: cards,
+                        setname: name);
                   },
                 ),
                 SizedBox(
@@ -93,7 +98,14 @@ class SeeAllQuizCard extends StatelessWidget {
                       name: name,
                       card: card,
                       onRemove: (quizSet) {
-                       showDeleteConfirmationDialog(context: context, setName: name, onDelete: () => { quizProvider.removeCardFromQuizSet( quizSetName: name,question:  quizSet['question'])} );
+                       showDeleteConfirmationDialog(
+                           context: context,
+                           setName: name,
+                           onDelete: () => {
+                             quizProvider.removeCardFromQuizSet(
+                                 quizSetName: name,
+                                 question:  quizSet['question'])
+                           } );
                       },
                       onEdit: (quizSet) {
                       quizProvider.questionController.text =  quizSet['question'];
@@ -108,7 +120,10 @@ class SeeAllQuizCard extends StatelessWidget {
                       );
                     },
                       onIgnore: (name,quizSet) {
-                        quizProvider.toggleIgnore( quizSetName: name, isIgnore: quizSet['isIgnore'], question: quizSet['question']);
+                        quizProvider.toggleIgnore(
+                            quizSetName: name,
+                            isIgnore: quizSet['isIgnore'],
+                            question: quizSet['question']);
                       },),
                   ),
                 ),
@@ -119,11 +134,18 @@ class SeeAllQuizCard extends StatelessWidget {
               colorScheme: colorScheme,
               name: 'Create Card',
               onTap: () {
-
-                CreateCardBottomModal(context: context, buttonName: "Add Card", isCreate: true, cardName: '', card: card, name: name );
+                CreateCardBottomModal(
+                    context: context,
+                    buttonName: "Add Card",
+                    isCreate: true,
+                    cardName: '',
+                    card: card,
+                    name: name );
               },
             ),
-            ReusableThemeSettingPosition(colorScheme: colorScheme),
+            ReusableThemeSettingPosition(
+                colorScheme: colorScheme
+            ),
           ],
         );
       },

@@ -99,7 +99,7 @@ class HomeScreen extends StatelessWidget {
                         Align(
                           alignment: Alignment.center,
                           child: Text(
-                          "Flashcards for Faster Learning",
+                          "FlashCards for Faster Learning",
                             style: TextStyle(
                               color: colorScheme.onPrimary,
                               fontWeight: FontWeight.w500,

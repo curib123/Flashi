@@ -20,11 +20,20 @@ void showReviewSelection({
     _createReviewerItem(
       context: context,
       icon: Icons.check_circle,
-      title: 'Multiple Choice',
+      title: 'Multiple Choice (Basic)',
       subtitle: 'Choose the correct answer from options',
       cards: cards,
       setname: setname,
     ),
+    _createReviewerItem(
+      context: context,
+      icon: Icons.timer,
+      title: 'Multiple Choice (Timer)',
+      subtitle: 'Choose the correct answer from options with timer',
+      cards: cards,
+      setname: setname,
+    ),
+
     _createReviewerItem(
       context: context,
       icon: Icons.merge_type,
