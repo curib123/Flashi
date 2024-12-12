@@ -288,7 +288,7 @@ class _MultipleChoiceReviewState extends State<MultipleChoiceReviewTimer> {
           itemBuilder: (context, index) {
             final card = widget.cards[index];
             final correctAnswer = card['answer'] as String;
-            final options = _shuffledOptions[index];
+            final options  = _shuffledOptions[index];
 
             return MultipleChoiceCore(
               timer: _timerNotifier.value.toString(),
