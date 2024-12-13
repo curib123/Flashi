@@ -45,27 +45,27 @@ class _MultipleChoiceCoreState extends State<MultipleChoiceCore> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-           Row(
-             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-             children: [
-               Text(
-                 "Score: ${widget.score} / ${widget.totalScore}",
-                 style: TextStyle(
-                   color: colorScheme.primary,
-                   fontSize: 18,
-                   fontWeight: FontWeight.w600,
-                 ),
-               ),
-               Text(
-                 "Timer: ${widget.timer}",
-                 style: TextStyle(
-                   color: colorScheme.primary,
-                   fontSize: 18,
-                   fontWeight: FontWeight.w600,
-                 ),
-               ),
-             ],
-           ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Score: ${widget.score} / ${widget.totalScore}",
+                  style: TextStyle(
+                    color: colorScheme.primary,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Text(
+                  "Timer: ${widget.timer}",
+                  style: TextStyle(
+                    color: colorScheme.primary,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
             const SizedBox(height: 20),
             Container(
               width: size.width,
@@ -120,6 +120,36 @@ class _MultipleChoiceCoreState extends State<MultipleChoiceCore> {
     final isCorrect = widget.answer == option;
     final isSelected = selectedOption == option;
 
+    Icon leadingIcon;
+    if (isSelected) {
+      if (isCorrect) {
+        leadingIcon = Icon(Icons.check, color: colorScheme.onPrimary);
+      } else {
+        leadingIcon = Icon(Icons.close, color: colorScheme.onPrimary);
+      }
+    } else {
+      if (isCorrect && !isSelected && hasAnswered) {
+        leadingIcon = Icon(Icons.check, color: colorScheme.onPrimary);
+      } else {
+        leadingIcon = Icon(Icons.radio_button_unchecked, color: colorScheme.onPrimary);
+      }
+    }
+
+    Color tileColor;
+    if (isSelected) {
+      if (isCorrect) {
+        tileColor = colorScheme.primary;
+      } else {
+        tileColor = colorScheme.error;
+      }
+    } else {
+      if (isCorrect && !isSelected && hasAnswered) {
+        tileColor = colorScheme.primary;
+      } else {
+        tileColor = colorScheme.secondary;
+      }
+    }
+
     return ListTile(
       onTap: hasAnswered
           ? null
@@ -130,20 +160,8 @@ class _MultipleChoiceCoreState extends State<MultipleChoiceCore> {
         });
         widget.onAnswerSelected(option); // Notify parent widget
       },
-      leading: isSelected
-          ? (isCorrect
-          ? Icon(Icons.check, color: colorScheme.onPrimary)
-          : Icon(Icons.close, color: colorScheme.onPrimary))
-          : (isCorrect && !isSelected && hasAnswered
-          ? Icon(Icons.check, color: colorScheme.onPrimary)
-          : Icon(Icons.radio_button_unchecked, color: colorScheme.onPrimary)),
-      tileColor: isSelected
-          ? (isCorrect
-          ? colorScheme.primary
-          : colorScheme.error)
-          : (isCorrect && !isSelected && hasAnswered
-          ? colorScheme.primary
-          : colorScheme.secondary),
+      leading: leadingIcon,
+      tileColor: tileColor,
       title: Text(
         option,
         style: TextStyle(
