@@ -63,19 +63,19 @@ class ReviewerPage extends StatelessWidget {
       case 'Multiple Choice (Basic)':
       // Return the widget for multiple choice
         return MultipleChoiceReviewBasic(reviewer: reviewer, cards: cards, setname: setname,); // Replace with the actual widget
-
       case 'Multiple Choice (Timer)':
       // Return the widget for multiple choice
         return MultipleChoiceReviewTimer(reviewer: reviewer, cards: cards, setname: setname, timerDuration: 10,); // Replace with the actual widget
+      case 'Text-to-Speech Review':
+      // Return the widget for text-to-speech review
+        return TextToSpeechReview(reviewer: reviewer, cards: cards, setname: setname); // Replace with the actual widget
       case 'Matching Type(Coming Soon)':
       // Return the widget for matching type
         return MatchingTypeReview(reviewer: reviewer); // Replace with the actual widget
       case 'Q&A Session(Coming Soon)':
       // Return the widget for Q&A session
         return QuestionAndAnswer(reviewer: reviewer); // Replace with the actual widget
-      case 'Text-to-Speech Review(Coming Soon)':
-      // Return the widget for text-to-speech review
-        return TextToSpeechReview(reviewer: reviewer); // Replace with the actual widget
+
       case 'Keywords Review(Coming Soon)':
       // Return the widget for keywords review
         return KeywordsReview(reviewer: reviewer); // Replace with the actual widget

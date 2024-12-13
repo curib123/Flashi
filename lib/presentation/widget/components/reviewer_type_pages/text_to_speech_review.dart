@@ -1,13 +1,124 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
+import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reviewer_widgets_core/text_to_speech_card_core.dart';
 
-class TextToSpeechReview extends StatelessWidget {
+class TextToSpeechReview extends StatefulWidget {
   final String reviewer;
-  const TextToSpeechReview ({super.key, required this.reviewer});
+  final List<dynamic> cards; // List of cards with 'question' and 'answer'
+  final String setname;
+
+  const TextToSpeechReview({
+    super.key,
+    required this.reviewer,
+    required this.cards,
+    required this.setname,
+  });
+
+  @override
+  _TextToSpeechReviewState createState() => _TextToSpeechReviewState();
+}
+
+class _TextToSpeechReviewState extends State<TextToSpeechReview> {
+  final FlutterTts _flutterTts = FlutterTts(); // Initialize TTS
+  late final PageController _pageController; // Controller for PageView
+  bool _isSpeaking = false; // Track if TTS is speaking
+  int _currentIndex = 0; // Track current page index
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: _currentIndex); // Start at the first card
+  }
+
+  @override
+  void dispose() {
+    _flutterTts.stop(); // Stop TTS when widget is disposed
+    _pageController.dispose(); // Dispose PageController
+    super.dispose();
+  }
+
+  Future<void> _speakAndAutoScroll() async {
+    if (_isSpeaking) return;
+
+    setState(() {
+      _isSpeaking = true;
+    });
+
+    for (int i = _currentIndex; i < widget.cards.length; i++) {
+      final card = widget.cards[i];
+      final question = card['question'] ?? 'No question available';
+      final answer = card['answer'] ?? 'No answer available';
+
+      // Speak the content
+      await _flutterTts.speak("Question: $question. Answer: $answer.");
+
+      // Wait for the speech to complete
+      await _flutterTts.awaitSpeakCompletion(true);
+
+      // Move to the next page if not on the last one
+      if (i < widget.cards.length - 1) {
+        setState(() {
+          _currentIndex = i + 1;
+        });
+        _pageController.nextPage(
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        );
+      }
+    }
+
+    setState(() {
+      _isSpeaking = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text(reviewer), // Placeholder for content
+    if (widget.cards.isEmpty) {
+      return Center(
+        child: Text(
+          "No cards available",
+          style: TextStyle(color: Theme.of(context).colorScheme.primary),
+        ),
+      );
+    }
+
+    return Column(
+      children: [
+        Expanded(
+          child: PageView.builder(
+            controller: _pageController,
+            itemCount: widget.cards.length,
+            onPageChanged: (index) {
+              setState(() {
+                _currentIndex = index;
+              });
+            },
+            itemBuilder: (context, index) {
+              final card = widget.cards[index];
+              return TextToSpeechCardCore(
+                question: card['question'] ?? 'No question available',
+                answer: card['answer'] ?? 'No answer available',
+              );
+            },
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: ElevatedButton(
+            onPressed: _speakAndAutoScroll,
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              foregroundColor: Theme.of(context).colorScheme.onPrimary,
+            ),
+            child: Text(
+              _isSpeaking ? "Speaking..." : "Start Speech",
+              style: const TextStyle(fontSize: 16),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

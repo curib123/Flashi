@@ -33,6 +33,14 @@ void showReviewSelection({
       cards: cards,
       setname: setname,
     ),
+    _createReviewerItem(
+      context: context,
+      icon: Icons.volume_up,
+      title: 'Text-to-Speech Review',
+      subtitle: 'Listen to prompts and review',
+      cards: cards,
+      setname: setname,
+    ),
 
     _createReviewerItem(
       context: context,
@@ -50,14 +58,7 @@ void showReviewSelection({
       cards: cards,
       setname: setname,
     ),
-    _createReviewerItem(
-      context: context,
-      icon: Icons.volume_up,
-      title: 'Text-to-Speech Review(Coming Soon)',
-      subtitle: 'Listen to prompts and review',
-      cards: cards,
-      setname: setname,
-    ),
+
     _createReviewerItem(
       context: context,
       icon: Icons.label,
