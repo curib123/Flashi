@@ -87,6 +87,7 @@ class _TextToSpeechReviewState extends State<TextToSpeechReview> {
       children: [
         Expanded(
           child: PageView.builder(
+            physics: NeverScrollableScrollPhysics(),
             controller: _pageController,
             itemCount: widget.cards.length,
             onPageChanged: (index) {
@@ -105,17 +106,50 @@ class _TextToSpeechReviewState extends State<TextToSpeechReview> {
         ),
         Padding(
           padding: const EdgeInsets.all(16.0),
-          child: ElevatedButton(
-            onPressed: _speakAndAutoScroll,
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              foregroundColor: Theme.of(context).colorScheme.onPrimary,
-            ),
-            child: Text(
-              _isSpeaking ? "Speaking..." : "Start Speech",
-              style: const TextStyle(fontSize: 16),
-            ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              ElevatedButton(
+                onPressed: _speakAndAutoScroll,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                ),
+                child: Text(
+                  _isSpeaking ? "Speaking..." : "Start Speech",
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  // Stop the TTS if it's speaking
+                  if (_isSpeaking) {
+                    _flutterTts.stop();
+                    _speakAndAutoScroll;
+                  }
+
+                  // Reset to the first card and restart the PageView
+                  setState(() {
+                    _currentIndex = 0; // Reset the page to the first one
+                  });
+                  _pageController.jumpToPage(0); // Jump to the first card
+
+                  // Reset the text-to-speech state
+                  setState(() {
+                    _isSpeaking = false; // Ensure speaking is not in progress
+                  });
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                ),
+                child: Icon(Icons.arrow_back),
+              ),
+
+            ],
           ),
         ),
       ],

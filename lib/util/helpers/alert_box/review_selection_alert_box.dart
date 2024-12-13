@@ -42,31 +42,7 @@ void showReviewSelection({
       setname: setname,
     ),
 
-    _createReviewerItem(
-      context: context,
-      icon: Icons.merge_type,
-      title: 'Matching Type(Coming Soon)',
-      subtitle: 'Match items to test your knowledge',
-      cards: cards,
-      setname: setname,
-    ),
-    _createReviewerItem(
-      context: context,
-      icon: Icons.question_answer,
-      title: 'Q&A Session(Coming Soon)',
-      subtitle: 'Write your answer to the questions',
-      cards: cards,
-      setname: setname,
-    ),
 
-    _createReviewerItem(
-      context: context,
-      icon: Icons.label,
-      title: 'Keywords Review(Coming Soon)',
-      subtitle: 'Create and review keywords',
-      cards: cards,
-      setname: setname,
-    ),
   ];
 
   showDialog(
