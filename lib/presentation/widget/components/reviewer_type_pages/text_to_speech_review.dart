@@ -87,7 +87,7 @@ class _TextToSpeechReviewState extends State<TextToSpeechReview> {
       children: [
         Expanded(
           child: PageView.builder(
-            physics: NeverScrollableScrollPhysics(),
+            physics: const BouncingScrollPhysics(),
             controller: _pageController,
             itemCount: widget.cards.length,
             onPageChanged: (index) {
