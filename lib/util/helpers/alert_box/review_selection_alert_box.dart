@@ -50,7 +50,7 @@ void showReviewSelection({
     barrierDismissible: true,
     builder: (BuildContext context) {
       return Dialog(
-        elevation: 10,
+        elevation: 15,
         insetAnimationDuration: const Duration(seconds: 2),
         insetPadding: const EdgeInsets.symmetric(horizontal: 20),
         shape: RoundedRectangleBorder(
