@@ -1,6 +1,8 @@
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reviewer_widgets_core/flip_card_core.dart';
 import 'package:flashlearn/provider/quiz_provider.dart';
+import 'package:flashlearn/provider/reviewer_settings_provider.dart';
 import 'package:flashlearn/util/helpers/modal/create_card_bottom_modal.dart';
+import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -35,6 +37,7 @@ class _FlashcardReviewState extends State<FlashcardReview> {
   Widget build(BuildContext context) {
     // Access both providers directly
     final quizProvider = Provider.of<QuizProvider>(context);
+    final reviewerSettingsProvider = Provider.of<ReviewerSettingsProvider>(context);
 
 
     if (widget.cards.isEmpty) {
@@ -60,6 +63,7 @@ class _FlashcardReviewState extends State<FlashcardReview> {
                   Map<String, dynamic> card = Map<String, dynamic>.from(widget.cards[index]);
 
                   return FlipCardCore(
+                    flipDirection: reviewerSettingsProvider.flashCardFlippingDirection,
                     question: card['question'],
                     answer: card['answer'],
                     onEdit: () {

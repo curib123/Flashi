@@ -12,7 +12,7 @@ class FlipCardCore extends StatefulWidget {
     Key? key,
     required this.question,
     required this.answer,
-    this.flipDirection = FlipDirection.HORIZONTAL, // Default to horizontal
+    required this.flipDirection, // Default to horizontal
     required this.onEdit,
   }) : super(key: key);
 

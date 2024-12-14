@@ -5,16 +5,16 @@ import 'package:hive/hive.dart';
 
 class ThemeProvider extends ChangeNotifier {
   // Default theme settings
-  FlexScheme _currentScheme = FlexScheme.cyanM3;
+  FlexScheme _currentScheme = FlexScheme.materialBaseline; // Default to purpleM3
   ThemeMode _themeMode = ThemeMode.light;
   String _currentFont = 'Montserrat'; // Default font
 
   final Box _settingsBox = Hive.box('settings');
 
   ThemeProvider() {
-    // Load saved theme values from Hive
+    // Load saved theme values from Hive or use defaults
     _currentScheme = FlexScheme.values[
-    _settingsBox.get('currentScheme', defaultValue: FlexScheme.cyanM3.index)
+    _settingsBox.get('currentScheme', defaultValue: FlexScheme.materialBaseline.index)
     ];
     _themeMode = ThemeMode.values[
     _settingsBox.get('themeMode', defaultValue: ThemeMode.light.index)
@@ -53,7 +53,6 @@ class ThemeProvider extends ChangeNotifier {
     return FlexThemeData.light(
       scheme: _currentScheme,
       textTheme: GoogleFonts.getTextTheme(_currentFont),
-
     );
   }
 
