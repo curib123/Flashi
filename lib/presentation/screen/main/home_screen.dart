@@ -132,7 +132,7 @@ class HomeScreen extends StatelessWidget {
               // Content section below the header
               SliverToBoxAdapter(
                 child: Container(
-                  padding: const EdgeInsets.only(top: 10, bottom: 80),
+                  padding: const EdgeInsets.only(top: 10, bottom: 200,right: 2,left: 2),
                   child: Column(
                     children: [
                       // Sorting and "See All" button
@@ -194,6 +194,7 @@ class HomeScreen extends StatelessWidget {
 
           // Floating theme settings button
           ReusableThemeSettingPosition(colorScheme: colorScheme),
+
         ],
       ),
     );

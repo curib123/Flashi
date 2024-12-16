@@ -8,12 +8,12 @@ class ReusableThemeSettingPosition extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return  Positioned(
-      bottom: 80,
-      right: 10,
+      bottom: 65 ,
+      right: 15,
       child: GestureDetector(
         onTap: () => {openThemeSelector(context)},
         child: Container(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
               color: colorScheme.primary,
               borderRadius: BorderRadius.circular(50)
