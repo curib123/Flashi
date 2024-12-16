@@ -132,7 +132,7 @@ class HomeScreen extends StatelessWidget {
               // Content section below the header
               SliverToBoxAdapter(
                 child: Container(
-                  padding: const EdgeInsets.only(top: 10, bottom: 50),
+                  padding: const EdgeInsets.only(top: 10, bottom: 80),
                   child: Column(
                     children: [
                       // Sorting and "See All" button
@@ -175,7 +175,7 @@ class HomeScreen extends StatelessWidget {
             ],
           ),
 
-          // Floating "Create Set" button
+         // Floating "Create Set" button
           ReusableCreateSetButtonPosition(
             colorScheme: colorScheme,
             name: 'Create Set',
