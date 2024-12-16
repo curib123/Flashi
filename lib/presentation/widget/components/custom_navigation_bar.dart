@@ -17,7 +17,7 @@ class CustomNavigationBar extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     return CurvedNavigationBar(
-      height: 70.0, // Height of the navigation bar
+      height: 60.0, // Height of the navigation bar
       backgroundColor: colorScheme.onPrimary,  // Background color for the navbar (transparent in this case)
       color: colorScheme.primary,  // Color for inactive icons
       buttonBackgroundColor: colorScheme.primary,  // Active color for the button (e.g. "Add" button)

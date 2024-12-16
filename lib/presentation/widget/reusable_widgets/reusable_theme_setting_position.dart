@@ -8,7 +8,7 @@ class ReusableThemeSettingPosition extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return  Positioned(
-      bottom: 70,
+      bottom: 80,
       right: 10,
       child: GestureDetector(
         onTap: () => {openThemeSelector(context)},
