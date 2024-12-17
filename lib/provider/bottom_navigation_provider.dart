@@ -1,11 +1,12 @@
 
+import 'package:flashlearn/presentation/screen/main/favorate_screen.dart';
 import 'package:flashlearn/presentation/screen/main/home_screen.dart';
 import 'package:flutter/material.dart';
 
 class BottomNavigationProvider with ChangeNotifier{
 
   final List<Widget> _screen = [
-    const HomeScreen(),
+    const FavoriteScreen(),
     const HomeScreen(),
     const HomeScreen(),
     const HomeScreen(),

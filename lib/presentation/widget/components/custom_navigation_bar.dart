@@ -19,22 +19,29 @@ class CustomNavigationBar extends StatelessWidget {
     return Container(
       height: 70,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(50)
+        borderRadius: BorderRadius.circular(50),
       ),
       child: CurvedNavigationBar(
         height: 55.0, // Height of the navigation bar
-        backgroundColor: colorScheme.onPrimary,  // Background color for the navbar (transparent in this case)
-        color: colorScheme.primary,  // Color for inactive icons
-        buttonBackgroundColor: colorScheme.primary,  // Active color for the button (e.g. "Add" button)
-        index: currentIndex,  // Set the active button based on the currentIndex
+        backgroundColor: colorScheme.onPrimary, // Navbar background color
+        color: colorScheme.primary, // Navbar color
+        buttonBackgroundColor: colorScheme.primary, // Active button color
+        index: currentIndex, // Current active index
         items: <Widget>[
-          Icon(Icons.search_rounded, size: 30, color: colorScheme.onPrimary),
           Icon(Icons.favorite_rounded, size: 30, color: colorScheme.onPrimary),
-          Icon(Icons.home_rounded, size: 30, color: colorScheme.onPrimary),
           Icon(Icons.send_rounded, size: 30, color: colorScheme.onPrimary),
+          Icon(Icons.home_rounded, size: 30, color: colorScheme.onPrimary),
+          Icon(Icons.wifi, size: 30, color: colorScheme.onPrimary),
           Icon(Icons.settings_rounded, size: 30, color: colorScheme.onPrimary),
         ],
-        onTap: onTap,  // Handle tap events using the provided callback
+        onTap: (index) {
+          if (onTap != null) {
+            onTap!(index); // Call the callback if it's not null
+          }
+        },
+        letIndexChange: (index) {
+          return true; // Allows index change; customize logic if needed  onTap!(index); // Call the callback if it's not null
+        },
       ),
     );
   }

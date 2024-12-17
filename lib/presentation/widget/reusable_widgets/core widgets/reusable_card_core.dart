@@ -33,88 +33,90 @@ class ReusableCardCore extends StatelessWidget {
     // Format the timestamp
     String formattedTimestamp = "${timestamp.day}/${timestamp.month}/${timestamp.year} ${timestamp.hour}:${timestamp.minute}";
 
-    return  Card(
-        margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        elevation: 15,
-        shadowColor: colorScheme.shadow.withOpacity(0.5),
-        child: InkWell(
-          onTap: () {
-            // Add functionality to reveal the answer or other interactions
-          },
-          borderRadius: BorderRadius.circular(20),
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [colorScheme.tertiaryContainer, colorScheme.secondaryContainer],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(20),
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      elevation: 15,
+      shadowColor: colorScheme.shadow.withOpacity(0.5),
+      child: InkWell(
+        onTap: () {
+          // Add functionality to reveal the answer or other interactions
+        },
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [colorScheme.tertiaryContainer, colorScheme.secondaryContainer],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
-            child: ListTile(
-              contentPadding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 20.0),
-              title: Text(
-                question,
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: colorScheme.primary.withOpacity(0.5),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: ListTile(
+            contentPadding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 20.0),
+            title: isIgnore
+                ? Text(
+              "This card has been hidden and marked as ignored.",
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: colorScheme.onSurface.withOpacity(0.6),
+              ),
+            )
+                : Text(
+              question,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: colorScheme.primary.withOpacity(0.5),
+              ),
+            ),
+            subtitle: isIgnore
+                ? null
+                : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  answer,
+                  style: TextStyle(fontSize: 14, color: colorScheme.onSurface),
                 ),
-              ),
-              subtitle: isIgnore
-                  ? Text(
-                "This card is ignored.",
-                style: TextStyle(
-                  color: colorScheme.onSurface.withOpacity(0.6),
+                const SizedBox(height: 8),
+                isUpdating
+                    ? Text(
+                  "Updated on: $formattedTimestamp",
+                  style: TextStyle(fontSize: 12, color: colorScheme.onSurface.withOpacity(0.6)),
+                )
+                    : Text(
+                  "Created on: $formattedTimestamp",
+                  style: TextStyle(fontSize: 12, color: colorScheme.onSurface.withOpacity(0.6)),
                 ),
-              )
-                  : Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    answer,
-                    style: TextStyle(fontSize: 14, color: colorScheme.onSurface),
-                  ),
-                  const SizedBox(height: 8),
-                  isUpdating ? Text(
-                    "Updated on: $formattedTimestamp",
-                    style: TextStyle(
-                        fontSize: 12, color: colorScheme.onSurface.withOpacity(0.6)),
-                  ) : Text(
-                    "Created on: $formattedTimestamp",
-                    style: TextStyle(
-                        fontSize: 12, color: colorScheme.onSurface.withOpacity(0.6)),
-                  ),
-                ],
-              ),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.volume_up, color: colorScheme.primary),
-                    onPressed: () async {
-                      await flutterTts.speak('The question :   $question   The Answer : $answer');
-                    },
-                    splashColor: colorScheme.primary.withOpacity(0.2),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.more_vert, color: colorScheme.primary),
-                    onPressed: () {
-                      _showPopupMenu(context, colorScheme);
-                    },
-                    splashColor: colorScheme.primary.withOpacity(0.2),
-                  ),
-                ],
-              ),
+              ],
+            ),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.volume_up, color: colorScheme.primary),
+                  onPressed: () async {
+                    await flutterTts.speak('The question :   $question   The Answer : $answer');
+                  },
+                  splashColor: colorScheme.primary.withOpacity(0.2),
+                ),
+                IconButton(
+                  icon: Icon(Icons.more_vert, color: colorScheme.primary),
+                  onPressed: () {
+                    _showPopupMenu(context, colorScheme);
+                  },
+                  splashColor: colorScheme.primary.withOpacity(0.2),
+                ),
+              ],
             ),
           ),
         ),
-      );
-
-
+      ),
+    );
   }
 
   // Popup menu for more options (Edit, Remove, Ignore)

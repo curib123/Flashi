@@ -16,6 +16,10 @@ class ReviewerPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
+    // Filtering only cards where isIgnore is false
+    final List<dynamic> filteredCardsIsIgnore = cards
+        .where((card) => card['isIgnore'] == false) // Filter cards with isIgnore == false
+        .toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -57,23 +61,23 @@ class ReviewerPage extends StatelessWidget {
           },
         ),
       ),
-      body: reviewerCheck(context),
+      body: reviewerCheck(context,filteredCardsIsIgnore),
     );
   }
 
-  Widget reviewerCheck( BuildContext context ) {
+  Widget reviewerCheck( BuildContext context, List<dynamic> filteredCardsIsIgnore ) {
     switch (reviewer) {
       case 'Flashcard Review':
-        return FlashcardReview(reviewer: reviewer, cards: cards, setname: setname,);  // Assuming this is the correct widget to display for this review type
+        return FlashcardReview(reviewer: reviewer, cards: filteredCardsIsIgnore, setname: setname,);  // Assuming this is the correct widget to display for this review type
       case 'Multiple Choice (Basic)':
       // Return the widget for multiple choice
-        return MultipleChoiceReviewBasic(reviewer: reviewer, cards: cards, setname: setname,); // Replace with the actual widget
+        return MultipleChoiceReviewBasic(reviewer: reviewer, cards: filteredCardsIsIgnore, setname: setname,); // Replace with the actual widget
       case 'Multiple Choice (Timer)':
       // Return the widget for multiple choice
-        return MultipleChoiceReviewTimer(reviewer: reviewer, cards: cards, setname: setname, timerDuration: Provider.of<ReviewerSettingsProvider>(context).timeDuration ,); // Replace with the actual widget
+        return MultipleChoiceReviewTimer(reviewer: reviewer, cards: filteredCardsIsIgnore, setname: setname, timerDuration: Provider.of<ReviewerSettingsProvider>(context).timeDuration ,); // Replace with the actual widget
       case 'Text-to-Speech Review':
       // Return the widget for text-to-speech review
-        return TextToSpeechReview(reviewer: reviewer, cards: cards, setname: setname); // Replace with the actual widget
+        return TextToSpeechReview(reviewer: reviewer, cards: filteredCardsIsIgnore, setname: setname); // Replace with the actual widget
 
       default:
         return const Center(

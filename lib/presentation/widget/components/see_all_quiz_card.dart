@@ -73,7 +73,7 @@ class SeeAllQuizCard extends StatelessWidget {
                     if (newValue != null) {
                       sortProvider.updateSortValueCard(newValue);
                       quizProvider.newValueCard = newValue; // Trigger sorting in the provider
-                      print(quizProvider.newValueCard);
+
                     }
                   },
                   onSeeAllPressed: () {

@@ -2,7 +2,6 @@ import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/r
 import 'package:flashlearn/provider/quiz_provider.dart';
 import 'package:flashlearn/provider/reviewer_settings_provider.dart';
 import 'package:flashlearn/util/helpers/modal/create_card_bottom_modal.dart';
-import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -103,7 +102,7 @@ class _FlashcardReviewState extends State<FlashcardReview> {
                   children: List.generate(
                     widget.cards.length,
                         (index) => Container(
-                      margin: EdgeInsets.symmetric(horizontal: 2.0),
+                      margin: const EdgeInsets.symmetric(horizontal: 2.0),
                       width:  widget.cards.length <= 15 ? 10 : 6,
                       height:  widget.cards.length <= 15 ? 10 : 6,
                       decoration: BoxDecoration(

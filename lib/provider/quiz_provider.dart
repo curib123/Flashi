@@ -25,28 +25,28 @@ class QuizProvider with ChangeNotifier {
 
     List<Map<String, dynamic>> defaultValue = [
       {
-        'name': "Motivational Quotes",
+        'name': "Motivational Quotes (Template)",
         'timestamp': DateTime.now(),
         'description': "A collection of quotes to inspire and uplift.",
         'cards': [
           {
             'isUpdating': false,
-            'question': "What motivates you in life?",
-            'answer': "Personal growth and success",
+            'question': "What is your favorite motivational quote?",
+            'answer': "The only way to do great work is to love what you do. - Steve Jobs",
             'isIgnore': false,
             'timestamp': DateTime.now()
           },
           {
             'isUpdating': false,
-            'question': "What are your favorite hobbies?",
-            'answer': "Reading, hiking, and gaming",
+            'question': "Who is someone you look up to for inspiration?",
+            'answer': "Elon Musk",
             'isIgnore': false,
             'timestamp': DateTime.now()
           },
           {
             'isUpdating': false,
-            'question': "What is your dream travel destination?",
-            'answer': "Japan",
+            'question': "What helps you stay positive during hard times?",
+            'answer': "Remembering my goals and past achievements.",
             'isIgnore': false,
             'timestamp': DateTime.now()
           }
@@ -54,28 +54,28 @@ class QuizProvider with ChangeNotifier {
         'numberOfQuiz': 3,
       },
       {
-        'name': "Travel Destinations",
+        'name': "Travel Destinations (Template)",
         'timestamp': DateTime.now(),
         'description': "Explore top travel destinations around the world.",
         'cards': [
           {
             'isUpdating': false,
-            'question': "What motivates you in life?",
-            'answer': "Personal growth and success",
+            'question': "Which city do you most want to visit?",
+            'answer': "Paris, France",
             'isIgnore': false,
             'timestamp': DateTime.now()
           },
           {
             'isUpdating': false,
-            'question': "What are your favorite hobbies?",
-            'answer': "Reading, hiking, and gaming",
+            'question': "What type of travel do you prefer—adventure, relaxation, or culture?",
+            'answer': "Adventure",
             'isIgnore': false,
             'timestamp': DateTime.now()
           },
           {
             'isUpdating': false,
-            'question': "What is your dream travel destination?",
-            'answer': "Japan",
+            'question': "What is your favorite travel memory?",
+            'answer': "Seeing the Northern Lights in Iceland.",
             'isIgnore': false,
             'timestamp': DateTime.now()
           }
@@ -83,28 +83,28 @@ class QuizProvider with ChangeNotifier {
         'numberOfQuiz': 3,
       },
       {
-        'name': "General Knowledge",
+        'name': "General Knowledge (Template)",
         'timestamp': DateTime.now(),
         'description': "A variety of questions to test your general knowledge.",
         'cards': [
           {
             'isUpdating': false,
-            'question': "What motivates you in life?",
-            'answer': "Personal growth and success",
+            'question': "What is the capital of Australia?",
+            'answer': "Canberra",
             'isIgnore': false,
             'timestamp': DateTime.now()
           },
           {
             'isUpdating': false,
-            'question': "What are your favorite hobbies?",
-            'answer': "Reading, hiking, and gaming",
+            'question': "Who developed the theory of relativity?",
+            'answer': "Albert Einstein",
             'isIgnore': false,
             'timestamp': DateTime.now()
           },
           {
             'isUpdating': false,
-            'question': "What is your dream travel destination?",
-            'answer': "Japan",
+            'question': "What is the largest mammal in the world?",
+            'answer': "Blue Whale",
             'isIgnore': false,
             'timestamp': DateTime.now()
           }
@@ -112,6 +112,7 @@ class QuizProvider with ChangeNotifier {
         'numberOfQuiz': 3,
       }
     ];
+
 
 
     var quizSetsFromStorage = _settingsBox.get('quizSets', defaultValue: defaultValue);
@@ -158,6 +159,14 @@ class QuizProvider with ChangeNotifier {
           .toList();
     }
   }
+
+  // Get filtered quiz sets that are marked as favorite
+  List<Map<String, dynamic>> get filteredQuizSetsFavorite {
+    return _quizSets
+        .where((set) => set['favorite'] == true) // Ensure 'favorite' is true
+        .toList();
+  }
+
 
 
   // Sort quiz sets based on the criterion
