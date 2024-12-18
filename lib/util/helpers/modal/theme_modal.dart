@@ -10,7 +10,7 @@ void openThemeSelector(BuildContext context) {
     builder: (context) {
       return const Padding(
         padding: EdgeInsets.all(16.0),
-        child: ThemeSelector(), // Add the ThemeSelector here
+        child: ThemeSelector(isShowCloseBtn: true,), // Add the ThemeSelector here
       );
     },
   );

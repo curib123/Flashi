@@ -25,7 +25,7 @@ class FavoriteScreen extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         backgroundColor: colorScheme.primary,
         foregroundColor: colorScheme.onPrimary,
-        title: const Text("Favorites"),
+        title: const Text('Favorites',style: TextStyle(fontWeight: FontWeight.bold),),
         centerTitle: true,
       ),
       body:  Stack(

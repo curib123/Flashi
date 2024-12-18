@@ -9,8 +9,6 @@ class BottomNavigationProvider with ChangeNotifier{
     const FavoriteScreen(),
     const HomeScreen(),
     const HomeScreen(),
-    const HomeScreen(),
-    const HomeScreen(),
   ];
 
   int _currentIndex = 2;

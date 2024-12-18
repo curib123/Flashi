@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ThemeSelector extends StatelessWidget {
-  const ThemeSelector({super.key});
+
+  final bool isShowCloseBtn;
+
+  const ThemeSelector({super.key,required, required this.isShowCloseBtn });
 
   @override
   Widget build(BuildContext context) {
@@ -168,7 +171,7 @@ class ThemeSelector extends StatelessWidget {
         // Close button for the modal
         Align(
           alignment: Alignment.bottomRight,
-          child: ElevatedButton(
+          child: isShowCloseBtn ?  ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.primary,
               foregroundColor: Theme.of(context).colorScheme.onPrimary,
@@ -181,7 +184,7 @@ class ThemeSelector extends StatelessWidget {
               Navigator.pop(context); // Close the modal bottom sheet
             },
             child: const Text("Close"),
-          ),
+          ) : null
         ),
       ],
     );

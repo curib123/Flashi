@@ -1,18 +1,9 @@
-import 'package:flashlearn/provider/reviewer_settings_provider.dart';
-import 'package:flip_card/flip_card.dart';
+import 'package:flashlearn/presentation/widget/components/reviewer_settings_alert_content.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 void reviewerSettingsAlertBox({
   required BuildContext context,
 }) {
-  const List<FlipDirection> flashCardFlippingDirection = [
-    FlipDirection.HORIZONTAL,
-    FlipDirection.VERTICAL,
-  ];
-
-  const List<int> timeDuration = [5, 10, 15, 20, 25, 30];
-
   showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -25,6 +16,8 @@ void reviewerSettingsAlertBox({
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
+
+        // Dialog Title
         title: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -47,72 +40,15 @@ void reviewerSettingsAlertBox({
             textAlign: TextAlign.center,
           ),
         ),
-        content: Consumer<ReviewerSettingsProvider>(
-          builder: (context, settingsProvider, child) {
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Customize your reviewer settings below.",
-                  style: textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                    fontSize: 14,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                _buildDropdownSection(
-                  context: context,
-                  label: "Flashcard Flip Direction",
-                  value: settingsProvider.flashCardFlippingDirection,
-                  items: flashCardFlippingDirection.map((option) {
-                    return DropdownMenuItem<FlipDirection>(
-                      value: option,
-                      child: Text(
-                        option == FlipDirection.HORIZONTAL
-                            ? "Horizontal"
-                            : "Vertical",
-                        style: textTheme.bodyMedium?.copyWith(
-                          color: colorScheme.onSurface,
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                  onChanged: (FlipDirection? newValue) {
-                    if (newValue != null) {
-                      settingsProvider.updateflashCardFlippingDirection(newValue);
-                    }
-                  },
-                ),
-                const SizedBox(height: 20),
-                _buildDropdownSection(
-                  context: context,
-                  label: "Multiple Choice Time Duration",
-                  value: settingsProvider.timeDuration,
-                  items: timeDuration.map((option) {
-                    return DropdownMenuItem<int>(
-                      value: option,
-                      child: Text(
-                        "$option seconds",
-                        style: textTheme.bodyMedium?.copyWith(
-                          color: colorScheme.onSurface,
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                  onChanged: (int? newValue) {
-                    if (newValue != null) {
-                      settingsProvider.updateTimeDuration(newValue);
-                    }
-                  },
-                ),
-              ],
-            );
-          },
-        ),
+
+        // Dialog Content
+        content: const ReviewerSettingsAlertContent(),
         scrollable: true,
+
+        // Actions
         actionsPadding: const EdgeInsets.symmetric(horizontal: 16),
         actions: [
+          // Cancel Button
           _buildActionButton(
             context: context,
             label: "Cancel",
@@ -120,16 +56,15 @@ void reviewerSettingsAlertBox({
             textColor: colorScheme.onError,
             onPressed: () => Navigator.of(context).pop(),
           ),
+
+          // Save Button
           _buildActionButton(
             context: context,
             label: "Save",
             color: colorScheme.secondary,
             textColor: colorScheme.onPrimary,
             onPressed: () {
-              Provider.of<ReviewerSettingsProvider>(context, listen: false)
-                  .flashCardFlippingDirection;
-              Provider.of<ReviewerSettingsProvider>(context, listen: false)
-                  .timeDuration;
+              // Trigger updates in the Provider
               Navigator.of(context).pop();
             },
           ),
@@ -139,43 +74,7 @@ void reviewerSettingsAlertBox({
   );
 }
 
-Widget _buildDropdownSection<T>({
-  required BuildContext context,
-  required String label,
-  required T value,
-  required List<DropdownMenuItem<T>> items,
-  required ValueChanged<T?> onChanged,
-}) {
-  final textTheme = Theme.of(context).textTheme;
-  final colorScheme = Theme.of(context).colorScheme;
-
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        label,
-        style: textTheme.bodySmall?.copyWith(
-          color: colorScheme.primary,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-      const SizedBox(height: 10),
-      DropdownButton<T>(
-        isExpanded: true,
-        value: value,
-        items: items,
-        onChanged: onChanged,
-        dropdownColor: colorScheme.surface,
-        style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface),
-        underline: Container(
-          height: 2,
-          color: colorScheme.primary,
-        ),
-      ),
-    ],
-  );
-}
-
+// Helper Widget for Buttons
 Widget _buildActionButton({
   required BuildContext context,
   required String label,
