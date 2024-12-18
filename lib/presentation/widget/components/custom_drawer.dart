@@ -1,5 +1,4 @@
 import 'package:flashlearn/presentation/screen/main/settings_screen.dart';
-import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_quiz_card_list.dart';
 import 'package:flashlearn/provider/bottom_navigation_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -9,117 +8,114 @@ class CustomDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     final bottomNavigationProvider = Provider.of<BottomNavigationProvider>(context);
     final colorScheme = Theme.of(context).colorScheme;
+    final textStyle = TextStyle(color: colorScheme.primary);
+
+    Widget buildListTile({
+      required IconData icon,
+      required String title,
+      required VoidCallback onTap,
+    }) {
+      return ListTile(
+        leading: Icon(icon, color: colorScheme.primary),
+        title: Text(title, style: textStyle),
+        onTap: onTap,
+      );
+    }
 
     return Drawer(
       child: ListView(
-        padding: EdgeInsets.zero, // Removes default padding
+        padding: EdgeInsets.zero,
         children: [
-           UserAccountsDrawerHeader(
-            accountName: Text("not sign in"),
-            accountEmail: Text("sign in first"),
+          UserAccountsDrawerHeader(
+            accountName: const Text("not sign in"),
+            accountEmail: const Text("sign in first"),
             currentAccountPicture: CircleAvatar(
-              child: Icon(Icons.person,color: colorScheme.primary,size: 50,),
+              child: Icon(Icons.person, color: colorScheme.primary, size: 50),
             ),
           ),
-          ListTile(
-            leading:  Icon(Icons.home_rounded,color: colorScheme.primary,),
-            title:  Text('Home',style: TextStyle(color: colorScheme.primary),),
+          buildListTile(
+            icon: Icons.login,
+            title: 'Sign in',
+            onTap: () => Navigator.pop(context),
+          ),
+          buildListTile(
+            icon: Icons.star_rounded,
+            title: 'Upgrade to PRO',
+            onTap: () => Navigator.pop(context),
+          ),
+          const Divider(height: 1),
+          buildListTile(
+            icon: Icons.home_rounded,
+            title: 'Home',
             onTap: () {
-              Navigator.pop(context); // Close the drawer
+              Navigator.pop(context);
               bottomNavigationProvider.toogleNavigation(1);
             },
           ),
-          ListTile(
-            leading:  Icon(Icons.favorite_rounded,color: colorScheme.primary),
-            title:  Text('Favorites',style: TextStyle(color: colorScheme.primary)),
+          buildListTile(
+            icon: Icons.favorite_rounded,
+            title: 'Favorites',
             onTap: () {
-              Navigator.pop(context); // Close the drawer
+              Navigator.pop(context);
               bottomNavigationProvider.toogleNavigation(0);
             },
           ),
-          ListTile(
-            leading:  Icon(Icons.alarm_rounded,color: colorScheme.primary),
-            title:  Text('Alarm',style: TextStyle(color: colorScheme.primary)),
+          buildListTile(
+            icon: Icons.alarm_rounded,
+            title: 'Alarm',
             onTap: () {
-              Navigator.pop(context); // Close the drawer
+              Navigator.pop(context);
               bottomNavigationProvider.toogleNavigation(2);
             },
           ),
-          ListTile(
-            leading:  Icon(Icons.settings_rounded,color: colorScheme.primary),
-            title:  Text('Settings',style: TextStyle(color: colorScheme.primary)),
+          buildListTile(
+            icon: Icons.settings_rounded,
+            title: 'Settings',
             onTap: () {
-              Navigator.pop(context); // Close the drawer
-              // Add navigation logic here
+              Navigator.pop(context);
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const SettingsScreen()),
               );
-
             },
           ),
-          Divider(
-              height: 1,
-              color: colorScheme.primary
+          const Divider(height: 1),
+          buildListTile(
+            icon: Icons.settings_backup_restore_rounded,
+            title: 'Backup/Restore',
+            onTap: () => Navigator.pop(context),
           ),
-          ListTile(
-            leading:  Icon(Icons.settings_backup_restore_rounded,color: colorScheme.primary),
-            title:  Text('Backup/Restore',style: TextStyle(color: colorScheme.primary)),
-            onTap: () {
-              Navigator.pop(context); // Close the drawer
-              // Add navigation logic here
-            },
+          buildListTile(
+            icon: Icons.import_export_rounded,
+            title: 'Import/Export Cards',
+            onTap: () => Navigator.pop(context),
           ),
-          ListTile(
-            leading:  Icon(Icons.import_export_rounded,color: colorScheme.primary),
-            title:  Text('Import/Export Cards',style: TextStyle(color: colorScheme.primary)),
-            onTap: () {
-              Navigator.pop(context); // Close the drawer
-              // Add navigation logic here
-            },
+          buildListTile(
+            icon: Icons.privacy_tip_rounded,
+            title: 'Privacy policy',
+            onTap: () => Navigator.pop(context),
           ),
-          ListTile(
-            leading:  Icon(Icons.contact_mail,color: colorScheme.primary),
-            title:  Text('Contact us',style: TextStyle(color: colorScheme.primary)),
-            onTap: () {
-              Navigator.pop(context); // Close the drawer
-              // Add navigation logic here
-            },
+          buildListTile(
+            icon: Icons.help_center,
+            title: 'Help',
+            onTap: () => Navigator.pop(context),
           ),
-          ListTile(
-            leading:  Icon(Icons.privacy_tip_rounded,color: colorScheme.primary),
-            title:  Text('Privacy policy',style: TextStyle(color: colorScheme.primary)),
-            onTap: () {
-              Navigator.pop(context); // Close the drawer
-              // Add navigation logic here
-            },
+          buildListTile(
+            icon: Icons.share_rounded,
+            title: 'Share',
+            onTap: () => Navigator.pop(context),
           ),
-          ListTile(
-            leading:  Icon(Icons.help_center,color: colorScheme.primary),
-            title:  Text('Help',style: TextStyle(color: colorScheme.primary)),
-            onTap: () {
-              Navigator.pop(context); // Close the drawer
-              // Add navigation logic here
-            },
+          buildListTile(
+            icon: Icons.contact_mail,
+            title: 'Contact us',
+            onTap: () => Navigator.pop(context),
           ),
-          ListTile(
-            leading:  Icon(Icons.share_rounded,color: colorScheme.primary),
-            title:  Text('Share',style: TextStyle(color: colorScheme.primary)),
-            onTap: () {
-              Navigator.pop(context); // Close the drawer
-              // Add navigation logic here
-            },
-          ),
-          ListTile(
-            leading:  Icon(Icons.info_rounded,color: colorScheme.primary),
-            title:  Text('About us',style: TextStyle(color: colorScheme.primary)),
-            onTap: () {
-              Navigator.pop(context); // Close the drawer
-              // Add navigation logic here
-            },
+          buildListTile(
+            icon: Icons.info_rounded,
+            title: 'About us',
+            onTap: () => Navigator.pop(context),
           ),
         ],
       ),
