@@ -16,16 +16,16 @@ class CustomDrawer extends StatelessWidget {
       child: ListView(
         padding: EdgeInsets.zero, // Removes default padding
         children: [
-          const UserAccountsDrawerHeader(
+           UserAccountsDrawerHeader(
             accountName: Text("not sign in"),
             accountEmail: Text("sign in first"),
             currentAccountPicture: CircleAvatar(
-
+              child: Icon(Icons.person,color: colorScheme.primary,size: 50,),
             ),
           ),
           ListTile(
             leading:  Icon(Icons.home_rounded,color: colorScheme.primary,),
-            title: const Text('Home'),
+            title:  Text('Home',style: TextStyle(color: colorScheme.primary),),
             onTap: () {
               Navigator.pop(context); // Close the drawer
               bottomNavigationProvider.toogleNavigation(1);
@@ -33,7 +33,7 @@ class CustomDrawer extends StatelessWidget {
           ),
           ListTile(
             leading:  Icon(Icons.favorite_rounded,color: colorScheme.primary),
-            title: const Text('Favorites'),
+            title:  Text('Favorites',style: TextStyle(color: colorScheme.primary)),
             onTap: () {
               Navigator.pop(context); // Close the drawer
               bottomNavigationProvider.toogleNavigation(0);
@@ -41,15 +41,15 @@ class CustomDrawer extends StatelessWidget {
           ),
           ListTile(
             leading:  Icon(Icons.alarm_rounded,color: colorScheme.primary),
-            title: const Text('Alarm'),
+            title:  Text('Alarm',style: TextStyle(color: colorScheme.primary)),
             onTap: () {
               Navigator.pop(context); // Close the drawer
-              bottomNavigationProvider.toogleNavigation(0);
+              bottomNavigationProvider.toogleNavigation(2);
             },
           ),
           ListTile(
             leading:  Icon(Icons.settings_rounded,color: colorScheme.primary),
-            title: const Text('Settings'),
+            title:  Text('Settings',style: TextStyle(color: colorScheme.primary)),
             onTap: () {
               Navigator.pop(context); // Close the drawer
               // Add navigation logic here
