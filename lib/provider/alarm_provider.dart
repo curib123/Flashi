@@ -1,0 +1,72 @@
+import 'package:flutter/material.dart';
+
+class AlarmProvider with ChangeNotifier {
+  // List of alarms
+  List<Map<String, dynamic>> _alarms = [
+    {
+      'alarmName': 'alarmName1',
+      'goalTime': DateTime.now().add(Duration(days: 2)),
+      'setName': 'setName1',
+      'dateTime': DateTime.now(),
+    },
+    {
+      'alarmName': 'alarmName2',
+      'goalTime': DateTime.now().add(Duration(days: 1)),
+      'setName': 'setName2',
+      'dateTime': DateTime.now(),
+    }
+  ];
+
+  String _searchText = '';
+
+  TextEditingController searchController = TextEditingController();
+
+  // Getter to access the alarms list
+  List<Map<String, dynamic>> get alarms => _alarms;
+
+  String get searchText => _searchText;
+
+  // Update the search query and notify listeners
+  void updateSearchQuery(String query) {
+    _searchText = query;
+    notifyListeners();  // Notify listeners to update UI
+  }
+
+  // Create a new alarm
+  void addAlarm(Map<String, dynamic> alarm) {
+    _alarms.add(alarm);
+    notifyListeners();  // Notify listeners to update UI
+  }
+
+  // Filter alarms based on search text or specific parameters
+  List<Map<String, dynamic>> filterAlarms() {
+    if (_searchText.isEmpty) {
+      return _alarms;  // If no search text, return all alarms
+    }
+
+    return _alarms.where((alarm) {
+      bool matchesAlarmName = alarm['alarmName']
+          .toLowerCase()
+          .contains(_searchText.toLowerCase());
+      bool matchesSetName = alarm['setName']
+          .toLowerCase()
+          .contains(_searchText.toLowerCase());
+      return matchesAlarmName || matchesSetName; // Return true if matches any
+    }).toList();
+  }
+
+  // Update an existing alarm by its name
+  void updateAlarm(String alarmName, Map<String, dynamic> updatedAlarm) {
+    int index = _alarms.indexWhere((alarm) => alarm['alarmName'] == alarmName);
+    if (index != -1) {
+      _alarms[index] = updatedAlarm;
+      notifyListeners();  // Notify listeners to update UI
+    }
+  }
+
+  // Delete an alarm by its name
+  void deleteAlarm(String alarmName) {
+    _alarms.removeWhere((alarm) => alarm['alarmName'] == alarmName);
+    notifyListeners();  // Notify listeners to update UI
+  }
+}

@@ -1,5 +1,6 @@
 
 import 'package:flashlearn/home.dart';
+import 'package:flashlearn/provider/alarm_provider.dart';
 import 'package:flashlearn/provider/bottom_navigation_provider.dart';
 import 'package:flashlearn/provider/quiz_provider.dart';
 import 'package:flashlearn/provider/reviewer_settings_provider.dart';
@@ -22,6 +23,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => ThemeProvider()), // Add ThemeProvider
         ChangeNotifierProvider(create: (_) => SortProvider()), // Add SortProvider
         ChangeNotifierProvider(create: (_) => ReviewerSettingsProvider()), // Add SortProvider
+        ChangeNotifierProvider(create: (_) => AlarmProvider()), // Add SortProvider
         ChangeNotifierProvider(
             create: (context) => QuizProvider(
                 criterionSet: Provider.of<SortProvider>(context,listen: false).dropdownValueSet,
