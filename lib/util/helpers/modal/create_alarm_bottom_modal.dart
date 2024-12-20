@@ -163,16 +163,35 @@ void CreateAlarmBottomModal({
                 ),
                 const SizedBox(height: 20),
                 CreateSetButtons(createBtn: () {
+                  // Ensure selectedDateTime is properly defined and passed
+                  Duration remainingTime = selectedDateTime.difference(DateTime.now());
+
+                  // Calculate the status based on remaining time
+                  String status = '';
+                  if (remainingTime.isNegative) {
+                    status = "Completed";
+                  } else if (remainingTime.inDays > 0) {
+                    status = "Upcoming";
+                  } else {
+                    status = "Today";
+                  }
+
+                  // Check if this is a create action
                   if (isCreate) {
+                    // Add the alarm with calculated status
                     alarmProvider.addAlarm({
-                      'goalTime': selectedDateTime,
-                      'setName': selectedDropdownValue,
+                      'goalTime': selectedDateTime,  // Ensure selectedDateTime is correctly initialized
+                      'setName': selectedDropdownValue,  // Ensure selectedDropdownValue is passed and initialized
                       'dateCreated': DateTime.now(),
-                      'status': '',
+                      'status': status,  // Use the calculated status here
                     });
                   } else {
-
+                    // Handle update or other actions here if needed
+                    // For example, updating an existing alarm
+                    // alarmProvider.updateAlarm(existingAlarmId, updatedAlarm);
                   }
+
+                  // Close the dialog or navigate back
                   Navigator.pop(context);
                 }, buttonName: buttonName)
 

@@ -57,26 +57,34 @@ class AlarmScreen extends StatelessWidget {
 }
 
 Widget _alarmBody(AlarmProvider alarmProvider) {
-  // Filter alarms based on search query
-  final filteredAlarms = alarmProvider.filterAlarms();
+  // Get the list of alarms, reversed
+  final filteredAlarms = alarmProvider.filterAlarms().reversed.toList();
 
-  // Check if filteredAlarms is empty
-  if (filteredAlarms.isEmpty) {
+  // Filter the alarms with status "Today"
+  final todayAlarms = filteredAlarms.where((alarm) => alarm['status'] == 'Today').toList();
+  final upcomingAlarms = filteredAlarms.where((alarm) => alarm['status'] == 'Upcoming').toList();
+  final completedAlarms = filteredAlarms.where((alarm) => alarm['status'] == 'Completed').toList();
+  print(filteredAlarms);
+
+  // Check if today's alarms are empty
+  if (todayAlarms.isEmpty) {
     return Center(
-      child: Text('No alarms found', style: TextStyle(fontSize: 18, color: Colors.grey)),
+      child: Text('No alarms for today', style: TextStyle(fontSize: 18, color: Colors.grey)),
     );
   }
 
+  // Use ListView.builder directly, since it already provides scrollable behavior
   return ListView.builder(
+    scrollDirection: Axis.vertical,
     padding: const EdgeInsets.symmetric(vertical: 60),
     itemCount: filteredAlarms.length,
     itemBuilder: (context, index) {
       final alarm = filteredAlarms[index];
       return ReusableAlarmCore(
-        dateCreated: alarm['dateCreated'], // You can set this based on actual data
-        goalTime: alarm['goalTime'], // Use the actual goal time from the alarm
+        dateCreated: alarm['dateCreated'],
+        goalTime: alarm['goalTime'],
         setName: alarm['setName'],
-        statusAlarm: alarm['status'],   // Use the actual set name from the alarm
+        statusAlarm: alarm['status'],
       );
     },
   );

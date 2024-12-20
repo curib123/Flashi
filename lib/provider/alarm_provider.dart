@@ -63,12 +63,13 @@ class AlarmProvider with ChangeNotifier {
 
   // Update the status of an existing alarm by its name
   void updateAlarmStatus(String setName, String newStatus) {
-    int index = _alarms.indexWhere((alarm) => alarm['alarmName'] == setName);
+    int index = _alarms.indexWhere((alarm) => alarm['setName'] == setName);
     if (index != -1) {
       _alarms[index]['status'] = newStatus;  // Only update the status field
       notifyListeners();  // Notify listeners to update UI
     }
   }
+
 
 
   // Delete an alarm by its name

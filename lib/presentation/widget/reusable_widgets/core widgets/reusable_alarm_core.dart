@@ -75,7 +75,6 @@ class _ReusableAlarmCoreState extends State<ReusableAlarmCore> {
     final colorScheme = Theme.of(context).colorScheme;
     final alarmProvider = Provider.of<AlarmProvider>(context);
 
-    alarmProvider.updateAlarmStatus(widget.setName, status);
 
     return Card(
       elevation: 6,
@@ -153,17 +152,16 @@ class _ReusableAlarmCoreState extends State<ReusableAlarmCore> {
                 ),
               ],
             ),
-            const SizedBox(height: 8),
-            // Goal Time Display
+
             Text(
               "Study Time: ${formatTime(widget.goalTime)}",
               style: TextStyle(
-                fontSize: 15,
+                fontSize: 12,
                 fontWeight: FontWeight.w600,
                 color: colorScheme.tertiary,
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 5),
             // Alarm Details
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
