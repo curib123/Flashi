@@ -3,18 +3,18 @@ import 'package:flutter/material.dart';
 class AlarmProvider with ChangeNotifier {
   // List of alarms
   List<Map<String, dynamic>> _alarms = [
-    {
-      'alarmName': 'alarmName1',
-      'goalTime': DateTime.now().add(Duration(days: 2)),
-      'setName': 'setName1',
-      'dateTime': DateTime.now(),
-    },
-    {
-      'alarmName': 'alarmName2',
-      'goalTime': DateTime.now().add(Duration(days: 1)),
-      'setName': 'setName2',
-      'dateTime': DateTime.now(),
-    }
+    // {
+    //   'status' : 'Completed',
+    //   'goalTime': DateTime.now().add(Duration(days: 2)),
+    //   'setName': 'setName1',
+    //   'dateCreated': DateTime.now(),
+    // },
+    // {
+    //   'status' : 'Completed',
+    //   'goalTime': DateTime.now().add(Duration(days: 1)),
+    //   'setName': 'setName2',
+    //   'dateCreated': DateTime.now(),
+    // }
   ];
 
   String _searchText = '';
@@ -45,24 +45,31 @@ class AlarmProvider with ChangeNotifier {
     }
 
     return _alarms.where((alarm) {
-      bool matchesAlarmName = alarm['alarmName']
-          .toLowerCase()
-          .contains(_searchText.toLowerCase());
       bool matchesSetName = alarm['setName']
           .toLowerCase()
           .contains(_searchText.toLowerCase());
-      return matchesAlarmName || matchesSetName; // Return true if matches any
+      return matchesSetName; // Return true if matches any
     }).toList();
   }
 
   // Update an existing alarm by its name
-  void updateAlarm(String alarmName, Map<String, dynamic> updatedAlarm) {
-    int index = _alarms.indexWhere((alarm) => alarm['alarmName'] == alarmName);
+  void updateAlarm(String setName, Map<String, dynamic> updatedAlarm) {
+    int index = _alarms.indexWhere((alarm) => alarm['setName'] == setName);
     if (index != -1) {
       _alarms[index] = updatedAlarm;
       notifyListeners();  // Notify listeners to update UI
     }
   }
+
+  // Update the status of an existing alarm by its name
+  void updateAlarmStatus(String setName, String newStatus) {
+    int index = _alarms.indexWhere((alarm) => alarm['alarmName'] == setName);
+    if (index != -1) {
+      _alarms[index]['status'] = newStatus;  // Only update the status field
+      notifyListeners();  // Notify listeners to update UI
+    }
+  }
+
 
   // Delete an alarm by its name
   void deleteAlarm(String alarmName) {

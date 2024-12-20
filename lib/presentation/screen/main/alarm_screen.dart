@@ -1,7 +1,8 @@
-import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/alarm_card_core.dart';
+import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_alarm_core.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_search_bar_core.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_create_alarm_button_position.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
+import 'package:flashlearn/util/helpers/modal/create_alarm_bottom_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flashlearn/provider/alarm_provider.dart';
@@ -45,7 +46,9 @@ class AlarmScreen extends StatelessWidget {
           ReusableCreateAlarmButtonPosition(
             colorScheme: colorScheme,
             name: "Add Alarm",
-            onTap: () {},
+            onTap: () {
+              CreateAlarmBottomModal(context: context, buttonName: 'Add', isCreate: true, title: 'Add Study Alarm');
+            },
           ),
         ],
       ),
@@ -53,24 +56,27 @@ class AlarmScreen extends StatelessWidget {
   }
 }
 
-// Make it dynamic and with nice style
 Widget _alarmBody(AlarmProvider alarmProvider) {
-
   // Filter alarms based on search query
   final filteredAlarms = alarmProvider.filterAlarms();
 
-  print(filteredAlarms);
+  // Check if filteredAlarms is empty
+  if (filteredAlarms.isEmpty) {
+    return Center(
+      child: Text('No alarms found', style: TextStyle(fontSize: 18, color: Colors.grey)),
+    );
+  }
 
   return ListView.builder(
     padding: const EdgeInsets.symmetric(vertical: 60),
     itemCount: filteredAlarms.length,
     itemBuilder: (context, index) {
       final alarm = filteredAlarms[index];
-      return AlarmClockCard(
-        alarmName: alarm['alarmName'],
-        dateCreated: alarm['dateTime'], // You can set this based on actual data
+      return ReusableAlarmCore(
+        dateCreated: alarm['dateCreated'], // You can set this based on actual data
         goalTime: alarm['goalTime'], // Use the actual goal time from the alarm
-        setName: alarm['setName'],   // Use the actual set name from the alarm
+        setName: alarm['setName'],
+        statusAlarm: alarm['status'],   // Use the actual set name from the alarm
       );
     },
   );

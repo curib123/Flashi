@@ -149,6 +149,20 @@ class QuizProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  // Get filtered quiz set names based on the search query
+  List<String> get filteredQuizSetNames {
+    return _quizSets
+        .where((set) => _searchQuery.isEmpty ||
+        (set['name']?.toLowerCase().contains(_searchQuery.toLowerCase()) ?? false))
+        .map((set) => set['name'] as String)
+        .toList();
+  }
+
+  List<String> getNamesFromQuizSets() {
+    return quizSets.map((quizSet) => quizSet['name'] as String).toList();
+  }
+
+
   // Get filtered quiz sets based on the search query
   List<Map<String, dynamic>> get filteredQuizSets {
     if (_searchQuery.isEmpty) {
