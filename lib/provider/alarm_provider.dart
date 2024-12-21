@@ -24,18 +24,20 @@ class AlarmProvider with ChangeNotifier {
   // Load alarms from Hive into the list
   void loadAlarms() {
     if (_alarmsBox.isNotEmpty) {
-      _alarms = List<Map<String, dynamic>>.from(_alarmsBox.values);
+      _alarms = List<Map<String, dynamic>>.from(_alarmsBox.values.map((e) => Map<String, dynamic>.from(e)));
       notifyListeners();  // Notify listeners after loading
     }
   }
 
-  // Save alarms to Hive
+
+// Save alarms to Hive
   void saveAlarms() {
     _alarmsBox.clear();  // Clear the previous data in Hive box
     for (var alarm in _alarms) {
-      _alarmsBox.add(alarm);  // Add each alarm to Hive
+      _alarmsBox.add(Map<String, dynamic>.from(alarm));  // Add each alarm to Hive as a Map
     }
   }
+
 
   // Update the search query and notify listeners
   void updateSearchQuery(String query) {
