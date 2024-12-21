@@ -1,21 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class AlarmProvider with ChangeNotifier {
-  // List of alarms
-  List<Map<String, dynamic>> _alarms = [
-    // {
-    //   'status' : 'Completed',
-    //   'goalTime': DateTime.now().add(Duration(days: 2)),
-    //   'setName': 'setName1',
-    //   'dateCreated': DateTime.now(),
-    // },
-    // {
-    //   'status' : 'Completed',
-    //   'goalTime': DateTime.now().add(Duration(days: 1)),
-    //   'setName': 'setName2',
-    //   'dateCreated': DateTime.now(),
-    // }
-  ];
+
+  final Box _alarmsBox = Hive.box('settings'); // Hive box for settings
+
+  List<Map<String, dynamic>> _alarms = [];
 
   String _searchText = '';
 
@@ -26,6 +16,27 @@ class AlarmProvider with ChangeNotifier {
 
   String get searchText => _searchText;
 
+  // Constructor to load alarms from Hive on startup
+  AlarmProvider() {
+    loadAlarms();
+  }
+
+  // Load alarms from Hive into the list
+  void loadAlarms() {
+    if (_alarmsBox.isNotEmpty) {
+      _alarms = List<Map<String, dynamic>>.from(_alarmsBox.values);
+      notifyListeners();  // Notify listeners after loading
+    }
+  }
+
+  // Save alarms to Hive
+  void saveAlarms() {
+    _alarmsBox.clear();  // Clear the previous data in Hive box
+    for (var alarm in _alarms) {
+      _alarmsBox.add(alarm);  // Add each alarm to Hive
+    }
+  }
+
   // Update the search query and notify listeners
   void updateSearchQuery(String query) {
     _searchText = query;
@@ -35,6 +46,7 @@ class AlarmProvider with ChangeNotifier {
   // Create a new alarm
   void addAlarm(Map<String, dynamic> alarm) {
     _alarms.add(alarm);
+    saveAlarms();  // Save updated alarms to Hive
     notifyListeners();  // Notify listeners to update UI
   }
 
@@ -57,6 +69,7 @@ class AlarmProvider with ChangeNotifier {
     int index = _alarms.indexWhere((alarm) => alarm['setName'] == setName);
     if (index != -1) {
       _alarms[index] = updatedAlarm;
+      saveAlarms();  // Save updated alarms to Hive
       notifyListeners();  // Notify listeners to update UI
     }
   }
@@ -66,15 +79,15 @@ class AlarmProvider with ChangeNotifier {
     int index = _alarms.indexWhere((alarm) => alarm['setName'] == setName);
     if (index != -1) {
       _alarms[index]['status'] = newStatus;  // Only update the status field
+      saveAlarms();  // Save updated alarms to Hive
       notifyListeners();  // Notify listeners to update UI
     }
   }
 
-
-
   // Delete an alarm by its name
   void deleteAlarm(String alarmName) {
     _alarms.removeWhere((alarm) => alarm['alarmName'] == alarmName);
+    saveAlarms();  // Save updated alarms to Hive
     notifyListeners();  // Notify listeners to update UI
   }
 }

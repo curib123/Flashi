@@ -76,157 +76,152 @@ class _ReusableAlarmCoreState extends State<ReusableAlarmCore> {
     final alarmProvider = Provider.of<AlarmProvider>(context);
 
 
-    return Card(
-      elevation: 6,
-      margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-      shape: RoundedRectangleBorder(
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.90,
+      padding: const EdgeInsets.all(15),
+      margin: const EdgeInsets.all(5),
+      decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
-      ),
-      child: Container(
-        padding: const EdgeInsets.all(20.0),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
-          gradient: LinearGradient(
-            colors: [colorScheme.tertiaryContainer, colorScheme.secondaryContainer],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+        gradient: LinearGradient(
+          colors: [colorScheme.tertiaryContainer, colorScheme.secondaryContainer],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Remaining Time Display
-                Text(
-                  remainingTime.isNegative
-                      ? "Completed"
-                      : formatDuration(remainingTime),
-                  style: TextStyle(
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Remaining Time Display
+              Text(
+                remainingTime.isNegative
+                    ? "Completed"
+                    : formatDuration(remainingTime),
+                style: TextStyle(
                     color: colorScheme.secondary,
-                    fontSize: 35,
+                    fontSize: 30,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 2,
                     overflow: TextOverflow.ellipsis
-                  ),
                 ),
-                PopupMenuButton<String>(
-                  color: colorScheme.onPrimary,
-                  iconColor: colorScheme.primary,
-                  onSelected: (String value) {
-                    // Handle the selected option here
-                    switch (value) {
-                      case 'Edit':
-                      // Handle Edit action
-                        break;
-                      case 'Delete':
-                      // Handle Delete action
-                        break;
-                    }
-                  },
-                  itemBuilder: (BuildContext context) {
-                    return [
-                      PopupMenuItem<String>(
-                        value: 'Edit',
-                        child: Row(
-                          children: [
-                            Icon(Icons.edit, color: colorScheme.primary),
-                            const SizedBox(width: 8),
-                            Text('Edit'),
-                          ],
-                        ),
-                      ),
-                      PopupMenuItem<String>(
-                        value: 'Delete',
-                        child: Row(
-                          children: [
-                            Icon(Icons.delete, color: colorScheme.error),
-                            const SizedBox(width: 8),
-                            Text('Delete'),
-                          ],
-                        ),
-                      ),
-                    ];
-                  },
-                ),
-              ],
-            ),
-
-            Text(
-              "Study Time: ${formatTime(widget.goalTime)}",
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: colorScheme.tertiary,
               ),
-            ),
-            const SizedBox(height: 5),
-            // Alarm Details
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Flexible(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.setName,
-                        style: TextStyle(
-                          color: colorScheme.secondary,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          overflow: TextOverflow.visible,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      "Status",
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: colorScheme.tertiary,
+              PopupMenuButton<String>(
+                color: colorScheme.onPrimary,
+                iconColor: colorScheme.primary,
+                onSelected: (String value) {
+                  // Handle the selected option here
+                  switch (value) {
+                    case 'Edit':
+                    // Handle Edit action
+                      break;
+                    case 'Delete':
+                    // Handle Delete action
+                      break;
+                  }
+                },
+                itemBuilder: (BuildContext context) {
+                  return [
+                    PopupMenuItem<String>(
+                      value: 'Edit',
+                      child: Row(
+                        children: [
+                          Icon(Icons.edit, color: colorScheme.primary),
+                          const SizedBox(width: 8),
+                          Text('Edit'),
+                        ],
                       ),
                     ),
+                    PopupMenuItem<String>(
+                      value: 'Delete',
+                      child: Row(
+                        children: [
+                          Icon(Icons.delete, color: colorScheme.error),
+                          const SizedBox(width: 8),
+                          Text('Delete'),
+                        ],
+                      ),
+                    ),
+                  ];
+                },
+              ),
+            ],
+          ),
+
+          Text(
+            "Study Time: ${formatTime(widget.goalTime)}",
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: colorScheme.tertiary,
+            ),
+          ),
+          const SizedBox(height: 5),
+          // Alarm Details
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Flexible(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     Text(
-                      status,
+                      widget.setName,
                       style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: _getStatusColor(status),
+                        color: colorScheme.secondary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        overflow: TextOverflow.visible,
                       ),
                     ),
                   ],
                 ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            // Date Created
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Created On",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: colorScheme.tertiary,
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    "Status",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: colorScheme.tertiary,
+                    ),
                   ),
-                ),
-                Text(
-                  DateFormat.yMMMd().format(widget.dateCreated),
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: colorScheme.tertiary,
+                  Text(
+                    status,
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: _getStatusColor(status),
+                    ),
                   ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          // Date Created
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Created On",
+                style: TextStyle(
+                  fontSize: 14,
+                  color: colorScheme.tertiary,
                 ),
-              ],
-            ),
-          ],
-        ),
+              ),
+              Text(
+                DateFormat.yMMMd().format(widget.dateCreated),
+                style: TextStyle(
+                  fontSize: 16,
+                  color: colorScheme.tertiary,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
