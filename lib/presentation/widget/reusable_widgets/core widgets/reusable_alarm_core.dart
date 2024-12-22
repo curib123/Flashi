@@ -61,8 +61,10 @@ class _ReusableAlarmCoreState extends State<ReusableAlarmCore> {
     // Start a timer to refresh the widget every second
     _timer = Timer.periodic(Duration(seconds: 1), (_) {
       setState(() {
-        final alarmProvider = Provider.of<AlarmProvider>(context, listen: false);
-        alarmProvider.updateAlarmStatus();
+        if(widget.statusAlarm != status){
+          final alarmProvider = Provider.of<AlarmProvider>(context, listen: false);
+          alarmProvider.updateAlarmStatus();
+        }
       });
     });
   }

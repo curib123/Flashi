@@ -12,9 +12,15 @@ import 'package:provider/provider.dart';
 
 Future<void> main() async {
 
+  // Ensure that widget binding is initialized
   WidgetsFlutterBinding.ensureInitialized();
-  await Hive.initFlutter(); // Initialized HIVE
-  await Hive.openBox('settings'); // Open a box named 'settings'
+
+  // Initialize Hive
+  await Hive.initFlutter();
+
+  // Open individual boxes
+ await Hive.openBox('settings'); // Open a box named 'settings'
+  await Hive.openBox('alarmsBox'); // Open a box named 'alarmsBox'
 
   runApp(
     MultiProvider(

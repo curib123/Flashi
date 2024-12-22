@@ -85,8 +85,8 @@ class _AlarmScreenState extends State<AlarmScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildAlarmSection('Today', _filterByStatus(filteredAlarms, 'Today'), context),
           _buildAlarmSection('Upcoming', _filterByStatus(filteredAlarms, 'Upcoming'), context),
+          _buildAlarmSection('Today', _filterByStatus(filteredAlarms, 'Today'), context),
           _buildAlarmSection('Completed', _filterByStatus(filteredAlarms, 'Completed'), context),
         ],
       ),
