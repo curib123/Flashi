@@ -63,7 +63,10 @@ class _ReusableAlarmCoreState extends State<ReusableAlarmCore> {
       setState(() {
         if (remainingTime.isNegative) {
           _timer.cancel(); // Cancel the timer when the time is completed
-        } else if (widget.statusAlarm != status) {
+
+        }
+
+        if (widget.statusAlarm != status) {
           final alarmProvider = Provider.of<AlarmProvider>(context, listen: false);
           alarmProvider.updateAlarmStatus();
         }
@@ -194,7 +197,7 @@ class _ReusableAlarmCoreState extends State<ReusableAlarmCore> {
                     ),
                   ),
                   Text(
-                    status,
+                    widget.statusAlarm,
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
