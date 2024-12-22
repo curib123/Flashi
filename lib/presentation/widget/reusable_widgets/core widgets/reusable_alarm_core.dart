@@ -61,13 +61,16 @@ class _ReusableAlarmCoreState extends State<ReusableAlarmCore> {
     // Start a timer to refresh the widget every second
     _timer = Timer.periodic(Duration(seconds: 1), (_) {
       setState(() {
-        if(widget.statusAlarm != status){
+        if (remainingTime.isNegative) {
+          _timer.cancel(); // Cancel the timer when the time is completed
+        } else if (widget.statusAlarm != status) {
           final alarmProvider = Provider.of<AlarmProvider>(context, listen: false);
           alarmProvider.updateAlarmStatus();
         }
       });
     });
   }
+
 
 
 
@@ -101,11 +104,12 @@ class _ReusableAlarmCoreState extends State<ReusableAlarmCore> {
             children: [
               Text(
                 remainingTime.isNegative
-                    ? "Completed"
+                    ? "00:00:00"
                     : formatDuration(remainingTime),
                 style: TextStyle(
-                  color: colorScheme.secondary,
-                  fontSize: 30,
+                  decoration: remainingTime.isNegative ? TextDecoration.lineThrough : TextDecoration.none,
+                  color: remainingTime.isNegative ? colorScheme.error :colorScheme.secondary,
+                  fontSize: 40,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 2,
                 ),
