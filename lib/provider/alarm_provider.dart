@@ -27,6 +27,7 @@ class AlarmProvider with ChangeNotifier {
       _alarms = List<Map<String, dynamic>>.from(_alarmsBox.values.map((e) => Map<String, dynamic>.from(e)));
       notifyListeners();  // Notify listeners after loading
     }
+    updateAlarmStatus();
   }
 
 
@@ -55,10 +56,10 @@ class AlarmProvider with ChangeNotifier {
   // Filter alarms based on search text or specific parameters
   List<Map<String, dynamic>> filterAlarms() {
     if (_searchText.isEmpty) {
-      return _alarms;  // If no search text, return all alarms
+      return alarms;  // If no search text, return all alarms
     }
 
-    return _alarms.where((alarm) {
+    return alarms.where((alarm) {
       bool matchesSetName = alarm['setName']
           .toLowerCase()
           .contains(_searchText.toLowerCase());
@@ -76,15 +77,35 @@ class AlarmProvider with ChangeNotifier {
     }
   }
 
-  // Update the status of an existing alarm by its name
-  void updateAlarmStatus(String setName, String newStatus) {
-    int index = _alarms.indexWhere((alarm) => alarm['setName'] == setName);
-    if (index != -1) {
-      _alarms[index]['status'] = newStatus;  // Only update the status field
-      saveAlarms();  // Save updated alarms to Hive
-      notifyListeners();  // Notify listeners to update UI
+  // Update the status of all alarms
+  void updateAlarmStatus() {
+    for (int index = 0; index < alarms.length; index++) {
+      var alarm = alarms[index];
+
+      // Calculate the remaining time for the alarm
+      Duration remainingTime = alarm['goalTime'].difference(DateTime.now());
+
+      // Calculate the status based on remaining time
+      String status = '';
+      if (remainingTime.isNegative) {
+        status = "Completed";
+      } else if (remainingTime.inDays > 0) {
+        status = "Upcoming";
+      } else {
+        status = "Today";
+      }
+
+      // Update the status field of the alarm
+      alarms[index]['status'] = status;
     }
+
+    // Save updated alarms to Hive
+    saveAlarms();
+
+    // Notify listeners to update UI
+    notifyListeners();
   }
+
 
   // Delete an alarm by its name
   void deleteAlarm(String alarmName) {

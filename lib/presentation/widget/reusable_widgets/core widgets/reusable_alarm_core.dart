@@ -1,14 +1,17 @@
+
 import 'package:flashlearn/provider/alarm_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 import 'dart:async';
 
+import 'package:provider/provider.dart';
 class ReusableAlarmCore extends StatefulWidget {
   final DateTime dateCreated;
   final DateTime goalTime;
   final String setName;
   final String statusAlarm;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
 
   const ReusableAlarmCore({
     Key? key,
@@ -16,6 +19,8 @@ class ReusableAlarmCore extends StatefulWidget {
     required this.goalTime,
     required this.setName,
     required this.statusAlarm,
+    required this.onEdit,
+    required this.onDelete,
   }) : super(key: key);
 
   @override
@@ -42,12 +47,7 @@ class _ReusableAlarmCoreState extends State<ReusableAlarmCore> {
     final hours = (duration.inHours % 24).toString().padLeft(2, '0');
     final minutes = (duration.inMinutes % 60).toString().padLeft(2, '0');
     final seconds = (duration.inSeconds % 60).toString().padLeft(2, '0');
-
-    if (days > 0) {
-      return '$days:$hours:$minutes:$seconds';
-    } else {
-      return '$hours:$minutes:$seconds';
-    }
+    return days > 0 ? '$days:$hours:$minutes:$seconds' : '$hours:$minutes:$seconds';
   }
 
 
@@ -58,23 +58,26 @@ class _ReusableAlarmCoreState extends State<ReusableAlarmCore> {
   @override
   void initState() {
     super.initState();
-    // Start the timer to update the remaining time every second
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      setState(() {}); // Refresh the widget every second
+    // Start a timer to refresh the widget every second
+    _timer = Timer.periodic(Duration(seconds: 1), (_) {
+      setState(() {
+        final alarmProvider = Provider.of<AlarmProvider>(context, listen: false);
+        alarmProvider.updateAlarmStatus();
+      });
     });
   }
 
+
+
   @override
   void dispose() {
-    _timer.cancel(); // Stop the timer when the widget is disposed
+    _timer.cancel(); // Clean up the timer
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final alarmProvider = Provider.of<AlarmProvider>(context);
-
 
     return Container(
       width: MediaQuery.of(context).size.width * 0.90,
@@ -94,30 +97,29 @@ class _ReusableAlarmCoreState extends State<ReusableAlarmCore> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // Remaining Time Display
               Text(
                 remainingTime.isNegative
                     ? "Completed"
                     : formatDuration(remainingTime),
                 style: TextStyle(
-                    color: colorScheme.secondary,
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 2,
-                    overflow: TextOverflow.ellipsis
+                  color: colorScheme.secondary,
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 2,
                 ),
               ),
               PopupMenuButton<String>(
                 color: colorScheme.onPrimary,
                 iconColor: colorScheme.primary,
                 onSelected: (String value) {
-                  // Handle the selected option here
                   switch (value) {
                     case 'Edit':
                     // Handle Edit action
+                      widget.onEdit();
                       break;
                     case 'Delete':
                     // Handle Delete action
+                      widget.onDelete();
                       break;
                   }
                 },
@@ -148,7 +150,6 @@ class _ReusableAlarmCoreState extends State<ReusableAlarmCore> {
               ),
             ],
           ),
-
           Text(
             "Study Time: ${formatTime(widget.goalTime)}",
             style: TextStyle(
@@ -158,7 +159,6 @@ class _ReusableAlarmCoreState extends State<ReusableAlarmCore> {
             ),
           ),
           const SizedBox(height: 5),
-          // Alarm Details
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -172,7 +172,6 @@ class _ReusableAlarmCoreState extends State<ReusableAlarmCore> {
                         color: colorScheme.secondary,
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
-                        overflow: TextOverflow.visible,
                       ),
                     ),
                   ],
@@ -201,7 +200,6 @@ class _ReusableAlarmCoreState extends State<ReusableAlarmCore> {
             ],
           ),
           const SizedBox(height: 12),
-          // Date Created
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

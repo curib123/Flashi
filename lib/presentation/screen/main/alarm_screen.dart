@@ -7,9 +7,14 @@ import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_theme_s
 import 'package:flashlearn/util/helpers/modal/create_alarm_bottom_modal.dart';
 import 'package:flashlearn/provider/alarm_provider.dart';
 
-class AlarmScreen extends StatelessWidget {
+class AlarmScreen extends StatefulWidget {
   const AlarmScreen({super.key});
 
+  @override
+  State<AlarmScreen> createState() => _AlarmScreenState();
+}
+
+class _AlarmScreenState extends State<AlarmScreen> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -46,82 +51,64 @@ class AlarmScreen extends StatelessWidget {
     );
   }
 
-  ReusableSearchBarCore _buildSearchBar(
-      ColorScheme colorScheme, AlarmProvider alarmProvider) {
+  Widget _buildSearchBar(ColorScheme colorScheme, AlarmProvider alarmProvider) {
     return ReusableSearchBarCore(
       colorScheme: colorScheme,
       hintText: 'Search here',
-      onChanged: (value) => alarmProvider.updateSearchQuery(value),
+      onChanged: alarmProvider.updateSearchQuery,
       controller: alarmProvider.searchController,
     );
   }
 
-  ReusableCreateAlarmButtonPosition _buildCreateAlarmButton(
-      ColorScheme colorScheme, BuildContext context) {
+  Widget _buildCreateAlarmButton(ColorScheme colorScheme, BuildContext context) {
     return ReusableCreateAlarmButtonPosition(
       colorScheme: colorScheme,
       name: "Add Alarm",
-      onTap: () {
-        CreateAlarmBottomModal(
-          context: context,
-          buttonName: 'Add',
-          isCreate: true,
-          title: 'Add Study Alarm',
-        );
-      },
+      onTap: () => CreateAlarmBottomModal(
+        context: context,
+        buttonName: 'Add',
+        isCreate: true,
+        title: 'Add Study Alarm',
+      ),
     );
   }
 
   Widget _alarmBody(AlarmProvider alarmProvider, BuildContext context) {
     final filteredAlarms = alarmProvider.filterAlarms().reversed.toList();
-    final todayAlarms = filteredAlarms
-        .where((alarm) => alarm['status'] == 'Today')
-        .toList();
-    final upcomingAlarms = filteredAlarms
-        .where((alarm) => alarm['status'] == 'Upcoming')
-        .toList();
-    final completedAlarms = filteredAlarms
-        .where((alarm) => alarm['status'] == 'Completed')
-        .toList();
+
+    if (alarmProvider.searchText.isNotEmpty) {
+      return _buildAlarmSearch('Search Results', filteredAlarms, alarmProvider);
+    }
 
     return SingleChildScrollView(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 100, horizontal: 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            alarmProvider.searchText.isEmpty
-                ? Column(
-              children: [
-                _buildAlarmSection('Today', todayAlarms, context),
-                _buildAlarmSection('Upcoming', upcomingAlarms, context),
-                _buildAlarmSection('Completed', completedAlarms, context),
-              ],
-            )
-                : _buildAlarmSearch('Search Results', filteredAlarms, context,alarmProvider),
-          ],
-        ),
+      padding: const EdgeInsets.symmetric(vertical: 100, horizontal: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildAlarmSection('Today', _filterByStatus(filteredAlarms, 'Today'), context),
+          _buildAlarmSection('Upcoming', _filterByStatus(filteredAlarms, 'Upcoming'), context),
+          _buildAlarmSection('Completed', _filterByStatus(filteredAlarms, 'Completed'), context),
+        ],
       ),
     );
   }
 
-  Widget _buildAlarmSearch(String title, List<Map<String, dynamic>> alarms, BuildContext context,AlarmProvider alarmProvider) {
-
-    final filteredAlarms = alarmProvider.filterAlarms().reversed.toList();
-
-    return filteredAlarms.isEmpty ?  Center(child: Text('No alarms for $title'))
-    : SizedBox(
+  Widget _buildAlarmSearch(String title, List<Map<String, dynamic>> alarms, AlarmProvider alarmProvider) {
+    return alarms.isEmpty
+        ? Center(child: Text('No alarms for $title'))
+        : SizedBox(
       height: 400,
       child: ListView.builder(
-        scrollDirection: Axis.vertical,
-        itemCount: filteredAlarms.length,
+        itemCount: alarms.length,
         itemBuilder: (context, index) {
-          final alarm = filteredAlarms[index];
+          final alarm = alarms[index];
           return ReusableAlarmCore(
             dateCreated: alarm['dateCreated'],
             goalTime: alarm['goalTime'],
             setName: alarm['setName'],
             statusAlarm: alarm['status'],
+            onEdit: () {},
+            onDelete: () {},
           );
         },
       ),
@@ -140,9 +127,9 @@ class AlarmScreen extends StatelessWidget {
             color: Theme.of(context).colorScheme.primary,
           ),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         SizedBox(
-          height: 200, // Adjust height for the row of alarms
+          height: 200,
           child: alarms.isEmpty
               ? Center(child: Text('No alarms for $title'))
               : ListView.builder(
@@ -155,12 +142,18 @@ class AlarmScreen extends StatelessWidget {
                 goalTime: alarm['goalTime'],
                 setName: alarm['setName'],
                 statusAlarm: alarm['status'],
+                onEdit: () {},
+                onDelete: () {},
               );
             },
           ),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
       ],
     );
+  }
+
+  List<Map<String, dynamic>> _filterByStatus(List<Map<String, dynamic>> alarms, String status) {
+    return alarms.where((alarm) => alarm['status'] == status).toList();
   }
 }
