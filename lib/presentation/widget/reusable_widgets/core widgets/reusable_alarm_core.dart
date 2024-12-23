@@ -1,10 +1,9 @@
-
 import 'package:flashlearn/provider/alarm_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'dart:async';
-
 import 'package:provider/provider.dart';
+
 class ReusableAlarmCore extends StatefulWidget {
   final DateTime dateCreated;
   final DateTime goalTime;
@@ -29,8 +28,12 @@ class ReusableAlarmCore extends StatefulWidget {
 
 class _ReusableAlarmCoreState extends State<ReusableAlarmCore> {
   late Timer _timer;
+  bool _hasRung = false;
 
   Duration get remainingTime => widget.goalTime.difference(DateTime.now());
+
+
+
 
   String get status {
     if (remainingTime.isNegative) {
@@ -42,32 +45,21 @@ class _ReusableAlarmCoreState extends State<ReusableAlarmCore> {
     }
   }
 
-  String formatDuration(Duration duration) {
-    final days = duration.inDays;
-    final hours = (duration.inHours % 24).toString().padLeft(2, '0');
-    final minutes = (duration.inMinutes % 60).toString().padLeft(2, '0');
-    final seconds = (duration.inSeconds % 60).toString().padLeft(2, '0');
-    return days > 0 ? '$days:$hours:$minutes:$seconds' : '$hours:$minutes:$seconds';
-  }
-
-
-  String formatTime(DateTime time) {
-    return DateFormat('yyyy-MM-dd hh:mm a').format(time);
-  }
 
   @override
   void initState() {
     super.initState();
-    // Start a timer to refresh the widget every second
     _timer = Timer.periodic(Duration(seconds: 1), (_) {
       setState(() {
-        if (remainingTime.isNegative) {
-          _timer.cancel(); // Cancel the timer when the time is completed
+        if (remainingTime.isNegative && !_hasRung) {
+          _timer.cancel(); // Cancel the timer
 
+          _hasRung = true; // Prevent re-triggering
         }
 
         if (widget.statusAlarm != status) {
-          final alarmProvider = Provider.of<AlarmProvider>(context, listen: false);
+          final alarmProvider =
+          Provider.of<AlarmProvider>(context, listen: false);
           alarmProvider.updateAlarmStatus();
         }
       });
@@ -75,11 +67,23 @@ class _ReusableAlarmCoreState extends State<ReusableAlarmCore> {
   }
 
 
+  String formatDuration(Duration duration) {
+    final days = duration.inDays;
+    final hours = (duration.inHours % 24).toString().padLeft(2, '0');
+    final minutes = (duration.inMinutes % 60).toString().padLeft(2, '0');
+    final seconds = (duration.inSeconds % 60).toString().padLeft(2, '0');
+    return days > 0
+        ? '$days:$hours:$minutes:$seconds'
+        : '$hours:$minutes:$seconds';
+  }
 
+  String formatTime(DateTime time) {
+    return DateFormat('yyyy-MM-dd hh:mm a').format(time);
+  }
 
   @override
   void dispose() {
-    _timer.cancel(); // Clean up the timer
+    _timer.cancel();
     super.dispose();
   }
 
@@ -94,7 +98,10 @@ class _ReusableAlarmCoreState extends State<ReusableAlarmCore> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
         gradient: LinearGradient(
-          colors: [colorScheme.tertiaryContainer, colorScheme.secondaryContainer],
+          colors: [
+            colorScheme.tertiaryContainer,
+            colorScheme.secondaryContainer
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -110,8 +117,12 @@ class _ReusableAlarmCoreState extends State<ReusableAlarmCore> {
                     ? "00:00:00"
                     : formatDuration(remainingTime),
                 style: TextStyle(
-                  decoration: remainingTime.isNegative ? TextDecoration.lineThrough : TextDecoration.none,
-                  color: remainingTime.isNegative ? colorScheme.error :colorScheme.secondary,
+                  decoration: remainingTime.isNegative
+                      ? TextDecoration.lineThrough
+                      : TextDecoration.none,
+                  color: remainingTime.isNegative
+                      ? colorScheme.error
+                      : colorScheme.secondary,
                   fontSize: 40,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 2,
@@ -123,11 +134,9 @@ class _ReusableAlarmCoreState extends State<ReusableAlarmCore> {
                 onSelected: (String value) {
                   switch (value) {
                     case 'Edit':
-                    // Handle Edit action
                       widget.onEdit();
                       break;
                     case 'Delete':
-                    // Handle Delete action
                       widget.onDelete();
                       break;
                   }

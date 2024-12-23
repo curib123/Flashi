@@ -64,7 +64,7 @@ class CustomDrawer extends StatelessWidget {
           ),
           buildListTile(
             icon: Icons.alarm_rounded,
-            title:  'Study Time Alarm',
+            title:  'Study Time Remainder',
             onTap: () {
               Navigator.pop(context);
               bottomNavigationProvider.toogleNavigation(2);

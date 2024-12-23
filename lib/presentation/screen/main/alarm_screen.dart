@@ -1,6 +1,7 @@
+import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_alarm_core.dart';
+import 'package:flashlearn/util/helpers/alert_box/delete_confirmation_alert_box.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_alarm_core.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_search_bar_core.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_create_alarm_button_position.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
@@ -44,7 +45,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
       backgroundColor: colorScheme.primary,
       foregroundColor: colorScheme.onPrimary,
       title: const Text(
-        'Study Time Alarm',
+        'Study Time Remainder',
         style: TextStyle(fontWeight: FontWeight.bold),
       ),
       centerTitle: true,
@@ -63,12 +64,12 @@ class _AlarmScreenState extends State<AlarmScreen> {
   Widget _buildCreateAlarmButton(ColorScheme colorScheme, BuildContext context) {
     return ReusableCreateAlarmButtonPosition(
       colorScheme: colorScheme,
-      name: "Add Alarm",
+      name: "Add Remainder",
       onTap: () => CreateAlarmBottomModal(
         context: context,
         buttonName: 'Add',
         isCreate: true,
-        title: 'Add Study Alarm',
+        title: 'Add Study Remainder',
       ),
     );
   }
@@ -77,7 +78,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
     final filteredAlarms = alarmProvider.filterAlarms().reversed.toList();
 
     if (alarmProvider.searchText.isNotEmpty) {
-      return _buildAlarmSearch('Search Results', filteredAlarms, alarmProvider);
+      return _buildAlarmSearch('Search Results', filteredAlarms, alarmProvider,context);
     }
 
     return SingleChildScrollView(
@@ -93,12 +94,15 @@ class _AlarmScreenState extends State<AlarmScreen> {
     );
   }
 
-  Widget _buildAlarmSearch(String title, List<Map<String, dynamic>> alarms, AlarmProvider alarmProvider) {
+  Widget _buildAlarmSearch(String title, List<Map<String, dynamic>> alarms, AlarmProvider alarmProvider,BuildContext context) {
+
+
     return alarms.isEmpty
-        ? Center(child: Text('No alarms for $title'))
+        ? Center(child: Text('No Remainder for $title'))
         : SizedBox(
-      height: 400,
+      height: MediaQuery.of(context).size.height ,
       child: ListView.builder(
+        padding:const EdgeInsets.symmetric(horizontal: 15,vertical: 100),
         itemCount: alarms.length,
         itemBuilder: (context, index) {
           final alarm = alarms[index];
@@ -115,7 +119,13 @@ class _AlarmScreenState extends State<AlarmScreen> {
     );
   }
 
-  Widget _buildAlarmSection(String title, List<Map<String, dynamic>> alarms, BuildContext context) {
+  Widget _buildAlarmSection(
+      String title,
+      List<Map<String, dynamic>> alarms,
+      BuildContext context,
+      ) {
+    final alarmProvider = Provider.of<AlarmProvider>(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -131,7 +141,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
         SizedBox(
           height: 200,
           child: alarms.isEmpty
-              ? Center(child: Text('No alarms for $title'))
+              ? Center(child: Text('No Remainder for $title'))
               : ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: alarms.length,
@@ -142,8 +152,18 @@ class _AlarmScreenState extends State<AlarmScreen> {
                 goalTime: alarm['goalTime'],
                 setName: alarm['setName'],
                 statusAlarm: alarm['status'],
-                onEdit: () {},
-                onDelete: () {},
+                onEdit: () {
+                  // Add edit functionality here
+                },
+                onDelete: () {
+                  showDeleteConfirmationDialog(
+                    context: context,
+                    setName: alarm['setName'],
+                    onDelete: () {
+                      alarmProvider.deleteAlarm(alarm['setName']);
+                    },
+                  );
+                },
               );
             },
           ),

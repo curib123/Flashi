@@ -55,7 +55,7 @@ void showDeleteConfirmationDialog({required BuildContext context,required String
               Navigator.of(context).pop(); // Close the dialog
               // Add your deletion logic here
               onDelete();
-              showCustomSnackbar(context: context,  message: 'Remove {$setName}',);
+
             },
           ),
         ],

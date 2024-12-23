@@ -106,10 +106,25 @@ class AlarmProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // Delete an alarm by its name
-  void deleteAlarm(String alarmName) {
-    _alarms.removeWhere((alarm) => alarm['alarmName'] == alarmName);
-    saveAlarms(); // Save updated alarms to Hive
-    notifyListeners(); // Notify listeners to update UI
+  void deleteAlarm(String setName) {
+    // Find the alarm with the matching 'setName'
+    final alarmToRemove = _alarms.firstWhere(
+          (alarm) => alarm['setName'] == setName,
+
+    );
+
+    if (alarmToRemove == null) {
+      // Alarm not found
+      debugPrint("No alarm found with setName: $setName");
+    } else {
+      // Remove the found alarm
+      _alarms.remove(alarmToRemove);
+      debugPrint("Alarm with setName: $setName deleted.");
+      print(alarms);;
+      saveAlarms();
+      notifyListeners();
+    }
   }
+
+
 }

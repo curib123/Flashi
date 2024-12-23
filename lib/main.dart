@@ -1,4 +1,3 @@
-
 import 'package:flashlearn/home.dart';
 import 'package:flashlearn/provider/alarm_provider.dart';
 import 'package:flashlearn/provider/bottom_navigation_provider.dart';
@@ -11,7 +10,6 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
 Future<void> main() async {
-
   // Ensure that widget binding is initialized
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -19,23 +17,23 @@ Future<void> main() async {
   await Hive.initFlutter();
 
   // Open individual boxes
- await Hive.openBox('settings'); // Open a box named 'settings'
+  await Hive.openBox('settings'); // Open a box named 'settings'
   await Hive.openBox('alarmsBox'); // Open a box named 'alarmsBox'
 
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => BottomNavigationProvider()), // Add BottomNavigationProvider
-        ChangeNotifierProvider(create: (_) => ThemeProvider()), // Add ThemeProvider
-        ChangeNotifierProvider(create: (_) => SortProvider()), // Add SortProvider
-        ChangeNotifierProvider(create: (_) => ReviewerSettingsProvider()), // Add SortProvider
-        ChangeNotifierProvider(create: (_) => AlarmProvider()), // Add SortProvider
+        ChangeNotifierProvider(create: (_) => BottomNavigationProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => SortProvider()),
+        ChangeNotifierProvider(create: (_) => ReviewerSettingsProvider()),
+        ChangeNotifierProvider(create: (_) => AlarmProvider()),
         ChangeNotifierProvider(
-            create: (context) => QuizProvider(
-                criterionSet: Provider.of<SortProvider>(context,listen: false).dropdownValueSet,
-                criterionCard: Provider.of<SortProvider>(context,listen: false).dropdownValueCard)
-
-        ), // Add QuizProvider
+          create: (context) => QuizProvider(
+            criterionSet: Provider.of<SortProvider>(context, listen: false).dropdownValueSet,
+            criterionCard: Provider.of<SortProvider>(context, listen: false).dropdownValueCard,
+          ),
+        ),
       ],
       child: const RocketLearn(),
     ),
@@ -60,4 +58,3 @@ class RocketLearn extends StatelessWidget {
     );
   }
 }
-
