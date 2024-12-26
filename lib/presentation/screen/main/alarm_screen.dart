@@ -36,13 +36,6 @@ class _AlarmScreenState extends State<AlarmScreen> {
 
   AppBar _buildAppBar(ColorScheme colorScheme) {
     return AppBar(
-      leading: GestureDetector(
-        onTap: () => Scaffold.of(context).openDrawer(),
-        child: Icon(
-          Icons.menu_rounded,
-          color: colorScheme.onPrimary,
-        ),
-      ),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(20),
@@ -119,15 +112,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
             setName: alarm['setName'],
             statusAlarm: alarm['status'],
             onEdit: () {},
-            onDelete: () {
-              showDeleteConfirmationDialog(
-                context: context,
-                setName: alarm['setName'],
-                onDelete: () {
-                  alarmProvider.deleteAlarm(alarm['setName']);
-                },
-              );
-            },
+            onDelete: () {},
           );
         },
       ),
@@ -154,7 +139,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
         ),
         const SizedBox(height: 10),
         SizedBox(
-          height: 10,
+          height: 200,
           child: alarms.isEmpty
               ? Center(child: Text('No Remainder for $title'))
               : ListView.builder(
