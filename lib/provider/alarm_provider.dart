@@ -120,7 +120,7 @@ class AlarmProvider with ChangeNotifier {
       // Remove the found alarm
       _alarms.remove(alarmToRemove);
       debugPrint("Alarm with setName: $setName deleted.");
-      print(alarms);;
+      print(alarms);
       saveAlarms();
       notifyListeners();
     }

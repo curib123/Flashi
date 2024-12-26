@@ -1,3 +1,4 @@
+
 import 'package:flashlearn/home.dart';
 import 'package:flashlearn/provider/alarm_provider.dart';
 import 'package:flashlearn/provider/bottom_navigation_provider.dart';
@@ -5,14 +6,17 @@ import 'package:flashlearn/provider/quiz_provider.dart';
 import 'package:flashlearn/provider/reviewer_settings_provider.dart';
 import 'package:flashlearn/provider/sort_provider.dart';
 import 'package:flashlearn/provider/theme_provider.dart';
+import 'package:flashlearn/services/notification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:timezone/data/latest.dart' as tz;
 
 Future<void> main() async {
   // Ensure that widget binding is initialized
   WidgetsFlutterBinding.ensureInitialized();
-
+  await NotificationService.init();
+  tz.initializeTimeZones();
   // Initialize Hive
   await Hive.initFlutter();
 

@@ -1,4 +1,6 @@
+
 import 'package:flashlearn/provider/alarm_provider.dart';
+import 'package:flashlearn/services/notification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'dart:async';
@@ -28,7 +30,6 @@ class ReusableAlarmCore extends StatefulWidget {
 
 class _ReusableAlarmCoreState extends State<ReusableAlarmCore> {
   late Timer _timer;
-  bool _hasRung = false;
 
   Duration get remainingTime => widget.goalTime.difference(DateTime.now());
 
@@ -51,20 +52,27 @@ class _ReusableAlarmCoreState extends State<ReusableAlarmCore> {
     super.initState();
     _timer = Timer.periodic(Duration(seconds: 1), (_) {
       setState(() {
-        if (remainingTime.isNegative && !_hasRung) {
+        // Check if the remaining time is zero
+        if (remainingTime.inSeconds == 0) {
+          NotificationService.showInstantNotification(
+              "Study Remainder !!!", "${widget.setName} Study now!!"); // Use string interpolation
           _timer.cancel(); // Cancel the timer
-
-          _hasRung = true; // Prevent re-triggering
         }
 
+        // Ensure 'status' is defined and properly initialized before using it
         if (widget.statusAlarm != status) {
-          final alarmProvider =
-          Provider.of<AlarmProvider>(context, listen: false);
+          final alarmProvider = Provider.of<AlarmProvider>(context, listen: false);
           alarmProvider.updateAlarmStatus();
         }
       });
     });
   }
+
+
+
+
+
+
 
 
   String formatDuration(Duration duration) {
@@ -93,7 +101,7 @@ class _ReusableAlarmCoreState extends State<ReusableAlarmCore> {
 
     return Container(
       width: MediaQuery.of(context).size.width * 0.90,
-      padding: const EdgeInsets.all(15),
+      padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 5),
       margin: const EdgeInsets.all(5),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
@@ -114,16 +122,16 @@ class _ReusableAlarmCoreState extends State<ReusableAlarmCore> {
             children: [
               Text(
                 remainingTime.isNegative
-                    ? "00:00:00"
+                    ? "Completed"
                     : formatDuration(remainingTime),
                 style: TextStyle(
                   decoration: remainingTime.isNegative
-                      ? TextDecoration.lineThrough
+                      ? TextDecoration.none
                       : TextDecoration.none,
                   color: remainingTime.isNegative
                       ? colorScheme.error
                       : colorScheme.secondary,
-                  fontSize: 40,
+                  fontSize: 30,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 2,
                 ),
@@ -217,7 +225,7 @@ class _ReusableAlarmCoreState extends State<ReusableAlarmCore> {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

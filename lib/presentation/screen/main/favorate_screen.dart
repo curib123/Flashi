@@ -22,6 +22,13 @@ class FavoriteScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        leading: GestureDetector(
+          onTap: () => Scaffold.of(context).openDrawer(),
+          child: Icon(
+            Icons.menu_rounded,
+            color: colorScheme.onPrimary,
+          ),
+        ),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             bottomLeft: Radius.circular(20),
