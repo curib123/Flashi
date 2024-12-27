@@ -29,11 +29,9 @@ class ThemeSelector extends StatelessWidget {
       {'name': 'Fira Sans', 'description': 'Clear and versatile.'},
       {'name': 'Playfair Display', 'description': 'Elegant serif with a modern twist.'},
       {'name': 'Bebas Neue', 'description': 'Strong and timeless.'},
-
     ];
 
     return Column(
-
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Section for selecting a theme

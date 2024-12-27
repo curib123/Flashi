@@ -1,5 +1,5 @@
 
-import 'package:flashlearn/presentation/screen/main/alarm_screen.dart';
+import 'package:flashlearn/presentation/screen/main/note_screen.dart';
 import 'package:flashlearn/presentation/screen/main/favorate_screen.dart';
 import 'package:flashlearn/presentation/screen/main/home_screen.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +9,7 @@ class BottomNavigationProvider with ChangeNotifier{
   final List<Widget> _screen = [
     const FavoriteScreen(),
     const HomeScreen(),
-    const AlarmScreen(),
+    const NoteScreen(),
   ];
 
   int _currentIndex = 1;

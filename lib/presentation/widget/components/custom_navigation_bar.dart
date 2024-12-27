@@ -30,7 +30,7 @@ class CustomNavigationBar extends StatelessWidget {
         items: <Widget>[
           Icon(Icons.favorite_rounded, size: 30, color: colorScheme.onPrimary),
           Icon(Icons.home_rounded, size: 30, color: colorScheme.onPrimary),
-          Icon(Icons.alarm_rounded, size: 30, color: colorScheme.onPrimary),
+          Icon(Icons.note_rounded, size: 30, color: colorScheme.onPrimary),
         ],
         onTap: (index) {
           if (onTap != null) {

@@ -15,7 +15,7 @@ class CreateSetButtons extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        ReusableBtnCore(name: buttonName, color:colorScheme.primary , icon: Icons.add_circle,onTap:createBtn ,),
+        ReusableBtnCore(name: buttonName, color:colorScheme.primary , icon: Icons.save,onTap:createBtn ,),
         const SizedBox(width: 10,),
         ReusableBtnCore(name: "Cancel", color:colorScheme.secondary , icon: Icons.cancel, onTap: () => {Navigator.pop(context)},),
       ],
