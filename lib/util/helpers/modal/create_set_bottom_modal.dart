@@ -93,9 +93,10 @@ void CreateSetBottomModal({
                         Navigator.pop(context);
                       } else {
                         showCustomSnackbar(context: context, message: 'Required Question',);
+
                       }
                     },
-                    buttonName: buttonName,
+                    buttonName: isCreate ? buttonName : 'Save Changes',
                   ),
                 ],
               ),

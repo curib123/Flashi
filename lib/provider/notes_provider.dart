@@ -3,9 +3,13 @@ import 'package:flutter/material.dart';
 class NotesProvider with ChangeNotifier {
   // Initial sample data
   final List<Map<String, dynamic>> _notes = [
-    {'title': 'Meeting Notes', 'content': 'Discuss project status', 'date_created': DateTime.now().subtract(Duration(days: 1)), 'favorite': true},
-    {'title': 'Shopping List', 'content': 'Buy groceries', 'date_created': DateTime.now().subtract(Duration(days: 2)), 'favorite': false},
+    {'title': 'Meeting Notes', 'content': 'Discuss project status', 'created_at': DateTime.now().subtract(Duration(days: 1)), 'favorite': true},
+    {'title': 'Shopping List', 'content': 'Buy groceries', 'created_at': DateTime.now().subtract(Duration(days: 2)), 'favorite': false},
   ];
+
+  final TextEditingController titleController = TextEditingController();
+  final TextEditingController contentController = TextEditingController();
+
 
   // Getter for notes list
   List<Map<String, dynamic>> get notes => _notes;

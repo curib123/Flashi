@@ -97,7 +97,7 @@ void CreateCardBottomModal({
 
                       }
                     },
-                    buttonName: buttonName,
+                    buttonName: isCreate ? buttonName : 'Save Changes',
                   ),
                 ],
               ),
