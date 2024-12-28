@@ -1,4 +1,5 @@
-import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/notes_summary_tile_core.dart';
+
+import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_notes_summary_tile_core.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_search_bar_core.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_create_set_button_position.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
@@ -14,9 +15,18 @@ class NoteScreen extends StatelessWidget {
   Widget build(BuildContext context) {
 
     final colorScheme = Theme.of(context).colorScheme;
+    final notesProvider = Provider.of<NotesProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
+        leading: GestureDetector(
+          onTap: () => Scaffold.of(context).openDrawer(),
+          child: Icon(
+            Icons.menu_rounded,
+            color: colorScheme.onPrimary,
+          ),
+        ),
+
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             bottomLeft: Radius.circular(20),
@@ -31,14 +41,23 @@ class NoteScreen extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        centerTitle: true,
+        centerTitle: false,
       ),
       body: Stack(
         children: [
-          ReusableSearchBarCore(colorScheme: colorScheme, hintText: 'search notes', onChanged: (value) => {}, controller: TextEditingController()),
           _NoteBody(colorScheme),
+          ReusableSearchBarCore(
+              colorScheme: colorScheme,
+              hintText: 'search notes',
+              onChanged: (value) => {
+                notesProvider.onSearchChanged(value)
+              },
+              controller:notesProvider.searchController
+          ),
           ReusableThemeSettingPosition(colorScheme: colorScheme),
           ReusableCreateSetButtonPosition(colorScheme: colorScheme, name: 'Add Notes', onTap: () {
+            notesProvider.titleController.text = '';
+            notesProvider.contentController.text = '';
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -62,10 +81,10 @@ Widget _NoteBody(ColorScheme colorScheme) {
     builder: (context, notesProvider, child) {
       return ListView.builder(
         padding: const EdgeInsets.symmetric(vertical: 100, horizontal: 15),
-        itemCount: notesProvider.notes.length, // Number of notes in the provider
+        itemCount: notesProvider.filterNotesByTitle(notesProvider.searchQuery).length, // Number of notes in the provider
         itemBuilder: (context, index) {
-          var note = notesProvider.notes[index]; // Get the current note
-          return NotesSummaryTileCore(
+          var note = notesProvider.filterNotesByTitle(notesProvider.searchQuery)[index]; // Get the current note
+          return ReusableNotesSummaryTileCore(
             title: note['title'],
             content: note['content'],
             timestamp: note['created_at'],

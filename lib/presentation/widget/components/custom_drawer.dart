@@ -41,7 +41,7 @@ class CustomDrawer extends StatelessWidget {
             onTap: () => Navigator.pop(context),
           ),
           buildListTile(
-            icon: Icons.star_rounded,
+            icon: Icons.diamond_rounded,
             title: 'Upgrade to PRO',
             onTap: () => Navigator.pop(context),
           ),

@@ -68,11 +68,13 @@ class HomeScreen extends StatelessWidget {
                     ),
                     Row(
                       children: [
-                        Icon(
-                          Icons.notifications,
-                          size: 30,
-                          color: colorScheme.onPrimary,
-                        ),
+                       IconButton(
+                           onPressed: () {},
+                           icon: Icon(
+                             Icons.diamond_rounded,
+                             color: colorScheme.onPrimary,
+                             size: 30,
+                           )),
                         const SizedBox(width: 10),
                         GestureDetector(
                           onTap: () => Scaffold.of(context).openDrawer(),

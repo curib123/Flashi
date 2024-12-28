@@ -7,17 +7,33 @@ class NotesProvider with ChangeNotifier {
     {'title': 'Shopping List', 'content': 'Buy groceries', 'created_at': DateTime.now().subtract(Duration(days: 2)), 'favorite': false},
   ];
 
+  final TextEditingController searchController = TextEditingController();
   final TextEditingController titleController = TextEditingController();
   final TextEditingController contentController = TextEditingController();
 
-
   // Getter for notes list
   List<Map<String, dynamic>> get notes => _notes;
+
+  // Search query
+  String _searchQuery = '';
+
+  String get searchQuery => _searchQuery;
+
+  void onSearchChanged(String value) {
+    _searchQuery = value;
+    notifyListeners();
+  }
+
+  //method to filtered note list by title
+  List<Map<String, dynamic>> filterNotesByTitle(String title) {
+    return _notes.where((note) => note['title'].toLowerCase().contains(_searchQuery.toLowerCase())).toList().reversed.toList();
+  }
 
   // Add a new note
   void addNote(Map<String, dynamic> note) {
     _notes.add(note);
     notifyListeners();
+
   }
 
   // Edit a note by title
@@ -53,6 +69,4 @@ class NotesProvider with ChangeNotifier {
       return note['title'].toLowerCase().contains(query.toLowerCase());
     }).toList();
   }
-
-
 }

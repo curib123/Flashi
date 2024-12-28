@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class NotesSummaryTileCore extends StatelessWidget {
+class ReusableNotesSummaryTileCore extends StatelessWidget {
   final String title;
   final String content;
   final DateTime timestamp;
@@ -10,7 +10,7 @@ class NotesSummaryTileCore extends StatelessWidget {
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
-  NotesSummaryTileCore({
+  ReusableNotesSummaryTileCore({
     required this.title,
     required this.content,
     required this.timestamp,
@@ -72,6 +72,7 @@ class NotesSummaryTileCore extends StatelessWidget {
         fontSize: 16,
         fontWeight: FontWeight.bold,
         color: colorScheme.primary,
+        overflow: TextOverflow.ellipsis
       ),
     );
   }

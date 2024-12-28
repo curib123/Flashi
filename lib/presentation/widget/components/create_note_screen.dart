@@ -127,6 +127,7 @@ class CreateNoteScreen extends StatelessWidget {
             'created_at': DateTime.now(),
             'favorite': false,
           });
+      Navigator.pop(context);
       showCustomSnackbar(context: context, message: 'Note updated successfully!');
     }
   }

@@ -17,12 +17,12 @@ class CustomNavigationBar extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Container(
-      height: 70,
+      height: 100,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(50),
       ),
       child: CurvedNavigationBar(
-        height: 55.0, // Height of the navigation bar
+        height: 70.0, // Height of the navigation bar
         backgroundColor: colorScheme.onPrimary, // Navbar background color
         color: colorScheme.primary, // Navbar color
         buttonBackgroundColor: colorScheme.primary, // Active button color
