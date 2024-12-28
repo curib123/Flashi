@@ -111,13 +111,16 @@ class HomeScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 15),
                         // Search bar for filtering quiz sets
-                        ReusableSearchBarCore(
-                          colorScheme: colorScheme,
-                          hintText: 'Search Set Here',
-                          onChanged: (value) =>
-                              quizProvider.updateSearchQuery(value),
-                          controller: quizProvider.searchController,
-                        ),
+                        Container(
+                          height: 85,
+                          child: ReusableSearchBarCore(
+                            colorScheme: colorScheme,
+                            hintText: 'Search Set Here',
+                            onChanged: (value) =>
+                                quizProvider.updateSearchQuery(value),
+                            controller: quizProvider.searchController,
+                          ),
+                        )
                       ],
                     ),
                   ),
