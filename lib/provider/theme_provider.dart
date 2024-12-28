@@ -9,7 +9,7 @@ class ThemeProvider extends ChangeNotifier {
   ThemeMode _themeMode = ThemeMode.light;
   String _currentFont = 'Montserrat'; // Default font
 
-  final Box _settingsBox = Hive.box('settings');
+  final Box _settingsBox = Hive.box('theme');
 
   ThemeProvider() {
     // Load saved theme values from Hive or use defaults

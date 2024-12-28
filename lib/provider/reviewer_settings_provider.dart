@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class ReviewerSettingsProvider with ChangeNotifier {
-  final Box _settingsBox = Hive.box('settings');
+  final Box _settingsBox = Hive.box('reviewer_settings');
 
   // Default values
   FlipDirection _flashCardFlippingDirection = FlipDirection.HORIZONTAL;

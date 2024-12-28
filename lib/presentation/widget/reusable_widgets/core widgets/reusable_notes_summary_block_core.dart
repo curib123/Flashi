@@ -28,8 +28,8 @@ class ReusableNotesSummaryBlockCore extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: EdgeInsets.all(8),
-        padding: EdgeInsets.all(12),
+        margin: EdgeInsets.all(5),
+        padding: EdgeInsets.all(10),
         decoration: _buildContainerDecoration(colorScheme),
         width: 150,
         height: 150,

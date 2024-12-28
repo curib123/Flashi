@@ -88,6 +88,7 @@ class NoteScreen extends StatelessWidget {
                   return CreateNoteScreen(
                     isCreate: true,
                     title: '',
+                    isRead: false,
                   );
                 },
               ),
@@ -106,7 +107,9 @@ Widget _NoteBodyTile(ColorScheme colorScheme) {
     builder: (context, notesProvider, child) {
       var filteredNotes = notesProvider.filterNotesByTitle(notesProvider.searchQuery);
 
-      return AnimationLimiter(
+      return  filteredNotes.isEmpty ? Container(
+        height: MediaQuery.of(context).size.height,
+          child: Center(child: Text('No Notes'),)) : AnimationLimiter(
         child: ListView.builder(
           padding: const EdgeInsets.symmetric(vertical: 130, horizontal: 15),
           itemCount: filteredNotes.length,
@@ -147,6 +150,7 @@ Widget _NoteBodyTile(ColorScheme colorScheme) {
                                   return CreateNoteScreen(
                                     isCreate: false,
                                     title: note['title'],
+                                    isRead: false,
                                   );
                                 },
                               ),
@@ -165,6 +169,19 @@ Widget _NoteBodyTile(ColorScheme colorScheme) {
                       isFavorite: note['favorite'],
                       onTap: () {
                         // Handle tap
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (BuildContext pageContext) {
+                              return CreateNoteScreen(
+                                isCreate: false,
+                                title: note['title'],
+                                isRead: true,
+                              );
+                            },
+                          ),
+                        );
+
                       },
                       onFavorite: () {
                         notesProvider.toggleFavoriteByTitle(note['title']);
@@ -179,6 +196,7 @@ Widget _NoteBodyTile(ColorScheme colorScheme) {
                               return CreateNoteScreen(
                                 isCreate: false,
                                 title: note['title'],
+                                isRead: false,
                               );
                             },
                           ),
@@ -204,7 +222,9 @@ Widget _NoteBodyBlock(ColorScheme colorScheme) {
     builder: (context, notesProvider, child) {
       var filteredNotes = notesProvider.filterNotesByTitle(notesProvider.searchQuery);
 
-      return AnimationLimiter(
+      return filteredNotes.isEmpty ? Container(
+          height: MediaQuery.of(context).size.height,
+          child: Center(child: Text('No Notes'),)) : AnimationLimiter(
         child: GridView.builder(
           padding: const EdgeInsets.symmetric(vertical: 130, horizontal: 15),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -216,13 +236,14 @@ Widget _NoteBodyBlock(ColorScheme colorScheme) {
           itemCount: filteredNotes.length,
           itemBuilder: (context, index) {
             var note = filteredNotes[index];
+            
             return AnimationConfiguration.staggeredGrid(
               position: index,
-              duration: const Duration(seconds: 2),
+              duration: const Duration(seconds: 3),
               columnCount: MediaQuery.of(context).size.width > 600 ? 3 : 2,
               child: SlideAnimation(
-                curve: Curves.fastEaseInToSlowEaseOut,
-                verticalOffset: 100.0,
+                curve: Curves.easeInOutCubicEmphasized,
+                verticalOffset: 50.0,
                 child: FadeInAnimation(
                   child: Slidable(
                     // Left swipe for delete action
@@ -252,6 +273,7 @@ Widget _NoteBodyBlock(ColorScheme colorScheme) {
                                   return CreateNoteScreen(
                                     isCreate: false,
                                     title: note['title'],
+                                    isRead: false,
                                   );
                                 },
                               ),
@@ -270,6 +292,18 @@ Widget _NoteBodyBlock(ColorScheme colorScheme) {
                       isFavorite: note['favorite'],
                       onTap: () {
                         // Handle tap
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (BuildContext pageContext) {
+                              return CreateNoteScreen(
+                                isCreate: false,
+                                title: note['title'],
+                                isRead: true,
+                              );
+                            },
+                          ),
+                        );
                       },
                       onFavorite: () {
                         notesProvider.toggleFavoriteByTitle(note['title']);
@@ -284,6 +318,7 @@ Widget _NoteBodyBlock(ColorScheme colorScheme) {
                               return CreateNoteScreen(
                                 isCreate: false,
                                 title: note['title'],
+                                isRead: false,
                               );
                             },
                           ),

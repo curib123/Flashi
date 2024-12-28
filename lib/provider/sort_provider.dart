@@ -7,7 +7,7 @@ class SortProvider with ChangeNotifier {
   String _dropdownValueNote = 'Tiles';  // Default value
 
   // Box for storing the selected sort value
-  Box<dynamic> _sortBox = Hive.box('settings');
+  Box<dynamic> _sortBox = Hive.box('sort');
 
   final List<String> _sortOptionsSet = [
     'Newest',

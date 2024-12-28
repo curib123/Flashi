@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 
 class NotesProvider with ChangeNotifier {
-  // Initial sample data
-  final List<Map<String, dynamic>> _notes = [
-    {'title': 'Meeting Notes', 'content': 'Discuss project status', 'created_at': DateTime.now().subtract(Duration(days: 1)), 'favorite': true},
-    {'title': 'Shopping List', 'content': 'Buy groceries', 'created_at': DateTime.now().subtract(Duration(days: 2)), 'favorite': false},
-  ];
+  // Box for storing notes
+  final Box _quizBox = Hive.box('notes');
+
+  // Initial sample data (use a regular variable instead of final)
+  List<Map<String, dynamic>> _notes = [];
 
   final TextEditingController searchController = TextEditingController();
   final TextEditingController titleController = TextEditingController();
@@ -19,21 +20,29 @@ class NotesProvider with ChangeNotifier {
 
   String get searchQuery => _searchQuery;
 
+  // Constructor
+  NotesProvider() {
+    loadNotesHive();  // Load notes when the provider is initialized
+  }
+
+  // Method to handle search query change
   void onSearchChanged(String value) {
     _searchQuery = value;
     notifyListeners();
   }
 
-  //method to filtered note list by title
+  // Method to filter note list by title
   List<Map<String, dynamic>> filterNotesByTitle(String title) {
-    return _notes.where((note) => note['title'].toLowerCase().contains(_searchQuery.toLowerCase())).toList().reversed.toList();
+    return _notes
+        .where((note) => note['title'].toLowerCase().contains(_searchQuery.toLowerCase()))
+        .toList();
   }
 
   // Add a new note
   void addNote(Map<String, dynamic> note) {
     _notes.add(note);
+    saveNotesHive();  // Save to Hive after adding a note
     notifyListeners();
-
   }
 
   // Edit a note by title
@@ -41,6 +50,7 @@ class NotesProvider with ChangeNotifier {
     final index = _notes.indexWhere((note) => note['title'] == title);
     if (index != -1) {
       _notes[index] = updatedNote;
+      saveNotesHive();  // Save to Hive after editing a note
       notifyListeners();
     }
   }
@@ -50,6 +60,7 @@ class NotesProvider with ChangeNotifier {
     final index = _notes.indexWhere((note) => note['title'] == title);
     if (index != -1) {
       _notes[index]['favorite'] = !_notes[index]['favorite'];
+      saveNotesHive();  // Save to Hive after toggling favorite status
       notifyListeners();
     }
   }
@@ -59,6 +70,7 @@ class NotesProvider with ChangeNotifier {
     final index = _notes.indexWhere((note) => note['title'] == title);
     if (index != -1) {
       _notes.removeAt(index);
+      saveNotesHive();  // Save to Hive after deleting a note
       notifyListeners();
     }
   }
@@ -68,5 +80,31 @@ class NotesProvider with ChangeNotifier {
     return _notes.where((note) {
       return note['title'].toLowerCase().contains(query.toLowerCase());
     }).toList();
+  }
+
+  // Load notes from Hive storage
+  void loadNotesHive() {
+    var notesFromStorage = _quizBox.get('notes', defaultValue: []);
+
+    if (notesFromStorage is List) {
+      _notes = List<Map<String, dynamic>>.from(
+        notesFromStorage.map((item) {
+          if (item is Map<String, dynamic>) {
+            return item;
+          } else if (item is Map) {
+            return Map<String, dynamic>.from(item);
+          } else {
+            return {};
+          }
+        }),
+      );
+    }
+    notifyListeners();
+  }
+
+  // Save the current notes list to Hive storage
+  void saveNotesHive() {
+    _quizBox.put('notes', _notes);  // Save the entire list to Hive
+    loadNotesHive();
   }
 }

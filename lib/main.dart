@@ -13,8 +13,15 @@ import 'package:provider/provider.dart';
 Future<void> main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
-  await Hive.initFlutter(); // Initialized HIVE
-  await Hive.openBox('settings'); // Open a box named 'settings'
+  await Hive.initFlutter(); // Initialize Hive
+
+// Open different boxes for various settings or data
+  await Hive.openBox('theme'); // Box for theme settings
+  await Hive.openBox('sort'); // Box for sorting preferences
+  await Hive.openBox('reviewer_settings'); // Box for reviewer-related settings
+  await Hive.openBox('quiz'); // Box for quiz data
+  await Hive.openBox('notes'); // Box for storing notes
+
 
   runApp(
     MultiProvider(

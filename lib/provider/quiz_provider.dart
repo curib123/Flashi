@@ -8,7 +8,7 @@ class QuizProvider with ChangeNotifier {
   final TextEditingController questionController = TextEditingController();
   final TextEditingController answerController = TextEditingController();
 
-  final Box _settingsBox = Hive.box('settings'); // Hive box for settings
+  final Box _settingsBox = Hive.box('quiz'); // Hive box for settings
 
   List<Map<String, dynamic>> _quizSets = []; // List of maps to store quiz sets
   String _searchQuery = ""; // Variable to store the search query
