@@ -2,10 +2,14 @@
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_notes_summary_tile_core.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_search_bar_core.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_create_set_button_position.dart';
+import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_sort_and_see_all.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
 import 'package:flashlearn/provider/notes_provider.dart';
 import 'package:flashlearn/presentation/widget/components/create_note_screen.dart';
+import 'package:flashlearn/provider/sort_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 
 class NoteScreen extends StatelessWidget {
@@ -16,6 +20,7 @@ class NoteScreen extends StatelessWidget {
 
     final colorScheme = Theme.of(context).colorScheme;
     final notesProvider = Provider.of<NotesProvider>(context);
+    final sortProvider = Provider.of<SortProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -46,13 +51,30 @@ class NoteScreen extends StatelessWidget {
       body: Stack(
         children: [
           _NoteBody(colorScheme),
-          ReusableSearchBarCore(
-              colorScheme: colorScheme,
-              hintText: 'search notes',
-              onChanged: (value) => {
-                notesProvider.onSearchChanged(value)
-              },
-              controller:notesProvider.searchController
+          Container(
+            color: colorScheme.onPrimary,
+            height: 130,
+            child: Column(
+              children: [
+                ReusableSearchBarCore(
+                    colorScheme: colorScheme,
+                    hintText: 'search notes',
+                    onChanged: (value) => {
+                      notesProvider.onSearchChanged(value)
+                    },
+                    controller:notesProvider.searchController
+                ),
+                ReusableSortAndSeeAll(
+                    dropdownValue: sortProvider.dropdownValueNote,
+                    sortOptions: sortProvider.sortOptionsNote,
+                    onSortChanged:(value) => sortProvider.updateSortValueNote(value!),
+                    onSeeAllPressed: () {},
+                    isShowSeeAllLink: false,
+                    isShowReviewLink: false,
+                    onShowReviewLink: () {}
+                ),
+              ],
+            ),
           ),
           ReusableThemeSettingPosition(colorScheme: colorScheme),
           ReusableCreateSetButtonPosition(colorScheme: colorScheme, name: 'Add Notes', onTap: () {
@@ -76,48 +98,101 @@ class NoteScreen extends StatelessWidget {
   }
 }
 
+
+
 Widget _NoteBody(ColorScheme colorScheme) {
-  return Consumer<NotesProvider>( // Using Consumer to listen to changes
+  return Consumer<NotesProvider>(
     builder: (context, notesProvider, child) {
-      return ListView.builder(
-        padding: const EdgeInsets.symmetric(vertical: 100, horizontal: 15),
-        itemCount: notesProvider.filterNotesByTitle(notesProvider.searchQuery).length, // Number of notes in the provider
-        itemBuilder: (context, index) {
-          var note = notesProvider.filterNotesByTitle(notesProvider.searchQuery)[index]; // Get the current note
-          return ReusableNotesSummaryTileCore(
-            title: note['title'],
-            content: note['content'],
-            timestamp: note['created_at'],
-            isFavorite: note['favorite'],
-            onTap: () {
-              // Handle tap
-            },
-            onFavorite: () {
-              // Toggle favorite status
-              notesProvider.toggleFavoriteByTitle(note['title']); // Assuming you have a method like this
-            },
-            onEdit: () {
-              // Handle edit
-              notesProvider.titleController.text = note['title'];
-              notesProvider.contentController.text = note['content'];
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (BuildContext pageContext) {
-                    return CreateNoteScreen(
-                      isCreate: false,
+      var filteredNotes = notesProvider.filterNotesByTitle(notesProvider.searchQuery);
+
+      return AnimationLimiter(
+        child: ListView.builder(
+          padding: const EdgeInsets.symmetric(vertical: 130, horizontal: 15),
+          itemCount: filteredNotes.length,
+          itemBuilder: (context, index) {
+            var note = filteredNotes[index];
+            return AnimationConfiguration.staggeredList(
+              position: index,
+              duration: const Duration(seconds: 2),
+              child: SlideAnimation(
+                curve: Curves.fastEaseInToSlowEaseOut,
+                verticalOffset: 100.0,
+                child: FadeInAnimation(
+                  child: Slidable(
+                    // Left swipe for delete action
+                    startActionPane: ActionPane(
+                      motion: const DrawerMotion(),
+                      children: [
+                        SlidableAction(
+                          onPressed: (_) => notesProvider.deleteNoteByTitle( note['title']),
+                          foregroundColor: Theme.of(context).colorScheme.error,
+                          icon: Icons.delete,
+                          label: 'Delete',
+                        ),
+                      ],
+                    ),
+                    // Right swipe for edit action
+                    endActionPane: ActionPane(
+                      motion: const DrawerMotion(),
+                      children: [
+                        SlidableAction(
+                          onPressed: (_) {
+                            notesProvider.titleController.text = note['title'];
+                            notesProvider.contentController.text = note['content'];
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (BuildContext pageContext) {
+                                  return CreateNoteScreen(
+                                    isCreate: false,
+                                    title: note['title'],
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                          foregroundColor: Theme.of(context).colorScheme.tertiary,
+                          icon: Icons.edit,
+                          label: 'Edit',
+                        ),
+                      ],
+                    ),
+                    child: ReusableNotesSummaryTileCore(
                       title: note['title'],
-                    );
-                  },
+                      content: note['content'],
+                      timestamp: note['created_at'],
+                      isFavorite: note['favorite'],
+                      onTap: () {
+                        // Handle tap
+                      },
+                      onFavorite: () {
+                        notesProvider.toggleFavoriteByTitle(note['title']);
+                      },
+                      onEdit: () {
+                        notesProvider.titleController.text = note['title'];
+                        notesProvider.contentController.text = note['content'];
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (BuildContext pageContext) {
+                              return CreateNoteScreen(
+                                isCreate: false,
+                                title: note['title'],
+                              );
+                            },
+                          ),
+                        );
+                      },
+                      onDelete: () {
+                        notesProvider.deleteNoteByTitle(note['title']);
+                      },
+                    ),
+                  ),
                 ),
-              );
-            },
-            onDelete: () {
-              // Handle delete
-              notesProvider.deleteNoteByTitle(note['title']); // Assuming you have a method like this
-            },
-          );
-        },
+              ),
+            );
+          },
+        ),
       );
     },
   );

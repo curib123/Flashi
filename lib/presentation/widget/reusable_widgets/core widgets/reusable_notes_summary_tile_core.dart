@@ -28,7 +28,7 @@ class ReusableNotesSummaryTileCore extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: EdgeInsets.symmetric(vertical: 10),
+        margin: EdgeInsets.symmetric(vertical: 5),
         decoration: _buildContainerDecoration(colorScheme),
         child: ListTile(
           contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
