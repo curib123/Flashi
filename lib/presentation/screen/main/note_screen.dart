@@ -1,4 +1,5 @@
 
+import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_notes_summary_block_core.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_notes_summary_tile_core.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_search_bar_core.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_create_set_button_position.dart';
@@ -50,7 +51,7 @@ class NoteScreen extends StatelessWidget {
       ),
       body: Stack(
         children: [
-          _NoteBody(colorScheme),
+          sortProvider.dropdownValueNote == 'Tiles' ? _NoteBodyTile(colorScheme) : _NoteBodyBlock(colorScheme),
           Container(
             color: colorScheme.onPrimary,
             height: 130,
@@ -100,7 +101,7 @@ class NoteScreen extends StatelessWidget {
 
 
 
-Widget _NoteBody(ColorScheme colorScheme) {
+Widget _NoteBodyTile(ColorScheme colorScheme) {
   return Consumer<NotesProvider>(
     builder: (context, notesProvider, child) {
       var filteredNotes = notesProvider.filterNotesByTitle(notesProvider.searchQuery);
@@ -157,7 +158,112 @@ Widget _NoteBody(ColorScheme colorScheme) {
                         ),
                       ],
                     ),
-                    child: ReusableNotesSummaryTileCore(
+                    child:  ReusableNotesSummaryTileCore(
+                      title: note['title'],
+                      content: note['content'],
+                      timestamp: note['created_at'],
+                      isFavorite: note['favorite'],
+                      onTap: () {
+                        // Handle tap
+                      },
+                      onFavorite: () {
+                        notesProvider.toggleFavoriteByTitle(note['title']);
+                      },
+                      onEdit: () {
+                        notesProvider.titleController.text = note['title'];
+                        notesProvider.contentController.text = note['content'];
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (BuildContext pageContext) {
+                              return CreateNoteScreen(
+                                isCreate: false,
+                                title: note['title'],
+                              );
+                            },
+                          ),
+                        );
+                      },
+                      onDelete: () {
+                        notesProvider.deleteNoteByTitle(note['title']);
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      );
+    },
+  );
+}
+
+Widget _NoteBodyBlock(ColorScheme colorScheme) {
+  return Consumer<NotesProvider>(
+    builder: (context, notesProvider, child) {
+      var filteredNotes = notesProvider.filterNotesByTitle(notesProvider.searchQuery);
+
+      return AnimationLimiter(
+        child: GridView.builder(
+          padding: const EdgeInsets.symmetric(vertical: 130, horizontal: 15),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: MediaQuery.of(context).size.width > 600 ? 3 : 2, // Adjust columns based on screen width
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+            childAspectRatio: 1, // Maintain square aspect ratio
+          ),
+          itemCount: filteredNotes.length,
+          itemBuilder: (context, index) {
+            var note = filteredNotes[index];
+            return AnimationConfiguration.staggeredGrid(
+              position: index,
+              duration: const Duration(seconds: 2),
+              columnCount: MediaQuery.of(context).size.width > 600 ? 3 : 2,
+              child: SlideAnimation(
+                curve: Curves.fastEaseInToSlowEaseOut,
+                verticalOffset: 100.0,
+                child: FadeInAnimation(
+                  child: Slidable(
+                    // Left swipe for delete action
+                    startActionPane: ActionPane(
+                      motion: const DrawerMotion(),
+                      children: [
+                        SlidableAction(
+                          onPressed: (_) => notesProvider.deleteNoteByTitle(note['title']),
+                          foregroundColor: colorScheme.error,
+                          icon: Icons.delete,
+                          label: 'Delete',
+                        ),
+                      ],
+                    ),
+                    // Right swipe for edit action
+                    endActionPane: ActionPane(
+                      motion: const DrawerMotion(),
+                      children: [
+                        SlidableAction(
+                          onPressed: (_) {
+                            notesProvider.titleController.text = note['title'];
+                            notesProvider.contentController.text = note['content'];
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (BuildContext pageContext) {
+                                  return CreateNoteScreen(
+                                    isCreate: false,
+                                    title: note['title'],
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                          foregroundColor: colorScheme.tertiary,
+                          icon: Icons.edit,
+                          label: 'Edit',
+                        ),
+                      ],
+                    ),
+                    child: ReusableNotesSummaryBlockCore(
                       title: note['title'],
                       content: note['content'],
                       timestamp: note['created_at'],
