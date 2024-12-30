@@ -1,0 +1,50 @@
+import 'package:flutter/material.dart';
+
+class ReusableTitleContent extends StatelessWidget {
+
+  final ColorScheme colorScheme;
+  final String title;
+  final VoidCallback onUpgradePro;
+  final VoidCallback onTapProfile;
+
+  const ReusableTitleContent({super.key, required this.colorScheme, required this.title, required this.onUpgradePro, required this.onTapProfile});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            color: colorScheme.onPrimary,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Row(
+          children: [
+            IconButton(
+                onPressed: onUpgradePro,
+                icon: Icon(
+                  Icons.diamond_rounded,
+                  color: colorScheme.onPrimary,
+                  size: 30,
+                )),
+            const SizedBox(width: 10),
+            GestureDetector(
+              onTap: onTapProfile,
+              child: CircleAvatar(
+                backgroundColor: colorScheme.onPrimary,
+                child: Icon(
+                  Icons.person,
+                  size: 30,
+                  color: colorScheme.primary,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}

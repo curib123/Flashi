@@ -1,3 +1,4 @@
+import 'package:flashlearn/presentation/screen/main/export_import_screen.dart';
 import 'package:flashlearn/presentation/screen/main/settings_screen.dart';
 import 'package:flashlearn/provider/bottom_navigation_provider.dart';
 import 'package:flutter/material.dart';
@@ -83,14 +84,15 @@ class CustomDrawer extends StatelessWidget {
           ),
           const Divider(height: 1),
           buildListTile(
-            icon: Icons.settings_backup_restore_rounded,
-            title: 'Backup/Restore',
-            onTap: () => Navigator.pop(context),
-          ),
-          buildListTile(
             icon: Icons.import_export_rounded,
-            title: 'Import/Export Cards',
-            onTap: () => Navigator.pop(context),
+            title: 'Import/Export Set Card',
+            onTap: () => {
+              Navigator.pop(context),
+            Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) =>  ExportImportPage()),
+            )
+            },
           ),
           buildListTile(
             icon: Icons.privacy_tip_rounded,

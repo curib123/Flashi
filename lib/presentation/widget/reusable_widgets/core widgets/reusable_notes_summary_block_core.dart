@@ -93,15 +93,30 @@ class ReusableNotesSummaryBlockCore extends StatelessWidget {
     );
   }
 
-  Text _buildSubtitle(ColorScheme colorScheme) {
-    return Text(
-      content,
-      maxLines: 2,
-      overflow: TextOverflow.ellipsis,
-      style: TextStyle(
-        fontSize: 12,
-        color: colorScheme.secondary,
-      ),
+  Column _buildSubtitle(ColorScheme colorScheme) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          content,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            fontSize: 14,
+            color: colorScheme.secondary,
+          ),
+        ),
+        const SizedBox(height: 10,),
+        Text(
+          timestamp.toString(),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            fontSize: 10,
+            color: colorScheme.secondary,
+          ),
+        ),
+      ],
     );
   }
 

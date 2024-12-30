@@ -4,6 +4,7 @@ import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_create_
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_quiz_set_list.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_sort_and_see_all.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
+import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_title_content.dart';
 import 'package:flashlearn/provider/quiz_provider.dart';
 import 'package:flashlearn/provider/sort_provider.dart';
 import 'package:flashlearn/util/helpers/modal/create_set_bottom_modal.dart';
@@ -56,41 +57,7 @@ class HomeScreen extends StatelessWidget {
                 pinned: true, // Keeps the header visible when scrolling
                 floating: false, // Header doesn't float when scrolling
                 expandedHeight: 200, // Height of the expanded header
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "FlashLearn",
-                      style: TextStyle(
-                        color: colorScheme.onPrimary,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Row(
-                      children: [
-                       IconButton(
-                           onPressed: () {},
-                           icon: Icon(
-                             Icons.diamond_rounded,
-                             color: colorScheme.onPrimary,
-                             size: 30,
-                           )),
-                        const SizedBox(width: 10),
-                        GestureDetector(
-                          onTap: () => Scaffold.of(context).openDrawer(),
-                          child: CircleAvatar(
-                            backgroundColor: colorScheme.onPrimary,
-                            child: Icon(
-                              Icons.person,
-                              size: 30,
-                              color: colorScheme.primary,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                title:  ReusableTitleContent(colorScheme: colorScheme, title: "FlashLearn", onUpgradePro: () {}, onTapProfile: () {Scaffold.of(context).openDrawer();}),
                 flexibleSpace: FlexibleSpaceBar(
                   background: Container(
                     margin: const EdgeInsets.all(10),

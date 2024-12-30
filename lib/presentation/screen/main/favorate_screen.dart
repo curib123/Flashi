@@ -1,6 +1,7 @@
 import 'package:flashlearn/presentation/widget/components/see_all_quiz_card.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_set_core.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
+import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_title_content.dart';
 import 'package:flashlearn/provider/quiz_provider.dart';
 import 'package:flashlearn/util/helpers/alert_box/delete_confirmation_alert_box.dart';
 import 'package:flashlearn/util/helpers/alert_box/review_selection_alert_box.dart';
@@ -37,7 +38,7 @@ class FavoriteScreen extends StatelessWidget {
         ),
         backgroundColor: colorScheme.primary,
         foregroundColor: colorScheme.onPrimary,
-        title: const Text('Favorites',style: TextStyle(fontWeight: FontWeight.bold),),
+        title:  ReusableTitleContent(colorScheme: colorScheme, title: "Favorites", onUpgradePro: () {}, onTapProfile: () {Scaffold.of(context).openDrawer();}),
         centerTitle: false,
       ),
       body:  Stack(
@@ -112,6 +113,8 @@ class FavoriteScreen extends StatelessWidget {
                           onEdit: () => _showEditSetModal(context, quizProvider, name, description),
                           onFavorate: () => quizProvider.toggleFavorite(set),
                           onViewAllCards: () => _navigateToQuizCards(context, name, set, index, cards),
+                          onShare: () {  },
+                          onExport: () {  },
                         ),
                       ),
                     ),

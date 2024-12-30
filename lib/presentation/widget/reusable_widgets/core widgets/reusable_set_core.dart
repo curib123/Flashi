@@ -10,6 +10,8 @@ class ReusableSetCore extends StatelessWidget {
   final VoidCallback onDelete; // Action for "Delete"
   final VoidCallback onEdit; // Action for "Edit"
   final VoidCallback onFavorate; // Action for "Favorate"
+  final VoidCallback onShare; // Action for "Share"
+  final VoidCallback onExport; // Action for "Export Set"
   final VoidCallback onViewAllCards; // Action for "View All Cards"
   final DateTime timestamp; // Added timestamp parameter
   final bool isFavorate;
@@ -28,6 +30,8 @@ class ReusableSetCore extends StatelessWidget {
     required this.onViewAllCards, // Added parameter
     required this.timestamp,
     required this.isFavorate,
+    required this.onShare,
+    required this.onExport,
   });
 
   @override
@@ -56,7 +60,7 @@ class ReusableSetCore extends StatelessWidget {
         ],
         color: Colors.white, // Background color
       ),
-      margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
+      margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
       child: InkWell(
         borderRadius: BorderRadius.circular(15.0),
         onTap: onTap,
@@ -65,13 +69,13 @@ class ReusableSetCore extends StatelessWidget {
           children: [
             // Header with More Options icon
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.symmetric(vertical: 15,horizontal: 10),
               child: Row(
                 children: [
                   // Left-side icon or avatar
                   Container(
-                    width: 60,
-                    height: 60,
+                    width: 55,
+                    height: 55,
                     decoration: BoxDecoration(
                       color: colorScheme.primary.withOpacity(.1),
                       shape: BoxShape.circle,
@@ -87,7 +91,7 @@ class ReusableSetCore extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 16.0),
+                  const SizedBox(width: 15.0),
                   // Text information
                   Expanded(
                     child: Column(
@@ -140,6 +144,10 @@ class ReusableSetCore extends StatelessWidget {
                           onFavorate();
                         } else if(value == 'view_all'){
                           onViewAllCards();
+                        }else if(value == 'Share'){
+                          onShare();
+                        }else if(value == 'Export/Import'){
+                          onExport();
                         }
                       },
                       itemBuilder: (BuildContext context) {
@@ -149,7 +157,7 @@ class ReusableSetCore extends StatelessWidget {
                             child: Row(
                               children: [
                                 isFavorate ?  Icon(Icons.favorite, color: colorScheme.error) :  Icon(Icons.favorite_outline, color: colorScheme.error),
-                                const SizedBox(width: 8),
+                                const SizedBox(width: 5),
                                 Text('Favorate', style: TextStyle(color: colorScheme.primary)),
                               ],
                             ),
@@ -159,7 +167,7 @@ class ReusableSetCore extends StatelessWidget {
                             child: Row(
                               children: [
                                 Icon(Icons.edit, color: colorScheme.primary),
-                                const SizedBox(width: 8),
+                                const SizedBox(width: 5),
                                 Text('Edit', style: TextStyle(color: colorScheme.primary)),
                               ],
                             ),
@@ -170,8 +178,29 @@ class ReusableSetCore extends StatelessWidget {
                             child: Row(
                               children: [
                                 Icon(Icons.add_card, color: colorScheme.primary),
-                                const SizedBox(width: 8),
+                                const SizedBox(width: 5),
                                 Text('View All Cards', style: TextStyle(color: colorScheme.primary)),
+                              ],
+                            ),
+                          ),
+                          // Share Option
+                          PopupMenuItem<String>(
+                            value: 'Share',
+                            child: Row(
+                              children: [
+                                Icon(Icons.share, color: colorScheme.primary),
+                                const SizedBox(width: 5),
+                                Text('Share Set', style: TextStyle(color: colorScheme.primary)),
+                              ],
+                            ),
+                          ), // Export Option
+                          PopupMenuItem<String>(
+                            value: 'Export/Import',
+                            child: Row(
+                              children: [
+                                Icon(Icons.import_export_rounded, color: colorScheme.primary),
+                                const SizedBox(width: 5),
+                                Text('Export/Import Set', style: TextStyle(color: colorScheme.primary)),
                               ],
                             ),
                           ),
@@ -181,7 +210,7 @@ class ReusableSetCore extends StatelessWidget {
                             child: Row(
                               children: [
                                 Icon(Icons.delete, color: colorScheme.error),
-                                const SizedBox(width: 8),
+                                const SizedBox(width: 5),
                                 Text('Delete', style: TextStyle(color: colorScheme.error)),
                               ],
                             ),

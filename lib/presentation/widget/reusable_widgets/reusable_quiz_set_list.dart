@@ -109,6 +109,8 @@ class ReusableQuizSetList extends StatelessWidget {
                           },
                           onFavorate: () => quizProvider.toggleFavorite(set),
                           onViewAllCards: () => _navigateToSeeAllQuizCard(context, name, set,index,set['cards']),
+                          onShare: () {  },
+                          onExport: () {  },
                         ),
                       ),
                     ),

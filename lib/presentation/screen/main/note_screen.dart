@@ -5,6 +5,7 @@ import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/r
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_create_set_button_position.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_sort_and_see_all.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
+import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_title_content.dart';
 import 'package:flashlearn/provider/notes_provider.dart';
 import 'package:flashlearn/presentation/widget/components/create_note_screen.dart';
 import 'package:flashlearn/provider/sort_provider.dart';
@@ -41,12 +42,7 @@ class NoteScreen extends StatelessWidget {
         ),
         backgroundColor: colorScheme.primary,
         foregroundColor: colorScheme.onPrimary,
-        title: const Text(
-          'Notes',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        title:  ReusableTitleContent(colorScheme: colorScheme, title: "Notes", onUpgradePro: () {}, onTapProfile: () {Scaffold.of(context).openDrawer();}),
         centerTitle: false,
       ),
       body: Stack(
@@ -168,6 +164,8 @@ Widget _NoteBodyTile(ColorScheme colorScheme) {
                       timestamp: note['created_at'],
                       isFavorite: note['favorite'],
                       onTap: () {
+                        notesProvider.titleController.text = note['title'];
+                        notesProvider.contentController.text = note['content'];
                         // Handle tap
                         Navigator.push(
                           context,
@@ -292,6 +290,8 @@ Widget _NoteBodyBlock(ColorScheme colorScheme) {
                       isFavorite: note['favorite'],
                       onTap: () {
                         // Handle tap
+                        notesProvider.titleController.text = note['title'];
+                        notesProvider.contentController.text = note['content'];
                         Navigator.push(
                           context,
                           MaterialPageRoute(
