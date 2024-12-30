@@ -1,10 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:flashlearn/provider/quiz_provider.dart';
+import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_quiz_set_summary_list.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:flashlearn/provider/quiz_provider.dart';
 
 class ExportImportPage extends StatefulWidget {
   @override
@@ -12,68 +13,6 @@ class ExportImportPage extends StatefulWidget {
 }
 
 class _ExportImportPageState extends State<ExportImportPage> {
-
-  List<Map<String, dynamic>> defaultValue = [
-    {
-      'name': "Life Lessons (Template)",
-      'timestamp': DateTime.now(),
-      'description': "Reflective questions to gain insights and wisdom.",
-      'cards': [
-        {
-          'isUpdating': false,
-          'question': "What is the most important lesson you’ve learned in life?",
-          'answer': "Patience and persistence lead to success.",
-          'isIgnore': false,
-          'timestamp': DateTime.now()
-        },
-        {
-          'isUpdating': false,
-          'question': "What advice would you give to your younger self?",
-          'answer': "Don’t fear failure; it’s part of growth.",
-          'isIgnore': false,
-          'timestamp': DateTime.now()
-        },
-        {
-          'isUpdating': false,
-          'question': "What does success mean to you?",
-          'answer': "Living a fulfilling and happy life while helping others.",
-          'isIgnore': false,
-          'timestamp': DateTime.now()
-        }
-      ],
-      'numberOfQuiz': 3,
-    },
-    {
-      'name': "World Trivia (Template)",
-      'timestamp': DateTime.now(),
-      'description': "Challenge your knowledge about countries and cultures.",
-      'cards': [
-        {
-          'isUpdating': false,
-          'question': "What country has the largest population in the world?",
-          'answer': "China",
-          'isIgnore': false,
-          'timestamp': DateTime.now()
-        },
-        {
-          'isUpdating': false,
-          'question': "What is the longest river in the world?",
-          'answer': "The Nile River",
-          'isIgnore': false,
-          'timestamp': DateTime.now()
-        },
-        {
-          'isUpdating': false,
-          'question': "Which city is known as the 'City of Love'?",
-          'answer': "Paris",
-          'isIgnore': false,
-          'timestamp': DateTime.now()
-        }
-      ],
-      'numberOfQuiz': 3,
-    }
-  ];
-
   Map<String, dynamic> _sets = {};
   String _statusMessage = "Ready";
   final String _directory = '/storage/emulated/0/FlashLearn/Export/Sets';
@@ -86,15 +25,6 @@ class _ExportImportPageState extends State<ExportImportPage> {
       await Permission.manageExternalStorage.request();
     }
   }
-
-  @override
-  void initState() {
-    super.initState();
-    if (defaultValue.isNotEmpty) {
-      _sets = defaultValue.first;
-    }
-  }
-
 
   Future<void> _exportList() async {
     try {
@@ -115,39 +45,37 @@ class _ExportImportPageState extends State<ExportImportPage> {
       await file.writeAsString(exportedJson);
 
       setState(() {
-        _statusMessage = "List exported to: $filePath";
-        print("$filePath");
+        if (_sets.isNotEmpty) {
+          _statusMessage = "List exported to: $filePath";
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Export Successful: The list has been exported to $filePath"),
+              backgroundColor: Colors.green,
+            ),
+          );
+        } else {
+          _statusMessage = "Select Set To Export";
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("No Set Selected. Please select a set to export."),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
       });
     } catch (e) {
       setState(() {
         _statusMessage = "Error during export: $e";
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Export Failed: Error during export: $e"),
+            backgroundColor: Colors.red,
+          ),
+        );
       });
       print("Error during export: $e");
     }
   }
-
-  Map<String, dynamic> _convertTimestampsToString(Map<String, dynamic> data) {
-    Map<String, dynamic> convertedData = Map<String, dynamic>.from(data);
-
-    // Convert top-level timestamp to String
-    if (convertedData.containsKey('timestamp') && convertedData['timestamp'] is DateTime) {
-      convertedData['timestamp'] = (convertedData['timestamp'] as DateTime).toIso8601String();
-    }
-
-    // Convert timestamps inside cards to String
-    if (convertedData.containsKey('cards')) {
-      List<dynamic> cards = convertedData['cards'];
-      for (var card in cards) {
-        if (card.containsKey('timestamp') && card['timestamp'] is DateTime) {
-          card['timestamp'] = (card['timestamp'] as DateTime).toIso8601String();
-        }
-      }
-    }
-
-    return convertedData;
-  }
-
-
 
   Future<void> _importList() async {
     try {
@@ -163,24 +91,82 @@ class _ExportImportPageState extends State<ExportImportPage> {
 
         // Parse JSON and convert timestamps
         Map<String, dynamic> importedData = jsonDecode(contents);
+
+        // Check if the map already exists in the _sets variable
+        if (_sets['name'] == importedData['name']) {
+          setState(() {
+            _statusMessage = "This set is already imported.";
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text("Oops! This set already exists! Delete The exist to Continue"),
+                backgroundColor: Colors.orange,
+              ),
+            );
+          });
+          return; // Skip the import if it's a duplicate
+        }
+
         _sets = _convertTimestamps(importedData);
 
         setState(() {
           _statusMessage = "List imported from:";
-          Provider.of<QuizProvider>(context,listen: false).addQuizSet(_sets);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Import Successful: The list has been imported successfully."),
+              backgroundColor: Colors.green,
+            ),
+          );
+
+          Provider.of<QuizProvider>(context, listen: false).addQuizSet(_sets);
         });
       } else {
         setState(() {
           _statusMessage = "Import canceled.";
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Import Canceled: No file selected or import was canceled."),
+              backgroundColor: Colors.red,
+            ),
+          );
         });
         print("File selection canceled or no file selected.");
       }
     } catch (e) {
       setState(() {
         _statusMessage = "Error during import: $e";
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Import Failed: Error during import: $e"),
+            backgroundColor: Colors.red,
+          ),
+        );
       });
       print("Error during import: $e");
     }
+  }
+
+
+  Map<String, dynamic> _convertTimestampsToString(Map<String, dynamic> data) {
+    Map<String, dynamic> convertedData = Map<String, dynamic>.from(data);
+
+    // Convert top-level timestamp to String
+    if (convertedData.containsKey('timestamp') &&
+        convertedData['timestamp'] is DateTime) {
+      convertedData['timestamp'] =
+          (convertedData['timestamp'] as DateTime).toIso8601String();
+    }
+
+    // Convert timestamps inside cards to String
+    if (convertedData.containsKey('cards')) {
+      List<dynamic> cards = convertedData['cards'];
+      for (var card in cards) {
+        if (card.containsKey('timestamp') && card['timestamp'] is DateTime) {
+          card['timestamp'] = (card['timestamp'] as DateTime).toIso8601String();
+        }
+      }
+    }
+
+    return convertedData;
   }
 
   Map<String, dynamic> _convertTimestamps(Map<String, dynamic> data) {
@@ -202,10 +188,10 @@ class _ExportImportPageState extends State<ExportImportPage> {
     return data;
   }
 
-
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final quizProvider = Provider.of<QuizProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -214,10 +200,12 @@ class _ExportImportPageState extends State<ExportImportPage> {
           style: TextStyle(
             color: colorScheme.onPrimary,
             fontWeight: FontWeight.bold,
+            fontSize: 20,
           ),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, color: colorScheme.onPrimary),
+          icon: Icon(
+              Icons.arrow_back_ios_new_rounded, color: colorScheme.onPrimary),
           onPressed: () => Navigator.pop(context),
         ),
         backgroundColor: colorScheme.primary,
@@ -229,67 +217,101 @@ class _ExportImportPageState extends State<ExportImportPage> {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(8.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Card(
-              elevation: 4,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              child: _buildDropdownSection(
-                context: context,
-                label: 'All Sets',
-                value: _sets.isNotEmpty ? _sets['name'] as String? : null,
-                items: defaultValue
-                    .map((set) => DropdownMenuItem<String>(
-                  value: set['name'] as String?,
-                  child: Text(set['name'] as String),
-                ))
-                    .toList(),
-                onChanged: (newValue) {
-                  setState(() {
-                    _statusMessage = "Selected Set: $newValue";
-                    _sets = defaultValue.firstWhere((set) => set['name'] == newValue);
-                  });
-                },
-              ),
-            ),
-            SizedBox(height: 20),
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: _exportList,
-                    icon: Icon(Icons.file_upload),
-                    label: Text("Export List"),
-                  ),
-                ),
-                SizedBox(width: 10),
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: _importList,
-                    icon: Icon(Icons.file_download),
-                    label: Text("Import List"),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 20),
-            Card(
-              elevation: 2,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text("Status: $_statusMessage"),
-              ),
-            ),
+            _Header(colorScheme, quizProvider),
+            SizedBox(height: 10),
+            _SetTile(quizProvider),
           ],
         ),
       ),
     );
   }
 
+  Widget _Header(ColorScheme colorScheme, QuizProvider quizProvider) {
+    return Column(
+      children: [
+        Card(
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12)),
+          child: _buildDropdownSection(
+            context: context,
+            label: 'All Sets',
+            value: _sets.isNotEmpty ? _sets['name'] as String? : null,
+            items: quizProvider.quizSets
+                .map((set) => DropdownMenuItem<String>(
+              value: set['name'] as String?,
+              child: Text(
+                set['name'] as String,
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              ),
+            ))
+                .toList(),
+            onChanged: (newValue) {
+              setState(() {
+                _statusMessage = "Selected Set: $newValue";
+                _sets = quizProvider.quizSets
+                    .firstWhere((set) => set['name'] == newValue);
+              });
+            },
+            hintText: 'Select Set to Export',
+          ),
+        ),
+        SizedBox(height: 20),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center, // Center buttons horizontally
+          children: [
+            Expanded(
+              child: ElevatedButton.icon(
+                onPressed: _exportList,
+                icon: Icon(Icons.file_upload),
+                label: Text("Export List"),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: colorScheme.secondary,
+                  foregroundColor: colorScheme.onPrimary,
+                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                  textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+            SizedBox(width: 10),
+            Expanded(
+              child: ElevatedButton.icon(
+                onPressed: _importList,
+                icon: Icon(Icons.file_download),
+                label: Text("Import List"),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: colorScheme.tertiary,
+                  foregroundColor: colorScheme.onPrimary,
+                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                  textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 20),
+      ],
+    );
+  }
+
+  Widget _SetTile(QuizProvider quizProvider) {
+    final size = MediaQuery.of(context).size;
+
+    return Container(
+      height: size.height * 0.6,
+      child: ListView(
+        children: [
+          ReusableQuizSetSummaryList(quizSets: quizProvider.quizSets.reversed.toList())
+        ],
+      ),
+    );
+  }
+
   Widget _buildDropdownSection({
+    required String hintText,
     required BuildContext context,
     required String label,
     required String? value,
@@ -299,13 +321,28 @@ class _ExportImportPageState extends State<ExportImportPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: Theme.of(context).textTheme.titleLarge),
-        const SizedBox(height: 10),
-        DropdownButton<String>(
-          isExpanded: true,
-          value: value,
-          items: items,
-          onChanged: onChanged,
+        Container(
+          padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+          child: DropdownButton<String>(
+            isExpanded: true,
+            value: value,
+            items: items,
+            onChanged: onChanged,
+            hint: Text(
+              hintText,
+              style: TextStyle(color: Theme.of(context).colorScheme.primary.withOpacity(0.5)),
+            ),
+            style: TextStyle(
+              fontSize: 16,
+              color: Theme.of(context).colorScheme.onSurface,
+              fontWeight: FontWeight.w500,
+            ),
+            underline: SizedBox(), // Remove the underline for a cleaner look
+            icon: Icon(
+              Icons.arrow_drop_down,
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+            ),
+          ),
         ),
       ],
     );

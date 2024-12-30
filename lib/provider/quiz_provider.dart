@@ -13,6 +13,7 @@ class QuizProvider with ChangeNotifier {
   List<Map<String, dynamic>> _quizSets = []; // List of maps to store quiz sets
   String _searchQuery = ""; // Variable to store the search query
   String newValueCard = ""; // sort of cards
+  String setValue = ""; // sort of cards
 
   QuizProvider({required String criterionSet,required String criterionCard }){
     loadQuizSets();
@@ -130,6 +131,11 @@ class QuizProvider with ChangeNotifier {
         }),
       );
     }
+    notifyListeners();
+  }
+
+  void updateSetValue(String newValue){
+     setValue = newValue;
     notifyListeners();
   }
 

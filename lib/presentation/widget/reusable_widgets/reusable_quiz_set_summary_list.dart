@@ -1,6 +1,5 @@
-import 'package:flashlearn/presentation/screen/main/export_import_screen.dart';
 import 'package:flashlearn/presentation/widget/components/see_all_quiz_card.dart';
-import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_set_core.dart';
+import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_set_summary_core.dart';
 import 'package:flashlearn/provider/quiz_provider.dart';
 import 'package:flashlearn/util/helpers/alert_box/delete_confirmation_alert_box.dart';
 import 'package:flashlearn/util/helpers/alert_box/review_selection_alert_box.dart';
@@ -12,10 +11,10 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 /// Reusable widget to display a list of quiz sets with animations and interactive actions.
-class ReusableQuizSetList extends StatelessWidget {
+class ReusableQuizSetSummaryList extends StatelessWidget {
   final List<Map<String, dynamic>> quizSets;
 
-  const ReusableQuizSetList({
+  const ReusableQuizSetSummaryList({
     super.key,
     required this.quizSets,
   });
@@ -52,12 +51,17 @@ class ReusableQuizSetList extends StatelessWidget {
                           motion: const DrawerMotion(),
                           children: [
                             SlidableAction(
-                              onPressed: (_) => showDeleteConfirmationDialog(
-                                context: context,
-                                setName: name,
-                                onDelete: () => quizProvider.removeQuizSet(set),
-                              ),
-                              foregroundColor: Theme.of(context).colorScheme.error,
+                              onPressed: (_) =>
+                                  showDeleteConfirmationDialog(
+                                    context: context,
+                                    setName: name,
+                                    onDelete: () =>
+                                        quizProvider.removeQuizSet(set),
+                                  ),
+                              foregroundColor: Theme
+                                  .of(context)
+                                  .colorScheme
+                                  .error,
                               icon: Icons.delete,
                               label: 'Delete',
                             ),
@@ -70,7 +74,8 @@ class ReusableQuizSetList extends StatelessWidget {
                             SlidableAction(
                               onPressed: (_) {
                                 quizProvider.nameController.text = name;
-                                quizProvider.descriptionController.text = description;
+                                quizProvider.descriptionController.text =
+                                    description;
                                 CreateSetBottomModal(
                                   context: context,
                                   buttonName: 'Edit',
@@ -78,45 +83,30 @@ class ReusableQuizSetList extends StatelessWidget {
                                   setName: name,
                                 );
                               },
-                              foregroundColor: Theme.of(context).colorScheme.tertiary,
+                              foregroundColor: Theme
+                                  .of(context)
+                                  .colorScheme
+                                  .tertiary,
                               icon: Icons.edit,
                               label: 'Edit',
                             ),
                           ],
                         ),
-                        child: ReusableSetCore(
+                        child: ReusableSetSummaryCore(
                           name: name,
                           description: description,
                           numberOfQuiz: cards.length,
-                          isFavorate: favorite,
                           timestamp: timestamp,
-                          onTap: () => _navigateToQuizCards(context, name, set,index,set['cards']),
-                          onAddCard: () async => _addCard(context, name, set,index,set['cards']),
-                          onReview: () => showReviewSelection(context: context, heading:name, cards:set['cards'], setname: name ),
-                          onDelete: () => showDeleteConfirmationDialog(
-                            context: context,
-                            setName: name,
-                            onDelete: () => quizProvider.removeQuizSet(set),
-                          ),
-                          onEdit: () {
-                            quizProvider.nameController.text = name;
-                            quizProvider.descriptionController.text = description;
-                            CreateSetBottomModal(
-                              context: context,
-                              buttonName: 'Edit',
-                              isCreate: false,
-                              setName: name,
-                            );
-                          },
-                          onFavorate: () => quizProvider.toggleFavorite(set),
-                          onViewAllCards: () => _navigateToSeeAllQuizCard(context, name, set,index,set['cards']),
-                          onShare: () {  },
-                          onExport: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) =>  ExportImportPage()),
-                            );
-                          },
+                          onTap: () =>
+                              _navigateToQuizCards(
+                                  context, name, set, index, set['cards']),
+                          onAddCard: () async =>
+                              _addCard(context, name, set, index, set['cards']),
+                          onReview: () =>
+                              showReviewSelection(context: context,
+                                  heading: name,
+                                  cards: set['cards'],
+                                  setname: name),
                         ),
                       ),
                     ),
@@ -131,37 +121,42 @@ class ReusableQuizSetList extends StatelessWidget {
   }
 
   /// Navigate to the quiz card screen.
-  void _navigateToQuizCards(BuildContext context, String name, Map<String, dynamic> set,int index,List<dynamic> cards) {
-
+  void _navigateToQuizCards(BuildContext context, String name,
+      Map<String, dynamic> set, int index, List<dynamic> cards) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => SeeAllQuizCard(
-          name: name,
-          colorScheme: Theme.of(context).colorScheme,
-          card: set,
-          index: index,
-          cards: cards,
-        ),
+        builder: (context) =>
+            SeeAllQuizCard(
+              name: name,
+              colorScheme: Theme
+                  .of(context)
+                  .colorScheme,
+              card: set,
+              index: index,
+              cards: cards,
+            ),
       ),
     );
   }
 
   /// Add a card to a quiz set after a delay.
-  Future<void> _addCard(BuildContext context, String name, Map<String, dynamic> set,int index,List<dynamic> cards) async {
-
-
+  Future<void> _addCard(BuildContext context, String name,
+      Map<String, dynamic> set, int index, List<dynamic> cards) async {
     // Navigate to the Add Card List screen
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => SeeAllQuizCard(
-          name: name,
-          colorScheme: Theme.of(context).colorScheme,
-          card: set,
-          index: index,
-          cards: cards,
-        ),
+        builder: (context) =>
+            SeeAllQuizCard(
+              name: name,
+              colorScheme: Theme
+                  .of(context)
+                  .colorScheme,
+              card: set,
+              index: index,
+              cards: cards,
+            ),
       ),
     );
 
@@ -178,19 +173,5 @@ class ReusableQuizSetList extends StatelessWidget {
     );
   }
 
-  /// Navigate to the Add Card List screen.
-  void _navigateToSeeAllQuizCard(BuildContext context, String name, Map<String, dynamic> set,int index,List<dynamic> cards) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => SeeAllQuizCard(
-          name: name,
-          colorScheme: Theme.of(context).colorScheme,
-          card: set,
-          index: index,
-          cards: cards,
-        ),
-      ),
-    );
-  }
+
 }
