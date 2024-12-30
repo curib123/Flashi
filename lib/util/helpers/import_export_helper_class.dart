@@ -1,0 +1,154 @@
+import 'dart:convert';
+import 'dart:io';
+import 'package:file_picker/file_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter/material.dart';
+import 'package:flashlearn/provider/quiz_provider.dart';
+
+class ImportExportHelperClass {
+  final String directory = '/storage/emulated/0/FlashLearn/Export/Sets';
+
+  Future<void> requestPermissions() async {
+    if (!await Permission.storage.isGranted) {
+      await Permission.storage.request();
+    }
+    if (!await Permission.manageExternalStorage.isGranted) {
+      await Permission.manageExternalStorage.request();
+    }
+  }
+
+  Future<void> exportList(BuildContext context, Map<String, dynamic> sets) async {
+    try {
+      await requestPermissions();
+      final rootDirectory = Directory(directory);
+
+      if (!rootDirectory.existsSync()) {
+        await rootDirectory.create(recursive: true);
+      }
+
+      String fileName = '${sets['name'] ?? 'exported_list'}.json';
+      final filePath = "${rootDirectory.path}/$fileName";
+      final file = File(filePath);
+
+      // Convert to JSON with timestamp as String
+      String exportedJson = jsonEncode(_convertTimestampsToString(sets));
+
+      await file.writeAsString(exportedJson);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Export Successful: The list has been exported to $filePath"),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Export Failed: Error during export: $e"),
+          backgroundColor: Colors.red,
+        ),
+      );
+      print("Error during export: $e");
+    }
+  }
+
+  Future<void> importList(BuildContext context, QuizProvider quizProvider) async {
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['json'],
+        initialDirectory: directory,
+      );
+
+      if (result != null && result.files.single.path != null) {
+        final file = File(result.files.single.path!);
+        final contents = await file.readAsString();
+
+        // Parse JSON and convert timestamps
+        Map<String, dynamic> importedData = jsonDecode(contents);
+
+        // Check if the map already exists in the quiz sets
+        bool isDuplicate = quizProvider.quizSets.any((set) => set['name'] == importedData['name']);
+
+        if (isDuplicate) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Oops! This set already exists! Delete the existing set to continue."),
+              backgroundColor: Colors.orange,
+            ),
+          );
+        } else {
+          // If not a duplicate, convert timestamps and add the set
+          Map<String, dynamic> sets = _convertTimestamps(importedData);
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Import Successful: The list has been imported successfully."),
+              backgroundColor: Colors.green,
+            ),
+          );
+
+          quizProvider.addQuizSet(sets);
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Import Canceled: No file selected or import was canceled."),
+            backgroundColor: Colors.red,
+          ),
+        );
+        print("File selection canceled or no file selected.");
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Import Failed: Error during import: $e"),
+          backgroundColor: Colors.red,
+        ),
+      );
+      print("Error during import: $e");
+    }
+  }
+
+  Map<String, dynamic> _convertTimestampsToString(Map<String, dynamic> data) {
+    Map<String, dynamic> convertedData = Map<String, dynamic>.from(data);
+
+    // Convert top-level timestamp to String
+    if (convertedData.containsKey('timestamp') &&
+        convertedData['timestamp'] is DateTime) {
+      convertedData['timestamp'] =
+          (convertedData['timestamp'] as DateTime).toIso8601String();
+    }
+
+    // Convert timestamps inside cards to String
+    if (convertedData.containsKey('cards')) {
+      List<dynamic> cards = convertedData['cards'];
+      for (var card in cards) {
+        if (card.containsKey('timestamp') && card['timestamp'] is DateTime) {
+          card['timestamp'] = (card['timestamp'] as DateTime).toIso8601String();
+        }
+      }
+    }
+
+    return convertedData;
+  }
+
+  Map<String, dynamic> _convertTimestamps(Map<String, dynamic> data) {
+    // Parse the top-level timestamp if it exists
+    if (data.containsKey('timestamp')) {
+      data['timestamp'] = DateTime.parse(data['timestamp']);
+    }
+
+    // Parse timestamps inside cards
+    if (data.containsKey('cards')) {
+      List<dynamic> cards = data['cards'];
+      for (var card in cards) {
+        if (card.containsKey('timestamp')) {
+          card['timestamp'] = DateTime.parse(card['timestamp']);
+        }
+      }
+    }
+
+    return data;
+  }
+}

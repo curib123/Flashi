@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.rocketapp.flashlearn.flashlearn"
-    compileSdk = flutter.compileSdkVersion
+    compileSDK 34
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
