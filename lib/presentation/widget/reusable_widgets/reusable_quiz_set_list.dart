@@ -14,7 +14,6 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:share_plus/share_plus.dart';
 
 /// Reusable widget to display a list of quiz sets with animations and interactive actions.
 class ReusableQuizSetList extends StatelessWidget {
@@ -37,7 +36,7 @@ class ReusableQuizSetList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    final ImportExportHelperClass helper = ImportExportHelperClass();  // Helper instance for export/import
+    // final ImportExportHelperClass helper = ImportExportHelperClass();  // Helper instance for export/import
 
     return Consumer<QuizProvider>(
       builder: (context, quizProvider, child) {
@@ -127,81 +126,7 @@ class ReusableQuizSetList extends StatelessWidget {
                           },
                           onFavorate: () => quizProvider.toggleFavorite(set),
                           onViewAllCards: () => _navigateToSeeAllQuizCard(context, name, set,index,set['cards']),
-                          onShare: () async {
-
-                            try {
-
-                              helper.exportList(context, set);
-
-                              // Replace with the path to the directory you want to share files from
-                              final String directoryPath = '/storage/emulated/0/FlashLearn/Export/Sets';
-
-                              // Ensure the directory exists
-                              await requestPermissions();
-                              final rootDirectory = Directory(directoryPath);
-
-                              if (!rootDirectory.existsSync()) {
-                                await rootDirectory.create(recursive: true);
-                              }
-
-                              // Define the file name and path
-                              String fileName = '$name.json';
-                              final filePath = "${rootDirectory.path}/$fileName";
-                              final file = File(filePath);
-
-                              // Check if the file exists
-                              if (await file.exists()) {
-                                try {
-                                  // Share the file
-                                  await Share.shareXFiles(
-                                      [XFile(filePath)],
-                                      text: 'Check out this file!'
-                                  );
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text('File shared successfully!'),
-                                      backgroundColor: Colors.green,
-                                      behavior: SnackBarBehavior.floating,
-                                      margin: EdgeInsets.all(16),
-                                      duration: Duration(seconds: 3),
-                                    ),
-                                  );
-                                } catch (shareError) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text('Error sharing file: $shareError'),
-                                      backgroundColor: Colors.red,
-                                      behavior: SnackBarBehavior.floating,
-                                      margin: EdgeInsets.all(16),
-                                      duration: Duration(seconds: 3),
-                                    ),
-                                  );
-                                }
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('File does not exist at path: $filePath'),
-                                    backgroundColor: Colors.orange,
-                                    behavior: SnackBarBehavior.floating,
-                                    margin: EdgeInsets.all(16),
-                                    duration: Duration(seconds: 3),
-                                  ),
-                                );
-                              }
-                            } catch (e) {
-                              // Catch and handle general errors
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text('Unexpected error: $e'),
-                                  backgroundColor: Colors.red,
-                                  behavior: SnackBarBehavior.floating,
-                                  margin: EdgeInsets.all(16),
-                                  duration: Duration(seconds: 3),
-                                ),
-                              );
-                            }
-                          },
-
+                          onShare: () {},
 
                           onExport: () {
                             Navigator.push(
