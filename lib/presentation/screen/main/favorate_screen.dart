@@ -1,3 +1,4 @@
+import 'package:flashlearn/presentation/screen/main/export_import_screen.dart';
 import 'package:flashlearn/presentation/widget/components/see_all_quiz_card.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_set_core.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
@@ -5,6 +6,7 @@ import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_title_c
 import 'package:flashlearn/provider/quiz_provider.dart';
 import 'package:flashlearn/util/helpers/alert_box/delete_confirmation_alert_box.dart';
 import 'package:flashlearn/util/helpers/alert_box/review_selection_alert_box.dart';
+import 'package:flashlearn/util/helpers/import_export_helper_class.dart';
 import 'package:flashlearn/util/helpers/modal/create_card_bottom_modal.dart';
 import 'package:flashlearn/util/helpers/modal/create_set_bottom_modal.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +22,8 @@ class FavoriteScreen extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final quizProvider = Provider.of<QuizProvider>(context);
     final quizSets = quizProvider.filteredQuizSetsFavorite;
+
+    final ImportExportHelperClass helper = ImportExportHelperClass();  // Helper instance for export/import
 
     return Scaffold(
       appBar: AppBar(
@@ -114,7 +118,16 @@ class FavoriteScreen extends StatelessWidget {
                           onFavorate: () => quizProvider.toggleFavorite(set),
                           onViewAllCards: () => _navigateToQuizCards(context, name, set, index, cards),
                           onShare: () {  },
-                          onExport: () {  },
+                          onExport: () {
+                            helper.exportList(context, set);
+                          },
+                          onImport: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) =>  ExportImportScreen()),
+                            );
+
+                          },
                         ),
                       ),
                     ),

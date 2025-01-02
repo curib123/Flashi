@@ -41,6 +41,8 @@ class ImportExportHelperClass {
           backgroundColor: Colors.green,
         ),
       );
+
+
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -50,6 +52,11 @@ class ImportExportHelperClass {
       );
       print("Error during export: $e");
     }
+  }
+
+  Future<void> backToTimeStamp(BuildContext context, Map<String, dynamic> sets) async {
+    Map<String, dynamic> newSets = _convertTimestamps(sets);
+    sets = newSets;
   }
 
   Future<void> importList(BuildContext context, QuizProvider quizProvider) async {

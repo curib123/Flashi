@@ -103,7 +103,7 @@ class _ExportImportScreenState extends State<ExportImportScreen> {
                     ? () => _helper.exportList(context, _sets)
                     : null,  // Ensure export button is only enabled if a set is selected
                 icon: Icon(Icons.file_upload),
-                label: Text("Export List"),
+                label: Text("Export Set"),
                 style: ButtonStyle(
                   foregroundColor: WidgetStatePropertyAll(colorScheme.onSecondary),
                   backgroundColor: WidgetStatePropertyAll(colorScheme.secondary),
@@ -119,7 +119,7 @@ class _ExportImportScreenState extends State<ExportImportScreen> {
               child: ElevatedButton.icon(
                 onPressed: () => _helper.importList(context, quizProvider),
                 icon: Icon(Icons.file_download),
-                label: Text("Import List"),
+                label: Text("Import Set"),
                 style: ButtonStyle(
                   foregroundColor: WidgetStatePropertyAll(colorScheme.onTertiary),
                   backgroundColor: WidgetStatePropertyAll(colorScheme.tertiary),

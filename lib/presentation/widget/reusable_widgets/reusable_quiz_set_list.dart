@@ -1,4 +1,4 @@
-import 'dart:io';
+
 
 import 'package:flashlearn/presentation/screen/main/export_import_screen.dart';
 import 'package:flashlearn/presentation/widget/components/see_all_quiz_card.dart';
@@ -27,6 +27,42 @@ class ReusableQuizSetList extends StatelessWidget {
       await Permission.manageExternalStorage.request();
     }
   }
+
+
+  // Future<void> shareFile() async {
+  //   // Specify the initial directory you want to open
+  //   String initialDirectory = '/storage/emulated/0/FlashLearn/Export/Sets';
+  //
+  //   // Use FilePicker to select a .json file
+  //   FilePickerResult? result = await FilePicker.platform.pickFiles(
+  //     initialDirectory: initialDirectory,
+  //     type: FileType.custom,  // Custom file type
+  //     allowedExtensions: ['json'],  // Restrict to JSON files
+  //   );
+  //
+  //   // Check if no file was selected
+  //   if (result == null || result.files.isEmpty) return;
+  //
+  //   // Get the path of the selected file
+  //   String? filePath = result.files.single.path;
+  //
+  //   // Ensure filePath is not null
+  //   if (filePath == null) return;
+  //
+  //   // Try sharing the file using Share
+  //   try {
+  //     // Share the file using Share.shareXFiles
+  //     final shareResult = await Share.shareXFiles([XFile(filePath)], text: 'Check out this JSON file!');
+  //
+  //     if (shareResult.status == ShareResultStatus.success) {
+  //       print('File shared successfully!');
+  //     } else {
+  //       print('File sharing failed');
+  //     }
+  //   } catch (e) {
+  //     print('Error sharing file: $e');
+  //   }
+  // }
 
   const ReusableQuizSetList({
     super.key,
@@ -107,7 +143,10 @@ class ReusableQuizSetList extends StatelessWidget {
                           isFavorate: favorite,
                           timestamp: timestamp,
                           onTap: () => _navigateToQuizCards(context, name, set,index,set['cards']),
-                          onAddCard: () async => _addCard(context, name, set,index,set['cards']),
+                          onAddCard: () async => {
+                            helper.backToTimeStamp(context, set),
+                            _addCard(context, name, set,index,set['cards'])
+                          },
                           onReview: () => showReviewSelection(context: context, heading:name, cards:set['cards'], setname: name ),
                           onDelete: () => showDeleteConfirmationDialog(
                             context: context,
@@ -126,16 +165,22 @@ class ReusableQuizSetList extends StatelessWidget {
                           },
                           onFavorate: () => quizProvider.toggleFavorite(set),
                           onViewAllCards: () => _navigateToSeeAllQuizCard(context, name, set,index,set['cards']),
-                          onShare: () {
-                            helper.exportList(context, set);
+                          onShare: ()  {
+
+
+                       //    await shareFile();
                           },
 
                           onExport: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) =>  ExportImportScreen()),
-                            );
+                            helper.exportList(context, set);
                           },
+                          onImport: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) =>  ExportImportScreen()),
+                          );
+
+                        },
                         ),
                       ),
                     ),

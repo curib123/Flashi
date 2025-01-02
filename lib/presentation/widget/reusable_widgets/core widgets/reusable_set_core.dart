@@ -11,7 +11,8 @@ class ReusableSetCore extends StatelessWidget {
   final VoidCallback onEdit; // Action for "Edit"
   final VoidCallback onFavorate; // Action for "Favorate"
   final VoidCallback onShare; // Action for "Share"
-  final VoidCallback onExport; // Action for "Export Set"
+  final VoidCallback onImport; // Action for "Share"
+  final VoidCallback onExport; // Action for "Share"
   final VoidCallback onViewAllCards; // Action for "View All Cards"
   final DateTime timestamp; // Added timestamp parameter
   final bool isFavorate;
@@ -31,6 +32,7 @@ class ReusableSetCore extends StatelessWidget {
     required this.timestamp,
     required this.isFavorate,
     required this.onShare,
+    required this.onImport,
     required this.onExport,
   });
 
@@ -146,8 +148,10 @@ class ReusableSetCore extends StatelessWidget {
                           onViewAllCards();
                         }else if(value == 'Share'){
                           onShare();
-                        }else if(value == 'Export/Import'){
+                        }else if(value == 'Export'){
                           onExport();
+                        }else if(value == 'Import/Export Page'){
+                          onImport();
                         }
                       },
                       itemBuilder: (BuildContext context) {
@@ -194,13 +198,23 @@ class ReusableSetCore extends StatelessWidget {
                               ],
                             ),
                           ), // Export Option
-                          PopupMenuItem<String>(
-                            value: 'Export/Import',
+
+                           PopupMenuItem<String>(
+                            value: 'Import/Export Page',
                             child: Row(
                               children: [
-                                Icon(Icons.import_export_rounded, color: colorScheme.primary),
+                                Icon(Icons.file_download_rounded, color: colorScheme.primary),
                                 const SizedBox(width: 5),
-                                Text('Export/Import Set', style: TextStyle(color: colorScheme.primary)),
+                                Text('Import/Export Page', style: TextStyle(color: colorScheme.primary)),
+                              ],
+                            ),
+                          ), PopupMenuItem<String>(
+                            value: 'Export',
+                            child: Row(
+                              children: [
+                                Icon(Icons.file_upload_rounded, color: colorScheme.primary),
+                                const SizedBox(width: 5),
+                                Text('Export Set', style: TextStyle(color: colorScheme.primary)),
                               ],
                             ),
                           ),
