@@ -36,7 +36,7 @@ class ReusableQuizSetList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    // final ImportExportHelperClass helper = ImportExportHelperClass();  // Helper instance for export/import
+     final ImportExportHelperClass helper = ImportExportHelperClass();  // Helper instance for export/import
 
     return Consumer<QuizProvider>(
       builder: (context, quizProvider, child) {
@@ -126,7 +126,9 @@ class ReusableQuizSetList extends StatelessWidget {
                           },
                           onFavorate: () => quizProvider.toggleFavorite(set),
                           onViewAllCards: () => _navigateToSeeAllQuizCard(context, name, set,index,set['cards']),
-                          onShare: () {},
+                          onShare: () {
+                            helper.exportList(context, set);
+                          },
 
                           onExport: () {
                             Navigator.push(

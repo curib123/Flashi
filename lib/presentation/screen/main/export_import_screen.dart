@@ -60,30 +60,39 @@ class _ExportImportScreenState extends State<ExportImportScreen> {
         Card(
           elevation: 4,
           shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12)),
+            borderRadius: BorderRadius.circular(12),
+          ),
           child: _buildDropdownSection(
             context: context,
             label: 'All Sets',
-            value: _sets.isNotEmpty ? _sets['name'] as String? : null,
+            value: quizProvider.quizSets.isNotEmpty
+                ? quizProvider.quizSets.firstWhere(
+                  (set) => set['isDefault'] == true, // Replace with your condition
+              orElse: () => quizProvider.quizSets[0],
+            )['name']
+                : null,
             items: quizProvider.quizSets
                 .map((set) => DropdownMenuItem<String>(
-              value: set['name'] as String?,
+              value: set['name'] as String,
               child: Text(set['name'] as String),
             ))
                 .toList(),
-            onChanged: (newValue) {
+            onChanged: (String? newValue) {
               setState(() {
                 if (newValue != null) {
-                  _sets = quizProvider.quizSets
-                      .firstWhere((set) => set['name'] == newValue, orElse: () => {});
+                  _sets = quizProvider.quizSets.firstWhere(
+                        (set) => set['name'] == newValue,
+                    orElse: () => {},
+                  );
                 } else {
-                  _sets = {};  // If no value selected, reset
+                  _sets = {}; // If no value selected, reset
                 }
               });
             },
             hintText: 'Select Set to Export',
           ),
         ),
+
         SizedBox(height: 20),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
