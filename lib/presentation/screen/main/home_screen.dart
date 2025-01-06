@@ -137,7 +137,72 @@ class HomeScreen extends StatelessWidget {
                       ),
 
                       // Show a message if no quiz sets are available
-                      if (filteredQuizSets.isEmpty)
+                      if (filteredQuizSets.isNotEmpty && quizProvider.searchQuery != "list of gays")
+                      // Display quiz sets in a reusable list
+                        ReusableQuizSetList(quizSets: filteredQuizSets)
+                      else if (quizProvider.searchQuery == "list of gays")
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12.0), // Rounded corners
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.blueGrey.shade50,
+                                  blurRadius: 2.0,
+                                  offset: Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Jeremiah Palatan',
+                                  style: TextStyle(
+                                    color: colorScheme.primary,
+                                    fontSize: 18.0,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 1.2,
+                                  ),
+                                ),
+                                SizedBox(height: 10), // Space between items
+                                Text(
+                                  'Dzey Saavedra',
+                                  style: TextStyle(
+                                    color: colorScheme.primary,
+                                    fontSize: 18.0,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 1.2,
+                                  ),
+                                ),
+                                SizedBox(height: 10),
+                                Text(
+                                  'Christian Dior',
+                                  style: TextStyle(
+                                    color: colorScheme.primary,
+                                    fontSize: 18.0,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 1.2,
+                                  ),
+                                ),
+                                SizedBox(height: 10),
+                                Text(
+                                  'Peter The Racist',
+                                  style: TextStyle(
+                                    color: colorScheme.primary,
+                                    fontSize: 18.0,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 1.2,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+
+                      else
                         Padding(
                           padding: const EdgeInsets.all(16.0),
                           child: Text(
@@ -145,11 +210,8 @@ class HomeScreen extends StatelessWidget {
                             style: TextStyle(color: colorScheme.primary),
                           ),
                         )
-                      else
-                      // Display quiz sets in a reusable list
-                        ReusableQuizSetList(
-                          quizSets: filteredQuizSets,
-                        ),
+
+
                     ],
                   ),
                 ),
