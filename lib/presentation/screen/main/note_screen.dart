@@ -30,7 +30,8 @@ class NoteScreen extends StatelessWidget {
         leading: GestureDetector(
           onTap: () => Scaffold.of(context).openDrawer(),
           child: Icon(
-            Icons.menu_rounded,
+            Icons.notes_rounded,
+            size: 30,
             color: colorScheme.onPrimary,
           ),
         ),
