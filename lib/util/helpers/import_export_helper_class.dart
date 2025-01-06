@@ -26,14 +26,12 @@ class ImportExportHelperClass {
         await rootDirectory.create(recursive: true);
       }
 
-      String fileName = '${sets['name'] ?? 'exported_list'}.json';
+      String fileName = '${sets['name'] ?? 'empty'}.json';
       final filePath = "${rootDirectory.path}/$fileName";
       final file = File(filePath);
 
-      // Convert to JSON with timestamp as String
-      String exportedJson = jsonEncode(_convertTimestampsToString(sets));
+      await file.writeAsString(jsonEncode(_convertTimestampsToString(sets)));
 
-      await file.writeAsString(exportedJson);
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -41,6 +39,8 @@ class ImportExportHelperClass {
           backgroundColor: Colors.green,
         ),
       );
+
+      _convertStringsToTimestamps(sets);
 
 
     } catch (e) {
@@ -54,10 +54,7 @@ class ImportExportHelperClass {
     }
   }
 
-  Future<void> backToTimeStamp(BuildContext context, Map<String, dynamic> sets) async {
-    Map<String, dynamic> newSets = _convertTimestamps(sets);
-    sets = newSets;
-  }
+
 
   Future<void> importList(BuildContext context, QuizProvider quizProvider) async {
     try {
@@ -140,6 +137,29 @@ class ImportExportHelperClass {
     return convertedData;
   }
 
+  Map<String, dynamic> _convertStringsToTimestamps(Map<String, dynamic> data) {
+    Map<String, dynamic> convertedData = Map<String, dynamic>.from(data);
+
+    // Convert top-level timestamp from String to DateTime
+    if (convertedData.containsKey('timestamp') &&
+        convertedData['timestamp'] is String) {
+      convertedData['timestamp'] = DateTime.parse(convertedData['timestamp']);
+    }
+
+    // Convert timestamps inside cards from String to DateTime
+    if (convertedData.containsKey('cards')) {
+      List<dynamic> cards = convertedData['cards'];
+      for (var card in cards) {
+        if (card.containsKey('timestamp') && card['timestamp'] is String) {
+          card['timestamp'] = DateTime.parse(card['timestamp']);
+        }
+      }
+    }
+
+    return convertedData;
+  }
+
+
   Map<String, dynamic> _convertTimestamps(Map<String, dynamic> data) {
     // Parse the top-level timestamp if it exists
     if (data.containsKey('timestamp')) {
@@ -158,4 +178,8 @@ class ImportExportHelperClass {
 
     return data;
   }
+
+
+
 }
+

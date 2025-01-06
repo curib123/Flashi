@@ -161,7 +161,7 @@ class _ExportImportScreenState extends State<ExportImportScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+          padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
           child: DropdownButton<String>(
             isExpanded: true,
             value: value,

@@ -144,7 +144,6 @@ class ReusableQuizSetList extends StatelessWidget {
                           timestamp: timestamp,
                           onTap: () => _navigateToQuizCards(context, name, set,index,set['cards']),
                           onAddCard: () async => {
-                            helper.backToTimeStamp(context, set),
                             _addCard(context, name, set,index,set['cards'])
                           },
                           onReview: () => showReviewSelection(context: context, heading:name, cards:set['cards'], setname: name ),
