@@ -112,6 +112,7 @@ class ThemeSelector extends StatelessWidget {
 
         // Section for selecting a font
         const Text("Select Font", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        const Text("Need Internet", style: TextStyle(fontSize: 10, fontWeight: FontWeight.normal)),
         const SizedBox(height: 16),
         DropdownButton<String>(
           value: themeProvider.currentFont ?? aestheticFonts.first['name'],
