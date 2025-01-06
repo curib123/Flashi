@@ -1,6 +1,7 @@
 import 'package:flashlearn/presentation/screen/main/export_import_screen.dart';
 import 'package:flashlearn/presentation/screen/main/settings_screen.dart';
 import 'package:flashlearn/provider/bottom_navigation_provider.dart';
+import 'package:flashlearn/util/helpers/wepage_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -19,6 +20,7 @@ class CustomDrawer extends StatelessWidget {
       required VoidCallback onTap,
     }) {
       return ListTile(
+        contentPadding: const EdgeInsets.symmetric(vertical: 7,horizontal: 15),
         leading: Icon(icon, color: colorScheme.primary),
         title: Text(title, style: textStyle),
         onTap: onTap,
@@ -30,23 +32,23 @@ class CustomDrawer extends StatelessWidget {
         padding: EdgeInsets.zero,
         children: [
           UserAccountsDrawerHeader(
-            accountName: const Text("not sign in"),
-            accountEmail: const Text("sign in first"),
+            accountName: const Text("Flash Learn"),
+            accountEmail: const Text("Memorize Anytime AnyWhere"),
             currentAccountPicture: CircleAvatar(
-              child: Icon(Icons.person, color: colorScheme.primary, size: 50),
+              backgroundColor: colorScheme.onTertiary,
+              child: Icon(Icons.quiz, color: colorScheme.primary, size: 50),
             ),
           ),
-          buildListTile(
-            icon: Icons.login,
-            title: 'Sign in',
-            onTap: () => Navigator.pop(context),
-          ),
-          buildListTile(
-            icon: Icons.diamond_rounded,
-            title: 'Upgrade to PRO',
-            onTap: () => Navigator.pop(context),
-          ),
-          const Divider(height: 1),
+          // buildListTile(
+          //   icon: Icons.login,
+          //   title: 'Sign in',
+          //   onTap: () => Navigator.pop(context),
+          // ),
+          // buildListTile(
+          //   icon: Icons.diamond_rounded,
+          //   title: 'Upgrade to PRO',
+          //   onTap: () => Navigator.pop(context),
+          // ),
           buildListTile(
             icon: Icons.home_rounded,
             title: 'Home',
@@ -96,29 +98,52 @@ class CustomDrawer extends StatelessWidget {
           ),
           buildListTile(
             icon: Icons.privacy_tip_rounded,
-            title: 'Privacy policy',
-            onTap: () => Navigator.pop(context),
+            title: 'Privacy Policy',
+            onTap: () => {
+              Navigator.pop(context),
+              // TODO: Navigate to privacy policy screen
+
+            WebPageLauncher('https://curib123.github.io/flashlearn.web/privacy_policy.html').launch()
+
+          },
+
+          ), buildListTile(
+            icon: Icons.privacy_tip_rounded,
+            title: 'Terms and Conditions',
+            onTap: () => {
+              Navigator.pop(context),
+              // TODO: Navigate to privacy policy screen
+
+            WebPageLauncher('https://curib123.github.io/flashlearn.web/terms%26condition.html').launch()
+
+          },
+
           ),
-          buildListTile(
-            icon: Icons.help_center,
-            title: 'Help',
-            onTap: () => Navigator.pop(context),
-          ),
-          buildListTile(
-            icon: Icons.share_rounded,
-            title: 'Share',
-            onTap: () => Navigator.pop(context),
-          ),
+          // buildListTile(
+          //   icon: Icons.help_center,
+          //   title: 'Help',
+          //   onTap: () => Navigator.pop(context),
+          // ),
+          // buildListTile(
+          //   icon: Icons.share_rounded,
+          //   title: 'Share',
+          //   onTap: () => Navigator.pop(context),
+          // ),
           buildListTile(
             icon: Icons.contact_mail,
             title: 'Contact us',
-            onTap: () => Navigator.pop(context),
+            onTap: () =>
+            {
+              Navigator.pop(context),
+              // TODO: Navigate to contact us screen},
+              WebPageLauncher('').launchEmail()
+            }
           ),
-          buildListTile(
-            icon: Icons.info_rounded,
-            title: 'About us',
-            onTap: () => Navigator.pop(context),
-          ),
+          // buildListTile(
+          //   icon: Icons.info_rounded,
+          //   title: 'About us',
+          //   onTap: () => Navigator.pop(context),
+          // ),
         ],
       ),
     );

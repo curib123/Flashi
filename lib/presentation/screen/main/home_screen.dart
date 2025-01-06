@@ -1,3 +1,4 @@
+import 'package:flashlearn/presentation/screen/main/settings_screen.dart';
 import 'package:flashlearn/presentation/widget/components/see_all_quiz_set_list.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_search_bar_core.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_create_set_button_position.dart';
@@ -50,14 +51,23 @@ class HomeScreen extends StatelessWidget {
                 leading: GestureDetector(
                   onTap: () => Scaffold.of(context).openDrawer(),
                   child: Icon(
-                    Icons.menu_rounded,
+                    Icons.notes_rounded,
+                    size: 30,
                     color: colorScheme.onPrimary,
                   ),
                 ),
                 pinned: true, // Keeps the header visible when scrolling
                 floating: false, // Header doesn't float when scrolling
                 expandedHeight: 200, // Height of the expanded header
-                title:  ReusableTitleContent(colorScheme: colorScheme, title: "FlashLearn", onUpgradePro: () {}, onTapProfile: () {Scaffold.of(context).openDrawer();}),
+                title:  ReusableTitleContent(colorScheme: colorScheme, title: "FlashLearn", onUpgradePro: () {},
+                    onSettings: () {
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const SettingsScreen()),
+                      );
+
+                    }),
                 flexibleSpace: FlexibleSpaceBar(
                   background: Container(
                     margin: const EdgeInsets.all(10),

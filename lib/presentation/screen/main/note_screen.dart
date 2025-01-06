@@ -1,4 +1,5 @@
 
+import 'package:flashlearn/presentation/screen/main/settings_screen.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_notes_summary_block_core.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_notes_summary_tile_core.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_search_bar_core.dart';
@@ -42,7 +43,15 @@ class NoteScreen extends StatelessWidget {
         ),
         backgroundColor: colorScheme.primary,
         foregroundColor: colorScheme.onPrimary,
-        title:  ReusableTitleContent(colorScheme: colorScheme, title: "Notes", onUpgradePro: () {}, onTapProfile: () {Scaffold.of(context).openDrawer();}),
+        title:  ReusableTitleContent(colorScheme: colorScheme, title: "Notes", onUpgradePro: () {},
+            onSettings: () {
+
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsScreen()),
+              );
+
+            }),
         centerTitle: false,
       ),
       body: Stack(

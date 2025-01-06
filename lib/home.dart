@@ -1,21 +1,28 @@
+import 'package:flashlearn/presentation/screen/onboarding%20screen/onboarding_screen.dart';
 import 'package:flashlearn/presentation/widget/components/custom_drawer.dart';
 import 'package:flashlearn/presentation/widget/components/custom_navigation_bar.dart';
 import 'package:flashlearn/provider/bottom_navigation_provider.dart';
+import 'package:flashlearn/provider/onboarding_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 
 class Home extends StatelessWidget {
   const Home({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<BottomNavigationProvider>(
-      builder: (context,bottomNavigationProvider,child) {
+    return Consumer2<BottomNavigationProvider, OnboardingProvider>(
+      builder: (context, bottomNavigationProvider, onboardingProvider, child) {
         return Scaffold(
-          body: bottomNavigationProvider.getScreen(),
-          drawer: const CustomDrawer(),
-          bottomNavigationBar: CustomNavigationBar(
+          body: onboardingProvider.isFirstTime
+              ? OnboardingScreen()
+              : bottomNavigationProvider.getScreen(),
+          drawer: onboardingProvider.isFirstTime
+              ? null
+              : const CustomDrawer(),
+          bottomNavigationBar: onboardingProvider.isFirstTime
+              ? null
+              : CustomNavigationBar(
             currentIndex: bottomNavigationProvider.currentIndex,
             onTap: (index) {
               bottomNavigationProvider.toogleNavigation(index);
@@ -23,7 +30,6 @@ class Home extends StatelessWidget {
           ),
         );
       },
-
     );
   }
 }

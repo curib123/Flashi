@@ -1,4 +1,5 @@
 import 'package:flashlearn/presentation/screen/main/export_import_screen.dart';
+import 'package:flashlearn/presentation/screen/main/settings_screen.dart';
 import 'package:flashlearn/presentation/widget/components/see_all_quiz_card.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_set_core.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
@@ -42,7 +43,13 @@ class FavoriteScreen extends StatelessWidget {
         ),
         backgroundColor: colorScheme.primary,
         foregroundColor: colorScheme.onPrimary,
-        title:  ReusableTitleContent(colorScheme: colorScheme, title: "Favorites", onUpgradePro: () {}, onTapProfile: () {Scaffold.of(context).openDrawer();}),
+        title:  ReusableTitleContent(colorScheme: colorScheme, title: "Favorites", onUpgradePro: () {}, onSettings: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const SettingsScreen()),
+          );
+
+        }),
         centerTitle: false,
       ),
       body:  Stack(

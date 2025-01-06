@@ -48,6 +48,8 @@ dependencies:
   elegant_notification: ^2.4.1
   file_picker: ^8.1.7
   permission_handler: ^11.3.1
+  introduction_screen: ^3.1.14
+  url_launcher: ^6.3.1
 
 dev_dependencies:
   flutter_test:
