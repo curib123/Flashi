@@ -132,6 +132,7 @@ class ReusableSetCore extends StatelessWidget {
                   Align(
                     alignment: Alignment.topRight,
                     child: PopupMenuButton<String>(
+                      padding: EdgeInsets.all(3),
                       elevation: 15,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                       shadowColor: colorScheme.primary,
@@ -161,7 +162,7 @@ class ReusableSetCore extends StatelessWidget {
                             child: Row(
                               children: [
                                 isFavorate ?  Icon(Icons.favorite, color: colorScheme.error) :  Icon(Icons.favorite_outline, color: colorScheme.error),
-                                const SizedBox(width: 5),
+                                const SizedBox(width: 1),
                                 Text('Favorate', style: TextStyle(color: colorScheme.primary)),
                               ],
                             ),
@@ -171,7 +172,7 @@ class ReusableSetCore extends StatelessWidget {
                             child: Row(
                               children: [
                                 Icon(Icons.edit, color: colorScheme.primary),
-                                const SizedBox(width: 5),
+                                const SizedBox(width: 1),
                                 Text('Edit', style: TextStyle(color: colorScheme.primary)),
                               ],
                             ),
@@ -182,7 +183,7 @@ class ReusableSetCore extends StatelessWidget {
                             child: Row(
                               children: [
                                 Icon(Icons.add_card, color: colorScheme.primary),
-                                const SizedBox(width: 5),
+                                const SizedBox(width: 1),
                                 Text('View All Cards', style: TextStyle(color: colorScheme.primary)),
                               ],
                             ),
@@ -193,7 +194,7 @@ class ReusableSetCore extends StatelessWidget {
                             child: Row(
                               children: [
                                 Icon(Icons.share, color: colorScheme.primary),
-                                const SizedBox(width: 5),
+                                const SizedBox(width: 1),
                                 Text('Share Set', style: TextStyle(color: colorScheme.primary)),
                               ],
                             ),
@@ -204,8 +205,8 @@ class ReusableSetCore extends StatelessWidget {
                             child: Row(
                               children: [
                                 Icon(Icons.file_download_rounded, color: colorScheme.primary),
-                                const SizedBox(width: 5),
-                                Text('Import/Export Page', style: TextStyle(color: colorScheme.primary)),
+                                const SizedBox(width: 1),
+                                Text('Import Set from folder', style: TextStyle(color: colorScheme.primary,fontSize: 13)),
                               ],
                             ),
                           ), PopupMenuItem<String>(
@@ -213,8 +214,9 @@ class ReusableSetCore extends StatelessWidget {
                             child: Row(
                               children: [
                                 Icon(Icons.file_upload_rounded, color: colorScheme.primary),
-                                const SizedBox(width: 5),
-                                Text('Export Set', style: TextStyle(color: colorScheme.primary)),
+                                const SizedBox(width: 1),
+                                Text('Export Set / '
+                                    'Save in Folder', style: TextStyle(color: colorScheme.primary,fontSize: 13)),
                               ],
                             ),
                           ),
@@ -224,7 +226,7 @@ class ReusableSetCore extends StatelessWidget {
                             child: Row(
                               children: [
                                 Icon(Icons.delete, color: colorScheme.error),
-                                const SizedBox(width: 5),
+                                const SizedBox(width: 1),
                                 Text('Delete', style: TextStyle(color: colorScheme.error)),
                               ],
                             ),
