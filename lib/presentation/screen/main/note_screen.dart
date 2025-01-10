@@ -10,6 +10,7 @@ import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_title_c
 import 'package:flashlearn/provider/notes_provider.dart';
 import 'package:flashlearn/presentation/widget/components/create_note_screen.dart';
 import 'package:flashlearn/provider/sort_provider.dart';
+import 'package:flashlearn/util/helpers/ads/ads_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -24,6 +25,8 @@ class NoteScreen extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final notesProvider = Provider.of<NotesProvider>(context);
     final sortProvider = Provider.of<SortProvider>(context);
+
+    final AdManager adManager = AdManager();
 
     return Scaffold(
       appBar: AppBar(
@@ -60,7 +63,7 @@ class NoteScreen extends StatelessWidget {
           sortProvider.dropdownValueNote == 'Tiles' ? _NoteBodyTile(colorScheme) : _NoteBodyBlock(colorScheme),
           Container(
             color: colorScheme.onPrimary,
-            height: 130,
+            height: 180,
             child: Column(
               children: [
                 ReusableSearchBarCore(
@@ -80,6 +83,9 @@ class NoteScreen extends StatelessWidget {
                     isShowReviewLink: false,
                     onShowReviewLink: () {}
                 ),
+                const SizedBox(height:5),
+                adManager.getSecondBannerAdWidget(),
+                const SizedBox(height:5),
               ],
             ),
           ),
@@ -117,7 +123,7 @@ Widget _NoteBodyTile(ColorScheme colorScheme) {
         height: MediaQuery.of(context).size.height,
           child: Center(child: Text('No Notes'),)) : AnimationLimiter(
         child: ListView.builder(
-          padding: const EdgeInsets.symmetric(vertical: 130, horizontal: 15),
+          padding: const EdgeInsets.symmetric(vertical: 180, horizontal: 15),
           itemCount: filteredNotes.length,
           itemBuilder: (context, index) {
             var note = filteredNotes[index];
@@ -234,7 +240,7 @@ Widget _NoteBodyBlock(ColorScheme colorScheme) {
           height: MediaQuery.of(context).size.height,
           child: Center(child: Text('No Notes'),)) : AnimationLimiter(
         child: GridView.builder(
-          padding: const EdgeInsets.symmetric(vertical: 130, horizontal: 15),
+          padding: const EdgeInsets.symmetric(vertical: 180, horizontal: 15),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: MediaQuery.of(context).size.width > 600 ? 3 : 2, // Adjust columns based on screen width
             crossAxisSpacing: 10,

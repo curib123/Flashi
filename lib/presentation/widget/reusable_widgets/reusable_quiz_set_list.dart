@@ -19,6 +19,11 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 class ReusableQuizSetList extends StatelessWidget {
   final List<Map<String, dynamic>> quizSets;
 
+  const ReusableQuizSetList({
+    super.key,
+    required this.quizSets,
+  });
+
   Future<void> requestPermissions() async {
     if (!await Permission.storage.isGranted) {
       await Permission.storage.request();
@@ -28,47 +33,6 @@ class ReusableQuizSetList extends StatelessWidget {
     }
   }
 
-
-  // Future<void> shareFile() async {
-  //   // Specify the initial directory you want to open
-  //   String initialDirectory = '/storage/emulated/0/FlashLearn/Export/Sets';
-  //
-  //   // Use FilePicker to select a .json file
-  //   FilePickerResult? result = await FilePicker.platform.pickFiles(
-  //     initialDirectory: initialDirectory,
-  //     type: FileType.custom,  // Custom file type
-  //     allowedExtensions: ['json'],  // Restrict to JSON files
-  //   );
-  //
-  //   // Check if no file was selected
-  //   if (result == null || result.files.isEmpty) return;
-  //
-  //   // Get the path of the selected file
-  //   String? filePath = result.files.single.path;
-  //
-  //   // Ensure filePath is not null
-  //   if (filePath == null) return;
-  //
-  //   // Try sharing the file using Share
-  //   try {
-  //     // Share the file using Share.shareXFiles
-  //     final shareResult = await Share.shareXFiles([XFile(filePath)], text: 'Check out this JSON file!');
-  //
-  //     if (shareResult.status == ShareResultStatus.success) {
-  //       print('File shared successfully!');
-  //     } else {
-  //       print('File sharing failed');
-  //     }
-  //   } catch (e) {
-  //     print('Error sharing file: $e');
-  //   }
-  // }
-
-  const ReusableQuizSetList({
-    super.key,
-    required this.quizSets,
-  });
-
   @override
   Widget build(BuildContext context) {
 
@@ -76,51 +40,90 @@ class ReusableQuizSetList extends StatelessWidget {
 
     return Consumer<QuizProvider>(
       builder: (context, quizProvider, child) {
-        return AnimationLimiter(
-          // Adds staggered animations to the quiz set list
-          child: Column(
-            children: List.generate(
-              quizSets.length,
-                  (index) {
-                final set = quizSets[index];
+        return Column(
+          children: [
+            AnimationLimiter(
+              // Adds staggered animations to the quiz set list
+              child: Column(
+                children: List.generate(
+                  quizSets.length,
+                      (index) {
+                    final set = quizSets[index];
 
-                // Extract quiz set details with fallbacks for null values
-                final String name = set['name'] ?? 'Unnamed Set';
-                final String description = set['description'] ?? '';
-                final List cards = set['cards'] ?? [];
-                final bool favorite = set['favorite'] ?? false;
-                final DateTime timestamp = set['timestamp'] ?? DateTime.now();
+                    // Extract quiz set details with fallbacks for null values
+                    final String name = set['name'] ?? 'Unnamed Set';
+                    final String description = set['description'] ?? '';
+                    final List cards = set['cards'] ?? [];
+                    final bool favorite = set['favorite'] ?? false;
+                    final DateTime timestamp = set['timestamp'] ?? DateTime.now();
 
-                return AnimationConfiguration.staggeredList(
-                  position: index,
-                  duration: const Duration(seconds: 3),
-                  child: SlideAnimation(
-                    curve: Curves.easeInOutCubicEmphasized,
-                    verticalOffset: 100.0,
-                    child: FadeInAnimation(
-                      child: Slidable(
-                        // Left swipe for delete action
-                        startActionPane: ActionPane(
-                          motion: const DrawerMotion(),
-                          children: [
-                            SlidableAction(
-                              onPressed: (_) => showDeleteConfirmationDialog(
+                    return AnimationConfiguration.staggeredList(
+                      position: index,
+                      duration: const Duration(seconds: 3),
+                      child: SlideAnimation(
+                        curve: Curves.easeInOutCubicEmphasized,
+                        verticalOffset: 100.0,
+                        child: FadeInAnimation(
+                          child: Slidable(
+                            // Left swipe for delete action
+                            startActionPane: ActionPane(
+                              motion: const DrawerMotion(),
+                              children: [
+                                SlidableAction(
+                                  onPressed: (_) => showDeleteConfirmationDialog(
+                                    context: context,
+                                    setName: name,
+                                    onDelete: () => quizProvider.removeQuizSet(set),
+                                  ),
+                                  foregroundColor: Theme.of(context).colorScheme.error,
+                                  icon: Icons.delete,
+                                  label: 'Delete',
+                                ),
+                              ],
+                            ),
+                            // Right swipe for edit action
+                            endActionPane: ActionPane(
+                              motion: const DrawerMotion(),
+                              children: [
+                                SlidableAction(
+                                  onPressed: (_) {
+                                    quizProvider.nameController.text = name;
+                                    quizProvider.descriptionController.text = description;
+                                    CreateSetBottomModal(
+                                      context: context,
+                                      buttonName: 'Edit',
+                                      isCreate: false,
+                                      setName: name,
+                                    );
+                                  },
+                                  foregroundColor: Theme.of(context).colorScheme.tertiary,
+                                  icon: Icons.edit,
+                                  label: 'Edit',
+                                ),
+                              ],
+                            ),
+                            child: ReusableSetCore(
+                              name: name,
+                              description: description,
+                              numberOfQuiz: cards.length,
+                              isFavorate: favorite,
+                              timestamp: timestamp,
+                              onTap: () => {
+                                _navigateToQuizCards(
+                                    context, name, set, index, set['cards']),
+                                quizProvider.updateCurrentQuizSetNameToSetLimit(name),
+                              },
+                              onAddCard: () async => {
+                                _addCard(context, name, set,index,set['cards']),
+                                quizProvider.updateCurrentQuizSetNameToSetLimit(name),
+                              },
+                              onReview: () => showReviewSelection(context: context, heading:name, cards:set['cards'], setname: name ),
+                              onDelete: () => showDeleteConfirmationDialog(
                                 context: context,
                                 setName: name,
                                 onDelete: () => quizProvider.removeQuizSet(set),
                               ),
-                              foregroundColor: Theme.of(context).colorScheme.error,
-                              icon: Icons.delete,
-                              label: 'Delete',
-                            ),
-                          ],
-                        ),
-                        // Right swipe for edit action
-                        endActionPane: ActionPane(
-                          motion: const DrawerMotion(),
-                          children: [
-                            SlidableAction(
-                              onPressed: (_) {
+                              onEdit: () {
                                 quizProvider.nameController.text = name;
                                 quizProvider.descriptionController.text = description;
                                 CreateSetBottomModal(
@@ -130,64 +133,38 @@ class ReusableQuizSetList extends StatelessWidget {
                                   setName: name,
                                 );
                               },
-                              foregroundColor: Theme.of(context).colorScheme.tertiary,
-                              icon: Icons.edit,
-                              label: 'Edit',
+                              onFavorate: () => quizProvider.toggleFavorite(set),
+                              onViewAllCards: () => {
+                                _navigateToSeeAllQuizCard(
+                                    context, name, set, index, set['cards']),
+                                quizProvider.updateCurrentQuizSetNameToSetLimit(name),
+                              },
+                              onShare: ()  {
+
+
+                           //    await shareFile();
+                              },
+
+                              onExport: () {
+                                helper.exportList(context, set);
+                              },
+                              onImport: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) =>  ExportImportScreen()),
+                              );
+
+                            },
                             ),
-                          ],
-                        ),
-                        child: ReusableSetCore(
-                          name: name,
-                          description: description,
-                          numberOfQuiz: cards.length,
-                          isFavorate: favorite,
-                          timestamp: timestamp,
-                          onTap: () => _navigateToQuizCards(context, name, set,index,set['cards']),
-                          onAddCard: () async => {
-                            _addCard(context, name, set,index,set['cards'])
-                          },
-                          onReview: () => showReviewSelection(context: context, heading:name, cards:set['cards'], setname: name ),
-                          onDelete: () => showDeleteConfirmationDialog(
-                            context: context,
-                            setName: name,
-                            onDelete: () => quizProvider.removeQuizSet(set),
                           ),
-                          onEdit: () {
-                            quizProvider.nameController.text = name;
-                            quizProvider.descriptionController.text = description;
-                            CreateSetBottomModal(
-                              context: context,
-                              buttonName: 'Edit',
-                              isCreate: false,
-                              setName: name,
-                            );
-                          },
-                          onFavorate: () => quizProvider.toggleFavorite(set),
-                          onViewAllCards: () => _navigateToSeeAllQuizCard(context, name, set,index,set['cards']),
-                          onShare: ()  {
-
-
-                       //    await shareFile();
-                          },
-
-                          onExport: () {
-                            helper.exportList(context, set);
-                          },
-                          onImport: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) =>  ExportImportScreen()),
-                          );
-
-                        },
                         ),
                       ),
-                    ),
-                  ),
-                );
-              },
+                    );
+                  },
+                ),
+              ),
             ),
-          ),
+          ],
         );
       },
     );

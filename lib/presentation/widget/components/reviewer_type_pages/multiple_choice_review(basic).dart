@@ -1,4 +1,6 @@
 import 'dart:math';
+import 'package:flashlearn/util/helpers/ads/ad_unit_id.dart';
+import 'package:flashlearn/util/helpers/ads/ads_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reviewer_widgets_core/multiple_choice_core.dart';
 
@@ -73,9 +75,10 @@ class _MultipleChoiceReviewState extends State<MultipleChoiceReviewBasic> {
   }
 
 
-  void showCongratulationDialog() {
+  void showCongratulationDialog() async {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    AdManager adManager  = AdManager();
 
     showDialog(
       context: context,
@@ -128,6 +131,11 @@ class _MultipleChoiceReviewState extends State<MultipleChoiceReviewBasic> {
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               ),
               onPressed: () {
+                adManager.showInterstitialAd();
+                Future.delayed(Duration(minutes: 10), () {
+                  // Code to execute after the delay
+                  adManager.loadInterstitialAd(AdUnitIds.interstitialAdUnitId);
+                });
                 Navigator.pop(context); // Close the dialog
                 Navigator.pop(context); // Go back to the previous screen
               },
@@ -143,6 +151,12 @@ class _MultipleChoiceReviewState extends State<MultipleChoiceReviewBasic> {
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               ),
               onPressed: () {
+                adManager.showInterstitialAd();
+                Future.delayed(Duration(minutes: 5), () {
+                  // Code to execute after the delay
+                  adManager.loadInterstitialAd(AdUnitIds.interstitialAdUnitId);
+                });
+
                 Navigator.pop(context); // Close the dialog
                 restartQuiz(); // Restart the quiz
               },

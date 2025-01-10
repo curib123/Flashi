@@ -1,9 +1,11 @@
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_create_set_button_position.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_quiz_card_list.dart';
+import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_rewarded_ads_button_position.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_sort_and_see_all.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
 import 'package:flashlearn/provider/quiz_provider.dart';
 import 'package:flashlearn/provider/sort_provider.dart';
+import 'package:flashlearn/util/helpers/ads/ads_manager.dart';
 import 'package:flashlearn/util/helpers/alert_box/delete_confirmation_alert_box.dart';
 import 'package:flashlearn/util/helpers/alert_box/review_selection_alert_box.dart';
 import 'package:flashlearn/util/helpers/modal/create_card_bottom_modal.dart';
@@ -31,6 +33,8 @@ class SeeAllQuizCard extends StatelessWidget {
     // Access both providers directly
     final quizProvider = Provider.of<QuizProvider>(context);
 
+
+
     return Scaffold(
       appBar: AppBar(
         foregroundColor: colorScheme.onPrimary, // For text and icons color
@@ -49,6 +53,7 @@ class SeeAllQuizCard extends StatelessWidget {
             color: colorScheme.onPrimary, // Custom color for the icon
           ),
           onPressed: () {
+
             Navigator.pop(context); // Go back to the previous screen
             quizProvider.searchController.text = quizProvider.searchQuery;
             print(quizProvider.searchQuery);
@@ -60,6 +65,8 @@ class SeeAllQuizCard extends StatelessWidget {
   }
 
   Widget _body(BuildContext context) {
+    final AdManager adManager = AdManager();
+
     return Consumer2<QuizProvider, SortProvider>(
       builder: (context, quizProvider, sortProvider, child) {
         return Stack(
@@ -129,8 +136,14 @@ class SeeAllQuizCard extends StatelessWidget {
                 ),
               ],
             ),
+
+           Positioned(
+             bottom: 60,
+               left: 0,
+               right: 0,
+               child: Center(child: Text('${ card['limitNumberOfQuiz'] - quizProvider.getNumberOfCardsInSet(name) } slot free out of ${card['limitNumberOfQuiz']}')),),
             // Create Button Position
-            ReusableCreateSetButtonPosition(
+            card['limitNumberOfQuiz'] - quizProvider.getNumberOfCardsInSet(name) != 0 ? ReusableCreateSetButtonPosition(
               colorScheme: colorScheme,
               name: 'Create Card',
               onTap: () {
@@ -142,7 +155,7 @@ class SeeAllQuizCard extends StatelessWidget {
                     card: card,
                     name: name );
               },
-            ),
+            ) : ReusableRewardedAdsButtonPosition(colorScheme: colorScheme, name: "Watch an ad to get 3 free slot!", onTap: () => adManager.showRewarded(context)),
             ReusableThemeSettingPosition(
                 colorScheme: colorScheme
             ),

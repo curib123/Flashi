@@ -5,6 +5,7 @@ import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_sort_an
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
 import 'package:flashlearn/provider/quiz_provider.dart';
 import 'package:flashlearn/provider/sort_provider.dart';
+import 'package:flashlearn/util/helpers/ads/ads_manager.dart';
 import 'package:flashlearn/util/helpers/modal/create_set_bottom_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -24,6 +25,8 @@ class SeeAllQuizSetList extends StatelessWidget {
 
     // Access both providers directly
     final quizProvider = Provider.of<QuizProvider>(context);
+    final AdManager adManager = AdManager();
+
 
     return Scaffold(
       appBar: AppBar(
@@ -43,6 +46,7 @@ class SeeAllQuizSetList extends StatelessWidget {
             color: colorScheme.onPrimary, // Custom color for the icon
           ),
           onPressed: () {
+
             Navigator.pop(context); // Go back to the previous screen
             quizProvider.searchController.text = quizProvider.searchQuery;
             print(quizProvider.searchQuery);

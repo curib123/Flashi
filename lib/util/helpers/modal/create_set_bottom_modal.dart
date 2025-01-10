@@ -82,6 +82,7 @@ void CreateSetBottomModal({
                             'description': description,
                             'cards': [],
                             'numberOfQuiz': 0,
+                            'limitNumberOfQuiz': quizProvider.defaultMaxCards,
                           });
                           showCustomSnackbar(context: context, message: 'The Set $name is Created');
                         } else {

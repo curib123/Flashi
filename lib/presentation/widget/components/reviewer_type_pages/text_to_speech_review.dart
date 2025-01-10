@@ -1,3 +1,5 @@
+import 'package:flashlearn/util/helpers/ads/ad_unit_id.dart';
+import 'package:flashlearn/util/helpers/ads/ads_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reviewer_widgets_core/text_to_speech_card_core.dart';
@@ -82,6 +84,12 @@ class _TextToSpeechReviewState extends State<TextToSpeechReview> {
         ),
       );
     }
+
+    AdManager adManager  = AdManager();
+    Future.delayed(Duration(minutes: 10), () {
+      // Code to execute after the delay
+      adManager.loadInterstitialAd(AdUnitIds.interstitialAdUnitId);
+    });
 
     return Column(
       children: [

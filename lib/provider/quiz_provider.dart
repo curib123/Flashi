@@ -14,6 +14,12 @@ class QuizProvider with ChangeNotifier {
   String _searchQuery = ""; // Variable to store the search query
   String newValueCard = ""; // sort of cards
   String setValue = ""; // sort of cards
+  int _defaultMaxCards = 5;
+  String _currentQuizSetNameToSetLimit = '';
+
+
+  int get defaultMaxCards => _defaultMaxCards;
+  String get currentQuizSetNameToSetLimit => _currentQuizSetNameToSetLimit;
 
   QuizProvider({required String criterionSet,required String criterionCard }){
     loadQuizSets();
@@ -53,6 +59,7 @@ class QuizProvider with ChangeNotifier {
           }
         ],
         'numberOfQuiz': 3,
+        'limitNumberOfQuiz': 20,
       },
       {
         'name': "Travel Destinations (Template)",
@@ -82,6 +89,7 @@ class QuizProvider with ChangeNotifier {
           }
         ],
         'numberOfQuiz': 3,
+        'limitNumberOfQuiz': 20,
       },
       {
         'name': "General Knowledge (Template)",
@@ -111,6 +119,7 @@ class QuizProvider with ChangeNotifier {
           }
         ],
         'numberOfQuiz': 3,
+        'limitNumberOfQuiz': 20,
       }
     ];
 
@@ -246,6 +255,30 @@ class QuizProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void updateCurrentQuizSetNameToSetLimit(String newCurrentQuizSetNameToSetLimit){
+    _currentQuizSetNameToSetLimit = newCurrentQuizSetNameToSetLimit;
+    notifyListeners();
+  }
+
+// Update the limitNumberOfQuiz by adding 1 to the previous value for a specific quiz set
+  void updateQuizSetLimit() {
+    // Fetch the quiz set using the provided quiz set name
+    Map<String, dynamic>? quizSet = searchQuizSet(quizSetName: _currentQuizSetNameToSetLimit);
+
+    // Check if the quiz set exists
+    if (quizSet != null) {
+      // Fetch the current limit and increment it by 1
+      int currentLimit = quizSet['limitNumberOfQuiz'] ?? 0;  // Default to 0 if limitNumberOfQuiz doesn't exist
+      quizSet['limitNumberOfQuiz'] = currentLimit + 3;
+
+      // Save changes and notify listeners
+      saveQuizSets();
+      notifyListeners();
+    }
+  }
+
+
+
   // Get the number of cards in a specific quiz set
   int getNumberOfCardsInSet(String quizSetName) {
     Map<String, dynamic>? quizSet = searchQuizSet(quizSetName:quizSetName);
@@ -281,9 +314,22 @@ class QuizProvider with ChangeNotifier {
   bool addCardToQuizSet({required String quizSetName, required Map<String, dynamic> card}) {
     Map<String, dynamic>? quizSet = searchQuizSet(quizSetName: quizSetName);
     if (quizSet != null) {
+      // Initialize the 'cards' list if it doesn't exist
       if (quizSet['cards'] == null) {
-        quizSet['cards'] = []; // Initialize the 'cards' list if it doesn't exist
+        quizSet['cards'] = [];
       }
+
+      // Check if the number of cards exceeds the limit
+      int limitNumberOfQuiz = quizSet['limitNumberOfQuiz'] ?? 0;
+      int currentNumberOfCards = quizSet['cards']?.length ?? 0;
+
+      if (limitNumberOfQuiz > 0 && currentNumberOfCards >= limitNumberOfQuiz) {
+        debugPrint(
+            'Cannot add more cards. Limit of $limitNumberOfQuiz cards reached for $quizSetName.');
+        return false; // Reject the addition if the limit is reached
+      }
+
+      // Add the card
       quizSet['cards']?.add(card);
       quizSet['numberOfQuiz'] = (quizSet['cards']?.length ?? 0);
       saveQuizSets();
@@ -292,6 +338,7 @@ class QuizProvider with ChangeNotifier {
     }
     return false;
   }
+
 
   // Remove a card from a specific quiz set by its question
   bool removeCardFromQuizSet({required String quizSetName, required String question}) {

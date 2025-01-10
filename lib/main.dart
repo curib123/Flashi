@@ -8,6 +8,7 @@ import 'package:flashlearn/provider/reviewer_settings_provider.dart';
 import 'package:flashlearn/provider/sort_provider.dart';
 import 'package:flashlearn/provider/theme_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -15,7 +16,7 @@ Future<void> main() async {
 
 
   WidgetsFlutterBinding.ensureInitialized();
-
+  MobileAds.instance.initialize();
 
   await Hive.initFlutter(); // Initialize Hive
 // Open different boxes for various settings or data
@@ -25,8 +26,7 @@ Future<void> main() async {
   await Hive.openBox('quiz'); // Box for quiz data
   await Hive.openBox('notes'); // Box for storing notes
   await Hive.openBox('onboarding'); // Box for storing onboarding
-
-
+  await Hive.openBox('timerBox'); // Box for storing onboarding
 
   runApp(
     MultiProvider(
@@ -50,8 +50,16 @@ Future<void> main() async {
 }
 
 
-class RocketLearn extends StatelessWidget {
+class RocketLearn extends StatefulWidget {
   const RocketLearn({super.key});
+
+  @override
+  State<RocketLearn> createState() => _RocketLearnState();
+}
+
+class _RocketLearnState extends State<RocketLearn> {
+
+
 
   @override
   Widget build(BuildContext context) {

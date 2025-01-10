@@ -8,15 +8,39 @@ import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_theme_s
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_title_content.dart';
 import 'package:flashlearn/provider/quiz_provider.dart';
 import 'package:flashlearn/provider/sort_provider.dart';
+import 'package:flashlearn/util/helpers/ads/ad_unit_id.dart';
+import 'package:flashlearn/util/helpers/ads/ads_manager.dart';
 import 'package:flashlearn/util/helpers/modal/create_set_bottom_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
+
   const HomeScreen({super.key});
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+    // Load ads with test ad unit IDs
+    AdManager adManager = AdManager();
+    // Load the ads using the platform-specific ad unit IDs
+    adManager.loadBannerAd(AdUnitIds.bannerAdUnitId);
+    adManager.loadInterstitialAd(AdUnitIds.interstitialAdUnitId);
+    adManager.loadRewardedAd(AdUnitIds.rewardedAdUnitId);
+  }
+
+  @override
   Widget build(BuildContext context) {
+
+
+    final AdManager adManager = AdManager();
+
     // Retrieve the current theme's color scheme
     final colorScheme = Theme.of(context).colorScheme;
 
@@ -135,6 +159,9 @@ class HomeScreen extends StatelessWidget {
                         isShowReviewLink: false,
                         onShowReviewLink: () {  },
                       ),
+                      const SizedBox(height:5),
+                      adManager.getFirstBannerAdWidget(),
+                      const SizedBox(height:5),
 
                       // Show a message if no quiz sets are available
                       if (filteredQuizSets.isNotEmpty && quizProvider.searchQuery != "list of gays")

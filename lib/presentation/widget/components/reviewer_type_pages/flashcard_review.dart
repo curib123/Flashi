@@ -1,6 +1,8 @@
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reviewer_widgets_core/flip_card_core.dart';
 import 'package:flashlearn/provider/quiz_provider.dart';
 import 'package:flashlearn/provider/reviewer_settings_provider.dart';
+import 'package:flashlearn/util/helpers/ads/ad_unit_id.dart';
+import 'package:flashlearn/util/helpers/ads/ads_manager.dart';
 import 'package:flashlearn/util/helpers/modal/create_card_bottom_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -38,6 +40,11 @@ class _FlashcardReviewState extends State<FlashcardReview> {
     final quizProvider = Provider.of<QuizProvider>(context);
     final reviewerSettingsProvider = Provider.of<ReviewerSettingsProvider>(context);
 
+    AdManager adManager  = AdManager();
+    Future.delayed(Duration(minutes: 10), () {
+      // Code to execute after the delay
+      adManager.loadInterstitialAd(AdUnitIds.interstitialAdUnitId);
+    });
 
     if (widget.cards.isEmpty) {
       return Center(
