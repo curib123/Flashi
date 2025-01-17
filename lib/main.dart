@@ -5,6 +5,7 @@ import 'package:flashlearn/provider/notes_provider.dart';
 import 'package:flashlearn/provider/onboarding_provider.dart';
 import 'package:flashlearn/provider/quiz_provider.dart';
 import 'package:flashlearn/provider/reviewer_settings_provider.dart';
+import 'package:flashlearn/provider/save_info_ads_provider.dart';
 import 'package:flashlearn/provider/sort_provider.dart';
 import 'package:flashlearn/provider/theme_provider.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +37,8 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => SortProvider()), // Add SortProvider
         ChangeNotifierProvider(create: (_) => ReviewerSettingsProvider()), // Add SortProvider
         ChangeNotifierProvider(create: (_) => NotesProvider()), // Add SortProvider
-        ChangeNotifierProvider(create: (_) => OnboardingProvider()), // Add SortProvider
+        ChangeNotifierProvider(create: (_) => OnboardingProvider()), // Add OnboardingProvider
+        ChangeNotifierProvider(create: (_) => SaveInfoAdsProvider()), // Add SaveInfoAdsProvider
         ChangeNotifierProvider(
             create: (context) => QuizProvider(
                 criterionSet: Provider.of<SortProvider>(context,listen: false).dropdownValueSet,
@@ -69,7 +71,7 @@ class _RocketLearnState extends State<RocketLearn> {
       debugShowCheckedModeBanner: false,
       title: "FlashLearn",
       home: const Home(),
-      theme: themeProvider.getLightTheme(),
+      theme:  themeProvider.getLightTheme(),
       darkTheme: themeProvider.getDarkTheme(),
       themeMode: themeProvider.themeMode,
     );

@@ -14,7 +14,7 @@ class QuizProvider with ChangeNotifier {
   String _searchQuery = ""; // Variable to store the search query
   String newValueCard = ""; // sort of cards
   String setValue = ""; // sort of cards
-  int _defaultMaxCards = 5;
+  int _defaultMaxCards = 20;
   String _currentQuizSetNameToSetLimit = '';
 
 
@@ -30,102 +30,11 @@ class QuizProvider with ChangeNotifier {
 
   void loadQuizSets() {
 
-    List<Map<String, dynamic>> defaultValue = [
-      {
-        'name': "Motivational Quotes (Template)",
-        'timestamp': DateTime.now(),
-        'description': "A collection of quotes to inspire and uplift.",
-        'cards': [
-          {
-            'isUpdating': false,
-            'question': "What is your favorite motivational quote?",
-            'answer': "The only way to do great work is to love what you do. - Steve Jobs",
-            'isIgnore': false,
-            'timestamp': DateTime.now()
-          },
-          {
-            'isUpdating': false,
-            'question': "Who is someone you look up to for inspiration?",
-            'answer': "Elon Musk",
-            'isIgnore': false,
-            'timestamp': DateTime.now()
-          },
-          {
-            'isUpdating': false,
-            'question': "What helps you stay positive during hard times?",
-            'answer': "Remembering my goals and past achievements.",
-            'isIgnore': false,
-            'timestamp': DateTime.now()
-          }
-        ],
-        'numberOfQuiz': 3,
-        'limitNumberOfQuiz': 20,
-      },
-      {
-        'name': "Travel Destinations (Template)",
-        'timestamp': DateTime.now(),
-        'description': "Explore top travel destinations around the world.",
-        'cards': [
-          {
-            'isUpdating': false,
-            'question': "Which city do you most want to visit?",
-            'answer': "Paris, France",
-            'isIgnore': false,
-            'timestamp': DateTime.now()
-          },
-          {
-            'isUpdating': false,
-            'question': "What type of travel do you prefer—adventure, relaxation, or culture?",
-            'answer': "Adventure",
-            'isIgnore': false,
-            'timestamp': DateTime.now()
-          },
-          {
-            'isUpdating': false,
-            'question': "What is your favorite travel memory?",
-            'answer': "Seeing the Northern Lights in Iceland.",
-            'isIgnore': false,
-            'timestamp': DateTime.now()
-          }
-        ],
-        'numberOfQuiz': 3,
-        'limitNumberOfQuiz': 20,
-      },
-      {
-        'name': "General Knowledge (Template)",
-        'timestamp': DateTime.now(),
-        'description': "A variety of questions to test your general knowledge.",
-        'cards': [
-          {
-            'isUpdating': false,
-            'question': "What is the capital of Australia?",
-            'answer': "Canberra",
-            'isIgnore': false,
-            'timestamp': DateTime.now()
-          },
-          {
-            'isUpdating': false,
-            'question': "Who developed the theory of relativity?",
-            'answer': "Albert Einstein",
-            'isIgnore': false,
-            'timestamp': DateTime.now()
-          },
-          {
-            'isUpdating': false,
-            'question': "What is the largest mammal in the world?",
-            'answer': "Blue Whale",
-            'isIgnore': false,
-            'timestamp': DateTime.now()
-          }
-        ],
-        'numberOfQuiz': 3,
-        'limitNumberOfQuiz': 20,
-      }
-    ];
 
 
 
-    var quizSetsFromStorage = _settingsBox.get('quizSets', defaultValue: defaultValue);
+
+    var quizSetsFromStorage = _settingsBox.get('quizSets', defaultValue: []);
 
     if (quizSetsFromStorage is List) {
       _quizSets = List<Map<String, dynamic>>.from(
@@ -142,6 +51,8 @@ class QuizProvider with ChangeNotifier {
     }
     notifyListeners();
   }
+
+
 
   void updateSetValue(String newValue){
      setValue = newValue;
@@ -269,7 +180,7 @@ class QuizProvider with ChangeNotifier {
     if (quizSet != null) {
       // Fetch the current limit and increment it by 1
       int currentLimit = quizSet['limitNumberOfQuiz'] ?? 0;  // Default to 0 if limitNumberOfQuiz doesn't exist
-      quizSet['limitNumberOfQuiz'] = currentLimit + 3;
+      quizSet['limitNumberOfQuiz'] = currentLimit + 5;
 
       // Save changes and notify listeners
       saveQuizSets();

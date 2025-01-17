@@ -155,7 +155,7 @@ class SeeAllQuizCard extends StatelessWidget {
                     card: card,
                     name: name );
               },
-            ) : ReusableRewardedAdsButtonPosition(colorScheme: colorScheme, name: "Watch an ad to get 3 free slot!", onTap: () => adManager.showRewarded(context)),
+            ) : ReusableRewardedAdsButtonPosition(colorScheme: colorScheme, name: "Watch an ad to get 5 free slot!"),
             ReusableThemeSettingPosition(
                 colorScheme: colorScheme
             ),

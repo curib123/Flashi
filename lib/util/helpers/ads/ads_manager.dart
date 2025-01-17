@@ -1,4 +1,5 @@
 import 'package:flashlearn/provider/quiz_provider.dart';
+import 'package:flashlearn/provider/save_info_ads_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
@@ -20,6 +21,7 @@ class AdManager {
   InterstitialAd? _interstitialAd;
 
   RewardedAd? _rewardedAd;
+
 
 
 
@@ -158,10 +160,13 @@ class AdManager {
   void showRewarded(BuildContext context){
     // Access the QuizProvider and SortProvider from the context
     final quizProvider = Provider.of<QuizProvider>(context,listen: false);
+    final saveInfoAdsProvider = Provider.of<SaveInfoAdsProvider>(context,listen: false);
 
     _rewardedAd?.show(onUserEarnedReward: (AdWithoutView ad, RewardItem rewardItem) {
       // Reward the user for watching an ad.
       quizProvider.updateQuizSetLimit();
+      saveInfoAdsProvider.incrementAdsWatched();
+
     });
   }
   void dispose() {

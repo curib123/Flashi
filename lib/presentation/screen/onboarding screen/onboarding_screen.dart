@@ -1,61 +1,60 @@
-import 'package:flashlearn/provider/onboarding_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:flashlearn/provider/onboarding_provider.dart';
 
 class OnboardingScreen extends StatelessWidget {
-  final List<PageViewModel> pages = [
+  List<PageViewModel> pages = [
     PageViewModel(
       title: "Welcome to FlashLearn",
-      body: "The ultimate flashcard app for mastering any subject!",
-      image: Center(child: Icon(Icons.school, size: 100, color: Colors.teal)),
+      body: "Your go-to app for mastering any subject through interactive and engaging flashcards. Start your learning journey now!",
+      image: Center(child: _AnimatedMovingIcon(icon: Icons.school)),
       decoration: PageDecoration(
-        titleTextStyle: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.teal.shade700),
-        bodyTextStyle: TextStyle(fontSize: 18, color: Colors.teal.shade400),
+        titleTextStyle: _animatedTextStyle,
+        bodyTextStyle: _animatedBodyTextStyle,
         imagePadding: EdgeInsets.only(bottom: 16),
-
       ),
     ),
     PageViewModel(
       title: "Create & Customize",
-      body: "Easily create and customize your own flashcards.",
-      image: Center(child: Icon(Icons.create, size: 100, color: Colors.teal)),
+      body: "Create personalized flashcards tailored to your learning style. Add text, images, and more to make them your own.",
+      image: Center(child: _AnimatedMovingIcon(icon: Icons.create)),
       decoration: PageDecoration(
-        titleTextStyle: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.teal.shade700),
-        bodyTextStyle: TextStyle(fontSize: 18, color: Colors.teal.shade400),
+        titleTextStyle: _animatedTextStyle,
+        bodyTextStyle: _animatedBodyTextStyle,
         imagePadding: EdgeInsets.only(bottom: 16),
-
       ),
     ),
     PageViewModel(
       title: "Learn Anytime, Anywhere",
-      body: "Study on the go and memorize anytime anywhere.",
-      image: Center(child: Icon(Icons.mobile_friendly, size: 100, color: Colors.teal)),
+      body: "Access your flashcards and study on-the-go, wherever you are. No internet required, just dive into your learning!",
+      image: Center(child: _AnimatedMovingIcon(icon: Icons.mobile_friendly)),
       decoration: PageDecoration(
-        titleTextStyle: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.teal.shade700),
-        bodyTextStyle: TextStyle(fontSize: 18, color: Colors.teal.shade400),
+        titleTextStyle: _animatedTextStyle,
+        bodyTextStyle: _animatedBodyTextStyle,
         imagePadding: EdgeInsets.only(bottom: 16),
-
       ),
     ),
     PageViewModel(
       title: "Notes Section",
-      body: "Keep track of important notes to enhance your learning experience.",
-      image: Center(child: Icon(Icons.note, size: 100, color: Colors.teal)),
+      body: "Capture key takeaways, important concepts, and reminders to reinforce your memory. Keep everything organized in one place.",
+      image: Center(child: _AnimatedMovingIcon(icon: Icons.note)),
       decoration: PageDecoration(
-        titleTextStyle: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.teal.shade700),
-        bodyTextStyle: TextStyle(fontSize: 18, color: Colors.teal.shade400),
+        titleTextStyle: _animatedTextStyle,
+        bodyTextStyle: _animatedBodyTextStyle,
         imagePadding: EdgeInsets.only(bottom: 16),
-
       ),
     ),
   ];
+
+  static const _animatedTextStyle = TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.teal);
+  static const _animatedBodyTextStyle = TextStyle(fontSize: 15, color: Colors.teal);
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: IntroductionScreen(
-        globalBackgroundColor: Colors.teal.shade50,
+        globalBackgroundColor: Colors.white,
         pages: pages,
         onDone: () => _navigateToHome(context),
         onSkip: () => _navigateToHome(context),
@@ -78,6 +77,48 @@ class OnboardingScreen extends StatelessWidget {
     // Complete the onboarding process
     final onboardingProvider = Provider.of<OnboardingProvider>(context, listen: false);
     onboardingProvider.completeOnboarding();
+  }
+}
 
+class _AnimatedMovingIcon extends StatefulWidget {
+  final IconData icon;
+  const _AnimatedMovingIcon({required this.icon});
+
+  @override
+  _AnimatedMovingIconState createState() => _AnimatedMovingIconState();
+}
+
+class _AnimatedMovingIconState extends State<_AnimatedMovingIcon> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<Offset> _offsetAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: Duration(seconds: 1),
+      vsync: this,
+    );
+
+    _offsetAnimation = Tween<Offset>(
+      begin: Offset(0, -1), // Start position (off-screen at the top)
+      end: Offset(0, 0), // End position (center)
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+
+    _controller.forward(); // Start the animation immediately
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SlideTransition(
+      position: _offsetAnimation,
+      child: Icon(widget.icon, size: 250, color: Colors.teal),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose(); // Clean up the controller when no longer needed
+    super.dispose();
   }
 }

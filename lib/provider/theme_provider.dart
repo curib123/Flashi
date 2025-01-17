@@ -2,6 +2,7 @@ import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 
 class ThemeProvider extends ChangeNotifier {
   // Default theme settings
@@ -10,6 +11,11 @@ class ThemeProvider extends ChangeNotifier {
   String _currentFont = 'Montserrat'; // Default font
 
   final Box _settingsBox = Hive.box('theme');
+
+  Future<bool> isConnected() async {
+    return await InternetConnection().hasInternetAccess;
+  }
+
 
   ThemeProvider() {
     // Load saved theme values from Hive or use defaults
@@ -24,7 +30,9 @@ class ThemeProvider extends ChangeNotifier {
 
   // Getters for current theme properties
   FlexScheme get currentScheme => _currentScheme;
+
   ThemeMode get themeMode => _themeMode;
+
   String get currentFont => _currentFont;
 
   // Method to update the color scheme
@@ -36,7 +44,8 @@ class ThemeProvider extends ChangeNotifier {
 
   // Method to toggle between light and dark theme modes
   void toggleThemeMode() {
-    _themeMode = (_themeMode == ThemeMode.light) ? ThemeMode.dark : ThemeMode.light;
+    _themeMode =
+    (_themeMode == ThemeMode.light) ? ThemeMode.dark : ThemeMode.light;
     _settingsBox.put('themeMode', _themeMode.index); // Save to Hive
     notifyListeners();
   }
@@ -48,19 +57,31 @@ class ThemeProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Method to get the light theme with the selected scheme and font
+  // Store the internet connection status synchronously
+  bool _isConnected = false;
+
+// Method to check the internet connection and set the value of _isConnected
+  void checkConnectionStatus() {
+    isConnected().then((connectionStatus) {
+      _isConnected = connectionStatus;
+    });
+  }
+
+// Method to get the light theme with the selected scheme and font
   ThemeData getLightTheme() {
     return FlexThemeData.light(
       scheme: _currentScheme,
-      textTheme: GoogleFonts.getTextTheme(_currentFont),
+      textTheme:  GoogleFonts.getTextTheme(_currentFont) ,
+      fontFamily: !_isConnected ? 'Montserrat' : null, // Corrected syntax
     );
   }
 
-  // Method to get the dark theme with the selected scheme and font
+// Method to get the dark theme with the selected scheme and font
   ThemeData getDarkTheme() {
     return FlexThemeData.dark(
       scheme: _currentScheme,
-      textTheme: GoogleFonts.getTextTheme(_currentFont),
+      textTheme:  GoogleFonts.getTextTheme(_currentFont) ,
+      fontFamily: !_isConnected ? 'Montserrat' : null, // Corrected syntax
     );
   }
 }
