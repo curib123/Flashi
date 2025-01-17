@@ -1,3 +1,4 @@
+import 'package:flashlearn/util/helpers/list_default_sets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:hive/hive.dart';
 
@@ -30,11 +31,13 @@ class QuizProvider with ChangeNotifier {
 
   void loadQuizSets() {
 
+    // Create an instance of ListDefaultSets and set the defaultMaxCards to 10
+    var listDefaultSets = ListDefaultSets(defaultMaxCards);
 
+    // Access the defaultValue and print it to see the result
+    var defaultValue = listDefaultSets.defaultValue;
 
-
-
-    var quizSetsFromStorage = _settingsBox.get('quizSets', defaultValue: []);
+    var quizSetsFromStorage = _settingsBox.get('quizSets', defaultValue: defaultValue);
 
     if (quizSetsFromStorage is List) {
       _quizSets = List<Map<String, dynamic>>.from(

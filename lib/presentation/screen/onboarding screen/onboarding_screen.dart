@@ -17,7 +17,7 @@ class OnboardingScreen extends StatelessWidget {
     ),
     PageViewModel(
       title: "Create & Customize",
-      body: "Create personalized flashcards tailored to your learning style. Add text, images, and more to make them your own.",
+      body: "Create your own flashcards tailored to your learning style. Add questions and answer for personalized use",
       image: Center(child: _AnimatedMovingIcon(icon: Icons.create)),
       decoration: PageDecoration(
         titleTextStyle: _animatedTextStyle,

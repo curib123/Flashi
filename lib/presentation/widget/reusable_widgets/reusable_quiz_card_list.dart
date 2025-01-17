@@ -51,7 +51,7 @@ class ReusableQuizCardList extends StatelessWidget {
 
           return AnimationConfiguration.staggeredList(
             position: index,
-            duration: const Duration(seconds: 3), // Animation duration for each item
+            duration: const Duration(seconds: 2), // Animation duration for each item
             child: SlideAnimation(
               curve: Curves.easeInOutCubicEmphasized, // Smooth animation curve
               verticalOffset: 100.0, // Initial vertical offset for slide animation

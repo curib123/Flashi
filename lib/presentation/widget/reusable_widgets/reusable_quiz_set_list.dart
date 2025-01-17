@@ -59,7 +59,7 @@ class ReusableQuizSetList extends StatelessWidget {
 
                     return AnimationConfiguration.staggeredList(
                       position: index,
-                      duration: const Duration(seconds: 3),
+                      duration: const Duration(seconds: 2),
                       child: SlideAnimation(
                         curve: Curves.easeInOutCubicEmphasized,
                         verticalOffset: 100.0,
