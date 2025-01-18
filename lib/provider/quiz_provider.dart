@@ -224,8 +224,25 @@ class QuizProvider with ChangeNotifier {
     }
   }
 
+  bool addCardToQuizSet({
+    required String quizSetName,
+    required dynamic card, // Allow both types
+  }) {
+    // Ensure the card is of the type Map<String, Object> or Map<String, dynamic>
+    if (card is Map<String, dynamic>) {
+      // Handle when the card is of type Map<String, Object>
+      return addCardToQuizSetNew(quizSetName: quizSetName, card: card);
+    } else if (card is Map<String, Object>) {
+      // Handle when the card is of type Map<String, dynamic>
+      return addCardToQuizSetTemplate(quizSetName: quizSetName, card: card);
+    } else {
+
+      return false;
+    }
+  }
+
   // Add a card to a specific quiz set and update it in Hive
-  bool addCardToQuizSet({required String quizSetName, required Map<String, dynamic> card}) {
+  bool addCardToQuizSetNew({required String quizSetName, required Map<String, dynamic> card}) {
     Map<String, dynamic>? quizSet = searchQuizSet(quizSetName: quizSetName);
     if (quizSet != null) {
       // Initialize the 'cards' list if it doesn't exist
@@ -238,8 +255,7 @@ class QuizProvider with ChangeNotifier {
       int currentNumberOfCards = quizSet['cards']?.length ?? 0;
 
       if (limitNumberOfQuiz > 0 && currentNumberOfCards >= limitNumberOfQuiz) {
-        debugPrint(
-            'Cannot add more cards. Limit of $limitNumberOfQuiz cards reached for $quizSetName.');
+
         return false; // Reject the addition if the limit is reached
       }
 
@@ -247,6 +263,48 @@ class QuizProvider with ChangeNotifier {
       quizSet['cards']?.add(card);
       quizSet['numberOfQuiz'] = (quizSet['cards']?.length ?? 0);
       saveQuizSets();
+      notifyListeners();
+      return true;
+    }
+    return false;
+  }
+
+  bool addCardToQuizSetTemplate({
+    required String quizSetName,
+    required Map<String, Object> card, // Ensure the card matches the expected type
+  }) {
+    // Retrieve the quiz set
+    Map<String, dynamic>? quizSet = searchQuizSet(quizSetName: quizSetName);
+    if (quizSet != null) {
+      // Initialize the 'cards' list if it doesn't exist
+      if (quizSet['cards'] == null) {
+        quizSet['cards'] = <Map<String, Object>>[];
+      }
+
+      // Type-check the 'cards' list
+      if (quizSet['cards'] is! List<Map<String, Object>>) {
+        debugPrint('The cards field is not a list of maps. Aborting.');
+        return false;
+      }
+
+      List<Map<String, Object>> cards = quizSet['cards'] as List<Map<String, Object>>;
+
+      // Check if the number of cards exceeds the limit
+      int limitNumberOfQuiz = quizSet['limitNumberOfQuiz'] ?? 0;
+      int currentNumberOfCards = cards.length;
+
+      if (limitNumberOfQuiz > 0 && currentNumberOfCards >= limitNumberOfQuiz) {
+        debugPrint(
+            'Cannot add more cards. Limit of $limitNumberOfQuiz cards reached for $quizSetName.');
+        return false; // Reject the addition if the limit is reached
+      }
+
+      // Add the card
+      cards.add(card);
+      quizSet['cards'] = cards; // Reassign after modification to avoid implicit casting issues
+      quizSet['numberOfQuiz'] = cards.length;
+
+      saveQuizSets(); // Save changes
       notifyListeners();
       return true;
     }

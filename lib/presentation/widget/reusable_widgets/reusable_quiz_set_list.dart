@@ -113,10 +113,17 @@ class ReusableQuizSetList extends StatelessWidget {
                                     context, name, set, index, set['cards']),
                                 quizProvider.updateCurrentQuizSetNameToSetLimit(name),
                               },
-                              onAddCard: () async => {
-                                _addCard(context, name, set,index,set['cards']),
-                                quizProvider.updateCurrentQuizSetNameToSetLimit(name),
+                              onAddCard: () async {
+                                if ( (  set['limitNumberOfQuiz'] - quizProvider.getNumberOfCardsInSet(name)  ) > 0 ) {
+                                  _addCard(context, name, set, index, set['cards']);
+
+                                } else {
+                                  _navigateToSeeAllQuizCard(context, name, set, index, set['cards']);
+                                  _showCustomDialog(context);
+                                }
+                                quizProvider.updateCurrentQuizSetNameToSetLimit(name);
                               },
+
                               onReview: () => showReviewSelection(context: context, heading:name, cards:set['cards'], setname: name ),
                               onDelete: () => showDeleteConfirmationDialog(
                                 context: context,
@@ -168,7 +175,33 @@ class ReusableQuizSetList extends StatelessWidget {
         );
       },
     );
+
+
   }
+
+  void _showCustomDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Out of Slots"),
+          content: Text(
+            "You have run out of slots. Watch an ad to gain 5 additional slots and continue studying.",
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text("Exit"),
+            ),
+
+          ],
+        );
+      },
+    );
+  }
+
 
   /// Navigate to the quiz card screen.
   void _navigateToQuizCards(BuildContext context, String name, Map<String, dynamic> set,int index,List<dynamic> cards) {
@@ -234,3 +267,4 @@ class ReusableQuizSetList extends StatelessWidget {
     );
   }
 }
+

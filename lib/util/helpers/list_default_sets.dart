@@ -85,7 +85,9 @@ class ListDefaultSets {
           {'isUpdating': false, 'question': "What is the chemical symbol for gold?", 'answer': "Au", 'isIgnore': false, 'timestamp': DateTime.now()},
           {'isUpdating': false, 'question': "What is the largest ocean in the world?", 'answer': "Pacific Ocean", 'isIgnore': false, 'timestamp': DateTime.now()},
           {'isUpdating': false, 'question': "What is the hardest rock in the world?", 'answer': "Diamond", 'isIgnore': false, 'timestamp': DateTime.now()},
-          {'isUpdating': false, 'question': "What is the smallest bone in the human body?", 'answer': "Stapes", 'isIgnore': false, 'timestamp': DateTime.now()}
+          {'isUpdating': false, 'question': "What is the smallest bone in the human body?", 'answer': "Stapes", 'isIgnore': false, 'timestamp': DateTime.now()},
+          {'isUpdating': false, 'question': "What is the currency  of Japan?", 'answer': "Yen", 'isIgnore': false, 'timestamp': DateTime.now()},
+          {'isUpdating': false, 'question': "What is the tallest  mountain in the world?", 'answer': "Mount Everest", 'isIgnore': false, 'timestamp': DateTime.now()},
         ],
         'numberOfQuiz': 20,
         'limitNumberOfQuiz': defaultMaxCards,
