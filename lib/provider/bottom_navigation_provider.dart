@@ -1,15 +1,15 @@
 
 import 'package:flashlearn/presentation/screen/main/note_screen.dart';
-import 'package:flashlearn/presentation/screen/main/favorate_screen.dart';
 import 'package:flashlearn/presentation/screen/main/home_screen.dart';
+import 'package:flashlearn/presentation/screen/main/study_scheduler_screen.dart';
 import 'package:flutter/material.dart';
 
 class BottomNavigationProvider with ChangeNotifier{
 
   final List<Widget> _screen = [
-    const FavoriteScreen(),
-    const HomeScreen(),
-    const NoteScreen(),
+    NoteScreen(),
+    HomeScreen(),
+    StudySchedulerScreen(),
   ];
 
   int _currentIndex = 1;

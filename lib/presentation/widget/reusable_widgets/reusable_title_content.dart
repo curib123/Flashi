@@ -37,7 +37,7 @@ class ReusableTitleContent extends StatelessWidget {
                 backgroundColor: colorScheme.onPrimary,
                 child: Icon(
                   Icons.settings_rounded,
-                  size: 30,
+                  size: 25,
                   color: colorScheme.primary,
                 ),
               ),

@@ -15,8 +15,10 @@ class AdManager {
 
   BannerAd? _bannerAd1;
   BannerAd? _bannerAd2;
+  BannerAd? _bannerAd3;
   bool _isBannerAd1Loaded = false;
   bool _isBannerAd2Loaded= false;
+  bool _isBannerAd3Loaded= false;
 
   InterstitialAd? _interstitialAd;
 
@@ -62,8 +64,27 @@ class AdManager {
       ),
     );
 
+    _bannerAd3 = BannerAd(
+      adUnitId: id,
+      size: AdSize.banner,
+      request: AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (Ad ad) {
+
+            _isBannerAd3Loaded = true;
+
+        },
+        onAdFailedToLoad: (Ad ad, LoadAdError error) {
+
+            _isBannerAd3Loaded = false;
+
+        },
+      ),
+    );
+
     _bannerAd1?.load();
     _bannerAd2?.load();
+    _bannerAd3?.load();
   }
 
   Widget getFirstBannerAdWidget() {
@@ -84,6 +105,17 @@ class AdManager {
         width: _bannerAd2!.size.width.toDouble(),
         height: _bannerAd2!.size.height.toDouble(),
         child: AdWidget(ad: _bannerAd2!),
+      );
+    } else {
+      return SizedBox.shrink();
+    }
+  }
+  Widget getThirdBannerAdWidget() {
+    if (_bannerAd3 != null && _isBannerAd3Loaded) {
+      return Container(
+        width: _bannerAd3!.size.width.toDouble(),
+        height: _bannerAd3!.size.height.toDouble(),
+        child: AdWidget(ad: _bannerAd3!),
       );
     } else {
       return SizedBox.shrink();

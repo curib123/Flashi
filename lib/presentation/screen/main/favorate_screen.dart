@@ -29,10 +29,9 @@ class FavoriteScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         leading: GestureDetector(
-          onTap: () => Scaffold.of(context).openDrawer(),
+          onTap: () => Navigator.pop(context),
           child: Icon(
-            Icons.notes_rounded,
-            size: 30,
+            Icons.arrow_back_ios_new_rounded,
             color: colorScheme.onPrimary,
           ),
         ),

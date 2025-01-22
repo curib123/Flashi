@@ -1,5 +1,6 @@
 import 'package:flashlearn/presentation/screen/main/settings_screen.dart';
 import 'package:flashlearn/presentation/widget/components/see_all_quiz_set_list.dart';
+import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_favorate_position.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_search_bar_core.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_create_set_button_position.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_quiz_set_list.dart';
@@ -265,6 +266,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
           // Floating theme settings button
           ReusableThemeSettingPosition(colorScheme: colorScheme),
+          ReusableFavoratePosition(colorScheme: colorScheme),
 
         ],
       ),

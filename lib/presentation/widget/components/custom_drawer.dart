@@ -1,5 +1,6 @@
 import 'package:flashlearn/presentation/screen/main/export_import_screen.dart';
 import 'package:flashlearn/presentation/screen/main/settings_screen.dart';
+import 'package:flashlearn/presentation/screen/main/study_scheduler_screen.dart';
 import 'package:flashlearn/provider/bottom_navigation_provider.dart';
 import 'package:flashlearn/util/helpers/wepage_launcher.dart';
 import 'package:flutter/material.dart';
@@ -74,6 +75,16 @@ class CustomDrawer extends StatelessWidget {
             },
           ),
           buildListTile(
+            icon: Icons.task_rounded,
+            title: 'Todo Task',
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const StudySchedulerScreen()),
+              );
+            },
+          ),  buildListTile(
             icon: Icons.settings_rounded,
             title: 'Settings',
             onTap: () {
@@ -96,6 +107,9 @@ class CustomDrawer extends StatelessWidget {
             )
             },
           ),
+
+
+
           buildListTile(
             icon: Icons.privacy_tip_rounded,
             title: 'Privacy Policy',
