@@ -76,7 +76,7 @@ class CustomDrawer extends StatelessWidget {
           ),
           buildListTile(
             icon: Icons.task_rounded,
-            title: 'Todo Task',
+            title: 'Study Scheduler',
             onTap: () {
               Navigator.pop(context);
               Navigator.push(
