@@ -90,6 +90,7 @@ class AdManager {
   Widget getFirstBannerAdWidget() {
     if (_bannerAd1 != null && _isBannerAd1Loaded) {
       return Container(
+        margin: EdgeInsets.symmetric(vertical: 5),
         width: _bannerAd1!.size.width.toDouble(),
         height: _bannerAd1!.size.height.toDouble(),
         child: AdWidget(ad: _bannerAd1!),
@@ -102,6 +103,7 @@ class AdManager {
   Widget getSecondBannerAdWidget() {
     if (_bannerAd2 != null && _isBannerAd2Loaded) {
       return Container(
+        margin: EdgeInsets.symmetric(vertical: 5),
         width: _bannerAd2!.size.width.toDouble(),
         height: _bannerAd2!.size.height.toDouble(),
         child: AdWidget(ad: _bannerAd2!),
@@ -113,6 +115,7 @@ class AdManager {
   Widget getThirdBannerAdWidget() {
     if (_bannerAd3 != null && _isBannerAd3Loaded) {
       return Container(
+        margin: EdgeInsets.symmetric(vertical: 5),
         width: _bannerAd3!.size.width.toDouble(),
         height: _bannerAd3!.size.height.toDouble(),
         child: AdWidget(ad: _bannerAd3!),

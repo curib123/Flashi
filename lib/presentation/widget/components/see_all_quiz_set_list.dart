@@ -25,7 +25,6 @@ class SeeAllQuizSetList extends StatelessWidget {
 
     // Access both providers directly
     final quizProvider = Provider.of<QuizProvider>(context);
-    final AdManager adManager = AdManager();
 
 
     return Scaffold(

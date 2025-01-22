@@ -1,5 +1,6 @@
 import 'package:flashlearn/presentation/screen/main/settings_screen.dart';
-import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_favorate_position.dart';
+import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_study_scheduler_core.dart';
+import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_favorate_position.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_search_bar_core.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_create_set_button_position.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_sort_and_see_all.dart';
@@ -74,9 +75,9 @@ class StudySchedulerScreen extends StatelessWidget {
                     isShowReviewLink: false,
                     onShowReviewLink: () {}
                 ),
-                const SizedBox(height:5),
+
                 adManager.getThirdBannerAdWidget(),
-                const SizedBox(height:5),
+
               ],
             ),
           ),
@@ -94,7 +95,16 @@ class StudySchedulerScreen extends StatelessWidget {
 Widget _studySchedulerTile(ColorScheme colorScheme){
 
   return ListView(
-
+    padding: EdgeInsets.symmetric(vertical: 200 ),
+     children: [
+       ReusableStudySchedulerCore(isChecked: false, setName: 'Motivation Qoute1', dateTime: DateTime.now(), onEdit: (){}, onDelete: (){}, onTap: (){}),
+       ReusableStudySchedulerCore(isChecked: false, setName: 'Motivation Qoute2', dateTime: DateTime.now(), onEdit: (){}, onDelete: (){}, onTap: (){}),
+       ReusableStudySchedulerCore(isChecked: false, setName: 'Motivation Qoute3', dateTime: DateTime.now(), onEdit: (){}, onDelete: (){}, onTap: (){}),
+       ReusableStudySchedulerCore(isChecked: false, setName: 'Motivation Qoute', dateTime: DateTime.now(), onEdit: (){}, onDelete: (){}, onTap: (){}),
+       ReusableStudySchedulerCore(isChecked: false, setName: 'Motivation Qoute', dateTime: DateTime.now(), onEdit: (){}, onDelete: (){}, onTap: (){}),
+       ReusableStudySchedulerCore(isChecked: false, setName: 'Motivation Qoute', dateTime: DateTime.now(), onEdit: (){}, onDelete: (){}, onTap: (){}),
+       ReusableStudySchedulerCore(isChecked: false, setName: 'Motivation Qoute', dateTime: DateTime.now(), onEdit: (){}, onDelete: (){}, onTap: (){}),
+     ],
   );
 
 }

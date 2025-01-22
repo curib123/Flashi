@@ -1,6 +1,6 @@
 
 import 'package:flashlearn/presentation/screen/main/settings_screen.dart';
-import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_favorate_position.dart';
+import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_favorate_position.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_notes_summary_block_core.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_notes_summary_tile_core.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_search_bar_core.dart';
@@ -84,9 +84,7 @@ class NoteScreen extends StatelessWidget {
                     isShowReviewLink: false,
                     onShowReviewLink: () {}
                 ),
-                const SizedBox(height:5),
                 adManager.getSecondBannerAdWidget(),
-                const SizedBox(height:5),
               ],
             ),
           ),
