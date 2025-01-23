@@ -16,6 +16,7 @@ class AdManager {
   BannerAd? _bannerAd1;
   BannerAd? _bannerAd2;
   BannerAd? _bannerAd3;
+  double _bannerHeight = 100;
   bool _isBannerAd1Loaded = false;
   bool _isBannerAd2Loaded= false;
   bool _isBannerAd3Loaded= false;
@@ -25,7 +26,7 @@ class AdManager {
   RewardedAd? _rewardedAd;
 
 
-
+double get bannerHeight => _bannerHeight;
 
   void loadBannerAd(String id) {
     _bannerAd1 = BannerAd(
@@ -34,12 +35,12 @@ class AdManager {
       request: AdRequest(),
       listener: BannerAdListener(
         onAdLoaded: (Ad ad) {
-
+          _bannerHeight = 180;
             _isBannerAd1Loaded = true;
 
         },
         onAdFailedToLoad: (Ad ad, LoadAdError error) {
-
+          _bannerHeight = 110;
             _isBannerAd1Loaded = false;
 
         },
@@ -52,12 +53,12 @@ class AdManager {
       request: AdRequest(),
       listener: BannerAdListener(
         onAdLoaded: (Ad ad) {
-
+          _bannerHeight = 180;
             _isBannerAd2Loaded = true;
 
         },
         onAdFailedToLoad: (Ad ad, LoadAdError error) {
-
+          _bannerHeight = 110;
             _isBannerAd2Loaded = false;
 
         },
@@ -70,12 +71,12 @@ class AdManager {
       request: AdRequest(),
       listener: BannerAdListener(
         onAdLoaded: (Ad ad) {
-
+          _bannerHeight = 180;
             _isBannerAd3Loaded = true;
 
         },
         onAdFailedToLoad: (Ad ad, LoadAdError error) {
-
+          _bannerHeight = 110;
             _isBannerAd3Loaded = false;
 
         },

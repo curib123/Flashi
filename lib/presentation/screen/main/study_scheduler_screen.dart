@@ -52,10 +52,10 @@ class StudySchedulerScreen extends StatelessWidget {
       ),
       body: Stack(
         children: [
-         _studySchedulerTile(colorScheme),
+         _studySchedulerTile(colorScheme,adManager),
           Container(
             color: colorScheme.onPrimary,
-            height: 180,
+            height: adManager.bannerHeight,
             child: Column(
               children: [
                 ReusableSearchBarCore(
@@ -92,10 +92,10 @@ class StudySchedulerScreen extends StatelessWidget {
   }
 }
 
-Widget _studySchedulerTile(ColorScheme colorScheme){
+Widget _studySchedulerTile(ColorScheme colorScheme,AdManager adManager){
 
   return ListView(
-    padding: EdgeInsets.symmetric(vertical: 200 ),
+    padding: EdgeInsets.symmetric(vertical: adManager.bannerHeight ),
      children: [
        ReusableStudySchedulerCore(isChecked: false, setName: 'Motivation Qoute1', dateTime: DateTime.now(), onEdit: (){}, onDelete: (){}, onTap: (){}),
        ReusableStudySchedulerCore(isChecked: false, setName: 'Motivation Qoute2', dateTime: DateTime.now(), onEdit: (){}, onDelete: (){}, onTap: (){}),
