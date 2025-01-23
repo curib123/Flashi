@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // For date formatting
 
-class ReusableStudySchedulerCore extends StatelessWidget {
-  final String setName;
+class ReusableTaskTileCore extends StatelessWidget {
+  final String taskName;
   final DateTime dateTime;
   final bool isChecked;
+  final bool isUpdated;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
   final VoidCallback onTap; // Changed to VoidCallback
 
-  const ReusableStudySchedulerCore({
+  const ReusableTaskTileCore({
     super.key,
     required this.isChecked,
-    required this.setName,
+    required this.taskName,
     required this.dateTime,
     required this.onEdit,
     required this.onDelete,
     required this.onTap,
+    required this.isUpdated,
   });
 
   @override
@@ -26,38 +28,36 @@ class ReusableStudySchedulerCore extends StatelessWidget {
     // Formatting date and time to 12-hour format
     String formattedDate = DateFormat('MMM dd, yyyy - hh:mm a').format(dateTime);
 
-    // Method to check if the date is not in the past
-    bool isNotPastDate() {
-      return dateTime.isAtSameMomentAs(DateTime.now()) || dateTime.isAfter(DateTime.now());
-    }
-
     return Container(
-      decoration: _buildContainerDecoration(colorScheme),
-      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-      padding: EdgeInsets.all(10),
+      decoration:_buildContainerDecoration(colorScheme) ,
+      margin: EdgeInsets.symmetric(horizontal: 15,vertical: 8),
       child: ListTile(
+
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         leading: Icon(
-          isChecked ? Icons.favorite_rounded : Icons.favorite_border_outlined,
+          isChecked ? Icons.check_circle_rounded : Icons.circle_outlined,
           color: colorScheme.primary,
         ),
         title: Text(
-          setName,
+          taskName,
           style: TextStyle(
+            fontSize: taskName.length <= 13 ? 15 : 13,
             color: colorScheme.primary,
             fontWeight: FontWeight.bold,
-            decoration: isNotPastDate() ? TextDecoration.none : TextDecoration.lineThrough, // Apply line-through for past dates
+            decoration: !isChecked ? TextDecoration.none : TextDecoration.lineThrough, // Apply line-through for past dates
           ),
         ),
         subtitle: Text(
-          'Schedule: $formattedDate',
+          '${isUpdated ? 'Updated' : 'Created'}: $formattedDate',
           style: TextStyle(
             color: colorScheme.secondary,
             fontWeight: FontWeight.normal,
             fontSize: 10,
             overflow: TextOverflow.ellipsis,
-            decoration: isNotPastDate() ? TextDecoration.none : TextDecoration.lineThrough, // Apply line-through for past dates
+            decoration: isChecked ? TextDecoration.lineThrough : TextDecoration.none, // Apply line-through if checked
           ),
         ),
+
         trailing: _buildPopupMenuButton(colorScheme),
         onTap: onTap, // Calling onTap without any argument
       ),

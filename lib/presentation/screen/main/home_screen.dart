@@ -165,15 +165,16 @@ class _HomeScreenState extends State<HomeScreen> {
                       if (filteredQuizSets.isNotEmpty && quizProvider.searchQuery != "12/15/03")
                         ReusableQuizSetList(quizSets: filteredQuizSets)
                       else
-                        Padding(
+
+                        quizProvider.searchQuery == "12/15/03"
+                            ? Padding(
                           padding: const EdgeInsets.all(16.0),
                           child: Text(
-                            quizProvider.searchQuery == "12/15/03"
-                                ? 'Developer : John Paul Curib'
-                                : 'No quiz sets available.',
+                            'Developer: John Paul Curib',
                             style: TextStyle(color: colorScheme.primary),
                           ),
-                        ),
+                        )
+                            : _noSetWidget(context),
 
 
                     ],
@@ -208,4 +209,35 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+}
+
+
+Widget _noSetWidget(BuildContext context) {
+  return SizedBox(
+    height: MediaQuery.of(context).size.height * 0.30,
+    width: MediaQuery.of(context).size.width,
+    child:   Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.inbox, size: 100, color: Colors.grey),
+          const SizedBox(height: 20),
+          Text(
+            "No Set available",
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              color: Colors.grey,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            "Create some Set to see them here.",
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Colors.grey.shade600,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    ),
+  );
 }

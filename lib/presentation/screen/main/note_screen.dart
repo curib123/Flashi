@@ -15,7 +15,6 @@ import 'package:flashlearn/util/helpers/ads/ads_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:provider/provider.dart';
 
 class NoteScreen extends StatelessWidget {
@@ -318,10 +317,32 @@ Widget _buildNoteLayout(Map<String, dynamic> note, int index, ColorScheme colorS
     ),
   );
 }
-
 Widget _noNotesWidget(BuildContext context) {
   return SizedBox(
     height: MediaQuery.of(context).size.height,
-    child: Center(child: Text('No Notes')),
+    width: MediaQuery.of(context).size.width,
+    child:   Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.inbox, size: 100, color: Colors.grey),
+          const SizedBox(height: 20),
+          Text(
+            "No Notes available",
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              color: Colors.grey,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            "Add some Notes to see them here.",
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Colors.grey.shade600,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    ),
   );
 }

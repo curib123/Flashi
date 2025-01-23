@@ -88,7 +88,9 @@ class SeeAllQuizSetList extends StatelessWidget {
                   isShowReviewLink: false,
                   onShowReviewLink: () {  },
                 ),
-                SizedBox(
+                filteredQuizSets.isEmpty
+                    ? _noSetWidget(context)
+                    : SizedBox(
                   width: MediaQuery.sizeOf(context).width,
                   height: MediaQuery.sizeOf(context).height * 0.60,
                   child: SingleChildScrollView(
@@ -119,4 +121,35 @@ class SeeAllQuizSetList extends StatelessWidget {
       },
     );
   }
+}
+
+
+Widget _noSetWidget(BuildContext context) {
+  return SizedBox(
+    height: MediaQuery.of(context).size.height * 0.30,
+    width: MediaQuery.of(context).size.width,
+    child:   Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.inbox, size: 100, color: Colors.grey),
+          const SizedBox(height: 20),
+          Text(
+            "No Set available",
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              color: Colors.grey,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            "Create some Set to see them here.",
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Colors.grey.shade600,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    ),
+  );
 }

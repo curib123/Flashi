@@ -28,9 +28,9 @@ class CustomNavigationBar extends StatelessWidget {
         buttonBackgroundColor: colorScheme.primary, // Active button color
         index: currentIndex, // Current active index
         items: <Widget>[
-          Icon(Icons.note_rounded, size: 30, color: colorScheme.onPrimary),
+          Icon(Icons.task_rounded, size: 30, color: colorScheme.onPrimary),
           Icon(Icons.home_rounded, size: 30, color: colorScheme.onPrimary),
-          Icon(Icons.alarm_rounded, size: 30, color: colorScheme.onPrimary),
+          Icon(Icons.note_rounded, size: 30, color: colorScheme.onPrimary),
         ],
         onTap: (index) {
           if (onTap != null) {

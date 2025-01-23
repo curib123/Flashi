@@ -8,6 +8,7 @@ import 'package:flashlearn/provider/reviewer_settings_provider.dart';
 import 'package:flashlearn/provider/save_info_ads_provider.dart';
 import 'package:flashlearn/provider/sort_provider.dart';
 import 'package:flashlearn/provider/study_scheduler_provider.dart';
+import 'package:flashlearn/provider/task_provider.dart';
 import 'package:flashlearn/provider/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -28,8 +29,9 @@ Future<void> main() async {
   await Hive.openBox('quiz'); // Box for quiz data
   await Hive.openBox('notes'); // Box for storing notes
   await Hive.openBox('onboarding'); // Box for storing onboarding
-  await Hive.openBox('timerBox'); // Box for storing onboarding
-  await Hive.openBox('scheduler'); // Box for storing onboarding
+  await Hive.openBox('timerBox'); // Box for storing timerBox
+  await Hive.openBox('scheduler'); // Box for storing scheduler
+  await Hive.openBox('task'); // Box for storing task
 
   runApp(
     MultiProvider(
@@ -41,7 +43,8 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => NotesProvider()), // Add SortProvider
         ChangeNotifierProvider(create: (_) => OnboardingProvider()), // Add OnboardingProvider
         ChangeNotifierProvider(create: (_) => SaveInfoAdsProvider()), // Add SaveInfoAdsProvider
-        ChangeNotifierProvider(create: (_) => StudySchedulerProvider()), // Add SaveInfoAdsProvider
+        ChangeNotifierProvider(create: (_) => StudySchedulerProvider()), // Add StudySchedulerProvider
+        ChangeNotifierProvider(create: (_) => TaskProvider()), // Add StudySchedulerProvider
         ChangeNotifierProvider(
             create: (context) => QuizProvider(
                 criterionSet: Provider.of<SortProvider>(context,listen: false).dropdownValueSet,
