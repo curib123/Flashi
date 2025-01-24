@@ -31,6 +31,7 @@ class ReusableTaskTileCore extends StatelessWidget {
     return Container(
       decoration:_buildContainerDecoration(colorScheme) ,
       margin: EdgeInsets.symmetric(horizontal: 15,vertical: 8),
+      padding: EdgeInsets.symmetric(vertical: 5),
       child: ListTile(
 
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),

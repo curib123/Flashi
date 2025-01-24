@@ -36,15 +36,31 @@ class OnboardingScreen extends StatelessWidget {
       ),
     ),
     PageViewModel(
-      title: "Notes Section",
-      body: "Capture key takeaways, important concepts, and reminders to reinforce your memory. Keep everything organized in one place.",
-      image: Center(child: _AnimatedMovingIcon(icon: Icons.note)),
+      title: "My Task Section",
+      body: "Easily manage your daily tasks and stay organized. Add, edit, and track tasks to boost your productivity effortlessly.",
+      image: Center(
+        child: _AnimatedMovingIcon(icon: Icons.task_rounded),
+      ),
       decoration: PageDecoration(
         titleTextStyle: _animatedTextStyle,
         bodyTextStyle: _animatedBodyTextStyle,
-        imagePadding: EdgeInsets.only(bottom: 16),
+        imagePadding: const EdgeInsets.only(bottom: 16),
       ),
     ),
+    PageViewModel(
+      title: "My Notes",
+      body: "Capture your thoughts, ideas, and reminders effortlessly. Create, organize, and access your notes anytime to stay inspired and productive.",
+      image: Center(
+        child: _AnimatedMovingIcon(icon: Icons.note_rounded),
+      ),
+      decoration: PageDecoration(
+        titleTextStyle: _animatedTextStyle,
+        bodyTextStyle: _animatedBodyTextStyle,
+        imagePadding: const EdgeInsets.only(bottom: 16),
+      ),
+    ),
+
+
   ];
 
   static const _animatedTextStyle = TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.teal);
@@ -63,9 +79,9 @@ class OnboardingScreen extends StatelessWidget {
         next: Icon(Icons.arrow_forward, color: Colors.teal),
         done: Text("Get Started", style: TextStyle(fontWeight: FontWeight.w600, color: Colors.teal)),
         dotsDecorator: DotsDecorator(
-          size: Size(10, 10),
+          size: Size(5, 5),
           color: Colors.grey,
-          activeSize: Size(20, 10),
+          activeSize: Size(15, 10),
           activeColor: Colors.teal,
           activeShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0)),
         ),

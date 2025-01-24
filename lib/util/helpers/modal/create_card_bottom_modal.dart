@@ -30,7 +30,7 @@ void CreateCardBottomModal({
 
       return Consumer<QuizProvider>(
         builder: (context, quizProvider, child) {
-          if (isCreate) quizProvider.clearController();
+
 
           return Container(
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
@@ -85,6 +85,7 @@ void CreateCardBottomModal({
                               'timestamp' : DateTime.now()
                             });
                             showCustomSnackbar(context: context, message: 'The Card is Created ',);
+                            quizProvider.clearController();
                         } else {
                           quizProvider.updateCardInQuizSet( quizSetName: name, oldQuestion: card['question'], newQuestion: question, newAnswer: answer);
                           showCustomSnackbar(context: context,message: 'The Card is Updated', );

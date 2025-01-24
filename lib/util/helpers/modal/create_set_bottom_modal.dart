@@ -29,8 +29,6 @@ void CreateSetBottomModal({
 
       return Consumer<QuizProvider>(
         builder: (context, quizProvider, child) {
-          if (isCreate) quizProvider.clearController();
-
           return Container(
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
             height: 380 + keyboardHeight, // Fixed height, adjusting for the keyboard
@@ -85,6 +83,7 @@ void CreateSetBottomModal({
                             'limitNumberOfQuiz': quizProvider.defaultMaxCards,
                           });
                           showCustomSnackbar(context: context, message: 'The Set $name is Created');
+                          quizProvider.clearController();
                         } else {
                           quizProvider.editQuizSet(setName, newName: name, newDescription: description);
                           showCustomSnackbar(context: context,  message: 'The Set $name is Updated ');

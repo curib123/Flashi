@@ -68,7 +68,7 @@ class _ExportImportScreenState extends State<ExportImportScreen> {
             Expanded(
               child: ElevatedButton.icon(
                 onPressed: () => _helper.importList(context, quizProvider),
-                icon: Icon(Icons.file_download),
+                icon: Icon(Icons.file_download,color: Colors.white,),
                 label: Text("Import Set"),
                 style: ButtonStyle(
                   foregroundColor: WidgetStatePropertyAll(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class ReusableNotesSummaryTileCore extends StatelessWidget {
   final String title;
@@ -24,6 +25,8 @@ class ReusableNotesSummaryTileCore extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+
+
 
     return GestureDetector(
       onTap: onTap,
@@ -77,6 +80,9 @@ class ReusableNotesSummaryTileCore extends StatelessWidget {
     );
   }
   Column _buildSubtitle(ColorScheme colorScheme) {
+    // Formatting date and time to 12-hour format
+    String formattedDate = DateFormat('MMM dd, yyyy - hh:mm a').format(timestamp);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -91,7 +97,7 @@ class ReusableNotesSummaryTileCore extends StatelessWidget {
         ),
         const SizedBox(height: 10,),
         Text(
-          timestamp.toString(),
+          formattedDate,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(

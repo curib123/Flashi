@@ -26,8 +26,8 @@ class NoteScreen extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final notesProvider = Provider.of<NotesProvider>(context);
     final sortProvider = Provider.of<SortProvider>(context);
-
     final AdManager adManager = AdManager();
+    var filteredNotes = notesProvider.filterNotesByTitle().reversed.toList();
 
 
     return Scaffold(
@@ -62,7 +62,7 @@ class NoteScreen extends StatelessWidget {
       ),
       body: Stack(
         children: [
-          sortProvider.dropdownValueNote == 'Tiles' ? _NoteBodyTile(colorScheme,adManager) : _NoteBodyBlock(colorScheme,adManager),
+          sortProvider.dropdownValueNote == 'Tiles' ? _NoteBodyTile(colorScheme,adManager,filteredNotes) : _NoteBodyBlock(colorScheme,adManager,filteredNotes),
           Container(
             color: colorScheme.onPrimary,
             height: adManager.bannerHeight,
@@ -111,20 +111,20 @@ class NoteScreen extends StatelessWidget {
     );
   }
 }
-Widget _NoteBodyTile(ColorScheme colorScheme,AdManager adManager) {
+Widget _NoteBodyTile(ColorScheme colorScheme,AdManager adManager,List filteredNotes ) {
   return Consumer<NotesProvider>(
     builder: (context, notesProvider, child) {
-      var filteredNotes = notesProvider.filterNotesByTitle();
+
       return _buildNoteListView(filteredNotes, colorScheme, notesProvider,'Tile',context,adManager);
     },
   );
 }
 
-Widget _NoteBodyBlock(ColorScheme colorScheme,AdManager adManager) {
+Widget _NoteBodyBlock(ColorScheme colorScheme,AdManager adManager,List filteredNotes) {
 
   return Consumer<NotesProvider>(
     builder: (context, notesProvider, child) {
-      var filteredNotes = notesProvider.filterNotesByTitle();
+
       return _buildNoteGridView(filteredNotes, colorScheme, notesProvider,"Block",context,adManager);
     },
   );

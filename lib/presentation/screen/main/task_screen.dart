@@ -30,7 +30,7 @@ class _TaskScreenState extends State<TaskScreen> {
     final AdManager adManager = AdManager();
     final sortProvider = Provider.of<SortProvider>(context);
     final taskProvider = Provider.of<TaskProvider>(context);
-    final filteredTask = taskProvider.searchTasksByName();
+    final filteredTask = taskProvider.searchTasksByName().reversed.toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -78,7 +78,7 @@ class _TaskScreenState extends State<TaskScreen> {
                     onChanged: (value) => {
                     taskProvider.onSearchQuery(value)
                     },
-                    controller:taskProvider.taskNameController
+                    controller:taskProvider.searchController
                 ),
                 ReusableSortAndSeeAll(
                     dropdownValue: sortProvider.dropdownValueTask,

@@ -65,7 +65,7 @@ class SeeAllQuizCard extends StatelessWidget {
   }
 
   Widget _body(BuildContext context) {
-    final AdManager adManager = AdManager();
+
 
     return Consumer2<QuizProvider, SortProvider>(
       builder: (context, quizProvider, sortProvider, child) {

@@ -4,7 +4,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 class SortProvider with ChangeNotifier {
   String _dropdownValueSet = 'Newest';  // Default value
   String _dropdownValueCard = 'Newest';  // Default value
-  String _dropdownValueNote = 'Tiles';  // Default value
+  String _dropdownValueNote = 'Blocks';  // Default value
   String _dropdownValueTask = 'Tiles';  // Default value
 
   // Box for storing the selected sort value

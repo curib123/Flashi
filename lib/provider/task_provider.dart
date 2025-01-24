@@ -13,6 +13,7 @@ class TaskProvider with ChangeNotifier {
   List<Map<String, dynamic>> studyTasks = [];
 
   TextEditingController taskNameController = TextEditingController();
+  TextEditingController searchController = TextEditingController();
   String searchQuery = '';
 
   // Clear the controller

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class ReusableNotesSummaryBlockCore extends StatelessWidget {
   final String title;
@@ -94,6 +95,9 @@ class ReusableNotesSummaryBlockCore extends StatelessWidget {
   }
 
   Column _buildSubtitle(ColorScheme colorScheme) {
+    // Formatting date and time to 12-hour format
+    String formattedDate = DateFormat('MMM dd, yyyy - hh:mm a').format(timestamp);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -108,7 +112,7 @@ class ReusableNotesSummaryBlockCore extends StatelessWidget {
         ),
         const SizedBox(height: 10,),
         Text(
-          timestamp.toString(),
+          formattedDate,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
