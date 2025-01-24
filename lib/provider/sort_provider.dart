@@ -50,7 +50,7 @@ class SortProvider with ChangeNotifier {
     // Load saved sort value or use default
     _dropdownValueSet = _sortBox.get('selectedSortSet', defaultValue: 'Newest')!;
     _dropdownValueCard = _sortBox.get('selectedSortCard', defaultValue: 'Newest')!;
-    _dropdownValueNote = _sortBox.get('selectedSortNote', defaultValue: 'Tiles')!;
+    _dropdownValueNote = _sortBox.get('selectedSortNote', defaultValue: 'Blocks')!;
     _dropdownValueTask = _sortBox.get('dropdownValueTask', defaultValue: 'Tiles')!;
     notifyListeners();
   }
