@@ -74,7 +74,7 @@ class _TaskScreenState extends State<TaskScreen> {
               children: [
                 ReusableSearchBarCore(
                     colorScheme: colorScheme,
-                    hintText: 'search session',
+                    hintText: 'search task',
                     onChanged: (value) => {
                     taskProvider.onSearchQuery(value)
                     },
