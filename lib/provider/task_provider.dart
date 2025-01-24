@@ -5,7 +5,7 @@ class TaskProvider with ChangeNotifier {
   // Box for storing tasks (assumed to be opened in main.dart)
   final Box _taskBox = Hive.box('task');
 
-  TaskProvider(){
+  TaskProvider() {
     loadTasks(); // Load tasks when the TaskProvider is created
   }
 
@@ -13,10 +13,16 @@ class TaskProvider with ChangeNotifier {
   List<Map<String, dynamic>> studyTasks = [];
 
   TextEditingController taskNameController = TextEditingController();
+  String searchQuery = '';
 
   // Clear the controller
   void clearController() {
     taskNameController.clear();
+  }
+
+  void onSearchQuery(String newValue) {
+    searchQuery = newValue;
+    notifyListeners();
   }
 
   // Load tasks from Hive into the studyTasks list
@@ -79,10 +85,19 @@ class TaskProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // Search tasks by name
-  List<Map<String, dynamic>> searchTasksByName(String searchQuery) {
-    return studyTasks.where((task) {
-      return task['taskName'].toLowerCase().contains(searchQuery.toLowerCase());
-    }).toList();
+  List<Map<String, dynamic>> searchTasksByName() {
+    if (searchQuery.isNotEmpty) {
+      return studyTasks.where((task) {
+        return task['taskName']
+            .toString()
+            .toLowerCase()
+            .contains(searchQuery.toLowerCase());
+      }).toList();
+    }
+    return studyTasks;
   }
 }
+
+
+
+

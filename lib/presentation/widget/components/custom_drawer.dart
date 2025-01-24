@@ -1,4 +1,5 @@
 import 'package:flashlearn/presentation/screen/main/export_import_screen.dart';
+import 'package:flashlearn/presentation/screen/main/favorate_screen.dart';
 import 'package:flashlearn/presentation/screen/main/settings_screen.dart';
 import 'package:flashlearn/presentation/screen/main/task_screen.dart';
 import 'package:flashlearn/provider/bottom_navigation_provider.dart';
@@ -60,10 +61,13 @@ class CustomDrawer extends StatelessWidget {
           ),
           buildListTile(
             icon: Icons.favorite_rounded,
-            title: 'Favorites',
+            title: 'Favorites Set',
             onTap: () {
               Navigator.pop(context);
-              bottomNavigationProvider.toogleNavigation(0);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const FavoriteScreen()),
+              );
             },
           ),
           buildListTile(
@@ -79,10 +83,7 @@ class CustomDrawer extends StatelessWidget {
             title: 'My Task ',
             onTap: () {
               Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const TaskScreen()),
-              );
+              bottomNavigationProvider.toogleNavigation(0);
             },
           ),  buildListTile(
             icon: Icons.settings_rounded,

@@ -21,7 +21,7 @@ class ReviewerSettingsProvider with ChangeNotifier {
   // Load settings from Hive
   void _loadSettings() {
     // Load flashCardFlippingDirection from Hive (0: HORIZONTAL, 1: VERTICAL)
-    int savedDirection = _settingsBox.get('flashCardFlippingDirection', defaultValue: 0);
+    int savedDirection = _settingsBox.get('flashCardFlippingDirection', defaultValue: 1);
     _flashCardFlippingDirection = FlipDirection.values[savedDirection];
 
     // Load timeDuration from Hive

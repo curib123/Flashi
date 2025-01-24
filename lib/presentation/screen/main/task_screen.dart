@@ -30,6 +30,7 @@ class _TaskScreenState extends State<TaskScreen> {
     final AdManager adManager = AdManager();
     final sortProvider = Provider.of<SortProvider>(context);
     final taskProvider = Provider.of<TaskProvider>(context);
+    final filteredTask = taskProvider.searchTasksByName();
 
     return Scaffold(
       appBar: AppBar(
@@ -64,7 +65,7 @@ class _TaskScreenState extends State<TaskScreen> {
       body: Stack(
         children: [
 
-          sortProvider.dropdownValueTask == 'Tiles' ?  _taskTile(colorScheme,adManager,taskProvider):  _taskBlock(colorScheme,adManager,taskProvider),
+          sortProvider.dropdownValueTask == 'Tiles' ?  _taskTile(colorScheme,adManager,taskProvider,filteredTask,context):  _taskBlock(colorScheme,adManager,taskProvider,filteredTask,context),
 
           Container(
             color: colorScheme.onPrimary,
@@ -75,9 +76,9 @@ class _TaskScreenState extends State<TaskScreen> {
                     colorScheme: colorScheme,
                     hintText: 'search session',
                     onChanged: (value) => {
-
+                    taskProvider.onSearchQuery(value)
                     },
-                    controller:TextEditingController()
+                    controller:taskProvider.taskNameController
                 ),
                 ReusableSortAndSeeAll(
                     dropdownValue: sortProvider.dropdownValueTask,
@@ -95,7 +96,6 @@ class _TaskScreenState extends State<TaskScreen> {
             ),
           ),
           ReusableThemeSettingPosition(colorScheme: colorScheme),
-          ReusableFavoratePosition(colorScheme: colorScheme),
           ReusableCreateSetButtonPosition(colorScheme: colorScheme, name: 'Add Task Today', onTap: () {
             CreateTaskModal(context: context, buttonName: 'Add Task', isCreate: true, taskName: '');
           })
@@ -104,16 +104,20 @@ class _TaskScreenState extends State<TaskScreen> {
     );
   }
 }
-Widget _taskTile(ColorScheme colorScheme, AdManager adManager, TaskProvider taskProvider) {
+Widget _taskTile(ColorScheme colorScheme, AdManager adManager, TaskProvider taskProvider,List filteredTask,BuildContext context) {
+
+  if (filteredTask.isEmpty) {
+    return _noTaskWidget(context); // Show No Task message if there are no tasks
+  }
+
   return ListView.builder(
     padding: EdgeInsets.symmetric(vertical: adManager.bannerHeight),
-    itemCount: taskProvider.getAllTasks().isEmpty ? 1 : taskProvider.getAllTasks().length, // Check if tasks are empty
+    itemCount: filteredTask.isEmpty ? 1 :filteredTask.length, // Check if tasks are empty
     itemBuilder: (context, index) {
-      if (taskProvider.getAllTasks().isEmpty) {
-        return _noTaskWidget(context); // Show No Task message if there are no tasks
-      }
 
-      final task = taskProvider.getAllTasks()[index];
+
+
+      final task = filteredTask[index];
 
       return AnimationConfiguration.staggeredList(
         position: index,
@@ -147,7 +151,12 @@ Widget _taskTile(ColorScheme colorScheme, AdManager adManager, TaskProvider task
   );
 }
 
-Widget _taskBlock(ColorScheme colorScheme, AdManager adManager, TaskProvider taskProvider) {
+Widget _taskBlock(ColorScheme colorScheme, AdManager adManager, TaskProvider taskProvider,List filteredTask,BuildContext context) {
+
+  if (filteredTask.isEmpty) {
+    return _noTaskWidget(context); // Show No Task message if there are no tasks
+  }
+
   return GridView.builder(
     padding: EdgeInsets.symmetric(vertical: adManager.bannerHeight),
     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -156,13 +165,11 @@ Widget _taskBlock(ColorScheme colorScheme, AdManager adManager, TaskProvider tas
       mainAxisSpacing: 8.0, // Space between rows
       childAspectRatio: 1.0, // Aspect ratio of each grid item
     ),
-    itemCount: taskProvider.getAllTasks().isEmpty ? 1 : taskProvider.getAllTasks().length, // Check if tasks are empty
+    itemCount: filteredTask.isEmpty ? 1 : filteredTask.length, // Check if tasks are empty
     itemBuilder: (context, index) {
-      if (taskProvider.getAllTasks().isEmpty) {
-        return _noTaskWidget(context); // Show No Task message if there are no tasks
-      }
 
-      final task = taskProvider.getAllTasks()[index];
+
+      final task = filteredTask[index];
 
       return AnimationConfiguration.staggeredList(
         position: index,
@@ -202,7 +209,7 @@ Widget _taskBlock(ColorScheme colorScheme, AdManager adManager, TaskProvider tas
 
 Widget _noTaskWidget(BuildContext context) {
   return SizedBox(
-    height: MediaQuery.of(context).size.height * 0.50,
+    height: MediaQuery.of(context).size.height,
     width: MediaQuery.of(context).size.width,
     child:   Center(
   child: Column(

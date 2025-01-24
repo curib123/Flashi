@@ -32,11 +32,19 @@ class NotesProvider with ChangeNotifier {
   }
 
   // Method to filter note list by title
-  List<Map<String, dynamic>> filterNotesByTitle(String title) {
+  List<Map<String, dynamic>> filterNotesByTitle() {
     return _notes
         .where((note) => note['title'].toLowerCase().contains(_searchQuery.toLowerCase()))
         .toList();
   }
+
+
+  List<Map<String, dynamic>> filterFavorate() {
+    return _notes.where((note) {
+      return note['favorite'] == true; // Check if the note is marked as favorite
+    }).toList();
+  }
+
 
   // Add a new note
   void addNote(Map<String, dynamic> note) {

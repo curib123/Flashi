@@ -90,7 +90,6 @@ class NoteScreen extends StatelessWidget {
             ),
           ),
           ReusableThemeSettingPosition(colorScheme: colorScheme),
-          ReusableFavoratePosition(colorScheme: colorScheme),
           ReusableCreateSetButtonPosition(colorScheme: colorScheme, name: 'Add Notes', onTap: () {
             notesProvider.titleController.text = '';
             notesProvider.contentController.text = '';
@@ -115,7 +114,7 @@ class NoteScreen extends StatelessWidget {
 Widget _NoteBodyTile(ColorScheme colorScheme,AdManager adManager) {
   return Consumer<NotesProvider>(
     builder: (context, notesProvider, child) {
-      var filteredNotes = notesProvider.filterNotesByTitle(notesProvider.searchQuery);
+      var filteredNotes = notesProvider.filterNotesByTitle();
       return _buildNoteListView(filteredNotes, colorScheme, notesProvider,'Tile',context,adManager);
     },
   );
@@ -125,7 +124,7 @@ Widget _NoteBodyBlock(ColorScheme colorScheme,AdManager adManager) {
 
   return Consumer<NotesProvider>(
     builder: (context, notesProvider, child) {
-      var filteredNotes = notesProvider.filterNotesByTitle(notesProvider.searchQuery);
+      var filteredNotes = notesProvider.filterNotesByTitle();
       return _buildNoteGridView(filteredNotes, colorScheme, notesProvider,"Block",context,adManager);
     },
   );
