@@ -154,7 +154,7 @@ class _TextToSpeechReviewState extends State<TextToSpeechReview> {
                   backgroundColor: Theme.of(context).colorScheme.primary,
                   foregroundColor: Theme.of(context).colorScheme.onPrimary,
                 ),
-                child: Icon(Icons.arrow_back),
+                child: Icon(Icons.arrow_back,color: Colors.white,),
               ),
 
             ],
