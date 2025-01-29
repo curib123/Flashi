@@ -5,8 +5,8 @@ import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_sort_an
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
 import 'package:flashlearn/provider/quiz_provider.dart';
 import 'package:flashlearn/provider/sort_provider.dart';
-import 'package:flashlearn/util/helpers/ads/ads_manager.dart';
 import 'package:flashlearn/util/helpers/alert_box/delete_confirmation_alert_box.dart';
+import 'package:flashlearn/util/helpers/alert_box/highlight_keyword_alert_box.dart';
 import 'package:flashlearn/util/helpers/alert_box/review_selection_alert_box.dart';
 import 'package:flashlearn/util/helpers/modal/create_card_bottom_modal.dart';
 import 'package:flutter/material.dart';
@@ -133,6 +133,14 @@ class SeeAllQuizCard extends StatelessWidget {
                             quizSetName: name,
                             isIgnore: quizSet['isIgnore'],
                             question: quizSet['question']);
+                      },
+                      onKeyword: (quizSet) {
+                       HighlightKeywordAlertBox(context, (keyword) {
+                         quizProvider.updateKeyWordInQuizSet(quizSetName: name, oldKeyWord: quizSet['keyword'], newKeyWord: keyword);
+                       });
+                      },
+                      onRemoveKeyword: ( quizSet) {
+                        quizProvider.updateKeyWordInQuizSet(quizSetName: name, oldKeyWord:quizSet['keyword'] , newKeyWord: '');
                       },),
                   ),
                 ),

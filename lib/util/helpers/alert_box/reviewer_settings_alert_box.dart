@@ -74,7 +74,7 @@ void reviewerSettingsAlertBox({
   );
 }
 
-// Helper Widget for Buttons
+// Helper widget for Buttons
 Widget _buildActionButton({
   required BuildContext context,
   required String label,

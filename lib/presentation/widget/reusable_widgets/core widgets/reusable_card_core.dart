@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:flashlearn/util/helpers/widget/highlight_keywords.dart';
 
 class ReusableCardCore extends StatelessWidget {
   final String question;
+  final String keyword;
   final String answer;
   final bool isIgnore;
   final DateTime timestamp;
@@ -10,6 +12,8 @@ class ReusableCardCore extends StatelessWidget {
   final Function() onRemove;
   final Function() onEdit;
   final Function() onIgnore;
+  final Function() onKeyword;
+  final Function() onRemoveKeyword;
 
   final FlutterTts flutterTts = FlutterTts();
 
@@ -23,6 +27,9 @@ class ReusableCardCore extends StatelessWidget {
     required this.onEdit,
     required this.onIgnore,
     required this.isUpdating,
+    required this.onKeyword,
+    required this.keyword,
+    required this.onRemoveKeyword,
   }) : super(key: key);
 
   @override
@@ -62,17 +69,10 @@ class ReusableCardCore extends StatelessWidget {
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
-                color: colorScheme.onSurface.withOpacity(0.6),
+                color: colorScheme.primary.withOpacity(0.6),
               ),
             )
-                : Text(
-              question,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: colorScheme.primary.withOpacity(0.5),
-              ),
-            ),
+                : highlightKeywords(question, context, keyword), // Add highlight to the question text
             subtitle: isIgnore
                 ? null
                 : Column(
@@ -100,7 +100,7 @@ class ReusableCardCore extends StatelessWidget {
                 IconButton(
                   icon: Icon(Icons.volume_up, color: colorScheme.primary),
                   onPressed: () async {
-                    await flutterTts.speak('The question :   $question   The Answer : $answer');
+                    await flutterTts.speak('The question: $question The Answer: $answer');
                   },
                   splashColor: colorScheme.primary.withOpacity(0.2),
                 ),
@@ -118,6 +118,7 @@ class ReusableCardCore extends StatelessWidget {
       ),
     );
   }
+
 
   // Popup menu for more options (Edit, Remove, Ignore)
   void _showPopupMenu(BuildContext context, ColorScheme colorScheme) {
@@ -154,6 +155,25 @@ class ReusableCardCore extends StatelessWidget {
           ),
         ),
         PopupMenuItem(
+          value: 'keyword',
+          child: Row(
+            children: [
+              Icon(Icons.key, color: colorScheme.primary),
+              SizedBox(width: 8),
+              Text('Highlight keyword', style: TextStyle(color: colorScheme.primary)),
+            ],
+          ),
+        ),  PopupMenuItem(
+          value: 'remove_keyword',
+          child: Row(
+            children: [
+              Icon(Icons.key_off, color: colorScheme.error),
+              SizedBox(width: 8),
+              Text('Remove keyword', style: TextStyle(color: colorScheme.primary)),
+            ],
+          ),
+        ),
+        PopupMenuItem(
           value: 'ignore',
           child: Row(
             children: [
@@ -175,6 +195,10 @@ class ReusableCardCore extends StatelessWidget {
         onRemove();
       } else if (value == 'ignore') {
         onIgnore();
+      } else if (value == 'keyword') {
+        onKeyword();
+      }else if (value == 'remove_keyword') {
+        onRemoveKeyword();
       }
     });
   }

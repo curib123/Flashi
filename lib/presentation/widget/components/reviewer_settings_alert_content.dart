@@ -89,7 +89,7 @@ class ReviewerSettingsAlertContent extends StatelessWidget {
     );
   }
 
-  // Helper Widget for Dropdown
+  // Helper widget for Dropdown
   Widget _buildDropdownSection<T>({
     required BuildContext context,
     required String label,

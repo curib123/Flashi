@@ -12,14 +12,18 @@ class ReusableQuizCardList extends StatelessWidget {
   final Function(Map<String, dynamic> quizSet)? onRemove; // Callback for removing a quiz card
   final Function(Map<String, dynamic> quizSet)? onEdit; // Callback for editing a quiz card
   final Function(String name, Map<String, dynamic> quizSet)? onIgnore; // Callback for ignoring/unignoring a quiz card
+  final Function( Map<String, dynamic> quizSet)? onKeyword; // Callback for ignoring/unignoring a quiz card
+  final Function( Map<String, dynamic> quizSet)? onRemoveKeyword; // Callback for ignoring/unignoring a quiz card
 
   const ReusableQuizCardList({
     Key? key,
     required this.name,
     required this.card,
-    this.onRemove,
-    this.onEdit,
-    this.onIgnore,
+    required this.onRemove,
+    required this.onEdit,
+    required this.onIgnore,
+    required this.onKeyword,
+    required this.onRemoveKeyword,
   }) : super(key: key);
 
   @override
@@ -94,6 +98,7 @@ class ReusableQuizCardList extends StatelessWidget {
                   child: ReusableCardCore(
                     isUpdating: quizSet['isUpdating'] ?? false,
                     question: quizSet['question'] ?? 'No question provided',
+                    keyword:  quizSet['keyword'] ?? '',
                     answer: quizSet['answer'] ?? 'No answer provided',
                     timestamp: quizSet['timestamp'] ?? DateTime.now(),
                     isIgnore: quizSet['isIgnore'] ?? false,
@@ -105,6 +110,12 @@ class ReusableQuizCardList extends StatelessWidget {
                     },
                     onIgnore: () {
                       if (onIgnore != null) onIgnore!(name, quizSet);
+                    },
+                    onKeyword: () {
+                      if (onKeyword != null) onKeyword!(quizSet);
+                    },
+                    onRemoveKeyword: () {
+                      if (onRemoveKeyword != null) onRemoveKeyword!(quizSet);
                     },
                   ),
                 ),

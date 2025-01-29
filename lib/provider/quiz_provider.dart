@@ -358,6 +358,32 @@ class QuizProvider with ChangeNotifier {
     return false;
   }
 
+  // Update only the KeyWord inside a card in a specific quiz set
+  bool updateKeyWordInQuizSet({
+    required String quizSetName,
+    required String oldKeyWord,
+    required String newKeyWord,
+  }) {
+    Map<String, dynamic>? quizSet = searchQuizSet(quizSetName: quizSetName);
+
+    if (quizSet != null) {
+      // Find the index of the card with the old KeyWord
+      int cardIndex = quizSet['cards']?.indexWhere((card) => card['keyword'] == oldKeyWord) ?? -1;
+
+      if (cardIndex != -1) {
+        // Update the KeyWord, not the question
+        quizSet['cards']?[cardIndex]['keyword'] = newKeyWord;
+
+        // Save changes and notify listeners
+        saveQuizSets();
+        notifyListeners();
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   // Show all quiz sets
   List<Map<String, dynamic>> showAllQuizSets() {
     return _quizSets;

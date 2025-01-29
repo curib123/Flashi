@@ -82,6 +82,7 @@ void CreateCardBottomModal({
                               'question' : question,
                               'answer'   : answer,
                               'isIgnore'   : false,
+                              'keyword'   : '',
                               'timestamp' : DateTime.now()
                             });
                             showCustomSnackbar(context: context, message: 'The Card is Created ',);
