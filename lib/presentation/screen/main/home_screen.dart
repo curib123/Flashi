@@ -106,7 +106,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           "FlashCards for Faster Learning",
                             style: TextStyle(
                               color: colorScheme.onPrimary,
-                              fontWeight: FontWeight.w500,
+                              fontWeight: FontWeight.w700,
                               fontSize: 17,
                             ),
                           ),

@@ -44,28 +44,13 @@ class SettingsScreen extends StatelessWidget {
   Widget _settings(BuildContext context) {
     return ListView(
       children: [
-        _sectionHeader('FlashCard Settings'),
+        const SizedBox(height: 30),
         const ReviewerSettingsAlertContent(),
-        const SizedBox(height: 20),
-        _sectionHeader('Theme Settings'),
+        const SizedBox(height: 50),
         const ThemeSelector(
-          isShowCloseBtn: true,
+          isShowCloseBtn: false,
         ),
       ],
     );
   }
-
-  Widget _sectionHeader(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 15),
-      child: Text(
-        title,
-        style: const TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 20,
-          color: Colors.black, // Use a dynamic color if needed
-        ),
-      ),
-    );
   }
-}
