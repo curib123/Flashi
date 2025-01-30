@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class TextToSpeechCardCore extends StatelessWidget {
   // Declaring final variables to hold question and answer text
-  final String question;
+  final Widget question;
   final String answer;
 
   // Constructor with required named parameters
@@ -44,16 +44,7 @@ class TextToSpeechCardCore extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Display the question with enhanced styling and automatic wrapping
-            Text(
-              question,
-              textAlign: TextAlign.center, // Keep alignment consistent
-              style: TextStyle(
-                color: colorScheme.onPrimary,
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-              ),
-            ),
+           question,
             const SizedBox(height: 20),
             // Display the answer with styled appearance and automatic wrapping
             Text(

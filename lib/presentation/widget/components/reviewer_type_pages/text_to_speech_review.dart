@@ -1,5 +1,6 @@
 import 'package:flashlearn/util/helpers/ads/ad_unit_id.dart';
 import 'package:flashlearn/util/helpers/ads/ads_manager.dart';
+import 'package:flashlearn/util/helpers/widget/highlight_keywords.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reviewer_widgets_core/text_to_speech_card_core.dart';
@@ -106,7 +107,7 @@ class _TextToSpeechReviewState extends State<TextToSpeechReview> {
             itemBuilder: (context, index) {
               final card = widget.cards[index];
               return TextToSpeechCardCore(
-                question: card['question'] ?? 'No question available',
+                question: highlightKeywords( context: context, keyword:  card['keyword'] , text:  card['question'] , fontSize: 22 , fontColor: Theme.of(context).colorScheme.onPrimary, fontSizeKeyword: 17),
                 answer: card['answer'] ?? 'No answer available',
               );
             },

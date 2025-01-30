@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class MultipleChoiceCore extends StatefulWidget {
-  final String question;
+  final Widget question;
   final String answer;
   final String optionA;
   final String optionB;
@@ -86,17 +86,7 @@ class _MultipleChoiceCoreState extends State<MultipleChoiceCore> {
                   ),
                 ],
               ),
-              child: Center(
-                child: Text(
-                  widget.question,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: colorScheme.onPrimary,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
+              child: widget.question
             ),
             const SizedBox(height: 30),
             Column(

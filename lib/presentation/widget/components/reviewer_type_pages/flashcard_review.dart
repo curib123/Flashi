@@ -4,6 +4,7 @@ import 'package:flashlearn/provider/reviewer_settings_provider.dart';
 import 'package:flashlearn/util/helpers/ads/ad_unit_id.dart';
 import 'package:flashlearn/util/helpers/ads/ads_manager.dart';
 import 'package:flashlearn/util/helpers/modal/create_card_bottom_modal.dart';
+import 'package:flashlearn/util/helpers/widget/highlight_keywords.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -70,7 +71,7 @@ class _FlashcardReviewState extends State<FlashcardReview> {
 
                   return FlipCardCore(
                     flipDirection: reviewerSettingsProvider.flashCardFlippingDirection,
-                    question: card['question'],
+                    question: highlightKeywords( context: context, keyword:  card['keyword'] , text:  card['question'] , fontSize: 20 , fontColor: Theme.of(context).colorScheme.onPrimary, fontSizeKeyword: 15),
                     answer: card['answer'],
                     onEdit: () {
                       // Populate the quiz provider with the current card's data

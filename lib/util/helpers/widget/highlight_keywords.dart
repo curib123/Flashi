@@ -1,10 +1,30 @@
 import 'package:flutter/material.dart';
 
-Widget highlightKeywords(String text, BuildContext context, String keyword) {
+Widget highlightKeywords({
+  required BuildContext context,
+  required String text,
+  required String keyword,
+  required double fontSize,
+  required double fontSizeKeyword,
+  required Color fontColor,
+  String fontFamily = 'Roboto', // Set default font family
+}) {
   final colorScheme = Theme.of(context).colorScheme;
 
   if (keyword.isEmpty) {
-    return Text(text, style: TextStyle(fontSize: 16));
+    return Align(
+      alignment: Alignment.center,
+      child: Text(
+        text,
+        textAlign: TextAlign.center, // Ensures text wraps centrally
+        style: TextStyle(
+          fontSize: fontSize,
+          color: fontColor,
+          fontWeight: FontWeight.normal,
+          fontFamily: fontFamily, // Apply font family
+        ),
+      ),
+    );
   }
 
   List<InlineSpan> spans = [];
@@ -17,7 +37,12 @@ Widget highlightKeywords(String text, BuildContext context, String keyword) {
     if (index == -1) {
       spans.add(TextSpan(
         text: text.substring(start),
-        style: TextStyle(fontSize: 16, color: colorScheme.onSurface),
+        style: TextStyle(
+          fontSize: fontSize,
+          color: fontColor,
+          fontWeight: FontWeight.normal,
+          fontFamily: fontFamily, // Ensure consistent font
+        ),
       ));
       break;
     }
@@ -26,7 +51,12 @@ Widget highlightKeywords(String text, BuildContext context, String keyword) {
     if (index > start) {
       spans.add(TextSpan(
         text: text.substring(start, index),
-        style: TextStyle(fontSize: 16, color: colorScheme.onSurface),
+        style: TextStyle(
+          fontSize: fontSize,
+          color: fontColor,
+          fontWeight: FontWeight.normal,
+          fontFamily: fontFamily, // Apply font family
+        ),
       ));
     }
 
@@ -35,18 +65,19 @@ Widget highlightKeywords(String text, BuildContext context, String keyword) {
       WidgetSpan(
         alignment: PlaceholderAlignment.middle,
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 0),
-          margin: const EdgeInsets.symmetric(horizontal: 2),
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+          margin: const EdgeInsets.symmetric(horizontal: 5),
           decoration: BoxDecoration(
-            color: colorScheme.tertiary, // Background highlight
+            color: colorScheme.tertiary, // Highlight background
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(
             text.substring(index, index + keyword.length),
             style: TextStyle(
-              fontSize: 12,
+              fontSize: fontSizeKeyword,
               fontWeight: FontWeight.bold,
-              color: colorScheme.onTertiary, // Text color contrast
+              color: colorScheme.tertiaryContainer, // Contrast text color
+              fontFamily: fontFamily, // Ensure consistent font
             ),
           ),
         ),
@@ -56,5 +87,11 @@ Widget highlightKeywords(String text, BuildContext context, String keyword) {
     start = index + keyword.length;
   }
 
-  return RichText(text: TextSpan(children: spans));
+  return Align(
+    alignment: Alignment.center,
+    child: RichText(
+      textAlign: TextAlign.center, // Ensures text wraps centrally
+      text: TextSpan(children: spans),
+    ),
+  );
 }

@@ -3,7 +3,7 @@ import 'package:flip_card/flip_card.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
 class FlipCardCore extends StatefulWidget {
-  final String question;
+  final Widget question;
   final String answer;
   final FlipDirection flipDirection;
   final VoidCallback onEdit;
@@ -12,7 +12,7 @@ class FlipCardCore extends StatefulWidget {
     Key? key,
     required this.question,
     required this.answer,
-    required this.flipDirection, // Default to horizontal
+    required this.flipDirection,
     required this.onEdit,
   }) : super(key: key);
 
@@ -45,14 +45,18 @@ class _FlipCardCoreState extends State<FlipCardCore> {
         ),
         back: _buildCardSide(
           context,
-          content: widget.answer,
+          content: Center(
+            child: Text(widget.answer, // Convert answer to Text widget
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500, color: Theme.of(context).colorScheme.onPrimary)),
+          ),
           isFront: false,
         ),
       ),
     );
   }
 
-  Widget _buildCardSide(BuildContext context, {required String content, required bool isFront}) {
+  Widget _buildCardSide(BuildContext context, {required Widget content, required bool isFront}) {
     final size = MediaQuery.of(context).size;
     final colorScheme = Theme.of(context).colorScheme;
 
@@ -69,8 +73,8 @@ class _FlipCardCoreState extends State<FlipCardCore> {
               borderRadius: BorderRadius.circular(16),
               gradient: LinearGradient(
                 colors: isFront
-                    ? [colorScheme.primary, colorScheme.tertiary] // Gradient for the front side
-                    : [colorScheme.tertiary, colorScheme.primary], // Gradient for the back side
+                    ? [colorScheme.primary.withOpacity(.8), colorScheme.tertiary.withOpacity(.8)] // Gradient for front side
+                    : [colorScheme.tertiary.withOpacity(.8), colorScheme.primary.withOpacity(.8)], // Gradient for back side
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -83,13 +87,7 @@ class _FlipCardCoreState extends State<FlipCardCore> {
               ],
             ),
             padding: const EdgeInsets.all(16),
-            child: Center(
-              child: Text(
-                content,
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Colors.white),
-              ),
-            ),
+            child: Center(child: content), // Use Widget directly
           ),
         ),
         Positioned(
@@ -100,25 +98,25 @@ class _FlipCardCoreState extends State<FlipCardCore> {
             onPressed: widget.onEdit,
           ),
         ),
-        Positioned(
-          top: 8,
-          right: 8,
-          child: IconButton(
-            icon: Icon(Icons.volume_up, color: colorScheme.onPrimary, size: 24),
-            onPressed: () => _speak(content), // Trigger TTS for the current content
+        if (!isFront) // Only show the speaker icon for answers
+          Positioned(
+            top: 8,
+            right: 8,
+            child: IconButton(
+              icon: Icon(Icons.volume_up, color: colorScheme.onPrimary, size: 24),
+              onPressed: () => _speak(widget.answer), // Read aloud the answer
+            ),
           ),
-        ),
         Positioned(
-          bottom: 16, // Adjusted distance from the bottom edge
-          left: size.width * 0.45, // Center horizontally based on the card's width
+          bottom: 16,
+          left: size.width * 0.45,
           child: Transform.translate(
-            offset: Offset(-14, 0), // Adjust to ensure the icon is centered
+            offset: const Offset(-14, 0),
             child: isFront
                 ? Icon(Icons.rotate_right, color: colorScheme.onPrimary, size: 40)
                 : Icon(Icons.rotate_left, color: colorScheme.onPrimary, size: 40),
           ),
         ),
-
       ],
     );
   }

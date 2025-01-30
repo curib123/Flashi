@@ -87,6 +87,7 @@ void CreateSetBottomModal({
                         } else {
                           quizProvider.editQuizSet(setName, newName: name, newDescription: description);
                           showCustomSnackbar(context: context,  message: 'The Set $name is Updated ');
+                          quizProvider.clearController();
                         }
 
                         // Close the modal

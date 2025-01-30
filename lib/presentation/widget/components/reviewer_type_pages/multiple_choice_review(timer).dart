@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:math';
 import 'package:flashlearn/util/helpers/ads/ad_unit_id.dart';
 import 'package:flashlearn/util/helpers/ads/ads_manager.dart';
+import 'package:flashlearn/util/helpers/widget/highlight_keywords.dart';
 import 'package:flutter/material.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reviewer_widgets_core/multiple_choice_core.dart';
 
@@ -317,7 +318,7 @@ class _MultipleChoiceReviewState extends State<MultipleChoiceReviewTimer> {
               timer: _timerNotifier.value.toString(),
               totalScore: widget.cards.length.toString(),
               score: _score.toString(),
-              question: card['question'],
+              question: highlightKeywords( context: context, keyword:  card['keyword'] , text:  card['question'] , fontSize: 22 , fontColor: Theme.of(context).colorScheme.onPrimary, fontSizeKeyword: 17),
               optionA: options[0],
               optionB: options[1],
               optionC: options[2],

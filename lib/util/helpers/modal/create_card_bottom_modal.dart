@@ -90,6 +90,7 @@ void CreateCardBottomModal({
                         } else {
                           quizProvider.updateCardInQuizSet( quizSetName: name, oldQuestion: card['question'], newQuestion: question, newAnswer: answer);
                           showCustomSnackbar(context: context,message: 'The Card is Updated', );
+                          quizProvider.clearController();
                         }
 
                         // Close the modal

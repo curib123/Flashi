@@ -62,7 +62,7 @@ class ReusableCardCore extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
           ),
           child: ListTile(
-            contentPadding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 20.0),
+            contentPadding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 20.0),
             title: isIgnore
                 ? Text(
               "This card has been hidden and marked as ignored.",
@@ -72,15 +72,16 @@ class ReusableCardCore extends StatelessWidget {
                 color: colorScheme.primary.withOpacity(0.6),
               ),
             )
-                : highlightKeywords(question, context, keyword), // Add highlight to the question text
+                : highlightKeywords( context: context, keyword: keyword, text: question, fontSize: 15, fontColor: colorScheme.primary, fontSizeKeyword: 10), // Add highlight to the question text
             subtitle: isIgnore
                 ? null
                 : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                SizedBox(height: 2),
                 Text(
                   answer,
-                  style: TextStyle(fontSize: 14, color: colorScheme.onSurface),
+                  style: TextStyle(fontSize: 16, color: colorScheme.secondary,fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
                 isUpdating
