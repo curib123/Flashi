@@ -72,7 +72,7 @@ class ReusableCardCore extends StatelessWidget {
                 color: colorScheme.primary.withOpacity(0.6),
               ),
             )
-                : highlightKeywords( context: context, keyword: keyword, text: question, fontSize: 15, fontColor: colorScheme.primary, fontSizeKeyword: 10), // Add highlight to the question text
+                : highlightKeywords( context: context, keyword: keyword, text: question, fontSize: 15, fontColor: colorScheme.primary, fontSizeKeyword: 10, isCenter: false), // Add highlight to the question text
             subtitle: isIgnore
                 ? null
                 : Column(

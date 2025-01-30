@@ -71,7 +71,7 @@ class _FlashcardReviewState extends State<FlashcardReview> {
 
                   return FlipCardCore(
                     flipDirection: reviewerSettingsProvider.flashCardFlippingDirection,
-                    question: highlightKeywords( context: context, keyword:  card['keyword'] , text:  card['question'] , fontSize: 20 , fontColor: Theme.of(context).colorScheme.onPrimary, fontSizeKeyword: 15),
+                    question: highlightKeywords( context: context, keyword:  card['keyword'] , text:  card['question'] , fontSize: 20 , fontColor: Theme.of(context).colorScheme.onPrimary, fontSizeKeyword: 15, isCenter: true),
                     answer: card['answer'],
                     onEdit: () {
                       // Populate the quiz provider with the current card's data

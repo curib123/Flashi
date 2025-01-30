@@ -107,7 +107,7 @@ class _TextToSpeechReviewState extends State<TextToSpeechReview> {
             itemBuilder: (context, index) {
               final card = widget.cards[index];
               return TextToSpeechCardCore(
-                question: highlightKeywords( context: context, keyword:  card['keyword'] , text:  card['question'] , fontSize: 22 , fontColor: Theme.of(context).colorScheme.onPrimary, fontSizeKeyword: 17),
+                question: highlightKeywords( context: context, keyword:  card['keyword'] , text:  card['question'] , fontSize: 22 , fontColor: Theme.of(context).colorScheme.onPrimary, fontSizeKeyword: 17, isCenter: true),
                 answer: card['answer'] ?? 'No answer available',
               );
             },

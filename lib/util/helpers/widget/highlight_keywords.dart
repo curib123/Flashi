@@ -7,21 +7,21 @@ Widget highlightKeywords({
   required double fontSize,
   required double fontSizeKeyword,
   required Color fontColor,
-  String fontFamily = 'Roboto', // Set default font family
+  required bool isCenter,
 }) {
   final colorScheme = Theme.of(context).colorScheme;
+  final defaultTextStyle = DefaultTextStyle.of(context).style;
 
   if (keyword.isEmpty) {
     return Align(
-      alignment: Alignment.center,
+      alignment: isCenter ? Alignment.center : Alignment.centerLeft,
       child: Text(
         text,
-        textAlign: TextAlign.center, // Ensures text wraps centrally
-        style: TextStyle(
+        textAlign: isCenter ? TextAlign.center : TextAlign.start,
+        style: defaultTextStyle.copyWith(
           fontSize: fontSize,
           color: fontColor,
           fontWeight: FontWeight.normal,
-          fontFamily: fontFamily, // Apply font family
         ),
       ),
     );
@@ -37,30 +37,26 @@ Widget highlightKeywords({
     if (index == -1) {
       spans.add(TextSpan(
         text: text.substring(start),
-        style: TextStyle(
+        style: defaultTextStyle.copyWith(
           fontSize: fontSize,
           color: fontColor,
           fontWeight: FontWeight.normal,
-          fontFamily: fontFamily, // Ensure consistent font
         ),
       ));
       break;
     }
 
-    // Add text before the highlighted word
     if (index > start) {
       spans.add(TextSpan(
         text: text.substring(start, index),
-        style: TextStyle(
+        style: defaultTextStyle.copyWith(
           fontSize: fontSize,
           color: fontColor,
           fontWeight: FontWeight.normal,
-          fontFamily: fontFamily, // Apply font family
         ),
       ));
     }
 
-    // Add highlighted keyword with rounded background
     spans.add(
       WidgetSpan(
         alignment: PlaceholderAlignment.middle,
@@ -68,16 +64,15 @@ Widget highlightKeywords({
           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
           margin: const EdgeInsets.symmetric(horizontal: 5),
           decoration: BoxDecoration(
-            color: colorScheme.tertiary, // Highlight background
+            color: colorScheme.tertiary,
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(
             text.substring(index, index + keyword.length),
-            style: TextStyle(
+            style: defaultTextStyle.copyWith(
               fontSize: fontSizeKeyword,
               fontWeight: FontWeight.bold,
-              color: colorScheme.tertiaryContainer, // Contrast text color
-              fontFamily: fontFamily, // Ensure consistent font
+              color: colorScheme.tertiaryContainer,
             ),
           ),
         ),
@@ -88,10 +83,13 @@ Widget highlightKeywords({
   }
 
   return Align(
-    alignment: Alignment.center,
-    child: RichText(
-      textAlign: TextAlign.center, // Ensures text wraps centrally
-      text: TextSpan(children: spans),
+    alignment: isCenter ? Alignment.center : Alignment.centerLeft,
+    child: DefaultTextStyle.merge(
+      style: defaultTextStyle, // Ensures font family stays consistent
+      child: RichText(
+        textAlign: isCenter ? TextAlign.center : TextAlign.start,
+        text: TextSpan(children: spans),
+      ),
     ),
   );
 }

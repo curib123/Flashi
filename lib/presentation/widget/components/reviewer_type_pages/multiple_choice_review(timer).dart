@@ -318,7 +318,7 @@ class _MultipleChoiceReviewState extends State<MultipleChoiceReviewTimer> {
               timer: _timerNotifier.value.toString(),
               totalScore: widget.cards.length.toString(),
               score: _score.toString(),
-              question: highlightKeywords( context: context, keyword:  card['keyword'] , text:  card['question'] , fontSize: 22 , fontColor: Theme.of(context).colorScheme.onPrimary, fontSizeKeyword: 17),
+              question: highlightKeywords( context: context, keyword:  card['keyword'] , text:  card['question'] , fontSize: 22 , fontColor: Theme.of(context).colorScheme.onPrimary, fontSizeKeyword: 17, isCenter: true),
               optionA: options[0],
               optionB: options[1],
               optionC: options[2],
