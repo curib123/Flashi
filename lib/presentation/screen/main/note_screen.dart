@@ -101,6 +101,7 @@ class NoteScreen extends StatelessWidget {
                     isCreate: true,
                     title: '',
                     isRead: false,
+                    date: DateTime.now(),
                   );
                 },
               ),
@@ -210,6 +211,7 @@ Widget _buildNoteLayout(Map<String, dynamic> note, int index, ColorScheme colorS
                           isCreate: false,
                           title: note['title'],
                           isRead: false,
+                          date: note['created_at'],
                         );
                       },
                     ),
@@ -238,6 +240,7 @@ Widget _buildNoteLayout(Map<String, dynamic> note, int index, ColorScheme colorS
                       isCreate: false,
                       title: note['title'],
                       isRead: true,
+                      date: note['created_at'],
                     );
                   },
                 ),
@@ -257,6 +260,7 @@ Widget _buildNoteLayout(Map<String, dynamic> note, int index, ColorScheme colorS
                       isCreate: false,
                       title: note['title'],
                       isRead: false,
+                      date: note['created_at'],
                     );
                   },
                 ),
@@ -282,6 +286,7 @@ Widget _buildNoteLayout(Map<String, dynamic> note, int index, ColorScheme colorS
                       isCreate: false,
                       title: note['title'],
                       isRead: true,
+                      date: note['created_at'],
                     );
                   },
                 ),
@@ -301,6 +306,7 @@ Widget _buildNoteLayout(Map<String, dynamic> note, int index, ColorScheme colorS
                       isCreate: false,
                       title: note['title'],
                       isRead: false,
+                      date: note['created_at'],
                     );
                   },
                 ),

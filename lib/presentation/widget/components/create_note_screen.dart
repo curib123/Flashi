@@ -6,18 +6,20 @@ import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_theme_s
 import 'package:flashlearn/provider/notes_provider.dart';
 import 'package:flashlearn/util/helpers/snackbar/reusable_snackbar.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class CreateNoteScreen extends StatelessWidget {
   final bool isCreate;
   final bool isRead;
   final String title;
+  final DateTime date;
 
   const CreateNoteScreen({
     Key? key,
     required this.isCreate,
     required this.title,
-    required this.isRead,
+    required this.isRead, required this.date,
   }) : super(key: key);
 
   @override
@@ -25,6 +27,8 @@ class CreateNoteScreen extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final noteProvider = Provider.of<NotesProvider>(context);
     final size = MediaQuery.of(context).size;
+
+
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -93,6 +97,7 @@ class CreateNoteScreen extends StatelessWidget {
                 isCreate: false,
                 title: title,
                 isRead: false,
+                date: date,
               ),
             )),
 
@@ -109,28 +114,32 @@ class CreateNoteScreen extends StatelessWidget {
   }
 
   Widget _buildBody(Size size, NotesProvider noteProvider) {
+    String formattedDate = DateFormat('MMM dd, yyyy - hh:mm a').format(date);
     return ListView(
-      padding: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+      padding: EdgeInsets.symmetric(horizontal: 10),
       children: [
-        SizedBox(height: 50),
+        SizedBox(height: 80),
+        Text('Content ',style: TextStyle(color: Colors.grey),),
         _buildContentInputField(size,noteProvider),
+        Center(child: Text(formattedDate))
       ],
     );
   }
 
   Widget _buildTitleInputField(NotesProvider noteProvider) {
-    return Container(
-      color: Colors.white,
-      padding: const EdgeInsets.all(15.0),
-      child: TextField(
-        readOnly: isRead,
-        controller: noteProvider.titleController,
-        decoration: InputDecoration(
-          hintText: 'Title Here',
-          border: InputBorder.none,
-        ),
-        style: TextStyle(fontSize: 18),
-      ),
+    return  Container(
+          color: Colors.white,
+          padding: EdgeInsets.symmetric(horizontal: 20,vertical: 15),
+          child: TextField(
+            readOnly: isRead,
+            controller: noteProvider.titleController,
+            decoration: InputDecoration(
+              hintText: 'Title Here',
+              border: InputBorder.none,
+            ),
+            style: TextStyle(fontSize: 18),
+          ),
+
     );
   }
 

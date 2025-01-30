@@ -30,10 +30,8 @@ class ReusableNotesSummaryBlockCore extends StatelessWidget {
       onTap: onTap,
       child: Container(
         margin: EdgeInsets.all(5),
-        padding: EdgeInsets.all(10),
+        padding: EdgeInsets.symmetric(horizontal: 10),
         decoration: _buildContainerDecoration(colorScheme),
-        width: 150,
-        height: 150,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -116,7 +114,7 @@ class ReusableNotesSummaryBlockCore extends StatelessWidget {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
-            fontSize: 10,
+            fontSize: 8,
             color: colorScheme.secondary,
           ),
         ),
