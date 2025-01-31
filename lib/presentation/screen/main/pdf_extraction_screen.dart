@@ -1,13 +1,20 @@
 import 'package:flashlearn/presentation/screen/main/settings_screen.dart';
-import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_quiz_set_list.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_title_content.dart';
 import 'package:flashlearn/provider/quiz_provider.dart';
 import 'package:flashlearn/util/helpers/pdf_services.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class PdfExtractionScreen extends StatelessWidget {
+class PdfExtractionScreen extends StatefulWidget {
   const PdfExtractionScreen({super.key});
+
+  @override
+  _PdfExtractionScreenState createState() => _PdfExtractionScreenState();
+}
+
+class _PdfExtractionScreenState extends State<PdfExtractionScreen> {
+  String extractedText = '';
+  final PdfService pdfService = PdfService();
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +40,7 @@ class PdfExtractionScreen extends StatelessWidget {
         foregroundColor: colorScheme.onPrimary,
         title: ReusableTitleContent(
           colorScheme: colorScheme,
-          title: 'Flashcard with PDF',
+          title: 'Extract PDF',
           onUpgradePro: () {},
           onSettings: () {
             Navigator.push(
@@ -45,46 +52,35 @@ class PdfExtractionScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
-          PdfPickerButton(colorScheme: colorScheme),
-          SizedBox(height: 10),
-          _buildSetTile(quizProvider, context),
+          _buttonCreatePDF(colorScheme),
+          SizedBox(height: 20),
+          Center(
+            child: Text('Extracted PDF Text',style: TextStyle(color: colorScheme.primary),),
+          ),
+          SizedBox(height: 20),
+          _extractedPdfText(), // Display the extracted PDF text
         ],
       ),
     );
   }
-}
 
-class PdfPickerButton extends StatefulWidget {
-  final ColorScheme colorScheme;
-
-  const PdfPickerButton({Key? key, required this.colorScheme}) : super(key: key);
-
-  @override
-  _PdfPickerButtonState createState() => _PdfPickerButtonState();
-}
-
-class _PdfPickerButtonState extends State<PdfPickerButton> {
-  final PdfService pdfService = PdfService();
-  String extractedText = '';
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buttonCreatePDF(ColorScheme colorScheme) {
     return Container(
-      margin: EdgeInsets.all(20),
+      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10), // Added vertical margin
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Expanded(
             child: ElevatedButton.icon(
-              onPressed: () => _showChoiceDialog(widget.colorScheme),
+              onPressed: () => _showChoiceDialog(colorScheme),
               icon: Icon(Icons.picture_as_pdf_rounded, color: Colors.white),
               label: Text(
-                "Create Flashcard From PDF",
+                "Extract PDF Text",
                 style: TextStyle(overflow: TextOverflow.ellipsis),
               ),
               style: ButtonStyle(
-                foregroundColor: MaterialStateProperty.all(widget.colorScheme.onTertiary),
-                backgroundColor: MaterialStateProperty.all(widget.colorScheme.tertiary),
+                foregroundColor: MaterialStateProperty.all(colorScheme.onTertiary),
+                backgroundColor: MaterialStateProperty.all(colorScheme.tertiary),
                 shape: MaterialStateProperty.all(RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 )),
@@ -92,7 +88,6 @@ class _PdfPickerButtonState extends State<PdfPickerButton> {
               ),
             ),
           ),
-          SizedBox(height: 20),
         ],
       ),
     );
@@ -140,6 +135,51 @@ class _PdfPickerButtonState extends State<PdfPickerButton> {
     );
   }
 
+  Widget _extractedPdfText() {
+    return Expanded( // Wrap in Expanded for proper scrolling behavior
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 20),
+        margin: EdgeInsets.only(bottom: 40),
+        child: SingleChildScrollView( // Use SingleChildScrollView to make it scrollable
+          child: Text(
+            extractedText,
+            style: TextStyle(fontSize: 16),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _pickAndExtractPdfPageRange(int startPage, int endPage) async {
+    String result = await pdfService.extractTextFromPageRange(startPage, endPage);
+    if (mounted) { // Ensure setState is only called when the widget is still mounted
+      setState(() {
+        extractedText = result;
+      });
+    }
+    print(extractedText);
+  }
+
+  Future<void> _pickAndExtractPdfWholePage() async {
+    String result = await pdfService.extractTextFromWholeDocument();
+    if (mounted) {
+      setState(() {
+        extractedText = result;
+      });
+    }
+    print(extractedText);
+  }
+
+  Future<void> _pickAndExtractPdfSpecificPage(int pageNumber) async {
+    String result = await pdfService.extractTextFromSpecificPage(pageNumber);
+    if (mounted) {
+      setState(() {
+        extractedText = result;
+      });
+    }
+    print(extractedText);
+  }
+
   void _showPageNumberDialog(ColorScheme colorScheme) {
     TextEditingController pageController = TextEditingController();
     showDialog(
@@ -166,9 +206,15 @@ class _PdfPickerButtonState extends State<PdfPickerButton> {
             TextButton(
               onPressed: () {
                 if (pageController.text.isNotEmpty) {
-                  int pageNumber = int.parse(pageController.text);
-                  Navigator.pop(context);
-                  _pickAndExtractPdfSpecificPage(pageNumber);
+                  int pageNumber = int.tryParse(pageController.text) ?? 0; // Safely parse
+                  if (pageNumber > 0) {
+                    Navigator.pop(context);
+                    _pickAndExtractPdfSpecificPage(pageNumber);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Invalid page number! Please enter a valid number.')),
+                    );
+                  }
                 }
               },
               child: Text('Extract', style: TextStyle(fontSize: 14, color: Colors.blue)),
@@ -217,10 +263,16 @@ class _PdfPickerButtonState extends State<PdfPickerButton> {
             TextButton(
               onPressed: () {
                 if (startPageController.text.isNotEmpty && endPageController.text.isNotEmpty) {
-                  int startPage = int.parse(startPageController.text);
-                  int endPage = int.parse(endPageController.text);
-                  Navigator.pop(context);
-                  _pickAndExtractPdfPageRange(startPage, endPage);
+                  int startPage = int.tryParse(startPageController.text) ?? 0;
+                  int endPage = int.tryParse(endPageController.text) ?? 0;
+                  if (startPage > 0 && endPage >= startPage) {
+                    Navigator.pop(context);
+                    _pickAndExtractPdfPageRange(startPage, endPage);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Invalid page range! Please enter valid pages.')),
+                    );
+                  }
                 }
               },
               child: Text('Extract', style: TextStyle(fontSize: 14, color: Colors.blue)),
@@ -230,40 +282,4 @@ class _PdfPickerButtonState extends State<PdfPickerButton> {
       },
     );
   }
-
-  Future<void> _pickAndExtractPdfPageRange(int startPage, int endPage) async {
-    String result = await pdfService.extractTextFromPageRange(startPage, endPage);
-    setState(() {
-      extractedText = result;
-    });
-    print(extractedText);
-  }
-
-  Future<void> _pickAndExtractPdfWholePage() async {
-    String result = await pdfService.extractTextFromWholeDocument();
-    setState(() {
-      extractedText = result;
-    });
-    print(extractedText);
-  }
-
-  Future<void> _pickAndExtractPdfSpecificPage(int pageNumber) async {
-    String result = await pdfService.extractTextFromSpecificPage(pageNumber);
-    setState(() {
-      extractedText = result;
-    });
-    print(extractedText);
-  }
-}
-
-Widget _buildSetTile(QuizProvider quizProvider, BuildContext context) {
-  final size = MediaQuery.of(context).size;
-  return Container(
-    height: size.height * 0.6,
-    child: ListView(
-      children: [
-        ReusableQuizSetList(quizSets: quizProvider.quizSets.reversed.toList())
-      ],
-    ),
-  );
 }
