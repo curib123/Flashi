@@ -1,7 +1,7 @@
 import 'package:flashlearn/presentation/screen/main/export_import_screen.dart';
 import 'package:flashlearn/presentation/screen/main/favorate_screen.dart';
+import 'package:flashlearn/presentation/screen/main/pdf_extraction_screen.dart';
 import 'package:flashlearn/presentation/screen/main/settings_screen.dart';
-import 'package:flashlearn/presentation/screen/main/task_screen.dart';
 import 'package:flashlearn/provider/bottom_navigation_provider.dart';
 import 'package:flashlearn/util/helpers/wepage_launcher.dart';
 import 'package:flutter/material.dart';
@@ -105,6 +105,17 @@ class CustomDrawer extends StatelessWidget {
             Navigator.push(
             context,
             MaterialPageRoute(builder: (context) =>  ExportImportScreen()),
+            )
+            },
+          ),
+  buildListTile(
+            icon: Icons.picture_as_pdf_rounded,
+            title: 'Create FlashCard with PDF',
+            onTap: () => {
+              Navigator.pop(context),
+            Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) =>  PdfExtractionScreen()),
             )
             },
           ),

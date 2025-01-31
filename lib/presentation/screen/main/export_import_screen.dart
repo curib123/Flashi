@@ -59,7 +59,6 @@ class _ExportImportScreenState extends State<ExportImportScreen> {
   Widget _buildHeader(ColorScheme colorScheme, QuizProvider quizProvider) {
     return Column(
       children: [
-
         SizedBox(height: 20),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,

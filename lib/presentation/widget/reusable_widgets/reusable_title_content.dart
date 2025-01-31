@@ -19,6 +19,8 @@ class ReusableTitleContent extends StatelessWidget {
           style: TextStyle(
             color: colorScheme.onPrimary,
             fontWeight: FontWeight.bold,
+            fontSize: title.length >= 12 ?   18: 24,
+            overflow: TextOverflow.ellipsis
           ),
         ),
         Row(

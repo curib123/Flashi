@@ -58,13 +58,14 @@ class ReusableTaskBlockCore extends StatelessWidget {
             SizedBox(height: 10),
             Text(
               taskName,
-              textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: taskName.length <= 13 ? 16 : 14,
-                color: colorScheme.primary,
+                fontSize: 12,
                 fontWeight: FontWeight.bold,
-                decoration: !isChecked ? TextDecoration.none : TextDecoration.lineThrough, // Apply line-through for checked tasks
+                color: colorScheme.primary,
+                decoration: isChecked ? TextDecoration.lineThrough : TextDecoration.none,
               ),
+              maxLines: 4, // Limit to 3 lines
+              overflow: TextOverflow.ellipsis, // Add ellipsis (...) after 3rd line
             ),
             SizedBox(height: 6),
             Text(
@@ -73,7 +74,7 @@ class ReusableTaskBlockCore extends StatelessWidget {
               style: TextStyle(
                 color: colorScheme.secondary,
                 fontWeight: FontWeight.normal,
-                fontSize: 12,
+                fontSize: 10,
                 overflow: TextOverflow.ellipsis,
                 decoration: isChecked ? TextDecoration.lineThrough : TextDecoration.none, // Apply line-through if checked
               ),

@@ -147,11 +147,9 @@ class ReusableSetCore extends StatelessWidget {
                           onFavorate();
                         } else if(value == 'view_all'){
                           onViewAllCards();
-                        }else if(value == 'Share'){
-                          onShare();
-                        }else if(value == 'Export'){
+                        }else if(value == 'export'){
                           onExport();
-                        }else if(value == 'Import/Export Page'){
+                        }else if(value == 'import'){
                           onImport();
                         }
                       },
@@ -188,20 +186,20 @@ class ReusableSetCore extends StatelessWidget {
                               ],
                             ),
                           ),
-                          // Share Option
-                          PopupMenuItem<String>(
-                            value: 'Share',
-                            child: Row(
-                              children: [
-                                Icon(Icons.share, color: colorScheme.primary),
-                                const SizedBox(width: 1),
-                                Text('Share Set', style: TextStyle(color: colorScheme.primary)),
-                              ],
-                            ),
-                          ), // Export Option
+                          // // Share Option
+                          // PopupMenuItem<String>(
+                          //   value: 'Share',
+                          //   child: Row(
+                          //     children: [
+                          //       Icon(Icons.share, color: colorScheme.primary),
+                          //       const SizedBox(width: 1),
+                          //       Text('Share Set', style: TextStyle(color: colorScheme.primary)),
+                          //     ],
+                          //   ),
+                          // ), // Export Option
 
                            PopupMenuItem<String>(
-                            value: 'Import/Export Page',
+                            value: 'import',
                             child: Row(
                               children: [
                                 Icon(Icons.file_download_rounded, color: colorScheme.primary),
@@ -210,7 +208,7 @@ class ReusableSetCore extends StatelessWidget {
                               ],
                             ),
                           ), PopupMenuItem<String>(
-                            value: 'Export',
+                            value: 'export',
                             child: Row(
                               children: [
                                 Icon(Icons.file_upload_rounded, color: colorScheme.primary),
