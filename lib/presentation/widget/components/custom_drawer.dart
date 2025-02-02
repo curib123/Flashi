@@ -22,7 +22,7 @@ class CustomDrawer extends StatelessWidget {
       required VoidCallback onTap,
     }) {
       return ListTile(
-        contentPadding: const EdgeInsets.symmetric(vertical: 7,horizontal: 15),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 15),
         leading: Icon(icon, color: colorScheme.primary),
         title: Text(title, style: textStyle),
         onTap: onTap,
@@ -56,7 +56,7 @@ class CustomDrawer extends StatelessWidget {
             title: 'Home',
             onTap: () {
               Navigator.pop(context);
-              bottomNavigationProvider.toogleNavigation(1);
+              bottomNavigationProvider.toogleNavigation(2);
             },
           ),
           buildListTile(
@@ -75,7 +75,7 @@ class CustomDrawer extends StatelessWidget {
             title: 'Notes',
             onTap: () {
               Navigator.pop(context);
-              bottomNavigationProvider.toogleNavigation(2);
+              bottomNavigationProvider.toogleNavigation(4);
             },
           ),
           buildListTile(
@@ -96,6 +96,22 @@ class CustomDrawer extends StatelessWidget {
               );
             },
           ),
+          buildListTile(
+            icon: Icons.picture_as_pdf_rounded,
+            title: 'PDF Extractor',
+            onTap: () => {
+              Navigator.pop(context),
+            bottomNavigationProvider.toogleNavigation(3)
+            },
+          ),
+          buildListTile(
+            icon: Icons.text_snippet_rounded,
+            title: 'Text Reader',
+            onTap: () => {
+              Navigator.pop(context),
+            bottomNavigationProvider.toogleNavigation(1)
+            },
+          ),
           const Divider(height: 1),
           buildListTile(
             icon: Icons.import_export_rounded,
@@ -108,17 +124,7 @@ class CustomDrawer extends StatelessWidget {
             )
             },
           ),
-  buildListTile(
-            icon: Icons.picture_as_pdf_rounded,
-            title: 'Create FlashCard with PDF',
-            onTap: () => {
-              Navigator.pop(context),
-            Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) =>  PdfExtractionScreen()),
-            )
-            },
-          ),
+
 
 
 

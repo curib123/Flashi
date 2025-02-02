@@ -96,7 +96,9 @@ class _TaskScreenState extends State<TaskScreen> {
             ),
           ),
           ReusableThemeSettingPosition(colorScheme: colorScheme),
-          ReusableCreateSetButtonPosition(colorScheme: colorScheme, name: 'Add Task Today', onTap: () {
+          ReusableCreateSetButtonPosition(
+              icon: Icons.add_rounded,
+              colorScheme: colorScheme, name: 'Add Task Today', onTap: () {
             CreateTaskModal(context: context, buttonName: 'Add Task', isCreate: true, taskName: '');
           })
         ],

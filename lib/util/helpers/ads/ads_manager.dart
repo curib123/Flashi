@@ -16,10 +16,14 @@ class AdManager {
   BannerAd? _bannerAd1;
   BannerAd? _bannerAd2;
   BannerAd? _bannerAd3;
+  BannerAd? _bannerAd4;
+  BannerAd? _bannerAd5;
   double _bannerHeight = 100;
   bool _isBannerAd1Loaded = false;
   bool _isBannerAd2Loaded= false;
   bool _isBannerAd3Loaded= false;
+  bool _isBannerAd4Loaded= false;
+  bool _isBannerAd5Loaded= false;
 
   InterstitialAd? _interstitialAd;
 
@@ -81,11 +85,48 @@ double get bannerHeight => _bannerHeight;
 
         },
       ),
+
+    ); _bannerAd4 = BannerAd(
+      adUnitId: id,
+      size: AdSize.banner,
+      request: AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (Ad ad) {
+          _bannerHeight = 180;
+            _isBannerAd4Loaded = true;
+
+        },
+        onAdFailedToLoad: (Ad ad, LoadAdError error) {
+          _bannerHeight = 110;
+            _isBannerAd4Loaded = false;
+
+        },
+      ),
+    );
+
+    _bannerAd5 = BannerAd(
+      adUnitId: id,
+      size: AdSize.banner,
+      request: AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (Ad ad) {
+          _bannerHeight = 180;
+            _isBannerAd5Loaded = true;
+
+        },
+        onAdFailedToLoad: (Ad ad, LoadAdError error) {
+          _bannerHeight = 110;
+            _isBannerAd5Loaded = false;
+
+        },
+      ),
     );
 
     _bannerAd1?.load();
     _bannerAd2?.load();
     _bannerAd3?.load();
+    _bannerAd4?.load();
+    _bannerAd5?.load();
   }
 
   Widget getFirstBannerAdWidget() {
@@ -120,6 +161,32 @@ double get bannerHeight => _bannerHeight;
         width: _bannerAd3!.size.width.toDouble(),
         height: _bannerAd3!.size.height.toDouble(),
         child: AdWidget(ad: _bannerAd3!),
+      );
+    } else {
+      return SizedBox.shrink();
+    }
+  }
+
+  Widget getFourthBannerAdWidget() {
+    if (_bannerAd4 != null && _isBannerAd4Loaded) {
+      return Container(
+        margin: EdgeInsets.symmetric(vertical: 5),
+        width: _bannerAd4!.size.width.toDouble(),
+        height: _bannerAd4!.size.height.toDouble(),
+        child: AdWidget(ad: _bannerAd4!),
+      );
+    } else {
+      return SizedBox.shrink();
+    }
+  }
+
+  Widget getFifthBannerAdWidget() {
+    if (_bannerAd5 != null && _isBannerAd5Loaded) {
+      return Container(
+        margin: EdgeInsets.symmetric(vertical: 5),
+        width: _bannerAd5!.size.width.toDouble(),
+        height: _bannerAd5!.size.height.toDouble(),
+        child: AdWidget(ad: _bannerAd5!),
       );
     } else {
       return SizedBox.shrink();

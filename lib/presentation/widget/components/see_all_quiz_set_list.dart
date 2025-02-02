@@ -104,6 +104,7 @@ class SeeAllQuizSetList extends StatelessWidget {
             ),
             // Create Button Position
             ReusableCreateSetButtonPosition(
+              icon: Icons.add_rounded,
               colorScheme: colorScheme,
               name: 'Create Set',
               onTap: () {

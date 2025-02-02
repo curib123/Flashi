@@ -29,7 +29,9 @@ class CustomNavigationBar extends StatelessWidget {
         index: currentIndex, // Current active index
         items: <Widget>[
           Icon(Icons.task_rounded, size: 30, color: colorScheme.onPrimary),
+          Icon(Icons.text_snippet_rounded, size: 30, color: colorScheme.onPrimary),
           Icon(Icons.home_rounded, size: 30, color: colorScheme.onPrimary),
+          Icon(Icons.picture_as_pdf_rounded, size: 30, color: colorScheme.onPrimary),
           Icon(Icons.note_rounded, size: 30, color: colorScheme.onPrimary),
         ],
         onTap: (index) {

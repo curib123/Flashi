@@ -1,6 +1,12 @@
 import 'package:flashlearn/presentation/screen/main/settings_screen.dart';
+import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_search_bar_core.dart';
+import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_create_set_button_position.dart';
+import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_sort_and_see_all.dart';
+import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_title_content.dart';
 import 'package:flashlearn/provider/quiz_provider.dart';
+import 'package:flashlearn/provider/sort_provider.dart';
+import 'package:flashlearn/util/helpers/ads/ads_manager.dart';
 import 'package:flashlearn/util/helpers/pdf_services.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -19,17 +25,21 @@ class _PdfExtractionScreenState extends State<PdfExtractionScreen> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final AdManager adManager = AdManager();
     final quizProvider = Provider.of<QuizProvider>(context);
+    final sortProvider = Provider.of<SortProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
         leading: GestureDetector(
-          onTap: () => Navigator.pop(context),
+          onTap: () => Scaffold.of(context).openDrawer(),
           child: Icon(
-            Icons.arrow_back_ios_new_rounded,
+            Icons.notes_rounded,
+            size: 30,
             color: colorScheme.onPrimary,
           ),
         ),
+
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             bottomLeft: Radius.circular(20),
@@ -40,7 +50,7 @@ class _PdfExtractionScreenState extends State<PdfExtractionScreen> {
         foregroundColor: colorScheme.onPrimary,
         title: ReusableTitleContent(
           colorScheme: colorScheme,
-          title: 'Extract PDF',
+          title: 'My PDF',
           onUpgradePro: () {},
           onSettings: () {
             Navigator.push(
@@ -50,48 +60,53 @@ class _PdfExtractionScreenState extends State<PdfExtractionScreen> {
           },
         ),
       ),
-      body: Column(
+      body: Stack(
         children: [
-          _buttonCreatePDF(colorScheme),
-          SizedBox(height: 20),
-          Center(
-            child: Text('Extracted PDF Text',style: TextStyle(color: colorScheme.primary),),
+          _pdfExtractionWidget(colorScheme),
+          Container(
+            color: colorScheme.onPrimary,
+            height: adManager.bannerHeight,
+            child: Column(
+              children: [
+                ReusableSearchBarCore(
+                    colorScheme: colorScheme,
+                    hintText: 'search pdf ',
+                    onChanged: (value) => {
+
+                    },
+                    controller:TextEditingController()
+                ),
+                ReusableSortAndSeeAll(
+                    dropdownValue: sortProvider.dropdownValueNote,
+                    sortOptions: sortProvider.sortOptionsNote,
+                    onSortChanged:(value) => sortProvider.updateSortValueNote(value!),
+                    onSeeAllPressed: () {},
+                    isShowSeeAllLink: false,
+                    isShowReviewLink: false,
+                    onShowReviewLink: () {}
+                ),
+                adManager.getFourthBannerAdWidget(),
+              ],
+            ),
           ),
-          SizedBox(height: 20),
-          _extractedPdfText(), // Display the extracted PDF text
+          ReusableCreateSetButtonPosition(
+              colorScheme: colorScheme,
+              name: "Extract PDF",
+              onTap: (){},
+              icon: Icons.unarchive_rounded),
+         ReusableThemeSettingPosition(colorScheme: colorScheme)
         ],
       ),
     );
   }
 
-  Widget _buttonCreatePDF(ColorScheme colorScheme) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10), // Added vertical margin
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Expanded(
-            child: ElevatedButton.icon(
-              onPressed: () => _showChoiceDialog(colorScheme),
-              icon: Icon(Icons.picture_as_pdf_rounded, color: Colors.white),
-              label: Text(
-                "Extract PDF Text",
-                style: TextStyle(overflow: TextOverflow.ellipsis),
-              ),
-              style: ButtonStyle(
-                foregroundColor: MaterialStateProperty.all(colorScheme.onTertiary),
-                backgroundColor: MaterialStateProperty.all(colorScheme.tertiary),
-                shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                )),
-                padding: MaterialStateProperty.all(EdgeInsets.symmetric(vertical: 15)),
-              ),
-            ),
-          ),
-        ],
-      ),
+ Widget _pdfExtractionWidget(ColorScheme colorScheme) {
+
+    return ListView(
+
     );
-  }
+
+ }
 
   void _showChoiceDialog(ColorScheme colorScheme) {
     showDialog(
@@ -132,21 +147,6 @@ class _PdfExtractionScreenState extends State<PdfExtractionScreen> {
           ),
         );
       },
-    );
-  }
-
-  Widget _extractedPdfText() {
-    return Expanded( // Wrap in Expanded for proper scrolling behavior
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20),
-        margin: EdgeInsets.only(bottom: 40),
-        child: SingleChildScrollView( // Use SingleChildScrollView to make it scrollable
-          child: Text(
-            extractedText,
-            style: TextStyle(fontSize: 16),
-          ),
-        ),
-      ),
     );
   }
 

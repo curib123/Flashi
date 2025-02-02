@@ -186,6 +186,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
          // Floating "Create Set" button
           ReusableCreateSetButtonPosition(
+            icon: Icons.add_rounded,
             colorScheme: colorScheme,
             name: 'Create Set',
             onTap: () async {

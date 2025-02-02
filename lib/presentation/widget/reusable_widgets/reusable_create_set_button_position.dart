@@ -4,7 +4,8 @@ class ReusableCreateSetButtonPosition extends StatelessWidget {
   final ColorScheme colorScheme;
   final String name;
   final Function()? onTap;
-  const ReusableCreateSetButtonPosition({super.key, required this.colorScheme, required this.name,required this.onTap});
+  final IconData icon;
+  const ReusableCreateSetButtonPosition({super.key, required this.colorScheme, required this.name,required this.onTap, required this.icon});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +26,7 @@ class ReusableCreateSetButtonPosition extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.add,color: colorScheme.onPrimary,size: 30,),
+                  Icon(icon,color: colorScheme.onPrimary,size: 30,),
                   const SizedBox(width: 10,),
                   Text(
                     name,

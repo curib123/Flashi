@@ -90,7 +90,9 @@ class NoteScreen extends StatelessWidget {
             ),
           ),
           ReusableThemeSettingPosition(colorScheme: colorScheme),
-          ReusableCreateSetButtonPosition(colorScheme: colorScheme, name: 'Add Notes', onTap: () {
+          ReusableCreateSetButtonPosition(
+              icon: Icons.add_rounded,
+              colorScheme: colorScheme, name: 'Add Notes', onTap: () {
             notesProvider.titleController.text = '';
             notesProvider.contentController.text = '';
             Navigator.push(

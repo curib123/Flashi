@@ -38,6 +38,7 @@ class CreateNoteScreen extends StatelessWidget {
           _buildBody(size,noteProvider),
           _buildTitleInputField(noteProvider),
          !isRead ? ReusableCreateSetButtonPosition(
+           icon: Icons.add_rounded,
             colorScheme: colorScheme,
             name: isCreate ?  'Save' : 'Save Changes',
             onTap: () => {

@@ -154,6 +154,7 @@ class SeeAllQuizCard extends StatelessWidget {
                child: Center(child: Text('${ card['limitNumberOfQuiz'] - quizProvider.getNumberOfCardsInSet(name) } slot free out of ${card['limitNumberOfQuiz']}')),),
             // Create Button Position
             card['limitNumberOfQuiz'] - quizProvider.getNumberOfCardsInSet(name) != 0 ? ReusableCreateSetButtonPosition(
+              icon: Icons.add_rounded,
               colorScheme: colorScheme,
               name: 'Create Card',
               onTap: () {
