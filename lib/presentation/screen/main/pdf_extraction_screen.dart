@@ -1,33 +1,35 @@
+
 import 'package:flashlearn/presentation/screen/main/settings_screen.dart';
+import 'package:flashlearn/presentation/widget/components/create_pdf_screen.dart';
+import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_notes_summary_block_core.dart';
+import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_notes_summary_tile_core.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_search_bar_core.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_create_set_button_position.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_sort_and_see_all.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_title_content.dart';
-import 'package:flashlearn/provider/quiz_provider.dart';
+import 'package:flashlearn/provider/pdf_provider.dart';
 import 'package:flashlearn/provider/sort_provider.dart';
 import 'package:flashlearn/util/helpers/ads/ads_manager.dart';
 import 'package:flashlearn/util/helpers/pdf_services.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 
-class PdfExtractionScreen extends StatefulWidget {
+class PdfExtractionScreen extends StatelessWidget {
   const PdfExtractionScreen({super.key});
 
   @override
-  _PdfExtractionScreenState createState() => _PdfExtractionScreenState();
-}
-
-class _PdfExtractionScreenState extends State<PdfExtractionScreen> {
-  String extractedText = '';
-  final PdfService pdfService = PdfService();
-
-  @override
   Widget build(BuildContext context) {
+
     final colorScheme = Theme.of(context).colorScheme;
-    final AdManager adManager = AdManager();
-    final quizProvider = Provider.of<QuizProvider>(context);
+    final pdfProvider = Provider.of<PdfProvider>(context);
     final sortProvider = Provider.of<SortProvider>(context);
+    final AdManager adManager = AdManager();
+    var filteredNotes = pdfProvider.filterPdfByTitle().reversed.toList();
+    PdfService pdfService = PdfService();
+
 
     return Scaffold(
       appBar: AppBar(
@@ -48,21 +50,20 @@ class _PdfExtractionScreenState extends State<PdfExtractionScreen> {
         ),
         backgroundColor: colorScheme.primary,
         foregroundColor: colorScheme.onPrimary,
-        title: ReusableTitleContent(
-          colorScheme: colorScheme,
-          title: 'My PDF',
-          onUpgradePro: () {},
-          onSettings: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const SettingsScreen()),
-            );
-          },
-        ),
+        title:  ReusableTitleContent(colorScheme: colorScheme, title: "My Pdf", onUpgradePro: () {},
+            onSettings: () {
+
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsScreen()),
+              );
+
+            }),
+        centerTitle: false,
       ),
       body: Stack(
         children: [
-          _pdfExtractionWidget(colorScheme),
+          sortProvider.dropdownValuePdf == 'Tiles' ? _NoteBodyTile(colorScheme,adManager,filteredNotes) : _NoteBodyBlock(colorScheme,adManager,filteredNotes),
           Container(
             color: colorScheme.onPrimary,
             height: adManager.bannerHeight,
@@ -70,216 +71,279 @@ class _PdfExtractionScreenState extends State<PdfExtractionScreen> {
               children: [
                 ReusableSearchBarCore(
                     colorScheme: colorScheme,
-                    hintText: 'search pdf ',
+                    hintText: 'search pdf',
                     onChanged: (value) => {
-
+                     pdfProvider.onSearchChanged(value)
                     },
-                    controller:TextEditingController()
+                    controller:pdfProvider.searchController
                 ),
                 ReusableSortAndSeeAll(
-                    dropdownValue: sortProvider.dropdownValueNote,
-                    sortOptions: sortProvider.sortOptionsNote,
-                    onSortChanged:(value) => sortProvider.updateSortValueNote(value!),
+                    dropdownValue: sortProvider.dropdownValuePdf,
+                    sortOptions: sortProvider.sortOptionsPdf,
+                    onSortChanged:(value) => sortProvider.updateSortValuePdf(value!),
                     onSeeAllPressed: () {},
                     isShowSeeAllLink: false,
                     isShowReviewLink: false,
                     onShowReviewLink: () {}
                 ),
-                adManager.getFourthBannerAdWidget(),
+                adManager.getFourthBannerAdWidget()
               ],
             ),
           ),
+          ReusableThemeSettingPosition(colorScheme: colorScheme),
           ReusableCreateSetButtonPosition(
-              colorScheme: colorScheme,
-              name: "Extract PDF",
-              onTap: (){},
-              icon: Icons.unarchive_rounded),
-         ReusableThemeSettingPosition(colorScheme: colorScheme)
+              icon: Icons.unarchive_rounded,
+              colorScheme: colorScheme, name: 'Extract Pdf', onTap: () {
+            pdfProvider.titleController.text = '';
+            pdfProvider.contentController.text = '';
+
+            pdfService.showChoiceDialog(colorScheme, context,pdfProvider);
+
+          })
         ],
       ),
     );
   }
+}
 
- Widget _pdfExtractionWidget(ColorScheme colorScheme) {
+Widget _NoteBodyTile(ColorScheme colorScheme,AdManager adManager,List filteredNotes ) {
+  return Consumer<PdfProvider>(
+    builder: (context, pdfProvider, child) {
 
-    return ListView(
+      return _buildNoteListView(filteredNotes, colorScheme, pdfProvider,'Tile',context,adManager);
+    },
+  );
+}
 
-    );
+Widget _NoteBodyBlock(ColorScheme colorScheme,AdManager adManager,List filteredNotes) {
 
- }
+  return Consumer<PdfProvider>(
+    builder: (context, pdfProvider, child) {
 
-  void _showChoiceDialog(ColorScheme colorScheme) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(
-            'Select Extraction Type',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colorScheme.primary),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
+      return _buildNoteGridView(filteredNotes, colorScheme, pdfProvider,"Block",context,adManager);
+    },
+  );
+}
+
+Widget _buildNoteListView(List filteredNotes, ColorScheme colorScheme, PdfProvider pdfProvider, String layout,BuildContext context,AdManager adManager) {
+
+  return filteredNotes.isEmpty
+      ? _noNotesWidget(context)
+      : AnimationLimiter(
+    child: ListView.builder(
+      padding: EdgeInsets.symmetric(
+        vertical: adManager.bannerHeight, // Adjust padding as needed
+        horizontal: 15,
+      ),
+      itemCount: filteredNotes.length,
+      itemBuilder: (context, index) {
+        var note = filteredNotes[index];
+        return _buildNoteLayout(note, index, colorScheme, pdfProvider, context, layout);
+      },
+    ),
+  );
+}
+
+Widget _buildNoteGridView(List filteredNotes, ColorScheme colorScheme, PdfProvider pdfProvider, String layout,BuildContext context,AdManager adManager) {
+
+  return filteredNotes.isEmpty
+      ? _noNotesWidget(context)
+      : AnimationLimiter(
+    child: GridView.builder(
+      padding: EdgeInsets.symmetric(
+        vertical: adManager.bannerHeight, // Adjust padding as needed
+        horizontal: 15,
+      ),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: MediaQuery.of(context).size.width > 600 ? 3 : 2,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
+        childAspectRatio: 1,
+      ),
+      itemCount: filteredNotes.length,
+      itemBuilder: (context, index) {
+        var note = filteredNotes[index];
+        return _buildNoteLayout(note, index, colorScheme, pdfProvider, context, layout);
+      },
+    ),
+  );
+}
+
+
+Widget _buildNoteLayout(Map<String, dynamic> note, int index, ColorScheme colorScheme, PdfProvider pdfProvider,BuildContext context,String layout) {
+  return AnimationConfiguration.staggeredList(
+    position: index,
+    duration: const Duration(seconds: 2),
+    child: SlideAnimation(
+      curve: Curves.fastEaseInToSlowEaseOut,
+      verticalOffset: 100.0,
+      child: FadeInAnimation(
+        child: Slidable(
+          startActionPane: ActionPane(
+            motion: const DrawerMotion(),
             children: [
-              ListTile(
-                title: Text('Entire Document', style: TextStyle(fontSize: 14, color: colorScheme.primary)),
-                onTap: () {
-                  Navigator.pop(context);
-                  _pickAndExtractPdfWholePage();
-                },
-              ),
-              Divider(),
-              ListTile(
-                title: Text('Custom Page Range', style: TextStyle(fontSize: 14, color: colorScheme.primary)),
-                onTap: () {
-                  Navigator.pop(context);
-                  _showPageRangeDialog(colorScheme);
-                },
-              ),
-              Divider(),
-              ListTile(
-                title: Text('Custom Page', style: TextStyle(fontSize: 14, color: colorScheme.primary)),
-                onTap: () {
-                  Navigator.pop(context);
-                  _showPageNumberDialog(colorScheme);
-                },
+              SlidableAction(
+                onPressed: (_) => pdfProvider.deletePdf(note['title']),
+                foregroundColor: colorScheme.error,
+                icon: Icons.delete,
+                label: 'Delete',
               ),
             ],
           ),
-        );
-      },
-    );
-  }
-
-  Future<void> _pickAndExtractPdfPageRange(int startPage, int endPage) async {
-    String result = await pdfService.extractTextFromPageRange(startPage, endPage);
-    if (mounted) { // Ensure setState is only called when the widget is still mounted
-      setState(() {
-        extractedText = result;
-      });
-    }
-    print(extractedText);
-  }
-
-  Future<void> _pickAndExtractPdfWholePage() async {
-    String result = await pdfService.extractTextFromWholeDocument();
-    if (mounted) {
-      setState(() {
-        extractedText = result;
-      });
-    }
-    print(extractedText);
-  }
-
-  Future<void> _pickAndExtractPdfSpecificPage(int pageNumber) async {
-    String result = await pdfService.extractTextFromSpecificPage(pageNumber);
-    if (mounted) {
-      setState(() {
-        extractedText = result;
-      });
-    }
-    print(extractedText);
-  }
-
-  void _showPageNumberDialog(ColorScheme colorScheme) {
-    TextEditingController pageController = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(
-            'Enter the Page Number',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-          content: TextField(
-            controller: pageController,
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              hintText: 'Enter page number (e.g., 3)',
-              border: OutlineInputBorder(),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: colorScheme.primary, width: 2.0),
-              ),
-            ),
-            style: TextStyle(fontSize: 14),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                if (pageController.text.isNotEmpty) {
-                  int pageNumber = int.tryParse(pageController.text) ?? 0; // Safely parse
-                  if (pageNumber > 0) {
-                    Navigator.pop(context);
-                    _pickAndExtractPdfSpecificPage(pageNumber);
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Invalid page number! Please enter a valid number.')),
-                    );
-                  }
-                }
-              },
-              child: Text('Extract', style: TextStyle(fontSize: 14, color: Colors.blue)),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showPageRangeDialog(ColorScheme colorScheme) {
-    TextEditingController startPageController = TextEditingController();
-    TextEditingController endPageController = TextEditingController();
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(
-            'Enter Page Range',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
+          endActionPane: ActionPane(
+            motion: const DrawerMotion(),
             children: [
-              TextField(
-                controller: startPageController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  hintText: 'Start page (e.g., 1)',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              SizedBox(height: 10),
-              TextField(
-                controller: endPageController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  hintText: 'End page (e.g., 3)',
-                  border: OutlineInputBorder(),
-                ),
+              SlidableAction(
+                onPressed: (_) {
+                  pdfProvider.titleController.text = note['title'];
+                  pdfProvider.contentController.text = note['content'];
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (BuildContext pageContext) {
+                        return CreatePdfScreen(
+
+                          title: note['title'],
+                          isRead: false,
+                          date: note['created_at'],
+                        );
+                      },
+                    ),
+                  );
+                },
+                foregroundColor: colorScheme.tertiary,
+                icon: Icons.edit,
+                label: 'Edit',
               ),
             ],
           ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                if (startPageController.text.isNotEmpty && endPageController.text.isNotEmpty) {
-                  int startPage = int.tryParse(startPageController.text) ?? 0;
-                  int endPage = int.tryParse(endPageController.text) ?? 0;
-                  if (startPage > 0 && endPage >= startPage) {
-                    Navigator.pop(context);
-                    _pickAndExtractPdfPageRange(startPage, endPage);
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Invalid page range! Please enter valid pages.')),
+          child: layout == 'Tile'
+              ? ReusableNotesSummaryTileCore(
+            isNote: false,
+            title: note['title'],
+            content: note['content'],
+            timestamp: note['created_at'],
+            isFavorite: note['favorite'],
+            onTap: () {
+              pdfProvider.titleController.text = note['title'];
+              pdfProvider.contentController.text = note['content'];
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (BuildContext pageContext) {
+                    return CreatePdfScreen(
+
+                      title: note['title'],
+                      isRead: true,
+                      date: note['created_at'],
                     );
-                  }
-                }
-              },
-              child: Text('Extract', style: TextStyle(fontSize: 14, color: Colors.blue)),
+                  },
+                ),
+              );
+            },
+            onFavorite: () {
+              pdfProvider.toggleFavoriteByTitle(note['title']);
+            },
+            onEdit: () {
+              pdfProvider.titleController.text = note['title'];
+              pdfProvider.contentController.text = note['content'];
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (BuildContext pageContext) {
+                    return CreatePdfScreen(
+
+                      title: note['title'],
+                      isRead: false,
+                      date: note['created_at'],
+                    );
+                  },
+                ),
+              );
+            },
+            onDelete: () {
+              pdfProvider.deletePdf(note['title']);
+            },
+          )
+              : ReusableNotesSummaryBlockCore(
+            isNote: false,
+            title: note['title'],
+            content: note['content'],
+            timestamp: note['created_at'],
+            isFavorite: note['favorite'],
+            onTap: () {
+              pdfProvider.titleController.text = note['title'];
+              pdfProvider.contentController.text = note['content'];
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (BuildContext pageContext) {
+                    return CreatePdfScreen(
+
+                      title: note['title'],
+                      isRead: true,
+                      date: note['created_at'],
+                    );
+                  },
+                ),
+              );
+            },
+            onFavorite: () {
+              pdfProvider.toggleFavoriteByTitle(note['title']);
+            },
+            onEdit: () {
+              pdfProvider.titleController.text = note['title'];
+              pdfProvider.contentController.text = note['content'];
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (BuildContext pageContext) {
+                    return CreatePdfScreen(
+
+                      title: note['title'],
+                      isRead: false,
+                      date: note['created_at'],
+                    );
+                  },
+                ),
+              );
+            },
+            onDelete: () {
+              pdfProvider.deletePdf(note['title']);
+            },
+          ),
+
+        ),
+      ),
+    ),
+  );
+}
+Widget _noNotesWidget(BuildContext context) {
+  return SizedBox(
+    height: MediaQuery.of(context).size.height,
+    width: MediaQuery.of(context).size.width,
+    child:   Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.inbox, size: 100, color: Colors.grey),
+          const SizedBox(height: 20),
+          Text(
+            "No Pdf Extracted",
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              color: Colors.grey,
             ),
-          ],
-        );
-      },
-    );
-  }
+          ),
+          const SizedBox(height: 10),
+          Text(
+            "Extract some Pdf to see them here.",
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Colors.grey.shade600,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    ),
+  );
 }

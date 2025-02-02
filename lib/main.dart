@@ -3,6 +3,7 @@ import 'package:flashlearn/home.dart';
 import 'package:flashlearn/provider/bottom_navigation_provider.dart';
 import 'package:flashlearn/provider/notes_provider.dart';
 import 'package:flashlearn/provider/onboarding_provider.dart';
+import 'package:flashlearn/provider/pdf_provider.dart';
 import 'package:flashlearn/provider/quiz_provider.dart';
 import 'package:flashlearn/provider/reviewer_settings_provider.dart';
 import 'package:flashlearn/provider/save_info_ads_provider.dart';
@@ -48,6 +49,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => StudySchedulerProvider()), // Add StudySchedulerProvider
         ChangeNotifierProvider(create: (_) => TaskProvider()), // Add StudySchedulerProvider
         ChangeNotifierProvider(create: (_) => TextReaderProvider()), // Add TextReaderProvider
+        ChangeNotifierProvider(create: (_) => PdfProvider()), // Add TextReaderProvider
         ChangeNotifierProvider(
             create: (context) => QuizProvider(
                 criterionSet: Provider.of<SortProvider>(context,listen: false).dropdownValueSet,

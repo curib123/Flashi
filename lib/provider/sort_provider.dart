@@ -6,6 +6,7 @@ class SortProvider with ChangeNotifier {
   String _dropdownValueCard = 'Newest';  // Default value
   String _dropdownValueNote = 'Blocks';  // Default value
   String _dropdownValueTask = 'Tiles';  // Default value
+  String _dropdownValuePdf = 'Blocks';  // Default value
 
   // Box for storing the selected sort value
   Box<dynamic> _sortBox = Hive.box('sort');
@@ -25,6 +26,9 @@ class SortProvider with ChangeNotifier {
  final List<String> _sortOptionsTask= [
     'Tiles',
     'Blocks',
+  ];final List<String> _sortOptionsPdf= [
+    'Tiles',
+    'Blocks',
   ];
 
   final List<String> _sortOptionsCard = [
@@ -39,12 +43,14 @@ class SortProvider with ChangeNotifier {
   String get dropdownValueCard => _dropdownValueCard;
   String get dropdownValueNote => _dropdownValueNote;
   String get dropdownValueTask => _dropdownValueTask;
+  String get dropdownValuePdf => _dropdownValuePdf;
 
   // Getter for sortOptions
   List<String> get sortOptionsSet => _sortOptionsSet;
   List<String> get sortOptionsCard => _sortOptionsCard;
   List<String> get sortOptionsNote => _sortOptionsNote;
   List<String> get sortOptionsTask => _sortOptionsTask;
+  List<String> get sortOptionsPdf => _sortOptionsPdf;
 
   SortProvider() {
     // Load saved sort value or use default
@@ -52,6 +58,7 @@ class SortProvider with ChangeNotifier {
     _dropdownValueCard = _sortBox.get('selectedSortCard', defaultValue: 'Newest')!;
     _dropdownValueNote = _sortBox.get('selectedSortNote', defaultValue: 'Blocks')!;
     _dropdownValueTask = _sortBox.get('dropdownValueTask', defaultValue: 'Tiles')!;
+    _dropdownValuePdf = _sortBox.get('dropdownValuePdf', defaultValue: 'Blocks')!;
     notifyListeners();
   }
 
@@ -79,6 +86,11 @@ class SortProvider with ChangeNotifier {
   void updateSortValueCard(String newValue) {
     _dropdownValueCard = newValue;
     _sortBox.put('selectedSortCard', newValue);  // Save to Hive
+    notifyListeners();
+  }
+  void updateSortValuePdf(String newValue) {
+    _dropdownValuePdf= newValue;
+    _sortBox.put('selectedSortPdf', newValue);  // Save to Hive
     notifyListeners();
   }
 }

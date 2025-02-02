@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 class ReusableNotesSummaryBlockCore extends StatelessWidget {
   final String title;
   final String content;
+  final bool isNote;
   final DateTime timestamp;
   final bool isFavorite;
   final VoidCallback onFavorite;
@@ -20,6 +21,7 @@ class ReusableNotesSummaryBlockCore extends StatelessWidget {
     required this.onFavorite,
     required this.onEdit,
     required this.onDelete,
+    required this.isNote,
   });
 
   @override
@@ -51,16 +53,22 @@ class ReusableNotesSummaryBlockCore extends StatelessWidget {
   BoxDecoration _buildContainerDecoration(ColorScheme colorScheme) {
     return BoxDecoration(
       gradient: LinearGradient(
-        colors: [
+        colors: isNote
+            ? [
           colorScheme.primaryContainer,
           colorScheme.secondaryContainer,
-        ],
+        ]
+            : [
+          colorScheme.secondaryContainer,
+          colorScheme.tertiaryContainer,
+        ], // Fallback gradient colors
         begin: Alignment.bottomRight,
         end: Alignment.topLeft,
       ),
       borderRadius: BorderRadius.circular(15),
     );
   }
+
 
   Row _buildFavoriteButton(ColorScheme colorScheme) {
     return Row(

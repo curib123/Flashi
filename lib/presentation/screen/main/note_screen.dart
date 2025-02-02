@@ -1,6 +1,5 @@
 
 import 'package:flashlearn/presentation/screen/main/settings_screen.dart';
-import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_favorate_position.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_notes_summary_block_core.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_notes_summary_tile_core.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_search_bar_core.dart';
@@ -114,6 +113,7 @@ class NoteScreen extends StatelessWidget {
     );
   }
 }
+
 Widget _NoteBodyTile(ColorScheme colorScheme,AdManager adManager,List filteredNotes ) {
   return Consumer<NotesProvider>(
     builder: (context, notesProvider, child) {
@@ -227,6 +227,7 @@ Widget _buildNoteLayout(Map<String, dynamic> note, int index, ColorScheme colorS
           ),
           child: layout == 'Tile'
               ? ReusableNotesSummaryTileCore(
+            isNote: true,
             title: note['title'],
             content: note['content'],
             timestamp: note['created_at'],
@@ -273,6 +274,7 @@ Widget _buildNoteLayout(Map<String, dynamic> note, int index, ColorScheme colorS
             },
           )
               : ReusableNotesSummaryBlockCore(
+            isNote: true,
             title: note['title'],
             content: note['content'],
             timestamp: note['created_at'],

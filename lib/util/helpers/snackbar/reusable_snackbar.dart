@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 void showCustomSnackbar({
   required BuildContext context,
   required String message,
-  Duration duration = const Duration(seconds: 2), // Default duration
+  Duration duration = const Duration(seconds: 5), // Default duration
 }) {
 
   final colorScheme =  Theme.of(context).colorScheme;
