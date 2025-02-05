@@ -9,7 +9,6 @@ import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_theme_s
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_title_content.dart';
 import 'package:flashlearn/provider/quiz_provider.dart';
 import 'package:flashlearn/provider/sort_provider.dart';
-import 'package:flashlearn/util/helpers/ads/ad_unit_id.dart';
 import 'package:flashlearn/util/helpers/ads/ads_manager.dart';
 import 'package:flashlearn/util/helpers/modal/create_set_bottom_modal.dart';
 import 'package:flutter/material.dart';
@@ -28,12 +27,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // Load ads with test ad unit IDs
-    AdManager adManager = AdManager();
-    // Load the ads using the platform-specific ad unit IDs
-    adManager.loadBannerAd(AdUnitIds.bannerAdUnitId);
-    adManager.loadInterstitialAd(AdUnitIds.interstitialAdUnitId);
-    adManager.loadRewardedAd(AdUnitIds.rewardedAdUnitId);
   }
 
   @override

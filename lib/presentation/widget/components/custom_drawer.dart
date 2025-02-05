@@ -1,6 +1,5 @@
 import 'package:flashlearn/presentation/screen/main/export_import_screen.dart';
 import 'package:flashlearn/presentation/screen/main/favorate_screen.dart';
-import 'package:flashlearn/presentation/screen/main/pdf_extraction_screen.dart';
 import 'package:flashlearn/presentation/screen/main/settings_screen.dart';
 import 'package:flashlearn/provider/bottom_navigation_provider.dart';
 import 'package:flashlearn/util/helpers/wepage_launcher.dart';
@@ -34,11 +33,17 @@ class CustomDrawer extends StatelessWidget {
         padding: EdgeInsets.zero,
         children: [
           UserAccountsDrawerHeader(
-            accountName: const Text("Flash Learn"),
-            accountEmail: const Text("Memorize Anytime AnyWhere"),
+            accountName: const Text("FlashLearn"),
+            accountEmail: const Text("FlashCard For Faster Learning"),
             currentAccountPicture: CircleAvatar(
               backgroundColor: colorScheme.onTertiary,
-              child: Icon(Icons.quiz, color: colorScheme.primary, size: 50),
+              child: Image.asset(
+                'asset/icon/icon.png', // Replace with your image path
+                width: 30,
+                height: 30,
+
+              ),
+
             ),
           ),
           // buildListTile(
@@ -71,8 +76,22 @@ class CustomDrawer extends StatelessWidget {
             },
           ),
           buildListTile(
+            icon: Icons.settings_rounded,
+            title: 'Settings',
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsScreen()),
+              );
+            },
+          ),
+
+          const Divider(height: 1),
+
+          buildListTile(
             icon: Icons.note_rounded,
-            title: 'Notes',
+            title: 'My Notes',
             onTap: () {
               Navigator.pop(context);
               bottomNavigationProvider.toogleNavigation(4);
@@ -84,16 +103,6 @@ class CustomDrawer extends StatelessWidget {
             onTap: () {
               Navigator.pop(context);
               bottomNavigationProvider.toogleNavigation(0);
-            },
-          ),  buildListTile(
-            icon: Icons.settings_rounded,
-            title: 'Settings',
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const SettingsScreen()),
-              );
             },
           ),
           buildListTile(
@@ -124,9 +133,6 @@ class CustomDrawer extends StatelessWidget {
             )
             },
           ),
-
-
-
 
           buildListTile(
             icon: Icons.privacy_tip_rounded,

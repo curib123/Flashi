@@ -123,6 +123,7 @@ class _CreatePdfScreenState extends State<CreatePdfScreen> {
             },
             icon: isPlaying ? Icons.stop : Icons.volume_up_rounded,
           ),
+
           ReusableThemeSettingPosition(colorScheme: colorScheme),
         ],
       ),
@@ -211,6 +212,7 @@ class _CreatePdfScreenState extends State<CreatePdfScreen> {
           hintText: 'Type your content here...',
           border: InputBorder.none,
         ),
+
         style: TextStyle(fontSize: 16),
       ),
     );

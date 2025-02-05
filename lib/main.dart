@@ -35,6 +35,7 @@ Future<void> main() async {
   await Hive.openBox('scheduler'); // Box for storing scheduler
   await Hive.openBox('task'); // Box for storing task
   await Hive.openBox('textReader'); // Box for storing task
+  await Hive.openBox('pdf'); // Box for storing task
 
   runApp(
     MultiProvider(
