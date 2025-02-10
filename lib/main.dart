@@ -13,7 +13,6 @@ import 'package:flashlearn/provider/task_provider.dart';
 import 'package:flashlearn/provider/text_reader_provider.dart';
 import 'package:flashlearn/provider/theme_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -21,7 +20,6 @@ Future<void> main() async {
 
 
   WidgetsFlutterBinding.ensureInitialized();
-  MobileAds.instance.initialize();
 
   await Hive.initFlutter(); // Initialize Hive
 // Open different boxes for various settings or data
@@ -51,6 +49,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => TaskProvider()), // Add StudySchedulerProvider
         ChangeNotifierProvider(create: (_) => TextReaderProvider()), // Add TextReaderProvider
         ChangeNotifierProvider(create: (_) => PdfProvider()), // Add TextReaderProvider
+
         ChangeNotifierProvider(
             create: (context) => QuizProvider(
                 criterionSet: Provider.of<SortProvider>(context,listen: false).dropdownValueSet,

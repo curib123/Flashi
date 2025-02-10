@@ -1,12 +1,11 @@
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reviewer_widgets_core/flip_card_core.dart';
 import 'package:flashlearn/provider/quiz_provider.dart';
 import 'package:flashlearn/provider/reviewer_settings_provider.dart';
-import 'package:flashlearn/util/helpers/ads/ad_unit_id.dart';
-import 'package:flashlearn/util/helpers/ads/ads_manager.dart';
 import 'package:flashlearn/util/helpers/modal/create_card_bottom_modal.dart';
 import 'package:flashlearn/util/helpers/widget/highlight_keywords.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:startapp_sdk/startapp.dart';
 
 class FlashcardReview extends StatefulWidget {
   final String reviewer;
@@ -23,10 +22,32 @@ class _FlashcardReviewState extends State<FlashcardReview> {
   late PageController _pageController;
   int _currentPage = 0;
 
+  var startAppSdk = StartAppSdk();
+
+  StartAppInterstitialAd? interstitialAd;
+
   @override
   void initState() {
     super.initState();
+    // TODO make sure to comment out this line before release
+  //  startAppSdk.setTestAdsEnabled(true);
+    startAppSdk.setTestAdsEnabled(false);
+      loadInterstitialAd();
+
     _pageController = PageController();
+
+  }
+
+  void loadInterstitialAd() {
+    startAppSdk.loadInterstitialAd(prefs: StartAppAdPreferences(adTag: 'flashcard_review')).then((interstitialAd) {
+      setState(() {
+        this.interstitialAd = interstitialAd;
+      });
+    }).onError<StartAppException>((ex, stackTrace) {
+      debugPrint("Error loading Interstitial ad: ${ex.message}");
+    }).onError((error, stackTrace) {
+      debugPrint("Error loading Interstitial ad: $error");
+    });
   }
 
   @override
@@ -41,11 +62,6 @@ class _FlashcardReviewState extends State<FlashcardReview> {
     final quizProvider = Provider.of<QuizProvider>(context);
     final reviewerSettingsProvider = Provider.of<ReviewerSettingsProvider>(context);
 
-    AdManager adManager  = AdManager();
-    Future.delayed(Duration(minutes: 10), () {
-      // Code to execute after the delay
-      adManager.loadInterstitialAd(AdUnitIds.interstitialAdUnitId);
-    });
 
     if (widget.cards.isEmpty) {
       return Center(
@@ -53,6 +69,21 @@ class _FlashcardReviewState extends State<FlashcardReview> {
       );
     }
 
+    if (interstitialAd != null) {
+      interstitialAd!.show().then((shown) {
+        if (shown) {
+          setState(() {
+            // NOTE interstitial ad can be shown only once
+            this.interstitialAd = null;
+
+          });
+        }
+
+        return null;
+      }).onError((error, stackTrace) {
+        debugPrint("Error showing Interstitial ad: $error");
+      });
+    }
 
     return Center(
       child: Column(

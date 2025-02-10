@@ -9,10 +9,10 @@ import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_theme_s
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_title_content.dart';
 import 'package:flashlearn/provider/quiz_provider.dart';
 import 'package:flashlearn/provider/sort_provider.dart';
-import 'package:flashlearn/util/helpers/ads/ads_manager.dart';
 import 'package:flashlearn/util/helpers/modal/create_set_bottom_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:startapp_sdk/startapp.dart';
 
 class HomeScreen extends StatefulWidget {
 
@@ -24,16 +24,41 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
 
+  var startAppSdk = StartAppSdk();
+  double bannerHeight = 150.0;
+
+  StartAppBannerAd? bannerAd;
+
+
+
   @override
   void initState() {
     super.initState();
+
+    // TODO make sure to comment out this line before release
+  //  startAppSdk.setTestAdsEnabled(true);
+    startAppSdk.setTestAdsEnabled(false);
+
+    // TODO use one of the following types: BANNER, MREC, COVER
+    startAppSdk.loadBannerAd(StartAppBannerType.BANNER).then((bannerAd) {
+      setState(() {
+        this.bannerAd = bannerAd;
+        bannerHeight = 150;
+      });
+    }).onError<StartAppException>((ex, stackTrace) {
+      debugPrint("Error loading Banner ad: ${ex.message}");
+      bannerHeight = 00;
+    }).onError((error, stackTrace) {
+      debugPrint("Error loading Banner ad: $error");
+      bannerHeight = 0;
+    });
   }
+
+
 
   @override
   Widget build(BuildContext context) {
 
-
-    final AdManager adManager = AdManager();
 
     // Retrieve the current theme's color scheme
     final colorScheme = Theme.of(context).colorScheme;
@@ -41,6 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // Access the QuizProvider and SortProvider from the context
     final quizProvider = Provider.of<QuizProvider>(context);
     final sortProvider = Provider.of<SortProvider>(context);
+
 
     // Reverse the filtered quiz sets for display
     final filteredQuizSets = quizProvider.filteredQuizSets.reversed.toList();
@@ -153,7 +179,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         isShowReviewLink: false,
                         onShowReviewLink: () {  },
                       ),
-                      adManager.getFirstBannerAdWidget(),
+                      bannerAd != null ? StartAppBanner(bannerAd!) : Container(),
 
                       if (filteredQuizSets.isNotEmpty && quizProvider.searchQuery != "12/15/03")
                         ReusableQuizSetList(quizSets: filteredQuizSets)

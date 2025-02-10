@@ -1,9 +1,8 @@
 import 'dart:math';
-import 'package:flashlearn/util/helpers/ads/ad_unit_id.dart';
-import 'package:flashlearn/util/helpers/ads/ads_manager.dart';
 import 'package:flashlearn/util/helpers/widget/highlight_keywords.dart';
 import 'package:flutter/material.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reviewer_widgets_core/multiple_choice_core.dart';
+import 'package:startapp_sdk/startapp.dart';
 
 class MultipleChoiceReviewBasic extends StatefulWidget {
   final String reviewer;
@@ -26,10 +25,17 @@ class _MultipleChoiceReviewState extends State<MultipleChoiceReviewBasic> {
   final Random _random = Random();
   late List<List<String>> _shuffledOptions;
   int _score = 0;
+  var startAppSdk = StartAppSdk();
+
+  StartAppInterstitialAd? interstitialAd;
 
   @override
   void initState() {
     super.initState();
+    // TODO make sure to comment out this line before release
+  //  startAppSdk.setTestAdsEnabled(true);
+    startAppSdk.setTestAdsEnabled(false);
+    loadInterstitialAd();
     _pageController = PageController();
 
     _shuffledOptions = widget.cards.map((card) {
@@ -48,6 +54,17 @@ class _MultipleChoiceReviewState extends State<MultipleChoiceReviewBasic> {
     }).toList();
   }
 
+  void loadInterstitialAd() {
+    startAppSdk.loadInterstitialAd(prefs: StartAppAdPreferences(adTag: 'basic_multiple_choice')).then((interstitialAd) {
+      setState(() {
+        this.interstitialAd = interstitialAd;
+      });
+    }).onError<StartAppException>((ex, stackTrace) {
+      debugPrint("Error loading Interstitial ad: ${ex.message}");
+    }).onError((error, stackTrace) {
+      debugPrint("Error loading Interstitial ad: $error");
+    });
+  }
   @override
   void dispose() {
     _pageController.dispose();
@@ -79,7 +96,8 @@ class _MultipleChoiceReviewState extends State<MultipleChoiceReviewBasic> {
   void showCongratulationDialog() async {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    AdManager adManager  = AdManager();
+
+
 
     showDialog(
       context: context,
@@ -132,11 +150,23 @@ class _MultipleChoiceReviewState extends State<MultipleChoiceReviewBasic> {
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               ),
               onPressed: () {
-                adManager.showInterstitialAd();
-                Future.delayed(Duration(minutes: 10), () {
-                  // Code to execute after the delay
-                  adManager.loadInterstitialAd(AdUnitIds.interstitialAdUnitId);
-                });
+                if (interstitialAd != null) {
+                  interstitialAd!.show().then((shown) {
+                    if (shown) {
+                      setState(() {
+                        // NOTE interstitial ad can be shown only once
+                        this.interstitialAd = null;
+
+                        // NOTE load again
+                        loadInterstitialAd();
+                      });
+                    }
+
+                    return null;
+                  }).onError((error, stackTrace) {
+                    debugPrint("Error showing Interstitial ad: $error");
+                  });
+                }
                 Navigator.pop(context); // Close the dialog
                 Navigator.pop(context); // Go back to the previous screen
               },
@@ -152,12 +182,24 @@ class _MultipleChoiceReviewState extends State<MultipleChoiceReviewBasic> {
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               ),
               onPressed: () {
-                adManager.showInterstitialAd();
-                Future.delayed(Duration(minutes: 5), () {
-                  // Code to execute after the delay
-                  adManager.loadInterstitialAd(AdUnitIds.interstitialAdUnitId);
-                });
 
+                if (interstitialAd != null) {
+                  interstitialAd!.show().then((shown) {
+                    if (shown) {
+                      setState(() {
+                        // NOTE interstitial ad can be shown only once
+                        this.interstitialAd = null;
+
+                        // NOTE load again
+                        loadInterstitialAd();
+                      });
+                    }
+
+                    return null;
+                  }).onError((error, stackTrace) {
+                    debugPrint("Error showing Interstitial ad: $error");
+                  });
+                }
                 Navigator.pop(context); // Close the dialog
                 restartQuiz(); // Restart the quiz
               },

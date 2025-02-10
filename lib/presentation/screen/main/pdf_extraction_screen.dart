@@ -10,15 +10,49 @@ import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_theme_s
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_title_content.dart';
 import 'package:flashlearn/provider/pdf_provider.dart';
 import 'package:flashlearn/provider/sort_provider.dart';
-import 'package:flashlearn/util/helpers/ads/ads_manager.dart';
 import 'package:flashlearn/util/helpers/pdf_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
+import 'package:startapp_sdk/startapp.dart';
 
-class PdfExtractionScreen extends StatelessWidget {
+class PdfExtractionScreen extends StatefulWidget {
   const PdfExtractionScreen({super.key});
+
+  @override
+  State<PdfExtractionScreen> createState() => _PdfExtractionScreenState();
+}
+
+class _PdfExtractionScreenState extends State<PdfExtractionScreen> {
+
+  var startAppSdk = StartAppSdk();
+  double bannerHeight = 150.0;
+
+  StartAppBannerAd? bannerAd;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // TODO make sure to comment out this line before release
+ //   startAppSdk.setTestAdsEnabled(true);
+    startAppSdk.setTestAdsEnabled(false);
+
+    // TODO use one of the following types: BANNER, MREC, COVER
+    startAppSdk.loadBannerAd(StartAppBannerType.BANNER).then((bannerAd) {
+      setState(() {
+        this.bannerAd = bannerAd;
+        bannerHeight = 150;
+      });
+    }).onError<StartAppException>((ex, stackTrace) {
+      debugPrint("Error loading Banner ad: ${ex.message}");
+      bannerHeight = 100;
+    }).onError((error, stackTrace) {
+      debugPrint("Error loading Banner ad: $error");
+      bannerHeight = 100;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +60,6 @@ class PdfExtractionScreen extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final pdfProvider = Provider.of<PdfProvider>(context);
     final sortProvider = Provider.of<SortProvider>(context);
-    final AdManager adManager = AdManager();
     var filteredNotes = pdfProvider.filterPdfByTitle().reversed.toList();
     PdfService pdfService = PdfService();
 
@@ -63,10 +96,10 @@ class PdfExtractionScreen extends StatelessWidget {
       ),
       body: Stack(
         children: [
-          sortProvider.dropdownValuePdf == 'Tiles' ? _NoteBodyTile(colorScheme,adManager,filteredNotes) : _NoteBodyBlock(colorScheme,adManager,filteredNotes),
+          sortProvider.dropdownValuePdf == 'Tiles' ? _NoteBodyTile(colorScheme,bannerHeight,filteredNotes) : _NoteBodyBlock(colorScheme,bannerHeight,filteredNotes),
           Container(
             color: colorScheme.onPrimary,
-            height: adManager.bannerHeight,
+            height: bannerHeight,
             child: Column(
               children: [
                 ReusableSearchBarCore(
@@ -86,7 +119,7 @@ class PdfExtractionScreen extends StatelessWidget {
                     isShowReviewLink: false,
                     onShowReviewLink: () {}
                 ),
-                adManager.getFourthBannerAdWidget()
+                bannerAd != null ? StartAppBanner(bannerAd!) : Container(),
               ],
             ),
           ),
@@ -106,33 +139,33 @@ class PdfExtractionScreen extends StatelessWidget {
   }
 }
 
-Widget _NoteBodyTile(ColorScheme colorScheme,AdManager adManager,List filteredNotes ) {
+Widget _NoteBodyTile(ColorScheme colorScheme,double bannerHeight,List filteredNotes ) {
   return Consumer<PdfProvider>(
     builder: (context, pdfProvider, child) {
 
-      return _buildNoteListView(filteredNotes, colorScheme, pdfProvider,'Tile',context,adManager);
+      return _buildNoteListView(filteredNotes, colorScheme, pdfProvider,'Tile',context,bannerHeight);
     },
   );
 }
 
-Widget _NoteBodyBlock(ColorScheme colorScheme,AdManager adManager,List filteredNotes) {
+Widget _NoteBodyBlock(ColorScheme colorScheme,double bannerHeight,List filteredNotes) {
 
   return Consumer<PdfProvider>(
     builder: (context, pdfProvider, child) {
 
-      return _buildNoteGridView(filteredNotes, colorScheme, pdfProvider,"Block",context,adManager);
+      return _buildNoteGridView(filteredNotes, colorScheme, pdfProvider,"Block",context,bannerHeight);
     },
   );
 }
 
-Widget _buildNoteListView(List filteredNotes, ColorScheme colorScheme, PdfProvider pdfProvider, String layout,BuildContext context,AdManager adManager) {
+Widget _buildNoteListView(List filteredNotes, ColorScheme colorScheme, PdfProvider pdfProvider, String layout,BuildContext context,double bannerHeight) {
 
   return filteredNotes.isEmpty
       ? _noNotesWidget(context)
       : AnimationLimiter(
     child: ListView.builder(
       padding: EdgeInsets.symmetric(
-        vertical: adManager.bannerHeight, // Adjust padding as needed
+        vertical: bannerHeight, // Adjust padding as needed
         horizontal: 15,
       ),
       itemCount: filteredNotes.length,
@@ -144,14 +177,14 @@ Widget _buildNoteListView(List filteredNotes, ColorScheme colorScheme, PdfProvid
   );
 }
 
-Widget _buildNoteGridView(List filteredNotes, ColorScheme colorScheme, PdfProvider pdfProvider, String layout,BuildContext context,AdManager adManager) {
+Widget _buildNoteGridView(List filteredNotes, ColorScheme colorScheme, PdfProvider pdfProvider, String layout,BuildContext context,double bannerHeight) {
 
   return filteredNotes.isEmpty
       ? _noNotesWidget(context)
       : AnimationLimiter(
     child: GridView.builder(
       padding: EdgeInsets.symmetric(
-        vertical: adManager.bannerHeight, // Adjust padding as needed
+        vertical: bannerHeight, // Adjust padding as needed
         horizontal: 15,
       ),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

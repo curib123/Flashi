@@ -1,7 +1,6 @@
 import 'package:flashlearn/presentation/screen/main/settings_screen.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_task_block_core.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_task_tile_core.dart';
-import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_favorate_position.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_search_bar_core.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_create_set_button_position.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_sort_and_see_all.dart';
@@ -9,12 +8,12 @@ import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_theme_s
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_title_content.dart';
 import 'package:flashlearn/provider/sort_provider.dart';
 import 'package:flashlearn/provider/task_provider.dart';
-import 'package:flashlearn/util/helpers/ads/ads_manager.dart';
 import 'package:flashlearn/util/helpers/alert_box/delete_confirmation_alert_box.dart';
 import 'package:flashlearn/util/helpers/modal/create_task_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
+import 'package:startapp_sdk/startapp.dart';
 
 class TaskScreen extends StatefulWidget {
   const TaskScreen({super.key});
@@ -24,13 +23,42 @@ class TaskScreen extends StatefulWidget {
 }
 
 class _TaskScreenState extends State<TaskScreen> {
+
+  var startAppSdk = StartAppSdk();
+  double bannerHeight = 150.0;
+
+  StartAppBannerAd? bannerAd;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // TODO make sure to comment out this line before release
+    //startAppSdk.setTestAdsEnabled(true);
+    startAppSdk.setTestAdsEnabled(false);
+
+    // TODO use one of the following types: BANNER, MREC, COVER
+    startAppSdk.loadBannerAd(StartAppBannerType.BANNER).then((bannerAd) {
+      setState(() {
+        this.bannerAd = bannerAd;
+        bannerHeight = 150;
+      });
+    }).onError<StartAppException>((ex, stackTrace) {
+      debugPrint("Error loading Banner ad: ${ex.message}");
+      bannerHeight = 100;
+    }).onError((error, stackTrace) {
+      debugPrint("Error loading Banner ad: $error");
+      bannerHeight = 100;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final AdManager adManager = AdManager();
     final sortProvider = Provider.of<SortProvider>(context);
     final taskProvider = Provider.of<TaskProvider>(context);
     final filteredTask = taskProvider.searchTasksByName().reversed.toList();
+
 
     return Scaffold(
       appBar: AppBar(
@@ -65,11 +93,11 @@ class _TaskScreenState extends State<TaskScreen> {
       body: Stack(
         children: [
 
-          sortProvider.dropdownValueTask == 'Tiles' ?  _taskTile(colorScheme,adManager,taskProvider,filteredTask,context):  _taskBlock(colorScheme,adManager,taskProvider,filteredTask,context),
+          sortProvider.dropdownValueTask == 'Tiles' ?  _taskTile(colorScheme,bannerHeight,taskProvider,filteredTask,context):  _taskBlock(colorScheme,bannerHeight,taskProvider,filteredTask,context),
 
           Container(
             color: colorScheme.onPrimary,
-            height: adManager.bannerHeight,
+            height: bannerHeight,
             child: Column(
               children: [
                 ReusableSearchBarCore(
@@ -90,7 +118,7 @@ class _TaskScreenState extends State<TaskScreen> {
                     onShowReviewLink: () {}
                 ),
 
-                adManager.getThirdBannerAdWidget(),
+                bannerAd != null ? StartAppBanner(bannerAd!) : Container(),
 
               ],
             ),
@@ -106,14 +134,14 @@ class _TaskScreenState extends State<TaskScreen> {
     );
   }
 }
-Widget _taskTile(ColorScheme colorScheme, AdManager adManager, TaskProvider taskProvider,List filteredTask,BuildContext context) {
+Widget _taskTile(ColorScheme colorScheme,  double bannerHeight, TaskProvider taskProvider,List filteredTask,BuildContext context) {
 
   if (filteredTask.isEmpty) {
     return _noTaskWidget(context); // Show No Task message if there are no tasks
   }
 
   return ListView.builder(
-    padding: EdgeInsets.symmetric(vertical: adManager.bannerHeight),
+    padding: EdgeInsets.symmetric(vertical: bannerHeight),
     itemCount: filteredTask.isEmpty ? 1 :filteredTask.length, // Check if tasks are empty
     itemBuilder: (context, index) {
 
@@ -153,14 +181,14 @@ Widget _taskTile(ColorScheme colorScheme, AdManager adManager, TaskProvider task
   );
 }
 
-Widget _taskBlock(ColorScheme colorScheme, AdManager adManager, TaskProvider taskProvider,List filteredTask,BuildContext context) {
+Widget _taskBlock(ColorScheme colorScheme, double bannerHeight, TaskProvider taskProvider,List filteredTask,BuildContext context) {
 
   if (filteredTask.isEmpty) {
     return _noTaskWidget(context); // Show No Task message if there are no tasks
   }
 
   return GridView.builder(
-    padding: EdgeInsets.symmetric(vertical: adManager.bannerHeight),
+    padding: EdgeInsets.symmetric(vertical: bannerHeight),
     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
       crossAxisCount: 2, // Two columns
       crossAxisSpacing: 8.0, // Space between columns

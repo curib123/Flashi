@@ -10,14 +10,48 @@ import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_title_c
 import 'package:flashlearn/provider/notes_provider.dart';
 import 'package:flashlearn/presentation/widget/components/create_note_screen.dart';
 import 'package:flashlearn/provider/sort_provider.dart';
-import 'package:flashlearn/util/helpers/ads/ads_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
+import 'package:startapp_sdk/startapp.dart';
 
-class NoteScreen extends StatelessWidget {
+class NoteScreen extends StatefulWidget {
   const NoteScreen({super.key});
+
+  @override
+  State<NoteScreen> createState() => _NoteScreenState();
+}
+
+class _NoteScreenState extends State<NoteScreen> {
+
+  var startAppSdk = StartAppSdk();
+  double bannerHeight = 150.0;
+
+  StartAppBannerAd? bannerAd;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // TODO make sure to comment out this line before release
+   // startAppSdk.setTestAdsEnabled(true);
+    startAppSdk.setTestAdsEnabled(false);
+
+    // TODO use one of the following types: BANNER, MREC, COVER
+    startAppSdk.loadBannerAd(StartAppBannerType.BANNER).then((bannerAd) {
+      setState(() {
+        this.bannerAd = bannerAd;
+       bannerHeight = 150;
+      });
+    }).onError<StartAppException>((ex, stackTrace) {
+      debugPrint("Error loading Banner ad: ${ex.message}");
+      bannerHeight = 100;
+    }).onError((error, stackTrace) {
+      debugPrint("Error loading Banner ad: $error");
+      bannerHeight = 100;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,8 +59,8 @@ class NoteScreen extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final notesProvider = Provider.of<NotesProvider>(context);
     final sortProvider = Provider.of<SortProvider>(context);
-    final AdManager adManager = AdManager();
     var filteredNotes = notesProvider.filterNotesByTitle().reversed.toList();
+
 
 
     return Scaffold(
@@ -61,10 +95,10 @@ class NoteScreen extends StatelessWidget {
       ),
       body: Stack(
         children: [
-          sortProvider.dropdownValueNote == 'Tiles' ? _NoteBodyTile(colorScheme,adManager,filteredNotes) : _NoteBodyBlock(colorScheme,adManager,filteredNotes),
+          sortProvider.dropdownValueNote == 'Tiles' ? _NoteBodyTile(colorScheme,filteredNotes,bannerHeight) : _NoteBodyBlock(colorScheme,filteredNotes,bannerHeight),
           Container(
             color: colorScheme.onPrimary,
-            height: adManager.bannerHeight,
+            height:bannerHeight ,
             child: Column(
               children: [
                 ReusableSearchBarCore(
@@ -84,7 +118,8 @@ class NoteScreen extends StatelessWidget {
                     isShowReviewLink: false,
                     onShowReviewLink: () {}
                 ),
-                adManager.getSecondBannerAdWidget(),
+                bannerAd != null ? StartAppBanner(bannerAd!) : Container(),
+
               ],
             ),
           ),
@@ -114,33 +149,33 @@ class NoteScreen extends StatelessWidget {
   }
 }
 
-Widget _NoteBodyTile(ColorScheme colorScheme,AdManager adManager,List filteredNotes ) {
+Widget _NoteBodyTile(ColorScheme colorScheme ,List filteredNotes,double bannerHeight ) {
   return Consumer<NotesProvider>(
     builder: (context, notesProvider, child) {
 
-      return _buildNoteListView(filteredNotes, colorScheme, notesProvider,'Tile',context,adManager);
+      return _buildNoteListView(filteredNotes, colorScheme, notesProvider,'Tile',context,bannerHeight);
     },
   );
 }
 
-Widget _NoteBodyBlock(ColorScheme colorScheme,AdManager adManager,List filteredNotes) {
+Widget _NoteBodyBlock(ColorScheme colorScheme,List filteredNotes,double bannerHeight) {
 
   return Consumer<NotesProvider>(
     builder: (context, notesProvider, child) {
 
-      return _buildNoteGridView(filteredNotes, colorScheme, notesProvider,"Block",context,adManager);
+      return _buildNoteGridView(filteredNotes, colorScheme, notesProvider,"Block",context,bannerHeight);
     },
   );
 }
 
-Widget _buildNoteListView(List filteredNotes, ColorScheme colorScheme, NotesProvider notesProvider, String layout,BuildContext context,AdManager adManager) {
+Widget _buildNoteListView(List filteredNotes, ColorScheme colorScheme, NotesProvider notesProvider, String layout,BuildContext context,double bannerHeight) {
 
   return filteredNotes.isEmpty
       ? _noNotesWidget(context)
       : AnimationLimiter(
     child: ListView.builder(
       padding: EdgeInsets.symmetric(
-        vertical: adManager.bannerHeight, // Adjust padding as needed
+        vertical:bannerHeight , // Adjust padding as needed
         horizontal: 15,
       ),
       itemCount: filteredNotes.length,
@@ -152,14 +187,14 @@ Widget _buildNoteListView(List filteredNotes, ColorScheme colorScheme, NotesProv
   );
 }
 
-Widget _buildNoteGridView(List filteredNotes, ColorScheme colorScheme, NotesProvider notesProvider, String layout,BuildContext context,AdManager adManager) {
+Widget _buildNoteGridView(List filteredNotes, ColorScheme colorScheme, NotesProvider notesProvider, String layout,BuildContext context,double bannerHeight) {
 
   return filteredNotes.isEmpty
       ? _noNotesWidget(context)
       : AnimationLimiter(
     child: GridView.builder(
       padding: EdgeInsets.symmetric(
-        vertical: adManager.bannerHeight, // Adjust padding as needed
+        vertical: bannerHeight, // Adjust padding as needed
         horizontal: 15,
       ),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
