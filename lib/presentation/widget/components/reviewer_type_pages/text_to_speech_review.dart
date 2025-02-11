@@ -1,4 +1,5 @@
 
+import 'package:flashlearn/util/helpers/ads/ad_helper.dart';
 import 'package:flashlearn/util/helpers/widget/highlight_keywords.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -36,7 +37,7 @@ class _TextToSpeechReviewState extends State<TextToSpeechReview> {
   void initState() {
     super.initState();
     // TODO make sure to comment out this line before release
-    startAppSdk.setTestAdsEnabled(false);
+    startAppSdk.setTestAdsEnabled(AdHelper.isTestEnabled);
       loadInterstitialAd();
     _pageController = PageController(initialPage: _currentIndex); // Start at the first card
 

@@ -5,14 +5,16 @@ import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_sort_an
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
 import 'package:flashlearn/provider/quiz_provider.dart';
 import 'package:flashlearn/provider/sort_provider.dart';
+import 'package:flashlearn/util/helpers/ads/ad_helper.dart';
 import 'package:flashlearn/util/helpers/alert_box/delete_confirmation_alert_box.dart';
 import 'package:flashlearn/util/helpers/alert_box/highlight_keyword_alert_box.dart';
 import 'package:flashlearn/util/helpers/alert_box/review_selection_alert_box.dart';
 import 'package:flashlearn/util/helpers/modal/create_card_bottom_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:startapp_sdk/startapp.dart';
 
-class SeeAllQuizCard extends StatelessWidget {
+class SeeAllQuizCard extends StatefulWidget {
   final String name;
   final int index;
   final ColorScheme colorScheme;
@@ -28,6 +30,44 @@ class SeeAllQuizCard extends StatelessWidget {
   });
 
   @override
+  State<SeeAllQuizCard> createState() => _SeeAllQuizCardState();
+}
+
+class _SeeAllQuizCardState extends State<SeeAllQuizCard> {
+
+
+  var startAppSdk = StartAppSdk();
+
+  StartAppBannerAd? bannerAd;
+
+
+
+  @override
+  void initState() {
+    super.initState();
+
+    // TODO make sure to comment out this line before release
+    //  startAppSdk.setTestAdsEnabled(true);
+    startAppSdk.setTestAdsEnabled(AdHelper.isTestEnabled);
+
+    // TODO use one of the following types: BANNER, MREC, COVER
+    startAppSdk.loadBannerAd(StartAppBannerType.MREC).then((bannerAd) {
+      setState(() {
+        this.bannerAd = bannerAd;
+
+      });
+    }).onError<StartAppException>((ex, stackTrace) {
+      debugPrint("Error loading Banner ad: ${ex.message}");
+
+    }).onError((error, stackTrace) {
+      debugPrint("Error loading Banner ad: $error");
+
+    });
+  }
+
+
+
+  @override
   Widget build(BuildContext context) {
 
     // Access both providers directly
@@ -37,9 +77,9 @@ class SeeAllQuizCard extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        foregroundColor: colorScheme.onPrimary, // For text and icons color
-        backgroundColor: colorScheme.primary, // Background color of the app bar
-        title: Text(name),
+        foregroundColor: widget.colorScheme.onPrimary, // For text and icons color
+        backgroundColor: widget.colorScheme.primary, // Background color of the app bar
+        title: Text(widget.name),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             bottomLeft: Radius.circular(20),
@@ -50,7 +90,7 @@ class SeeAllQuizCard extends StatelessWidget {
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios_new, // Custom Icon (back arrow)
-            color: colorScheme.onPrimary, // Custom color for the icon
+            color: widget.colorScheme.onPrimary, // Custom color for the icon
           ),
           onPressed: () {
 
@@ -91,12 +131,13 @@ class SeeAllQuizCard extends StatelessWidget {
                   onShowReviewLink: () {
                     showReviewSelection(
                         context: context,
-                        heading: name,
-                        cards: cards,
-                        setname: name);
+                        heading: widget.name,
+                        cards: widget.cards,
+                        setname: widget.name);
                   },
                 ),
-                cards.isEmpty
+                bannerAd != null ? StartAppBanner(bannerAd!) : Container(),
+                widget.cards.isEmpty
                     ? _noCardWidget(context)
                     :SizedBox(
                   width: MediaQuery.sizeOf(context).width,
@@ -104,15 +145,15 @@ class SeeAllQuizCard extends StatelessWidget {
                   child: SingleChildScrollView(
                     scrollDirection: Axis.vertical,
                     child: ReusableQuizCardList(
-                      name: name,
-                      card: card,
+                      name: widget.name,
+                      card: widget.card,
                       onRemove: (quizSet) {
                        showDeleteConfirmationDialog(
                            context: context,
-                           setName: name,
+                           setName: widget.name,
                            onDelete: () => {
                              quizProvider.removeCardFromQuizSet(
-                                 quizSetName: name,
+                                 quizSetName: widget.name,
                                  question:  quizSet['question'])
                            } );
                       },
@@ -120,7 +161,7 @@ class SeeAllQuizCard extends StatelessWidget {
                       quizProvider.questionController.text =  quizSet['question'];
                       quizProvider.answerController.text =  quizSet['answer'];
                       CreateCardBottomModal(
-                        name: name,
+                        name: widget.name,
                         context: context,
                         buttonName: "Edit Card",
                         isCreate: false,
@@ -136,11 +177,11 @@ class SeeAllQuizCard extends StatelessWidget {
                       },
                       onKeyword: (quizSet) {
                        HighlightKeywordAlertBox(context, (keyword) {
-                         quizProvider.updateKeyWordInQuizSet(quizSetName: name, oldKeyWord: quizSet['keyword'], newKeyWord: keyword);
+                         quizProvider.updateKeyWordInQuizSet(quizSetName: widget.name, oldKeyWord: quizSet['keyword'], newKeyWord: keyword);
                        });
                       },
                       onRemoveKeyword: ( quizSet) {
-                        quizProvider.updateKeyWordInQuizSet(quizSetName: name, oldKeyWord:quizSet['keyword'] , newKeyWord: '');
+                        quizProvider.updateKeyWordInQuizSet(quizSetName: widget.name, oldKeyWord:quizSet['keyword'] , newKeyWord: '');
                       },),
                   ),
                 ),
@@ -151,11 +192,11 @@ class SeeAllQuizCard extends StatelessWidget {
              bottom: 60,
                left: 0,
                right: 0,
-               child: Center(child: Text('${ card['limitNumberOfQuiz'] - quizProvider.getNumberOfCardsInSet(name) } slot free out of ${card['limitNumberOfQuiz']}')),),
+               child: Center(child: Text('${ widget.card['limitNumberOfQuiz'] - quizProvider.getNumberOfCardsInSet(widget.name) } slot free out of ${widget.card['limitNumberOfQuiz']}')),),
             // Create Button Position
-            card['limitNumberOfQuiz'] - quizProvider.getNumberOfCardsInSet(name) != 0 ? ReusableCreateSetButtonPosition(
+            widget.card['limitNumberOfQuiz'] - quizProvider.getNumberOfCardsInSet(widget.name) != 0 ? ReusableCreateSetButtonPosition(
               icon: Icons.add_rounded,
-              colorScheme: colorScheme,
+              colorScheme: widget.colorScheme,
               name: 'Create Card',
               onTap: () {
                 CreateCardBottomModal(
@@ -163,12 +204,12 @@ class SeeAllQuizCard extends StatelessWidget {
                     buttonName: "Add Card",
                     isCreate: true,
                     cardName: '',
-                    card: card,
-                    name: name );
+                    card: widget.card,
+                    name: widget.name );
               },
-            ) : ReusableRewardedAdsButtonPosition(colorScheme: colorScheme, name: "Watch an ad to get 5 free slot!"),
+            ) : ReusableRewardedAdsButtonPosition(colorScheme: widget.colorScheme, name: "Watch an ad to get 5 free slot!"),
             ReusableThemeSettingPosition(
-                colorScheme: colorScheme
+                colorScheme: widget.colorScheme
             ),
           ],
         );

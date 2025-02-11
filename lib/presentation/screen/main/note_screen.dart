@@ -10,6 +10,7 @@ import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_title_c
 import 'package:flashlearn/provider/notes_provider.dart';
 import 'package:flashlearn/presentation/widget/components/create_note_screen.dart';
 import 'package:flashlearn/provider/sort_provider.dart';
+import 'package:flashlearn/util/helpers/ads/ad_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -36,7 +37,7 @@ class _NoteScreenState extends State<NoteScreen> {
 
     // TODO make sure to comment out this line before release
    // startAppSdk.setTestAdsEnabled(true);
-    startAppSdk.setTestAdsEnabled(false);
+    startAppSdk.setTestAdsEnabled(AdHelper.isTestEnabled);
 
     // TODO use one of the following types: BANNER, MREC, COVER
     startAppSdk.loadBannerAd(StartAppBannerType.BANNER).then((bannerAd) {

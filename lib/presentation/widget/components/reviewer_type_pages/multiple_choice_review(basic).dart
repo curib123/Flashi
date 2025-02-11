@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:flashlearn/util/helpers/ads/ad_helper.dart';
 import 'package:flashlearn/util/helpers/widget/highlight_keywords.dart';
 import 'package:flutter/material.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reviewer_widgets_core/multiple_choice_core.dart';
@@ -34,7 +35,7 @@ class _MultipleChoiceReviewState extends State<MultipleChoiceReviewBasic> {
     super.initState();
     // TODO make sure to comment out this line before release
   //  startAppSdk.setTestAdsEnabled(true);
-    startAppSdk.setTestAdsEnabled(false);
+    startAppSdk.setTestAdsEnabled(AdHelper.isTestEnabled);
     loadInterstitialAd();
     _pageController = PageController();
 

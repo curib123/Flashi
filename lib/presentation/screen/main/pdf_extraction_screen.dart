@@ -10,6 +10,7 @@ import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_theme_s
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_title_content.dart';
 import 'package:flashlearn/provider/pdf_provider.dart';
 import 'package:flashlearn/provider/sort_provider.dart';
+import 'package:flashlearn/util/helpers/ads/ad_helper.dart';
 import 'package:flashlearn/util/helpers/pdf_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -37,7 +38,7 @@ class _PdfExtractionScreenState extends State<PdfExtractionScreen> {
 
     // TODO make sure to comment out this line before release
  //   startAppSdk.setTestAdsEnabled(true);
-    startAppSdk.setTestAdsEnabled(false);
+    startAppSdk.setTestAdsEnabled(AdHelper.isTestEnabled);
 
     // TODO use one of the following types: BANNER, MREC, COVER
     startAppSdk.loadBannerAd(StartAppBannerType.BANNER).then((bannerAd) {

@@ -9,6 +9,7 @@ import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_theme_s
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_title_content.dart';
 import 'package:flashlearn/provider/quiz_provider.dart';
 import 'package:flashlearn/provider/sort_provider.dart';
+import 'package:flashlearn/util/helpers/ads/ad_helper.dart';
 import 'package:flashlearn/util/helpers/modal/create_set_bottom_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -37,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     // TODO make sure to comment out this line before release
   //  startAppSdk.setTestAdsEnabled(true);
-    startAppSdk.setTestAdsEnabled(false);
+    startAppSdk.setTestAdsEnabled(AdHelper.isTestEnabled);
 
     // TODO use one of the following types: BANNER, MREC, COVER
     startAppSdk.loadBannerAd(StartAppBannerType.BANNER).then((bannerAd) {

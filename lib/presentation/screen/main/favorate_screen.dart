@@ -5,6 +5,7 @@ import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/r
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_title_content.dart';
 import 'package:flashlearn/provider/quiz_provider.dart';
+import 'package:flashlearn/util/helpers/ads/ad_helper.dart';
 import 'package:flashlearn/util/helpers/alert_box/delete_confirmation_alert_box.dart';
 import 'package:flashlearn/util/helpers/alert_box/review_selection_alert_box.dart';
 import 'package:flashlearn/util/helpers/import_export_helper_class.dart';
@@ -14,9 +15,45 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
+import 'package:startapp_sdk/startapp.dart';
 
-class FavoriteScreen extends StatelessWidget {
+class FavoriteScreen extends StatefulWidget {
   const FavoriteScreen({super.key});
+
+  @override
+  State<FavoriteScreen> createState() => _FavoriteScreenState();
+}
+
+class _FavoriteScreenState extends State<FavoriteScreen> {
+  var startAppSdk = StartAppSdk();
+
+  StartAppBannerAd? bannerAd;
+
+
+
+  @override
+  void initState() {
+    super.initState();
+
+    // TODO make sure to comment out this line before release
+    //  startAppSdk.setTestAdsEnabled(true);
+    startAppSdk.setTestAdsEnabled(AdHelper.isTestEnabled);
+
+    // TODO use one of the following types: BANNER, MREC, COVER
+    startAppSdk.loadBannerAd(StartAppBannerType.MREC).then((bannerAd) {
+      setState(() {
+        this.bannerAd = bannerAd;
+
+      });
+    }).onError<StartAppException>((ex, stackTrace) {
+      debugPrint("Error loading Banner ad: ${ex.message}");
+
+    }).onError((error, stackTrace) {
+      debugPrint("Error loading Banner ad: $error");
+
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +91,7 @@ class FavoriteScreen extends StatelessWidget {
       ),
       body:  Stack(
         children: [
+
           quizSets.isEmpty
               ? _buildEmptyState(context)
               : ListView.builder(
@@ -102,39 +140,45 @@ class FavoriteScreen extends StatelessWidget {
                             ),
                           ],
                         ),
-                        child: ReusableSetCore(
-                          name: name,
-                          description: description,
-                          numberOfQuiz: cards.length,
-                          isFavorate: favorite,
-                          timestamp: timestamp,
-                          onTap: () => _navigateToQuizCards(context, name, set, index, cards),
-                          onAddCard: () => _addCard(context, name, set, index, cards),
-                          onReview: () => showReviewSelection(
-                            context: context,
-                            heading: name,
-                            cards: cards,
-                            setname: name,
-                          ),
-                          onDelete: () => showDeleteConfirmationDialog(
-                            context: context,
-                            setName: name,
-                            onDelete: () => quizProvider.removeQuizSet(set),
-                          ),
-                          onEdit: () => _showEditSetModal(context, quizProvider, name, description),
-                          onFavorate: () => quizProvider.toggleFavorite(set),
-                          onViewAllCards: () => _navigateToQuizCards(context, name, set, index, cards),
-                          onShare: () {  },
-                          onExport: () {
-                            helper.exportList(context, set);
-                          },
-                          onImport: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) =>  ExportImportScreen()),
-                            );
+                        child:  Column(
+                          children: [
 
-                          },
+                            bannerAd != null ? StartAppBanner(bannerAd!) : Container(),
+                            ReusableSetCore(
+                              name: name,
+                              description: description,
+                              numberOfQuiz: cards.length,
+                              isFavorate: favorite,
+                              timestamp: timestamp,
+                              onTap: () => _navigateToQuizCards(context, name, set, index, cards),
+                              onAddCard: () => _addCard(context, name, set, index, cards),
+                              onReview: () => showReviewSelection(
+                                context: context,
+                                heading: name,
+                                cards: cards,
+                                setname: name,
+                              ),
+                              onDelete: () => showDeleteConfirmationDialog(
+                                context: context,
+                                setName: name,
+                                onDelete: () => quizProvider.removeQuizSet(set),
+                              ),
+                              onEdit: () => _showEditSetModal(context, quizProvider, name, description),
+                              onFavorate: () => quizProvider.toggleFavorite(set),
+                              onViewAllCards: () => _navigateToQuizCards(context, name, set, index, cards),
+                              onShare: () {  },
+                              onExport: () {
+                                helper.exportList(context, set);
+                              },
+                              onImport: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) =>  ExportImportScreen()),
+                                );
+
+                              },
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -143,6 +187,7 @@ class FavoriteScreen extends StatelessWidget {
               );
             },
           ),
+
           ReusableThemeSettingPosition(colorScheme: colorScheme)
         ],
       )

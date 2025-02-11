@@ -1,6 +1,7 @@
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reviewer_widgets_core/flip_card_core.dart';
 import 'package:flashlearn/provider/quiz_provider.dart';
 import 'package:flashlearn/provider/reviewer_settings_provider.dart';
+import 'package:flashlearn/util/helpers/ads/ad_helper.dart';
 import 'package:flashlearn/util/helpers/modal/create_card_bottom_modal.dart';
 import 'package:flashlearn/util/helpers/widget/highlight_keywords.dart';
 import 'package:flutter/material.dart';
@@ -31,7 +32,7 @@ class _FlashcardReviewState extends State<FlashcardReview> {
     super.initState();
     // TODO make sure to comment out this line before release
   //  startAppSdk.setTestAdsEnabled(true);
-    startAppSdk.setTestAdsEnabled(false);
+    startAppSdk.setTestAdsEnabled(AdHelper.isTestEnabled);
       loadInterstitialAd();
 
     _pageController = PageController();

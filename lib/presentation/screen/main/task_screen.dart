@@ -8,6 +8,7 @@ import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_theme_s
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_title_content.dart';
 import 'package:flashlearn/provider/sort_provider.dart';
 import 'package:flashlearn/provider/task_provider.dart';
+import 'package:flashlearn/util/helpers/ads/ad_helper.dart';
 import 'package:flashlearn/util/helpers/alert_box/delete_confirmation_alert_box.dart';
 import 'package:flashlearn/util/helpers/modal/create_task_modal.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +36,7 @@ class _TaskScreenState extends State<TaskScreen> {
 
     // TODO make sure to comment out this line before release
     //startAppSdk.setTestAdsEnabled(true);
-    startAppSdk.setTestAdsEnabled(false);
+    startAppSdk.setTestAdsEnabled(AdHelper.isTestEnabled);
 
     // TODO use one of the following types: BANNER, MREC, COVER
     startAppSdk.loadBannerAd(StartAppBannerType.BANNER).then((bannerAd) {
