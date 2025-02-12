@@ -1,11 +1,10 @@
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_create_set_button_position.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
 import 'package:flashlearn/provider/text_reader_provider.dart';
-import 'package:flashlearn/util/helpers/ads/ad_helper.dart';
+import 'package:flashlearn/util/helpers/ads/ad_banner.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:provider/provider.dart';
-import 'package:startapp_sdk/startapp.dart';
 
 class ReusableTextReader extends StatefulWidget {
   const ReusableTextReader({super.key});
@@ -19,31 +18,15 @@ class _ReusableTextReaderState extends State<ReusableTextReader> {
   bool _isReading = false;
 
 
-  var startAppSdk = StartAppSdk();
+
   double bannerHeight = 150.0;
 
-  StartAppBannerAd? bannerAd;
 
   @override
   void initState() {
     super.initState();
 
-    // TODO make sure to comment out this line before release
-    startAppSdk.setTestAdsEnabled(AdHelper.isTestEnabled);
 
-    // TODO use one of the following types: BANNER, MREC, COVER
-    startAppSdk.loadBannerAd(StartAppBannerType.BANNER).then((bannerAd) {
-      setState(() {
-        this.bannerAd = bannerAd;
-        bannerHeight = 150;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Banner ad: ${ex.message}");
-      bannerHeight = 0;
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Banner ad: $error");
-      bannerHeight = 0;
-    });
 
     _flutterTts.setCompletionHandler(() {
       setState(() {
@@ -93,8 +76,8 @@ class _ReusableTextReaderState extends State<ReusableTextReader> {
             child: Column(
               children: [
                 // Text Input Field
+                PersistentBannerAd(placement: 'reader',),
 
-                bannerAd != null ? StartAppBanner(bannerAd!) : Container(),
                 TextField(
                   controller: textReaderProvider.textController,
                   maxLines: 23,

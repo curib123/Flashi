@@ -5,14 +5,14 @@ import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_sort_an
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
 import 'package:flashlearn/provider/quiz_provider.dart';
 import 'package:flashlearn/provider/sort_provider.dart';
-import 'package:flashlearn/util/helpers/ads/ad_helper.dart';
+import 'package:flashlearn/util/helpers/ads/ad_banner.dart';
 import 'package:flashlearn/util/helpers/alert_box/delete_confirmation_alert_box.dart';
 import 'package:flashlearn/util/helpers/alert_box/highlight_keyword_alert_box.dart';
 import 'package:flashlearn/util/helpers/alert_box/review_selection_alert_box.dart';
 import 'package:flashlearn/util/helpers/modal/create_card_bottom_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:startapp_sdk/startapp.dart';
+import 'package:stack_appodeal_flutter/stack_appodeal_flutter.dart';
 
 class SeeAllQuizCard extends StatefulWidget {
   final String name;
@@ -35,37 +35,35 @@ class SeeAllQuizCard extends StatefulWidget {
 
 class _SeeAllQuizCardState extends State<SeeAllQuizCard> {
 
-
-  var startAppSdk = StartAppSdk();
-
-  StartAppBannerAd? bannerAd;
-
-
+  bool isShow = false;
 
   @override
   void initState() {
     super.initState();
 
-    // TODO make sure to comment out this line before release
-    //  startAppSdk.setTestAdsEnabled(true);
-    startAppSdk.setTestAdsEnabled(AdHelper.isTestEnabled);
-
-    // TODO use one of the following types: BANNER, MREC, COVER
-    startAppSdk.loadBannerAd(StartAppBannerType.MREC).then((bannerAd) {
-      setState(() {
-        this.bannerAd = bannerAd;
-
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Banner ad: ${ex.message}");
-
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Banner ad: $error");
-
+    setState(() {
+      isShow = false;
     });
+
+    Appodeal.setMrecCallbacks(
+      onMrecLoaded: (isPrecache)
+      {print('onMrecLoaded: isPrecache - $isPrecache');
+        setState(() {
+          isShow = true;
+        });
+        },
+      onMrecFailedToLoad: () {
+        print('onMrecFailedToLoad');
+        setState(() {
+          isShow = false;
+        });
+      },
+      onMrecShown: () => print('onMrecShown'),
+      onMrecShowFailed: () => print('onMrecShowFailed'),
+      onMrecClicked: () => print('onMrecClicked'),
+      onMrecExpired: () => print('onMrecExpired'),
+    );
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -136,7 +134,16 @@ class _SeeAllQuizCardState extends State<SeeAllQuizCard> {
                         setname: widget.name);
                   },
                 ),
-                bannerAd != null ? StartAppBanner(bannerAd!) : Container(),
+                PersistentBannerAd(placement: 'card',),
+                //Header
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Visibility(
+                      visible: isShow,
+                      child: AppodealBanner(
+                          adSize: AppodealBannerSize.MEDIUM_RECTANGLE,
+                          placement: "default")),
+                ),
                 widget.cards.isEmpty
                     ? _noCardWidget(context)
                     :SizedBox(

@@ -5,7 +5,6 @@ import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/r
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_title_content.dart';
 import 'package:flashlearn/provider/quiz_provider.dart';
-import 'package:flashlearn/util/helpers/ads/ad_helper.dart';
 import 'package:flashlearn/util/helpers/alert_box/delete_confirmation_alert_box.dart';
 import 'package:flashlearn/util/helpers/alert_box/review_selection_alert_box.dart';
 import 'package:flashlearn/util/helpers/import_export_helper_class.dart';
@@ -15,7 +14,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
-import 'package:startapp_sdk/startapp.dart';
 
 class FavoriteScreen extends StatefulWidget {
   const FavoriteScreen({super.key});
@@ -25,34 +23,7 @@ class FavoriteScreen extends StatefulWidget {
 }
 
 class _FavoriteScreenState extends State<FavoriteScreen> {
-  var startAppSdk = StartAppSdk();
 
-  StartAppBannerAd? bannerAd;
-
-
-
-  @override
-  void initState() {
-    super.initState();
-
-    // TODO make sure to comment out this line before release
-    //  startAppSdk.setTestAdsEnabled(true);
-    startAppSdk.setTestAdsEnabled(AdHelper.isTestEnabled);
-
-    // TODO use one of the following types: BANNER, MREC, COVER
-    startAppSdk.loadBannerAd(StartAppBannerType.MREC).then((bannerAd) {
-      setState(() {
-        this.bannerAd = bannerAd;
-
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Banner ad: ${ex.message}");
-
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Banner ad: $error");
-
-    });
-  }
 
 
   @override
@@ -143,7 +114,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                         child:  Column(
                           children: [
 
-                            bannerAd != null ? StartAppBanner(bannerAd!) : Container(),
+
                             ReusableSetCore(
                               name: name,
                               description: description,

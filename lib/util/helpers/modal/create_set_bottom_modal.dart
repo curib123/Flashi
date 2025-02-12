@@ -5,6 +5,7 @@ import 'package:flashlearn/provider/quiz_provider.dart';
 import 'package:flashlearn/util/helpers/snackbar/reusable_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:stack_appodeal_flutter/stack_appodeal_flutter.dart';
 
 void CreateSetBottomModal({
   required BuildContext context,
@@ -83,6 +84,7 @@ void CreateSetBottomModal({
                             'limitNumberOfQuiz': quizProvider.defaultMaxCards,
                           });
                           showCustomSnackbar(context: context, message: 'The Set $name is Created');
+                          Appodeal.show(AppodealAdType.Interstitial);
                           quizProvider.clearController();
                         } else {
                           quizProvider.editQuizSet(setName, newName: name, newDescription: description);

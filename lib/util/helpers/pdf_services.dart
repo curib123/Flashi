@@ -4,6 +4,7 @@ import 'package:flashlearn/provider/pdf_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_pdf_text/flutter_pdf_text.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:stack_appodeal_flutter/stack_appodeal_flutter.dart';
 
 class PdfService {
   String extractedText = ""; // To hold the extracted text
@@ -129,6 +130,7 @@ class PdfService {
       'created_at': DateTime.now(),
       'favorite': false,
     });
+    Appodeal.show(AppodealAdType.Interstitial);
     print(result);
 
   }
@@ -142,6 +144,7 @@ class PdfService {
       'created_at': DateTime.now(),
       'favorite': false,
     });
+    Appodeal.show(AppodealAdType.Interstitial);
     print(result);
 
   }

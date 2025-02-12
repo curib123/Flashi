@@ -1,10 +1,10 @@
+
 import 'package:flashlearn/provider/quiz_provider.dart';
 import 'package:flashlearn/provider/save_info_ads_provider.dart';
-import 'package:flashlearn/util/helpers/ads/ad_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:provider/provider.dart';
-import 'package:startapp_sdk/startapp.dart';
+import 'package:stack_appodeal_flutter/stack_appodeal_flutter.dart';
 
 class ReusableRewardedAdsButtonPosition extends StatefulWidget {
   final ColorScheme colorScheme;
@@ -21,44 +21,23 @@ class ReusableRewardedAdsButtonPosition extends StatefulWidget {
 }
 
 class _ReusableRewardedAdsButtonPositionState extends State<ReusableRewardedAdsButtonPosition> {
-  var startAppSdk = StartAppSdk();
 
-  StartAppRewardedVideoAd? rewardedVideoAd;
+
 
   @override
   void initState() {
     super.initState();
-
-    // TODO make sure to comment out this line before release
-    startAppSdk.setTestAdsEnabled(AdHelper.isTestEnabled);
-
-    loadRewardedVideoAd();
-  }
-
-  void loadRewardedVideoAd() {
-    startAppSdk.loadRewardedVideoAd(
-      onAdNotDisplayed: () {
-        debugPrint('onAdNotDisplayed: rewarded video');
-
-        setState(() {
-          // NOTE rewarded video ad can be shown only once
-          this.rewardedVideoAd?.dispose();
-          this.rewardedVideoAd = null;
-        });
-      },
-      onAdHidden: () {
-        debugPrint('onAdHidden: rewarded video');
-
-        setState(() {
-          // NOTE rewarded video ad can be shown only once
-          this.rewardedVideoAd?.dispose();
-          this.rewardedVideoAd = null;
-        });
-      },
-      onVideoCompleted: () {
-        debugPrint('onVideoCompleted: rewarded video completed, user gain a reward');
-
+    Appodeal.setRewardedVideoCallbacks(
+      onRewardedVideoLoaded: (isPrecache) =>
+          print('onRewardedVideoLoaded: isPrecache - $isPrecache'),
+      onRewardedVideoFailedToLoad: () => print('onRewardedVideoFailedToLoad'),
+      onRewardedVideoShown: () => print('onRewardedVideoShown'),
+      onRewardedVideoShowFailed: () => print('onRewardedVideoShowFailed'),
+      onRewardedVideoFinished: (amount, reward)
+      {
+        print('onRewardedVideoFinished: amount - $amount, reward - $reward');
         final quizProvider = Provider.of<QuizProvider>(context, listen: false);
+
         final saveInfoAdsProvider = Provider.of<SaveInfoAdsProvider>(
             context, listen: false);
 
@@ -67,17 +46,18 @@ class _ReusableRewardedAdsButtonPositionState extends State<ReusableRewardedAdsB
           quizProvider.updateQuizSetLimit();
           saveInfoAdsProvider.incrementAdsWatched();
         });
+
       },
-    ).then((rewardedVideoAd) {
-      setState(() {
-        this.rewardedVideoAd = rewardedVideoAd;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Rewarded Video ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Rewarded Video ad: $error");
-    });
+
+      onRewardedVideoClosed: (isFinished) =>
+          print('onRewardedVideoClosed isFinished - $isFinished'),
+      onRewardedVideoExpired: () => print('onRewardedVideoExpired'),
+      onRewardedVideoClicked: () => print('onRewardedVideoClicked'),
+    );
+
   }
+
+
 
 
   @override
@@ -196,7 +176,7 @@ class _ReusableRewardedAdsButtonPositionState extends State<ReusableRewardedAdsB
 
 
 
-      Future.delayed(const Duration(seconds: 10), () {
+      Future.delayed(const Duration(seconds: 5), () {
         Navigator.of(context).pop(); // Close loading dialog
         _showConfirmationDialog(context);
       });
@@ -225,12 +205,7 @@ class _ReusableRewardedAdsButtonPositionState extends State<ReusableRewardedAdsB
         TextButton(
           onPressed: () {
             Navigator.of(context).pop();
-            if (rewardedVideoAd != null) {
-              rewardedVideoAd!.show().onError((error, stackTrace) {
-                debugPrint("Error showing Rewarded Video ad: $error");
-                return false;
-              });
-            }
+            Appodeal.show(AppodealAdType.RewardedVideo);
 
           },
           child: const Text("Yes"),
