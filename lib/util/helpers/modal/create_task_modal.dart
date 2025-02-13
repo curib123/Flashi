@@ -3,7 +3,6 @@ import 'package:flashlearn/presentation/widget/components/create_set_buttons.dar
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_textfield_core.dart';
 import 'package:flashlearn/provider/quiz_provider.dart';
 import 'package:flashlearn/provider/task_provider.dart';
-import 'package:flashlearn/util/helpers/snackbar/reusable_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 void CreateTaskModal({
@@ -76,16 +75,31 @@ void CreateTaskModal({
                            'dateTime': DateTime.now(),
                            'isUpdated': false,
                          });
-                          showCustomSnackbar(context: context, message: 'New Task is Created ',);
+                         ScaffoldMessenger.of(context).showSnackBar(
+                           SnackBar(
+                             content: Text("New Task Successfully Added"),
+                             backgroundColor: Colors.green,
+                           ),
+                         );
                         } else {
                          taskProvider.updateTask(taskName, taskNameInput);
-                          showCustomSnackbar(context: context,message: 'The task is Updated', );
+                         ScaffoldMessenger.of(context).showSnackBar(
+                           SnackBar(
+                             content: Text("Task Successfully Edited"),
+                             backgroundColor: Colors.green,
+                           ),
+                         );
                         }
 
                         // Close the modal
                         Navigator.pop(context);
                       } else {
-                        showCustomSnackbar(context: context, message: 'Required Input',);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text("required inputs"),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
 
                       }
                     },

@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flashlearn/provider/quiz_provider.dart';
 
 class ImportExportHelperClass {
-  final String directory = '/storage/emulated/0/FlashLearn/Export/Sets';
+  final String directory = '/storage/emulated/0/Flashi';
 
   Future<void> requestPermissions() async {
     if (!await Permission.storage.isGranted) {

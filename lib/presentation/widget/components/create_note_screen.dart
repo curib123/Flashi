@@ -4,7 +4,6 @@ import 'package:elegant_notification/resources/stacked_options.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_create_set_button_position.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
 import 'package:flashlearn/provider/notes_provider.dart';
-import 'package:flashlearn/util/helpers/snackbar/reusable_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -169,7 +168,12 @@ class CreateNoteScreen extends StatelessWidget {
         'created_at': DateTime.now(),
         'favorite': false,
       });
-      showCustomSnackbar(context: context, message: 'Note created successfully!');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Succesfully Added'),
+          backgroundColor: Colors.green,
+        ),
+      );
       noteProvider.titleController.clear();
       noteProvider.contentController.clear();
       Navigator.pop(context);
@@ -183,7 +187,12 @@ class CreateNoteScreen extends StatelessWidget {
             'favorite': false,
           });
       Navigator.pop(context);
-      showCustomSnackbar(context: context, message: 'Note updated successfully!');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Succesfully Updated'),
+          backgroundColor: Colors.green,
+        ),
+      );
     }
   }
 }

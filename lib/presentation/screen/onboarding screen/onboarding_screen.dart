@@ -6,7 +6,7 @@ import 'package:flashlearn/provider/onboarding_provider.dart';
 class OnboardingScreen extends StatelessWidget {
   List<PageViewModel> pages = [
     PageViewModel(
-      title: "Welcome to FlashLearn",
+      title: "Welcome to Flashi",
       body: "Your go-to app for mastering any subject through interactive and engaging flashcards. Start your learning journey now!",
       image: Center(child: _AnimatedMovingIcon(icon: Icons.school)),
       decoration: PageDecoration(

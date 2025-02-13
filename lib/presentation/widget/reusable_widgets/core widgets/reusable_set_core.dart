@@ -150,6 +150,8 @@ class ReusableSetCore extends StatelessWidget {
                           onExport();
                         }else if(value == 'import'){
                           onImport();
+                        }else if(value == 'share'){
+                          onShare();
                         }
                       },
                       itemBuilder: (BuildContext context) {
@@ -228,6 +230,16 @@ class ReusableSetCore extends StatelessWidget {
                               ],
                             ),
                           ),
+                          // PopupMenuItem<String>(
+                          //   value: 'share',
+                          //   child: Row(
+                          //     children: [
+                          //       Icon(Icons.share_rounded, color: colorScheme.primary),
+                          //       const SizedBox(width: 1),
+                          //       Text('Share Subject', style: TextStyle(color: colorScheme.primary)),
+                          //     ],
+                          //   ),
+                          // ),
                         ];
                       },
                     ),

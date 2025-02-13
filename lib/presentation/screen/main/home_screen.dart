@@ -104,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 pinned: true, // Keeps the header visible when scrolling
                 floating: false, // Header doesn't float when scrolling
                 expandedHeight: 200, // Height of the expanded header
-                title:  ReusableTitleContent(colorScheme: colorScheme, title: "FlashLearn", onUpgradePro: () {},
+                title:  ReusableTitleContent(colorScheme: colorScheme, title: "Flashi", onUpgradePro: () {},
                     onSettings: () {
 
                       Navigator.push(

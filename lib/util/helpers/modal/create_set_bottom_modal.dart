@@ -2,7 +2,6 @@
 import 'package:flashlearn/presentation/widget/components/create_set_buttons.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_textfield_core.dart';
 import 'package:flashlearn/provider/quiz_provider.dart';
-import 'package:flashlearn/util/helpers/snackbar/reusable_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -82,18 +81,35 @@ void CreateSetBottomModal({
                             'numberOfQuiz': 0,
                             'limitNumberOfQuiz': quizProvider.defaultMaxCards,
                           });
-                          showCustomSnackbar(context: context, message: 'The Set $name is Created');
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('The Set $name is Created'),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+
                           quizProvider.clearController();
                         } else {
                           quizProvider.editQuizSet(setName, newName: name, newDescription: description);
-                          showCustomSnackbar(context: context,  message: 'The Set $name is Updated ');
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('The Set $name is Updated '),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+
                           quizProvider.clearController();
                         }
 
                         // Close the modal
                         Navigator.pop(context);
                       } else {
-                        showCustomSnackbar(context: context, message: 'Required Question',);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Required Question'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
 
                       }
                     },

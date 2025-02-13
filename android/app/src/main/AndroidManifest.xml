@@ -9,10 +9,9 @@
 
 
 
-
     <application
 
-        android:label="FlashLearn"
+        android:label="Flashi"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
         android:requestLegacyExternalStorage="true">

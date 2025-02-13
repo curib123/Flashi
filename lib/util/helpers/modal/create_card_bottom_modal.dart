@@ -2,7 +2,6 @@
 import 'package:flashlearn/presentation/widget/components/create_set_buttons.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_textfield_core.dart';
 import 'package:flashlearn/provider/quiz_provider.dart';
-import 'package:flashlearn/util/helpers/snackbar/reusable_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 void CreateCardBottomModal({
@@ -85,18 +84,33 @@ void CreateCardBottomModal({
                               'keyword'   : '',
                               'timestamp' : DateTime.now()
                             });
-                            showCustomSnackbar(context: context, message: 'The Card is Created ',);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text("Card Successfully Added"),
+                                backgroundColor: Colors.green,
+                              ),
+                            );
                             quizProvider.clearController();
                         } else {
                           quizProvider.updateCardInQuizSet( quizSetName: name, oldQuestion: card['question'], newQuestion: question, newAnswer: answer);
-                          showCustomSnackbar(context: context,message: 'The Card is Updated', );
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Succesfully Updated'),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
                           quizProvider.clearController();
                         }
 
                         // Close the modal
                         Navigator.pop(context);
                       } else {
-                        showCustomSnackbar(context: context, message: 'Required Question',);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Required Question'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
 
                       }
                     },

@@ -1,7 +1,6 @@
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_create_set_button_position.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
 import 'package:flashlearn/provider/pdf_provider.dart';
-import 'package:flashlearn/util/helpers/snackbar/reusable_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:intl/intl.dart';
@@ -158,7 +157,12 @@ class _CreatePdfScreenState extends State<CreatePdfScreen> {
                 'favorite': false,
               });
 
-              showCustomSnackbar(context: context, message: 'Successfully Updated');
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Succesfully Updated'),
+                  backgroundColor: Colors.green,
+                ),
+              );
             },
           ),
         ],
