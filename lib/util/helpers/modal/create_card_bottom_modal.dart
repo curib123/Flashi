@@ -86,6 +86,7 @@ void CreateCardBottomModal({
                               'timestamp' : DateTime.now()
                             });
                             showCustomSnackbar(context: context, message: 'The Card is Created ',);
+
                             quizProvider.clearController();
                         } else {
                           quizProvider.updateCardInQuizSet( quizSetName: name, oldQuestion: card['question'], newQuestion: question, newAnswer: answer);

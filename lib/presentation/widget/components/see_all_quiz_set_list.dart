@@ -5,11 +5,11 @@ import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_sort_an
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
 import 'package:flashlearn/provider/quiz_provider.dart';
 import 'package:flashlearn/provider/sort_provider.dart';
-import 'package:flashlearn/util/helpers/ads/ad_helper.dart';
+import 'package:flashlearn/util/helpers/ads/ad_banner.dart';
 import 'package:flashlearn/util/helpers/modal/create_set_bottom_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:startapp_sdk/startapp.dart';
+import 'package:stack_appodeal_flutter/stack_appodeal_flutter.dart';
 
 class SeeAllQuizSetList extends StatefulWidget {
   final String name;
@@ -26,38 +26,6 @@ class SeeAllQuizSetList extends StatefulWidget {
 }
 
 class _SeeAllQuizSetListState extends State<SeeAllQuizSetList> {
-
-
-  var startAppSdk = StartAppSdk();
-
-  StartAppBannerAd? bannerAd;
-
-
-
-  @override
-  void initState() {
-    super.initState();
-
-    // TODO make sure to comment out this line before release
-    //  startAppSdk.setTestAdsEnabled(true);
-    startAppSdk.setTestAdsEnabled(AdHelper.isTestEnabled);
-
-    // TODO use one of the following types: BANNER, MREC, COVER
-    startAppSdk.loadBannerAd(StartAppBannerType.MREC).then((bannerAd) {
-      setState(() {
-        this.bannerAd = bannerAd;
-
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Banner ad: ${ex.message}");
-
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Banner ad: $error");
-
-    });
-  }
-
-
 
 
   @override
@@ -128,7 +96,8 @@ class _SeeAllQuizSetListState extends State<SeeAllQuizSetList> {
                   isShowReviewLink: false,
                   onShowReviewLink: () {  },
                 ),
-                bannerAd != null ? StartAppBanner(bannerAd!) : Container(),
+                //Header
+                PersistentBannerAd(placement: 'set',),
                 filteredQuizSets.isEmpty
                     ? _noSetWidget(context)
                     : SizedBox(

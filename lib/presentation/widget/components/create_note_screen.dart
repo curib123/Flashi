@@ -8,6 +8,7 @@ import 'package:flashlearn/util/helpers/snackbar/reusable_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:stack_appodeal_flutter/stack_appodeal_flutter.dart';
 
 class CreateNoteScreen extends StatelessWidget {
   final bool isCreate;
@@ -169,6 +170,7 @@ class CreateNoteScreen extends StatelessWidget {
         'created_at': DateTime.now(),
         'favorite': false,
       });
+      Appodeal.show(AppodealAdType.Interstitial);
       showCustomSnackbar(context: context, message: 'Note created successfully!');
       noteProvider.titleController.clear();
       noteProvider.contentController.clear();

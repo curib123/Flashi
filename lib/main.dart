@@ -20,6 +20,7 @@ Future<void> main() async {
 
 
   WidgetsFlutterBinding.ensureInitialized();
+  // Hides status and navigation bar
 
   await Hive.initFlutter(); // Initialize Hive
 // Open different boxes for various settings or data

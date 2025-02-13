@@ -1,12 +1,11 @@
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reviewer_widgets_core/flip_card_core.dart';
 import 'package:flashlearn/provider/quiz_provider.dart';
 import 'package:flashlearn/provider/reviewer_settings_provider.dart';
-import 'package:flashlearn/util/helpers/ads/ad_helper.dart';
 import 'package:flashlearn/util/helpers/modal/create_card_bottom_modal.dart';
 import 'package:flashlearn/util/helpers/widget/highlight_keywords.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:startapp_sdk/startapp.dart';
+import 'package:stack_appodeal_flutter/stack_appodeal_flutter.dart';
 
 class FlashcardReview extends StatefulWidget {
   final String reviewer;
@@ -23,32 +22,23 @@ class _FlashcardReviewState extends State<FlashcardReview> {
   late PageController _pageController;
   int _currentPage = 0;
 
-  var startAppSdk = StartAppSdk();
-
-  StartAppInterstitialAd? interstitialAd;
 
   @override
   void initState() {
     super.initState();
-    // TODO make sure to comment out this line before release
-  //  startAppSdk.setTestAdsEnabled(true);
-    startAppSdk.setTestAdsEnabled(AdHelper.isTestEnabled);
-      loadInterstitialAd();
 
+    Appodeal.setInterstitialCallbacks(
+      onInterstitialLoaded: (isPrecache) =>
+          print('onInterstitialLoaded: isPrecache - $isPrecache'),
+      onInterstitialFailedToLoad: () => print('onInterstitialFailedToLoad'),
+      onInterstitialShown: () => print('onInterstitialShown'),
+      onInterstitialShowFailed: () => print('onInterstitialShowFailed'),
+      onInterstitialClicked: () => print('onInterstitialClicked'),
+      onInterstitialClosed: () => print('onInterstitialClosed'),
+      onInterstitialExpired: () => print('onInterstitialExpired'),
+    );
     _pageController = PageController();
 
-  }
-
-  void loadInterstitialAd() {
-    startAppSdk.loadInterstitialAd(prefs: StartAppAdPreferences(adTag: 'flashcard_review')).then((interstitialAd) {
-      setState(() {
-        this.interstitialAd = interstitialAd;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Interstitial ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Interstitial ad: $error");
-    });
   }
 
   @override
@@ -70,21 +60,8 @@ class _FlashcardReviewState extends State<FlashcardReview> {
       );
     }
 
-    if (interstitialAd != null) {
-      interstitialAd!.show().then((shown) {
-        if (shown) {
-          setState(() {
-            // NOTE interstitial ad can be shown only once
-            this.interstitialAd = null;
 
-          });
-        }
-
-        return null;
-      }).onError((error, stackTrace) {
-        debugPrint("Error showing Interstitial ad: $error");
-      });
-    }
+    Appodeal.show(AppodealAdType.Interstitial);
 
     return Center(
       child: Column(

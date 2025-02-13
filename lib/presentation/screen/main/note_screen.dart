@@ -10,12 +10,12 @@ import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_title_c
 import 'package:flashlearn/provider/notes_provider.dart';
 import 'package:flashlearn/presentation/widget/components/create_note_screen.dart';
 import 'package:flashlearn/provider/sort_provider.dart';
-import 'package:flashlearn/util/helpers/ads/ad_helper.dart';
+import 'package:flashlearn/util/helpers/ads/ad_banner.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
-import 'package:startapp_sdk/startapp.dart';
+import 'package:stack_appodeal_flutter/stack_appodeal_flutter.dart';
 
 class NoteScreen extends StatefulWidget {
   const NoteScreen({super.key});
@@ -26,33 +26,10 @@ class NoteScreen extends StatefulWidget {
 
 class _NoteScreenState extends State<NoteScreen> {
 
-  var startAppSdk = StartAppSdk();
-  double bannerHeight = 150.0;
 
-  StartAppBannerAd? bannerAd;
+  double bannerHeight = 160.0;
 
-  @override
-  void initState() {
-    super.initState();
 
-    // TODO make sure to comment out this line before release
-   // startAppSdk.setTestAdsEnabled(true);
-    startAppSdk.setTestAdsEnabled(AdHelper.isTestEnabled);
-
-    // TODO use one of the following types: BANNER, MREC, COVER
-    startAppSdk.loadBannerAd(StartAppBannerType.BANNER).then((bannerAd) {
-      setState(() {
-        this.bannerAd = bannerAd;
-       bannerHeight = 150;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Banner ad: ${ex.message}");
-      bannerHeight = 100;
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Banner ad: $error");
-      bannerHeight = 100;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -119,8 +96,8 @@ class _NoteScreenState extends State<NoteScreen> {
                     isShowReviewLink: false,
                     onShowReviewLink: () {}
                 ),
-                bannerAd != null ? StartAppBanner(bannerAd!) : Container(),
 
+                PersistentBannerAd(placement: 'note',),
               ],
             ),
           ),

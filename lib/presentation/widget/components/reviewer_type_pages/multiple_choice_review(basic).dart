@@ -1,9 +1,9 @@
 import 'dart:math';
-import 'package:flashlearn/util/helpers/ads/ad_helper.dart';
 import 'package:flashlearn/util/helpers/widget/highlight_keywords.dart';
 import 'package:flutter/material.dart';
 import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reviewer_widgets_core/multiple_choice_core.dart';
-import 'package:startapp_sdk/startapp.dart';
+import 'package:stack_appodeal_flutter/stack_appodeal_flutter.dart';
+
 
 class MultipleChoiceReviewBasic extends StatefulWidget {
   final String reviewer;
@@ -26,17 +26,24 @@ class _MultipleChoiceReviewState extends State<MultipleChoiceReviewBasic> {
   final Random _random = Random();
   late List<List<String>> _shuffledOptions;
   int _score = 0;
-  var startAppSdk = StartAppSdk();
-
-  StartAppInterstitialAd? interstitialAd;
 
   @override
   void initState() {
     super.initState();
     // TODO make sure to comment out this line before release
+
+    Appodeal.setInterstitialCallbacks(
+      onInterstitialLoaded: (isPrecache) =>
+          print('onInterstitialLoaded: isPrecache - $isPrecache'),
+      onInterstitialFailedToLoad: () => print('onInterstitialFailedToLoad'),
+      onInterstitialShown: () => print('onInterstitialShown'),
+      onInterstitialShowFailed: () => print('onInterstitialShowFailed'),
+      onInterstitialClicked: () => print('onInterstitialClicked'),
+      onInterstitialClosed: () => print('onInterstitialClosed'),
+      onInterstitialExpired: () => print('onInterstitialExpired'),
+    );
+
   //  startAppSdk.setTestAdsEnabled(true);
-    startAppSdk.setTestAdsEnabled(AdHelper.isTestEnabled);
-    loadInterstitialAd();
     _pageController = PageController();
 
     _shuffledOptions = widget.cards.map((card) {
@@ -55,17 +62,7 @@ class _MultipleChoiceReviewState extends State<MultipleChoiceReviewBasic> {
     }).toList();
   }
 
-  void loadInterstitialAd() {
-    startAppSdk.loadInterstitialAd(prefs: StartAppAdPreferences(adTag: 'basic_multiple_choice')).then((interstitialAd) {
-      setState(() {
-        this.interstitialAd = interstitialAd;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Interstitial ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Interstitial ad: $error");
-    });
-  }
+
   @override
   void dispose() {
     _pageController.dispose();
@@ -151,23 +148,7 @@ class _MultipleChoiceReviewState extends State<MultipleChoiceReviewBasic> {
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               ),
               onPressed: () {
-                if (interstitialAd != null) {
-                  interstitialAd!.show().then((shown) {
-                    if (shown) {
-                      setState(() {
-                        // NOTE interstitial ad can be shown only once
-                        this.interstitialAd = null;
-
-                        // NOTE load again
-                        loadInterstitialAd();
-                      });
-                    }
-
-                    return null;
-                  }).onError((error, stackTrace) {
-                    debugPrint("Error showing Interstitial ad: $error");
-                  });
-                }
+                Appodeal.show(AppodealAdType.Interstitial);
                 Navigator.pop(context); // Close the dialog
                 Navigator.pop(context); // Go back to the previous screen
               },
@@ -184,23 +165,7 @@ class _MultipleChoiceReviewState extends State<MultipleChoiceReviewBasic> {
               ),
               onPressed: () {
 
-                if (interstitialAd != null) {
-                  interstitialAd!.show().then((shown) {
-                    if (shown) {
-                      setState(() {
-                        // NOTE interstitial ad can be shown only once
-                        this.interstitialAd = null;
-
-                        // NOTE load again
-                        loadInterstitialAd();
-                      });
-                    }
-
-                    return null;
-                  }).onError((error, stackTrace) {
-                    debugPrint("Error showing Interstitial ad: $error");
-                  });
-                }
+                Appodeal.show(AppodealAdType.Interstitial);
                 Navigator.pop(context); // Close the dialog
                 restartQuiz(); // Restart the quiz
               },

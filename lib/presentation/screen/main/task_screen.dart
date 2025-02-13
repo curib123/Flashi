@@ -8,13 +8,13 @@ import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_theme_s
 import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_title_content.dart';
 import 'package:flashlearn/provider/sort_provider.dart';
 import 'package:flashlearn/provider/task_provider.dart';
-import 'package:flashlearn/util/helpers/ads/ad_helper.dart';
+import 'package:flashlearn/util/helpers/ads/ad_banner.dart';
 import 'package:flashlearn/util/helpers/alert_box/delete_confirmation_alert_box.dart';
 import 'package:flashlearn/util/helpers/modal/create_task_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
-import 'package:startapp_sdk/startapp.dart';
+import 'package:stack_appodeal_flutter/stack_appodeal_flutter.dart';
 
 class TaskScreen extends StatefulWidget {
   const TaskScreen({super.key});
@@ -25,33 +25,9 @@ class TaskScreen extends StatefulWidget {
 
 class _TaskScreenState extends State<TaskScreen> {
 
-  var startAppSdk = StartAppSdk();
-  double bannerHeight = 150.0;
 
-  StartAppBannerAd? bannerAd;
+  double bannerHeight = 160.0;
 
-  @override
-  void initState() {
-    super.initState();
-
-    // TODO make sure to comment out this line before release
-    //startAppSdk.setTestAdsEnabled(true);
-    startAppSdk.setTestAdsEnabled(AdHelper.isTestEnabled);
-
-    // TODO use one of the following types: BANNER, MREC, COVER
-    startAppSdk.loadBannerAd(StartAppBannerType.BANNER).then((bannerAd) {
-      setState(() {
-        this.bannerAd = bannerAd;
-        bannerHeight = 150;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Banner ad: ${ex.message}");
-      bannerHeight = 100;
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Banner ad: $error");
-      bannerHeight = 100;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -119,8 +95,7 @@ class _TaskScreenState extends State<TaskScreen> {
                     onShowReviewLink: () {}
                 ),
 
-                bannerAd != null ? StartAppBanner(bannerAd!) : Container(),
-
+                PersistentBannerAd(placement: 'task',),
               ],
             ),
           ),
