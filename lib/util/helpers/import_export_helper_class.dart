@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
@@ -57,12 +58,26 @@ class ImportExportHelperClass {
 
 
   Future<void> importList(BuildContext context, QuizProvider quizProvider) async {
+
+    final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+
     try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
-        type: FileType.any,
-        allowedExtensions: ['json'],
-        initialDirectory: directory,
-      );
+
+      FilePickerResult? result;
+     if( androidInfo.version.sdkInt < 30){
+       result = await FilePicker.platform.pickFiles(
+         type: FileType.any,
+         initialDirectory: directory,
+       );
+     }else{
+       result = await FilePicker.platform.pickFiles(
+         type: FileType.custom,
+         allowedExtensions: ['json'],
+         initialDirectory: directory,
+       );
+     }
+
 
       if (result != null && result.files.single.path != null) {
         final file = File(result.files.single.path!);

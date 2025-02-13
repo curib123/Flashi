@@ -170,7 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           sortProvider.updateSortValueSet(newValue!);
                           quizProvider.sortQuizSets(newValue);
                         },
-                        onSeeAllPressed: () {
+                        onSeeAllPressed: ()  {
                           // Update search query and navigate to See All
                           quizProvider.searchController.text =
                               quizProvider.searchQuery;

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flashlearn/provider/pdf_provider.dart';
 import 'package:flutter/material.dart';
@@ -22,17 +23,36 @@ class PdfService {
   Future<String> extractTextFromWholeDocument() async {
     await requestPermissions();
 
+    final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+
     if (await Permission.storage.isGranted && await Permission.manageExternalStorage.isGranted) {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.any, allowedExtensions: ['pdf']);
-      if (result != null) {
-        File file = File(result.files.single.path!);
-        PDFDoc doc = await PDFDoc.fromFile(file);
+      FilePickerResult? result;
 
-        // Extracting all text from the document
-        String allText = await doc.text;  // Using doc.text to extract all text at once
+      if( androidInfo.version.sdkInt < 30){
+        result = await FilePicker.platform.pickFiles(type: FileType.any);
+        if (result != null) {
+          File file = File(result.files.single.path!);
+          PDFDoc doc = await PDFDoc.fromFile(file);
 
-        return allText;
+          // Extracting all text from the document
+          String allText = await doc.text;  // Using doc.text to extract all text at once
+
+          return allText;
+        }
+      }else{
+        result = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['pdf']);
+        if (result != null) {
+          File file = File(result.files.single.path!);
+          PDFDoc doc = await PDFDoc.fromFile(file);
+
+          // Extracting all text from the document
+          String allText = await doc.text;  // Using doc.text to extract all text at once
+
+          return allText;
+        }
       }
+
     }
     return "Permissions not granted. Please allow storage permissions.";
   }
