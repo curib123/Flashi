@@ -37,12 +37,7 @@ class CustomDrawer extends StatelessWidget {
             accountEmail: const Text("FlashCard For Faster Learning"),
             currentAccountPicture: CircleAvatar(
               backgroundColor: colorScheme.onTertiary,
-              child: Image.asset(
-                'asset/icon/icon.png', // Replace with your image path
-                width: 30,
-                height: 30,
-
-              ),
+              child: Icon(Icons.person_2_rounded,size: 50,color: colorScheme.primary,),
 
             ),
           ),

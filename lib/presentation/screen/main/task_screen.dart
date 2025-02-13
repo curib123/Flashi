@@ -80,7 +80,7 @@ class _TaskScreenState extends State<TaskScreen> {
         ),
         backgroundColor: colorScheme.primary,
         foregroundColor: colorScheme.onPrimary,
-        title:  ReusableTitleContent(colorScheme: colorScheme, title: "My Task", onUpgradePro: () {},
+        title:  ReusableTitleContent(colorScheme: colorScheme, title: "My Checklist", onUpgradePro: () {},
             onSettings: () {
 
               Navigator.push(
@@ -103,7 +103,7 @@ class _TaskScreenState extends State<TaskScreen> {
               children: [
                 ReusableSearchBarCore(
                     colorScheme: colorScheme,
-                    hintText: 'search task',
+                    hintText: 'search  task',
                     onChanged: (value) => {
                     taskProvider.onSearchQuery(value)
                     },

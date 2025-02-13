@@ -1,6 +1,9 @@
+import 'package:flashlearn/provider/quiz_provider.dart';
+import 'package:flashlearn/util/helpers/import_export_helper_class.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class ReusableTitleContent extends StatelessWidget {
+class ReusableTitleContent extends StatefulWidget {
 
   final ColorScheme colorScheme;
   final String title;
@@ -10,16 +13,26 @@ class ReusableTitleContent extends StatelessWidget {
   const ReusableTitleContent({super.key, required this.colorScheme, required this.title, required this.onUpgradePro, required this.onSettings});
 
   @override
+  State<ReusableTitleContent> createState() => _ReusableTitleContentState();
+}
+
+class _ReusableTitleContentState extends State<ReusableTitleContent> {
+
+  final ImportExportHelperClass _helper = ImportExportHelperClass(); // Helper instance for export/import
+
+
+  @override
   Widget build(BuildContext context) {
+    final quizProvider = Provider.of<QuizProvider>(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          title,
+          widget.title,
           style: TextStyle(
-            color: colorScheme.onPrimary,
+            color: widget.colorScheme.onPrimary,
             fontWeight: FontWeight.bold,
-            fontSize: title.length >= 12 ?   18: 20,
+            fontSize: widget.title.length >= 12 ?   18: 20,
             overflow: TextOverflow.ellipsis
           ),
         ),
@@ -32,15 +45,24 @@ class ReusableTitleContent extends StatelessWidget {
             //       color: colorScheme.onPrimary,
             //       size: 30,
             //     )),
+            IconButton(
+                onPressed: (){
+                  _helper.importList(context, quizProvider);
+                },
+                icon: Icon(
+                  Icons.archive_rounded,
+                  color: widget.colorScheme.onPrimary,
+                  size: 30,
+                )),
             const SizedBox(width: 10),
             GestureDetector(
-              onTap: onSettings,
+              onTap: widget.onSettings,
               child: CircleAvatar(
-                backgroundColor: colorScheme.onPrimary,
+                backgroundColor: widget.colorScheme.primary,
                 child: Icon(
-                  Icons.settings_rounded,
-                  size: 25,
-                  color: colorScheme.primary,
+                  Icons.settings,
+                  size: 30,
+                  color: widget.colorScheme.onPrimary,
                 ),
               ),
             ),

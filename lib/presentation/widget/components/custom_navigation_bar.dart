@@ -17,7 +17,7 @@ class CustomNavigationBar extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Container(
-      height: 90,
+      height: 100,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(50),
       ),
@@ -30,7 +30,7 @@ class CustomNavigationBar extends StatelessWidget {
         items: <Widget>[
           Icon(Icons.task_rounded, size: 25, color: colorScheme.onPrimary),
           Icon(Icons.text_snippet_rounded, size: 25, color: colorScheme.onPrimary),
-          Icon(Icons.home_rounded, size: 35, color: colorScheme.onPrimary),
+          Icon(Icons.house_siding_rounded, size: 40, color: colorScheme.onPrimary),
           Icon(Icons.picture_as_pdf_rounded, size: 25, color: colorScheme.onPrimary),
           Icon(Icons.note_rounded, size: 25, color: colorScheme.onPrimary),
         ],

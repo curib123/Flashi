@@ -195,7 +195,7 @@ class _SeeAllQuizCardState extends State<SeeAllQuizCard> {
                child: Center(child: Text('${ widget.card['limitNumberOfQuiz'] - quizProvider.getNumberOfCardsInSet(widget.name) } slot free out of ${widget.card['limitNumberOfQuiz']}')),),
             // Create Button Position
             widget.card['limitNumberOfQuiz'] - quizProvider.getNumberOfCardsInSet(widget.name) != 0 ? ReusableCreateSetButtonPosition(
-              icon: Icons.add_rounded,
+              icon: Icons.add_circle,
               colorScheme: widget.colorScheme,
               name: 'Create Card',
               onTap: () {

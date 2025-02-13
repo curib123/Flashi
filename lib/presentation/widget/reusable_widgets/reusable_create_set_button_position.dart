@@ -20,9 +20,14 @@ class ReusableCreateSetButtonPosition extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 25),
               margin: const EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
-                color: colorScheme.primary,
+                gradient: LinearGradient(
+                  colors: [colorScheme.primary, colorScheme.primary.withOpacity(0.6)], // Adjust colors as needed
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
                 borderRadius: BorderRadius.circular(50),
               ),
+
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

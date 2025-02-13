@@ -107,7 +107,7 @@ class _SeeAllQuizSetListState extends State<SeeAllQuizSetList> {
               children: [
                 ReusableSearchBarCore(
                   colorScheme: widget.colorScheme,
-                  hintText: 'search set here',
+                  hintText: 'search subject name ',
                   onChanged: (value) {
                     quizProvider.updateSearchQuery(value);
                   }, controller: quizProvider.searchController,
@@ -147,9 +147,9 @@ class _SeeAllQuizSetListState extends State<SeeAllQuizSetList> {
             ),
             // Create Button Position
             ReusableCreateSetButtonPosition(
-              icon: Icons.add_rounded,
+              icon: Icons.add_circle,
               colorScheme: widget.colorScheme,
-              name: 'Create Set',
+              name: 'Create Subject',
               onTap: () {
                 CreateSetBottomModal(
                   context: context,

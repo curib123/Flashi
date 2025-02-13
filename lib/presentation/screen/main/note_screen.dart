@@ -126,7 +126,7 @@ class _NoteScreenState extends State<NoteScreen> {
           ),
           ReusableThemeSettingPosition(colorScheme: colorScheme),
           ReusableCreateSetButtonPosition(
-              icon: Icons.add_rounded,
+              icon: Icons.add_circle_rounded,
               colorScheme: colorScheme, name: 'Add Notes', onTap: () {
             notesProvider.titleController.text = '';
             notesProvider.contentController.text = '';

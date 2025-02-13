@@ -59,7 +59,7 @@ class ImportExportHelperClass {
   Future<void> importList(BuildContext context, QuizProvider quizProvider) async {
     try {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
+        type: FileType.any,
         allowedExtensions: ['json'],
         initialDirectory: directory,
       );

@@ -54,11 +54,11 @@ class ReusableSortAndSeeAll extends StatelessWidget {
               elevation:const WidgetStatePropertyAll(5),
               shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
               shadowColor: WidgetStatePropertyAll(colorScheme.tertiaryContainer),
-              backgroundColor: WidgetStatePropertyAll(colorScheme.primary),
+              backgroundColor: WidgetStatePropertyAll(colorScheme.primary.withOpacity(0.8)),
             ),
             onPressed: onSeeAllPressed,
             child:const Text(
-              "SEE ALL SETS",
+              "ALL  SUBJECTS",
               style: TextStyle(
                 color: Colors.white, // Assuming a contrasting text color
                 fontWeight: FontWeight.bold,

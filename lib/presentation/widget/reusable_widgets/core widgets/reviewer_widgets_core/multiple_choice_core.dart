@@ -74,7 +74,7 @@ class _MultipleChoiceCoreState extends State<MultipleChoiceCore> {
               decoration: BoxDecoration(
                 borderRadius: const BorderRadius.all(Radius.circular(20)),
                 gradient: LinearGradient(
-                  colors: [colorScheme.tertiary, colorScheme.secondary],
+                  colors: [colorScheme.tertiary.withOpacity(0.6), colorScheme.secondary.withOpacity(0.7)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),

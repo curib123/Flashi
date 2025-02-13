@@ -102,20 +102,19 @@ class ReusableSetCore extends StatelessWidget {
                         Text(
                           name,
                           style: TextStyle(
-                            fontSize: 18,
+                            fontSize: name.length <= 13 ? 18 : 15,
                             fontWeight: FontWeight.bold,
                             color: colorScheme.primary,
                           ),
                         ),
                         Text(
-                          'Last updated: $formattedTimestamp',
+                          'Last Updated: $formattedTimestamp',
                           style: TextStyle(
                             fontSize: 10,
                             fontStyle: FontStyle.italic,
                             color: colorScheme.secondary,
                           ),
                         ),
-                        const SizedBox(height: 4.0),
                         Text(
                           description,
                           maxLines: 2,

@@ -25,7 +25,7 @@ class TextToSpeechCardCore extends StatelessWidget {
       // Add a gradient background, shadow, and rounded corners
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [colorScheme.primary, colorScheme.tertiary],
+          colors: [colorScheme.primary.withOpacity(0.7), colorScheme.tertiary.withOpacity(0.7)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),

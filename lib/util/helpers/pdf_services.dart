@@ -23,7 +23,7 @@ class PdfService {
     await requestPermissions();
 
     if (await Permission.storage.isGranted && await Permission.manageExternalStorage.isGranted) {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['pdf']);
+      FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.any, allowedExtensions: ['pdf']);
       if (result != null) {
         File file = File(result.files.single.path!);
         PDFDoc doc = await PDFDoc.fromFile(file);

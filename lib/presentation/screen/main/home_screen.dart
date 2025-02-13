@@ -78,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
         context,
         MaterialPageRoute(
           builder: (context) => SeeAllQuizSetList(
-            name: 'See All Set Of Quiz',
+            name: 'All Subjects',
             colorScheme: colorScheme,
           ),
         ),
@@ -123,7 +123,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         Align(
                           alignment: Alignment.center,
                           child: Text(
-                          "FlashCards for Faster Learning",
+                          "Flashcards for Faster Learning",
                             style: TextStyle(
                               color: colorScheme.onPrimary,
                               fontWeight: FontWeight.w700,
@@ -137,7 +137,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           height: 85,
                           child: ReusableSearchBarCore(
                             colorScheme: colorScheme,
-                            hintText: 'Search Set Here',
+                            hintText: 'Search Subject',
                             onChanged: (value) =>
                                 quizProvider.updateSearchQuery(value),
                             controller: quizProvider.searchController,
@@ -206,9 +206,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
          // Floating "Create Set" button
           ReusableCreateSetButtonPosition(
-            icon: Icons.add_rounded,
+            icon: Icons.add_circle,
             colorScheme: colorScheme,
-            name: 'Create Set',
+            name: 'Create Subject',
             onTap: () async {
               // Navigate to See All and then show a modal
               gotoSeeAllQuizSetList();
@@ -244,14 +244,14 @@ Widget _noSetWidget(BuildContext context) {
           const Icon(Icons.inbox, size: 100, color: Colors.grey),
           const SizedBox(height: 20),
           Text(
-            "No Set available",
+            "No Subject  Available",
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
               color: Colors.grey,
             ),
           ),
           const SizedBox(height: 10),
           Text(
-            "Create some Set to see them here.",
+            "Create Some Subject to See Them Here.",
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: Colors.grey.shade600,
             ),

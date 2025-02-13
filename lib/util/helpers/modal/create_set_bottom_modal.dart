@@ -41,7 +41,7 @@ void CreateSetBottomModal({
                   Align(
                     alignment: Alignment.topLeft,
                     child: Text(
-                      isCreate ? "Create a Set" : 'Edit the set: $setName',
+                      isCreate ? "Create a Subject" : 'Edit the Subject: $setName',
                       style: TextStyle(
                         color: colorScheme.primary,
                         fontSize: 25,
@@ -54,7 +54,7 @@ void CreateSetBottomModal({
                   const SizedBox(height: 30),
                   // TextField for Set Name
                   ReusableTextfieldCore(
-                    name: "Set Name",
+                    name: "Subject Name",
                     controller: quizProvider.nameController,
                   ),
                   const SizedBox(height: 20),

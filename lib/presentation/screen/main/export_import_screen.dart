@@ -14,7 +14,6 @@ class _ExportImportScreenState extends State<ExportImportScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     final colorScheme = Theme
         .of(context)
         .colorScheme;
@@ -47,9 +46,11 @@ class _ExportImportScreenState extends State<ExportImportScreen> {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            _buildHeader(colorScheme, quizProvider),
-            SizedBox(height: 10),
             _buildSetTile(quizProvider),
+            SizedBox(height: 10),
+            _buildHeader(colorScheme, quizProvider),
+
+
           ],
         ),
       ),
@@ -59,7 +60,6 @@ class _ExportImportScreenState extends State<ExportImportScreen> {
   Widget _buildHeader(ColorScheme colorScheme, QuizProvider quizProvider) {
     return Column(
       children: [
-        SizedBox(height: 20),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -67,14 +67,15 @@ class _ExportImportScreenState extends State<ExportImportScreen> {
             Expanded(
               child: ElevatedButton.icon(
                 onPressed: () => _helper.importList(context, quizProvider),
-                icon: Icon(Icons.file_download,color: Colors.white,),
-                label: Text("Import Set"),
+                icon: Icon(Icons.archive_rounded, color: Colors.white,),
+                label: Text("Import Subject",
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),),
                 style: ButtonStyle(
                   foregroundColor: WidgetStatePropertyAll(
                       colorScheme.onTertiary),
-                  backgroundColor: WidgetStatePropertyAll(colorScheme.tertiary),
+                  backgroundColor: WidgetStatePropertyAll(colorScheme.primary),
                   shape: WidgetStatePropertyAll(RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(50),
                   )),
                   padding: WidgetStatePropertyAll(
                       EdgeInsets.symmetric(vertical: 15)),
@@ -92,11 +93,37 @@ class _ExportImportScreenState extends State<ExportImportScreen> {
     final size = MediaQuery
         .of(context)
         .size;
+
     return Container(
-      height: size.height * 0.6,
-      child: ListView(
+      height: size.height * 0.75,
+      child: quizProvider.quizSets.isEmpty
+          ? Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.import_contacts, // Icon for importing subjects
+              size: 60,
+              color: Colors.grey[400],
+            ),
+            SizedBox(height: 10),
+            Text(
+              "Import Subject Now.",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+                color: Colors.grey[600],
+              ),
+            ),
+          ],
+        ),
+      )
+          : ListView(
         children: [
-          ReusableQuizSetList(quizSets: quizProvider.quizSets.reversed.toList())
+          ReusableQuizSetList(
+            quizSets: quizProvider.quizSets.reversed.toList(),
+          ),
         ],
       ),
     );
