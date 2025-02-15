@@ -1,15 +1,15 @@
-import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_create_set_button_position.dart';
-import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_quiz_card_list.dart';
-import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_rewarded_ads_button_position.dart';
-import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_sort_and_see_all.dart';
-import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
-import 'package:flashlearn/provider/quiz_provider.dart';
-import 'package:flashlearn/provider/sort_provider.dart';
-import 'package:flashlearn/util/helpers/ads/ad_helper.dart';
-import 'package:flashlearn/util/helpers/alert_box/delete_confirmation_alert_box.dart';
-import 'package:flashlearn/util/helpers/alert_box/highlight_keyword_alert_box.dart';
-import 'package:flashlearn/util/helpers/alert_box/review_selection_alert_box.dart';
-import 'package:flashlearn/util/helpers/modal/create_card_bottom_modal.dart';
+import 'package:flashi/presentation/widget/reusable_widgets/reusable_create_set_button_position.dart';
+import 'package:flashi/presentation/widget/reusable_widgets/reusable_quiz_card_list.dart';
+import 'package:flashi/presentation/widget/reusable_widgets/reusable_rewarded_ads_button_position.dart';
+import 'package:flashi/presentation/widget/reusable_widgets/reusable_sort_and_see_all.dart';
+import 'package:flashi/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
+import 'package:flashi/provider/quiz_provider.dart';
+import 'package:flashi/provider/sort_provider.dart';
+import 'package:flashi/util/helpers/ads/ad_helper.dart';
+import 'package:flashi/util/helpers/alert_box/delete_confirmation_alert_box.dart';
+import 'package:flashi/util/helpers/alert_box/highlight_keyword_alert_box.dart';
+import 'package:flashi/util/helpers/alert_box/review_selection_alert_box.dart';
+import 'package:flashi/util/helpers/modal/create_card_bottom_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:startapp_sdk/startapp.dart';
@@ -189,7 +189,7 @@ class _SeeAllQuizCardState extends State<SeeAllQuizCard> {
             ),
 
            Positioned(
-             bottom: 60,
+             bottom: 70,
                left: 0,
                right: 0,
                child: Center(child: Text('${ widget.card['limitNumberOfQuiz'] - quizProvider.getNumberOfCardsInSet(widget.name) } slot free out of ${widget.card['limitNumberOfQuiz']}')),),

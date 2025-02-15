@@ -1,14 +1,14 @@
 
 
-import 'package:flashlearn/presentation/screen/main/export_import_screen.dart';
-import 'package:flashlearn/presentation/widget/components/see_all_quiz_card.dart';
-import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_set_core.dart';
-import 'package:flashlearn/provider/quiz_provider.dart';
-import 'package:flashlearn/util/helpers/alert_box/delete_confirmation_alert_box.dart';
-import 'package:flashlearn/util/helpers/alert_box/review_selection_alert_box.dart';
-import 'package:flashlearn/util/helpers/import_export_helper_class.dart';
-import 'package:flashlearn/util/helpers/modal/create_card_bottom_modal.dart';
-import 'package:flashlearn/util/helpers/modal/create_set_bottom_modal.dart';
+import 'package:flashi/presentation/screen/main/export_import_screen.dart';
+import 'package:flashi/presentation/widget/components/see_all_quiz_card.dart';
+import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_set_core.dart';
+import 'package:flashi/provider/quiz_provider.dart';
+import 'package:flashi/util/helpers/alert_box/delete_confirmation_alert_box.dart';
+import 'package:flashi/util/helpers/alert_box/review_selection_alert_box.dart';
+import 'package:flashi/util/helpers/import_export_helper_class.dart';
+import 'package:flashi/util/helpers/modal/create_card_bottom_modal.dart';
+import 'package:flashi/util/helpers/modal/create_set_bottom_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';

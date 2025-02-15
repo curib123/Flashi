@@ -1,8 +1,8 @@
-import 'package:flashlearn/presentation/screen/main/export_import_screen.dart';
-import 'package:flashlearn/presentation/screen/main/favorate_screen.dart';
-import 'package:flashlearn/presentation/screen/main/settings_screen.dart';
-import 'package:flashlearn/provider/bottom_navigation_provider.dart';
-import 'package:flashlearn/util/helpers/wepage_launcher.dart';
+import 'package:flashi/presentation/screen/main/export_import_screen.dart';
+import 'package:flashi/presentation/screen/main/favorate_screen.dart';
+import 'package:flashi/presentation/screen/main/settings_screen.dart';
+import 'package:flashi/provider/bottom_navigation_provider.dart';
+import 'package:flashi/util/helpers/wepage_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -33,7 +33,7 @@ class CustomDrawer extends StatelessWidget {
         padding: EdgeInsets.zero,
         children: [
           UserAccountsDrawerHeader(
-            accountName: const Text("FlashLearn"),
+            accountName: const Text("Flashi"),
             accountEmail: const Text("FlashCard For Faster Learning"),
             currentAccountPicture: CircleAvatar(
               backgroundColor: colorScheme.onTertiary,

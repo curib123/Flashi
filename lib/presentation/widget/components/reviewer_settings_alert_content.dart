@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flashlearn/provider/reviewer_settings_provider.dart';
+import 'package:flashi/provider/reviewer_settings_provider.dart';
 import 'package:flip_card/flip_card.dart';
 
 class ReviewerSettingsAlertContent extends StatelessWidget {

@@ -47,7 +47,10 @@ class QuizProvider with ChangeNotifier {
         }),
       );
     }
+
+
     notifyListeners();
+
   }
 
 
@@ -186,7 +189,10 @@ class QuizProvider with ChangeNotifier {
     }
   }
 
-
+void updateDefaultMaxCard(int value){
+    _defaultMaxCards = value;
+    notifyListeners();
+}
 
   // Get the number of cards in a specific quiz set
   int getNumberOfCardsInSet(String quizSetName) {

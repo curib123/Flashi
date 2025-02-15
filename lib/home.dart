@@ -1,8 +1,8 @@
-import 'package:flashlearn/presentation/screen/onboarding%20screen/onboarding_screen.dart';
-import 'package:flashlearn/presentation/widget/components/custom_drawer.dart';
-import 'package:flashlearn/presentation/widget/components/custom_navigation_bar.dart';
-import 'package:flashlearn/provider/bottom_navigation_provider.dart';
-import 'package:flashlearn/provider/onboarding_provider.dart';
+import 'package:flashi/presentation/screen/onboarding%20screen/onboarding_screen.dart';
+import 'package:flashi/presentation/widget/components/custom_drawer.dart';
+import 'package:flashi/presentation/widget/components/custom_navigation_bar.dart';
+import 'package:flashi/provider/bottom_navigation_provider.dart';
+import 'package:flashi/provider/onboarding_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

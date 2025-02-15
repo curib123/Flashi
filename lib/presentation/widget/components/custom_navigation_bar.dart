@@ -17,7 +17,7 @@ class CustomNavigationBar extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Container(
-      height: 100,
+      height: 85,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(50),
       ),
@@ -42,7 +42,7 @@ class CustomNavigationBar extends StatelessWidget {
         letIndexChange: (index) {
           return true; // Allows index change; customize logic if needed  onTap!(index); // Call the callback if it's not null
         },
-      ),
+      )
     );
   }
 }

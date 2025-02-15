@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flashlearn/provider/pdf_provider.dart';
+import 'package:flashi/provider/pdf_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_pdf_text/flutter_pdf_text.dart';
 import 'package:permission_handler/permission_handler.dart';

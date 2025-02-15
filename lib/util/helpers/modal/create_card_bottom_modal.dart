@@ -1,7 +1,7 @@
 
-import 'package:flashlearn/presentation/widget/components/create_set_buttons.dart';
-import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_textfield_core.dart';
-import 'package:flashlearn/provider/quiz_provider.dart';
+import 'package:flashi/presentation/widget/components/create_set_buttons.dart';
+import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_textfield_core.dart';
+import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 void CreateCardBottomModal({
@@ -33,7 +33,7 @@ void CreateCardBottomModal({
 
           return Container(
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-            height: 380 + keyboardHeight, // Fixed height, adjusting for the keyboard
+            height: 400 + keyboardHeight, // Fixed height, adjusting for the keyboard
             child: Padding(
               padding: EdgeInsets.only(bottom: keyboardHeight), // Padding adjusts with keyboard height
               child: Column(

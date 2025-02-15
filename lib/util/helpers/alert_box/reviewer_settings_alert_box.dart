@@ -1,4 +1,4 @@
-import 'package:flashlearn/presentation/widget/components/reviewer_settings_alert_content.dart';
+import 'package:flashi/presentation/widget/components/reviewer_settings_alert_content.dart';
 import 'package:flutter/material.dart';
 
 void reviewerSettingsAlertBox({

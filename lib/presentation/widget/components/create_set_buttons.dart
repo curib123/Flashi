@@ -1,4 +1,4 @@
-import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_btn_core.dart';
+import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_btn_core.dart';
 import 'package:flutter/material.dart';
 
 class CreateSetButtons extends StatelessWidget {

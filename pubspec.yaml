@@ -1,4 +1,4 @@
-name: flashlearn
+name: flashi
 description: "Created by Curib Founder of Rockets Company"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.8.0+11
+version: 1.1.0+2
 
 environment:
   sdk: ^3.5.2
@@ -54,6 +54,8 @@ dependencies:
   startapp_sdk: ^1.0.1
   flutter_pdf_text: ^0.8.1
   device_info_plus: ^11.3.0
+  docx_to_text: ^1.0.1
+  dart_openai: ^5.1.0
 
 dev_dependencies:
   flutter_test:

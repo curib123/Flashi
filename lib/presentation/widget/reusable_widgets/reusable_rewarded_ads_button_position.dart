@@ -1,6 +1,6 @@
-import 'package:flashlearn/provider/quiz_provider.dart';
-import 'package:flashlearn/provider/save_info_ads_provider.dart';
-import 'package:flashlearn/util/helpers/ads/ad_helper.dart';
+import 'package:flashi/provider/quiz_provider.dart';
+import 'package:flashi/provider/save_info_ads_provider.dart';
+import 'package:flashi/util/helpers/ads/ad_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:provider/provider.dart';

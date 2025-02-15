@@ -1,9 +1,9 @@
 
-import 'package:flashlearn/presentation/screen/main/note_screen.dart';
-import 'package:flashlearn/presentation/screen/main/home_screen.dart';
-import 'package:flashlearn/presentation/screen/main/pdf_extraction_screen.dart';
-import 'package:flashlearn/presentation/screen/main/task_screen.dart';
-import 'package:flashlearn/presentation/screen/main/text_reader_screen.dart';
+import 'package:flashi/presentation/screen/main/note_screen.dart';
+import 'package:flashi/presentation/screen/main/home_screen.dart';
+import 'package:flashi/presentation/screen/main/pdf_extraction_screen.dart';
+import 'package:flashi/presentation/screen/main/task_screen.dart';
+import 'package:flashi/presentation/screen/main/text_reader_screen.dart';
 import 'package:flutter/material.dart';
 
 class BottomNavigationProvider with ChangeNotifier{

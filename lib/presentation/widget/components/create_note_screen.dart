@@ -1,9 +1,9 @@
 import 'package:elegant_notification/elegant_notification.dart';
 import 'package:elegant_notification/resources/arrays.dart';
 import 'package:elegant_notification/resources/stacked_options.dart';
-import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_create_set_button_position.dart';
-import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
-import 'package:flashlearn/provider/notes_provider.dart';
+import 'package:flashi/presentation/widget/reusable_widgets/reusable_create_set_button_position.dart';
+import 'package:flashi/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
+import 'package:flashi/provider/notes_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';

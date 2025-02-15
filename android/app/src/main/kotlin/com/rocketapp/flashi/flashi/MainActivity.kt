@@ -1,4 +1,4 @@
-package com.rocketapp.flashlearn.flashlearn
+package com.rocketapp.flashi
 
 import io.flutter.embedding.android.FlutterActivity
 

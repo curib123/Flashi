@@ -1,4 +1,4 @@
-import 'package:flashlearn/presentation/screen/main/favorate_screen.dart';
+import 'package:flashi/presentation/screen/main/favorate_screen.dart';
 import 'package:flutter/material.dart';
 
 class ReusableFavoratePosition extends StatelessWidget {

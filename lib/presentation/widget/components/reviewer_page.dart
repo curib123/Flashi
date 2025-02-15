@@ -1,9 +1,9 @@
-import 'package:flashlearn/presentation/widget/components/reviewer_type_pages/flashcard_review.dart';
-import 'package:flashlearn/presentation/widget/components/reviewer_type_pages/multiple_choice_review(basic).dart';
-import 'package:flashlearn/presentation/widget/components/reviewer_type_pages/multiple_choice_review(timer).dart';
-import 'package:flashlearn/presentation/widget/components/reviewer_type_pages/text_to_speech_review.dart';
-import 'package:flashlearn/provider/reviewer_settings_provider.dart';
-import 'package:flashlearn/util/helpers/alert_box/reviewer_settings_alert_box.dart';
+import 'package:flashi/presentation/widget/components/reviewer_type_pages/flashcard_review.dart';
+import 'package:flashi/presentation/widget/components/reviewer_type_pages/multiple_choice_review(basic).dart';
+import 'package:flashi/presentation/widget/components/reviewer_type_pages/multiple_choice_review(timer).dart';
+import 'package:flashi/presentation/widget/components/reviewer_type_pages/text_to_speech_review.dart';
+import 'package:flashi/provider/reviewer_settings_provider.dart';
+import 'package:flashi/util/helpers/alert_box/reviewer_settings_alert_box.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

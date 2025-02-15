@@ -55,9 +55,9 @@ class ReusableSetCore extends StatelessWidget {
         borderRadius: BorderRadius.circular(15.0),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2), // Subtle shadow
+            color: Colors.grey.withOpacity(0.5),
             blurRadius: 10.0,
-            offset: const Offset(0, 7), // Shadow position
+            offset: const Offset(0, 5), // Shadow position
           ),
         ],
         color: Colors.white, // Background color

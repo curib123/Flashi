@@ -4,7 +4,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
-import 'package:flashlearn/provider/quiz_provider.dart';
+import 'package:flashi/provider/quiz_provider.dart';
 
 class ImportExportHelperClass {
   final String directory = '/storage/emulated/0/Flashi';

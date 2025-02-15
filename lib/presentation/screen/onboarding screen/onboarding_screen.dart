@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:provider/provider.dart';
-import 'package:flashlearn/provider/onboarding_provider.dart';
+import 'package:flashi/provider/onboarding_provider.dart';
 
 class OnboardingScreen extends StatelessWidget {
   List<PageViewModel> pages = [

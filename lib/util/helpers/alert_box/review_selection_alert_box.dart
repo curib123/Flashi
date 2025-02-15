@@ -1,5 +1,5 @@
-import 'package:flashlearn/presentation/widget/components/reviewer_page.dart';
-import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_reviewer_card_core.dart';
+import 'package:flashi/presentation/widget/components/reviewer_page.dart';
+import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_reviewer_card_core.dart';
 import 'package:flutter/material.dart';
 
 void showReviewSelection({

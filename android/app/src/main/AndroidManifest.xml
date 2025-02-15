@@ -46,7 +46,7 @@
         <!-- TODO replace YOUR_APP_ID with actual value -->
         <meta-data
             android:name="com.startapp.sdk.APPLICATION_ID"
-            android:value="201827263" />
+            android:value="201522973" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

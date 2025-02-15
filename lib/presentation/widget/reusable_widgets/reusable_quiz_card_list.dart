@@ -1,5 +1,5 @@
-import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reusable_card_core.dart';
-import 'package:flashlearn/provider/quiz_provider.dart';
+import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_card_core.dart';
+import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';

@@ -1,9 +1,9 @@
-import 'package:flashlearn/presentation/widget/reusable_widgets/core%20widgets/reviewer_widgets_core/flip_card_core.dart';
-import 'package:flashlearn/provider/quiz_provider.dart';
-import 'package:flashlearn/provider/reviewer_settings_provider.dart';
-import 'package:flashlearn/util/helpers/ads/ad_helper.dart';
-import 'package:flashlearn/util/helpers/modal/create_card_bottom_modal.dart';
-import 'package:flashlearn/util/helpers/widget/highlight_keywords.dart';
+import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reviewer_widgets_core/flip_card_core.dart';
+import 'package:flashi/provider/quiz_provider.dart';
+import 'package:flashi/provider/reviewer_settings_provider.dart';
+import 'package:flashi/util/helpers/ads/ad_helper.dart';
+import 'package:flashi/util/helpers/modal/create_card_bottom_modal.dart';
+import 'package:flashi/util/helpers/widget/highlight_keywords.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:startapp_sdk/startapp.dart';

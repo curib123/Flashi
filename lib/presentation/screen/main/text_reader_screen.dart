@@ -1,6 +1,6 @@
-import 'package:flashlearn/presentation/screen/main/settings_screen.dart';
-import 'package:flashlearn/presentation/widget/components/reusable_text_reader.dart';
-import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_title_content.dart';
+import 'package:flashi/presentation/screen/main/settings_screen.dart';
+import 'package:flashi/presentation/widget/components/reusable_text_reader.dart';
+import 'package:flashi/presentation/widget/reusable_widgets/reusable_title_content.dart';
 import 'package:flutter/material.dart';
 
 class TextReaderScreen extends StatelessWidget {

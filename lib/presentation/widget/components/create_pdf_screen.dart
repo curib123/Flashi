@@ -1,6 +1,6 @@
-import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_create_set_button_position.dart';
-import 'package:flashlearn/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
-import 'package:flashlearn/provider/pdf_provider.dart';
+import 'package:flashi/presentation/widget/reusable_widgets/reusable_create_set_button_position.dart';
+import 'package:flashi/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
+import 'package:flashi/provider/pdf_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:intl/intl.dart';

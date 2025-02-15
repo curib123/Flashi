@@ -1,4 +1,4 @@
-import 'package:flashlearn/util/helpers/modal/theme_modal.dart';
+import 'package:flashi/util/helpers/modal/theme_modal.dart';
 import 'package:flutter/material.dart';
 
 class ReusableThemeSettingPosition extends StatelessWidget {
@@ -8,7 +8,7 @@ class ReusableThemeSettingPosition extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return  Positioned(
-      bottom: 65 ,
+      bottom: 68 ,
       right: 15,
       child: GestureDetector(
         onTap: () => {openThemeSelector(context)},
