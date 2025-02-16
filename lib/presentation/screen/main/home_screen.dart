@@ -7,10 +7,12 @@ import 'package:flashi/presentation/widget/reusable_widgets/reusable_quiz_set_li
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_sort_and_see_all.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_title_content.dart';
+import 'package:flashi/provider/ai_model_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flashi/provider/sort_provider.dart';
 import 'package:flashi/util/helpers/ads/ad_helper.dart';
-import 'package:flashi/util/helpers/ai_question_generator.dart';
+import 'package:flashi/util/helpers/alert_box/model_dialog.dart';
+import 'package:flashi/util/helpers/widget/ai_model/ai_question_generator.dart';
 import 'package:flashi/util/helpers/file_text_extractor.dart';
 import 'package:flashi/util/helpers/modal/create_set_bottom_modal.dart';
 import 'package:flutter/material.dart';
@@ -73,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String extractedText = "";
   bool isLoading = false;
 
-  Future<void> pickFileAndGenerate(QuizProvider quizProvider) async {
+  Future<void> pickFileAndGenerate(QuizProvider quizProvider,AiModelProvider aiModelProvider) async {
     setState(() => isLoading = true);
     extractedText = await FileTextExtractor.pickAndExtractText();
 
@@ -87,8 +89,8 @@ class _HomeScreenState extends State<HomeScreen> {
       );
       return;
     }
-
-    final questions = await AIQuestionGenerator.generateQuestions(extractedText);
+   print(aiModelProvider.maxLength);
+    final questions = await AIQuestionGenerator.generateQuestions(extractedText,aiModelProvider.model,aiModelProvider.quiz_question_type,aiModelProvider.maxLength);
     if (questions.isNotEmpty) {
       final quizSetName = 'AI Generated ${quizProvider.quizSets.length + 1}';
 
@@ -98,7 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
         'description': 'AI Generated Flashcard content using PDF/docs file',
         'cards': [],
         'numberOfQuiz': 0,
-        'limitNumberOfQuiz': quizProvider.defaultMaxCards,
+        'limitNumberOfQuiz': aiModelProvider.maxLength,
       });
 
       for (var questionData in questions) {
@@ -127,7 +129,8 @@ class _HomeScreenState extends State<HomeScreen> {
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("No internet/response error/Try Again"),
+          duration: Duration(seconds: 10),
+          content: Text("No internet/response error/Try Again/Choice Another Model"),
           backgroundColor: Colors.red,
         ),
       );
@@ -136,13 +139,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
   }
-  void _showFlashcardDialog(QuizProvider quizProvider, ColorScheme colorScheme) {
+  void _showFlashcardDialog(QuizProvider quizProvider, ColorScheme colorScheme,AiModelProvider aiModelProvider) {
     showDialog(
+      barrierDismissible: false, // Prevents closing when tapping outside
       context: context,
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
+
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16.0), // Rounded corners for a modern feel
               ),
@@ -191,6 +196,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         width: double.infinity, // Full-width button
                         child: TextButton(
                           onPressed: () {
+                            Navigator.pop(context);
                             CreateSetBottomModal(
                               context: context,
                               buttonName: 'Save',
@@ -212,14 +218,22 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       ),
-                      SizedBox(height: 8), // Space between buttons
                       SizedBox(
                         width: double.infinity, // Full-width button
                         child: ElevatedButton(
-                          onPressed: () async {
-                            setDialogState(() => isLoading = true); // Update dialog state
-                            await pickFileAndGenerate(quizProvider);
-                            setDialogState(() => isLoading = false); // Hide loader after completion
+                          onPressed: ()  {
+                             ModelSelectionDialog.show(
+                              context,
+                              onTap: ()  async {
+                                print("AI Model selection changed!");
+                                setDialogState(() => isLoading = true); // Update dialog state
+                                await pickFileAndGenerate(quizProvider,aiModelProvider);
+                                setDialogState(() => isLoading = false); // Hide loader after completion
+                                // Perform any additional actions
+                              },
+                            );
+
+
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: colorScheme.primary, // Use theme primary color
@@ -231,6 +245,26 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           child: Text(
                             "AI Generated",
+                            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: double.infinity, // Full-width button
+                        child: ElevatedButton(
+                          onPressed: ()  {
+                            Navigator.pop(context);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: colorScheme.error, // Use theme primary color
+                            foregroundColor: Colors.white,
+                            padding: EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10), // Rounded button
+                            ),
+                          ),
+                          child: Text(
+                            "Cancel",
                             style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
                           ),
                         ),
@@ -257,6 +291,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     // Access the QuizProvider and SortProvider from the context
     final quizProvider = Provider.of<QuizProvider>(context);
+    final aiModelProvider = Provider.of<AiModelProvider>(context);
     final sortProvider = Provider.of<SortProvider>(context);
 
     // Reverse the filtered quiz sets for display
@@ -405,7 +440,7 @@ change(quizProvider);
             colorScheme: colorScheme,
             name: 'Create Subject',
             onTap: ()  {
-              _showFlashcardDialog(quizProvider,colorScheme);
+              _showFlashcardDialog(quizProvider,colorScheme,aiModelProvider);
             },
           ),
 

@@ -56,6 +56,7 @@ dependencies:
   device_info_plus: ^11.3.0
   docx_to_text: ^1.0.1
   dart_openai: ^5.1.0
+  flutter_secure_storage: ^9.2.4
 
 dev_dependencies:
   flutter_test:

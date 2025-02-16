@@ -1,5 +1,6 @@
 
 import 'package:flashi/home.dart';
+import 'package:flashi/provider/ai_model_provider.dart';
 import 'package:flashi/provider/bottom_navigation_provider.dart';
 import 'package:flashi/provider/notes_provider.dart';
 import 'package:flashi/provider/onboarding_provider.dart';
@@ -49,6 +50,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => TaskProvider()), // Add StudySchedulerProvider
         ChangeNotifierProvider(create: (_) => TextReaderProvider()), // Add TextReaderProvider
         ChangeNotifierProvider(create: (_) => PdfProvider()), // Add TextReaderProvider
+        ChangeNotifierProvider(create: (_) => AiModelProvider()), // Add TextReaderProvider
 
         ChangeNotifierProvider(
             create: (context) => QuizProvider(

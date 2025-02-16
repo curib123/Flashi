@@ -1,22 +1,37 @@
 import 'dart:convert';
-import 'package:dart_openai/dart_openai.dart';
 
-class AIQuestionGenerator {
-  static Future<List<Map<String, String>>> generateQuestions(String content) async {
-    OpenAI.apiKey = "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"; // Replace with your API key
+import 'package:dart_openai/dart_openai.dart';
+import 'package:flashi/util/helpers/widget/ai_model/api_key.dart';
+
+class OpenAiLogic{
+
+  static Future<List<Map<String, String>>> generateQuestionsOpenAi(String content) async {
+    await saveAPIKey('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');
+
+// Retrieve the stored API key securely
+    String? apiKey = await getAPIKey();
+
+// Ensure the key is not null before assigning
+    if (apiKey != null && apiKey.isNotEmpty) {
+      OpenAI.apiKey = apiKey;
+    } else {
+      print("API Key not found!");
+    }
 
     List<String> chunks = splitTextIntoChunks(content, 1000);
     List<Map<String, String>> allQuestions = [];
 
     for (String chunk in chunks) {
-      List<Map<String, String>> questions = await processChunk(chunk);
+      List<Map<String, String>> questions = await processChunkOpenai(chunk);
       allQuestions.addAll(questions);
       if (allQuestions.length >= 20) break;
     }
 
     return allQuestions.take(20).toList() ?? [];
   }
-  static Future<List<Map<String, String>>> processChunk(String textChunk) async {
+
+
+  static Future<List<Map<String, String>>> processChunkOpenai(String textChunk) async {
     final prompt = """
   Generate 20 identification-type questions and answers from the following text:
 
@@ -33,6 +48,7 @@ class AIQuestionGenerator {
     try {
       final response = await OpenAI.instance.chat.create(
         model: "gpt-4o-mini",
+        maxTokens: 400,
         messages: [
           OpenAIChatCompletionChoiceMessageModel(
               role: OpenAIChatMessageRole.system,
