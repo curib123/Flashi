@@ -64,7 +64,9 @@ class _HomeScreenState extends State<HomeScreen> {
     // Access the QuizProvider and SortProvider from the context
 
     final aiModelProvider = Provider.of<AiModelProvider>(context,listen: false);
+    final aiModelLogicProvider = Provider.of<AiModelLogicProvider>(context,listen: false);
     aiModelProvider.fetchLatestVersion();
+    aiModelLogicProvider.fetchLatestVersion();
 
   }
 

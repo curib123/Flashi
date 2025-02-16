@@ -1,6 +1,7 @@
 import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flashi/provider/save_info_ads_provider.dart';
 import 'package:flashi/util/helpers/ads/ad_helper.dart';
+import 'package:flashi/util/helpers/alert_box/show_maintenace_alert_box.dart';
 import 'package:flutter/material.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:provider/provider.dart';
@@ -157,19 +158,8 @@ class _ReusableRewardedAdsButtonPositionState extends State<ReusableRewardedAdsB
   Future<void> _handleAdTap(BuildContext context, SaveInfoAdsProvider saveInfoAdsProvider) async {
     bool isConnected = await InternetConnection().hasInternetAccess;
 
-
     if (!isConnected) {
-      _showDialog(
-        context,
-        title: "No Internet",
-        message: "Please connect to the internet to watch an ad. Try turning on Wi-Fi or mobile data.",
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text("OK"),
-          ),
-        ],
-      );
+      showMaintenanceDialog(context, 'No Internet', "Please connect to the internet.");
       return;
     }
 

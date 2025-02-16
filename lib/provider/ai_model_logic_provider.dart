@@ -9,6 +9,7 @@ import 'package:flashi/util/helpers/modal/create_set_bottom_modal.dart';
 import 'package:flashi/util/helpers/widget/ai_model/ai_question_generator.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 
 class AiModelLogicProvider extends ChangeNotifier {
   String extractedText = "";
@@ -16,7 +17,7 @@ class AiModelLogicProvider extends ChangeNotifier {
   bool isUnderMaintenance = false;
   String reasonMaintenance = '';
 
-  Future<void> _fetchLatestVersion() async {
+  Future<void> fetchLatestVersion() async {
     final response = await http.get(Uri.parse('https://curib123.github.io/flashi_/flashi.json'));
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -109,8 +110,6 @@ class AiModelLogicProvider extends ChangeNotifier {
 
   Future<void> showFlashcardDialog(BuildContext context, QuizProvider quizProvider, ColorScheme colorScheme, AiModelProvider aiModelProvider) async {
 
-    await _fetchLatestVersion();
-
     showDialog(
       barrierDismissible: false,
       context: context,
@@ -191,8 +190,12 @@ class AiModelLogicProvider extends ChangeNotifier {
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: () {
-
+                          onPressed: () async {
+                            bool isConnected = await InternetConnection().hasInternetAccess;
+                            if (!isConnected) {
+                              showMaintenanceDialog(context, 'No Internet', "Please connect to the internet to generate a flashcard.");
+                              return;
+                            }
                             if(!isUnderMaintenance){
                               ModelSelectionDialog.show(
                                 context,

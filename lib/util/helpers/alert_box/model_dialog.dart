@@ -7,9 +7,9 @@ class ModelSelectionDialog {
     return await showDialog<void>(
       context: context,
       builder: (context) {
-        String selectedModel = Provider.of<AiModelProvider>(context, listen: false).model;
-        int selectedMaxLength = Provider.of<AiModelProvider>(context, listen: false).maxLength;
-        String selectedQuizType = Provider.of<AiModelProvider>(context, listen: false).quiz_question_type;
+        String selectedModel = Provider.of<AiModelProvider>(context, listen: false).listOfModels.first;
+        int selectedMaxLength = Provider.of<AiModelProvider>(context, listen: false).ListOfMaxLength.first;
+        String selectedQuizType = Provider.of<AiModelProvider>(context, listen: false).listOfQuizQuestionTypes.first;
 
         ColorScheme colorScheme = Theme.of(context).colorScheme;
 
@@ -28,48 +28,38 @@ class ModelSelectionDialog {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   // Model Selection Dropdown
-                  DropdownButtonFormField<String>(
-                    decoration: _inputDecoration(colorScheme, "Select AI Model"),
+                  _buildDropdown<String>(
+                    context,
+                    label: "Select AI Model",
                     value: selectedModel,
-                    dropdownColor: colorScheme.surface,
-                    style: TextStyle(color: colorScheme.onSurface),
                     items: Provider.of<AiModelProvider>(context, listen: false)
-                        .listOfModels
-                        .map((model) => DropdownMenuItem(value: model, child: Text(model)))
-                        .toList(),
-                    onChanged: (String? newValue) {
+                        .listOfModels,
+                    onChanged: (newValue) {
                       if (newValue != null) setState(() => selectedModel = newValue);
                     },
                   ),
                   const SizedBox(height: 16), // Spacing
 
                   // Max Length Selection Dropdown
-                  DropdownButtonFormField<int>(
-                    decoration: _inputDecoration(colorScheme, "Select Max Length"),
+                  _buildDropdown<int>(
+                    context,
+                    label: "Select Max Length",
                     value: selectedMaxLength,
-                    dropdownColor: colorScheme.surface,
-                    style: TextStyle(color: colorScheme.onSurface),
-                    items: Provider.of<AiModelProvider>(context, listen: false)
-                        .ListOfMaxLength
-                        .map((length) => DropdownMenuItem(value: length, child: Text(length.toString())))
-                        .toList(),
-                    onChanged: (int? newValue) {
+                    items: Provider.of<AiModelProvider>(context, listen: false).ListOfMaxLength,
+                    onChanged: (newValue) {
                       if (newValue != null) setState(() => selectedMaxLength = newValue);
                     },
                   ),
                   const SizedBox(height: 16), // Spacing
 
                   // Quiz Question Type Dropdown
-                  DropdownButtonFormField<String>(
-                    decoration: _inputDecoration(colorScheme, "Select Quiz Type"),
+                  _buildDropdown<String>(
+                    context,
+                    label: "Select Quiz Type",
                     value: selectedQuizType,
-                    dropdownColor: colorScheme.surface,
-                    style: TextStyle(color: colorScheme.onSurface),
                     items: Provider.of<AiModelProvider>(context, listen: false)
-                        .listOfQuizQuestionTypes
-                        .map((type) => DropdownMenuItem(value: type, child: Text(type)))
-                        .toList(),
-                    onChanged: (String? newValue) {
+                        .listOfQuizQuestionTypes,
+                    onChanged: (newValue) {
                       if (newValue != null) setState(() => selectedQuizType = newValue);
                     },
                   ),
@@ -99,11 +89,24 @@ class ModelSelectionDialog {
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              child: const Text("OK"),
+              child: const Text("Generate"),
             ),
           ],
         );
       },
+    );
+  }
+
+  // Dropdown Helper Method
+  static Widget _buildDropdown<T>(BuildContext context, {required String label, required T value, required List<T> items, required ValueChanged<T?> onChanged}) {
+    ColorScheme colorScheme = Theme.of(context).colorScheme;
+    return DropdownButtonFormField<T>(
+      decoration: _inputDecoration(colorScheme, label),
+      value: value,
+      dropdownColor: colorScheme.surface,
+      style: TextStyle(color: colorScheme.primary),
+      items: items.map((item) => DropdownMenuItem(value: item, child: Text(item.toString()))).toList(),
+      onChanged: onChanged,
     );
   }
 
@@ -113,12 +116,12 @@ class ModelSelectionDialog {
       labelText: label,
       labelStyle: TextStyle(color: colorScheme.primary),
       filled: true,
-      fillColor: colorScheme.surface,
+      fillColor: colorScheme.onPrimary,
       enabledBorder: UnderlineInputBorder(
-        borderSide: BorderSide(color: colorScheme.primary, width: 3),
+        borderSide: BorderSide(color: colorScheme.primary, width: 1),
       ),
       focusedBorder: UnderlineInputBorder(
-        borderSide: BorderSide(color: colorScheme.secondary, width: 3),
+        borderSide: BorderSide(color: colorScheme.secondary, width: 1),
       ),
     );
   }

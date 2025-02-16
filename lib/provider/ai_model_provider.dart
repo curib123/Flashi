@@ -3,30 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class AiModelProvider with ChangeNotifier {
-  String _model = 'pixtral-12b-2409';
-  int _maxLength = 20;
-  String _quiz_question_type = 'Identification';
+  String _model = '';
+  int _maxLength = 0;
+  String _quiz_question_type = '';
   Map<String, String> questionTypes = {};
-
-
-  List<String> listOfModels = [
-  ];
-
-  List<String> listOfQuizQuestionTypes = [
-   
-  ];
-
-  List<int> ListOfMaxLength = [
-    20,
-    30,
-    40,
-    50,
-    60,
-    70,
-    80,
-    90,
-    100,
-  ];
+  List<String> listOfModels = [];
+  List<String> listOfQuizQuestionTypes = [];
+  List<int> ListOfMaxLength = [];
 
   String get model => _model;
   int get maxLength => _maxLength;
@@ -75,11 +58,18 @@ class AiModelProvider with ChangeNotifier {
         listOfQuizQuestionTypes.add(key.toString());
       });
 
+      // Extract ListOfMaxLength
+      ListOfMaxLength = List<int>.from(data['ListOfMaxLength']);
+
+      // Print the values (for debugging)
+      print('ListOfMaxLength: $ListOfMaxLength');
+
       // Notify listeners to update the UI
       notifyListeners();
     } else {
       print("Failed to load data");
     }
   }
+
 
 }
