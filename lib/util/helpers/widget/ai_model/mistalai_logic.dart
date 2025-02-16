@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:flashi/util/helpers/widget/ai_model/api_key.dart';
 
 class MistralAiLogic {
-  static Future<List<Map<String, String>>> generateQuestionsMistral(String content,String modelType,String type,int maxLength) async {
+  static Future<List<Map<String, String>>> generateQuestionsMistral(String content,String modelType,String type,int maxLength,var questionTypes) async {
     await saveAPIKey('TZjSrnSAjyflYyNyFmPnMfHHSZ4Mw33q'); // Save API key (remove if stored separately)
 
     String? apiKey = await getAPIKey(); // Retrieve stored API key
@@ -17,95 +17,21 @@ class MistralAiLogic {
     List<Map<String, String>> allQuestions = [];
 
     for (String chunk in chunks) {
-      List<Map<String, String>> questions = await processChunkMistral(chunk, apiKey,modelType,type,maxLength);
+      List<Map<String, String>> questions = await processChunkMistral(chunk, apiKey,modelType,type,maxLength,questionTypes);
       allQuestions.addAll(questions);
       if (allQuestions.length >= maxLength) break;
     }
 
     return allQuestions.take(maxLength).toList();
   }
-  static Future<List<Map<String, String>>> processChunkMistral(String textChunk, String apiKey,String modelType,String type,int maxLength) async {
+  static Future<List<Map<String, String>>> processChunkMistral(String textChunk, String apiKey,String modelType,String type,int maxLength,var questionTypes) async {
     final String mistralEndpoint = "https://api.mistral.ai/v1/chat/completions";
 
-    String generatePrompt() {
-      switch (type) {
-        case 'Identification':
-          return """
-      Generate ${maxLength} summarize identification questions and answers from the following text in this format accurately dont put title,heading or guide:
-      Question: It is <definition/explanation/short question>.
-      Answer: <term/answer>
-
-      TEXT:
-      "$textChunk"
-
-      Example Output:
-      Question: It is the process of converting food into energy?
-      Answer: Metabolism
-
-      Question: It is the capital city of France.
-      Answer: Paris
-      """;
-
-        case 'Fill_In_The_Blank':
-          return """
-      Generate ${maxLength} summarize fill-in-the-blank  questions and answers from the following text in this format accurately dont put title,heading or guide:
-      TEXT:
-      "$textChunk"
-
-      Example Output:
-      Question: The process of converting food into energy is called _____?
-      Answer: Metabolism
-
-      Question: The capital city of France is _____?
-      Answer: Paris
-      """;
-
-        case 'Definition':
-          return """
-      Generate ${maxLength} summarize Definition  questions and answers from the following text in this format accurately dont put title,heading or guide:
-      TEXT:
-      "$textChunk"
-
-      Example Output:
-      Question: The process of converting food into energy?
-        Answer: Metabolism
-
-      Question: The capital city of France?
-       Answer: Paris
-      """;
-
-        case 'Enumeration':
-          return """
-      Generate ${maxLength} summarize enumeration-type  questions and answers from the following text in this format accurately dont put title,heading or guide:
-      TEXT:
-      "$textChunk"
-
-      Example Output:
-      Question: List the stages of cell division?
-      Answer: Prophase, Metaphase, Anaphase, Telophase
-
-      Question: Name the primary colors.
-      Answer: Red, Blue, Yellow
-      """;
-
-        case 'True_False':
-          return """
-      Generate ${maxLength}  true or false  questions and answers from the following text in this format accurately dont put title,heading or guide:
-      TEXT:
-      "$textChunk"
-
-      Example Output:
-      Question: Metabolism is the process of breaking down food into nutrients. (True/False)?
-      Answer: True
-
-      Question: The capital of Germany is Paris. (True/False)?
-      Answer: False
-      """;
-
-        default:
-          return "Invalid question type";
-      }
+     String generatePrompt(String type, int maxLength, String textChunk, var questionTypes) {
+      // Return the prompt for the corresponding type, or a default message if not found
+      return questionTypes[type] ?? "Invalid question type";
     }
+
 
 
     try {
@@ -119,7 +45,7 @@ class MistralAiLogic {
           "model": modelType, // Updated to a known model name
           "messages": [
             {"role": "system", "content": "You are an expert quiz generator."},
-            {"role": "user", "content": generatePrompt()}
+            {"role": "user", "content": generatePrompt(type,maxLength,textChunk,questionTypes)}
           ],
           "max_tokens": 1000
         }),

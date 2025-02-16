@@ -57,6 +57,7 @@ dependencies:
   docx_to_text: ^1.0.1
   dart_openai: ^5.1.0
   flutter_secure_storage: ^9.2.4
+  package_info_plus: ^8.2.1
 
 dev_dependencies:
   flutter_test:

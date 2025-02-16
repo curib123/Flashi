@@ -33,8 +33,8 @@ class CustomDrawer extends StatelessWidget {
         padding: EdgeInsets.zero,
         children: [
           UserAccountsDrawerHeader(
-            accountName: const Text("Flashi"),
-            accountEmail: const Text("FlashCard For Faster Learning"),
+            accountName: const Text("Flashi Ai"),
+            accountEmail: const Text("Ai Based FlashCard Creator"),
             currentAccountPicture: CircleAvatar(
               backgroundColor: colorScheme.onTertiary,
               child: Icon(Icons.person_2_rounded,size: 50,color: colorScheme.primary,),
@@ -136,7 +136,7 @@ class CustomDrawer extends StatelessWidget {
               Navigator.pop(context),
               // TODO: Navigate to privacy policy screen
 
-            WebPageLauncher('https://curib123.github.io/flashlearn.web/privacy_policy.html').launch()
+            WebPageLauncher('https://curib123.github.io/flashi_/privacy_policy.html').launch()
 
           },
 
@@ -147,7 +147,7 @@ class CustomDrawer extends StatelessWidget {
               Navigator.pop(context),
               // TODO: Navigate to privacy policy screen
 
-            WebPageLauncher('https://curib123.github.io/flashlearn.web/terms%26condition.html').launch()
+            WebPageLauncher('https://curib123.github.io/flashi_/terms%26condition.html').launch()
 
           },
 

@@ -18,7 +18,7 @@ class WebPageLauncher {
   void _launchEmail() async {
     final Uri emailUri = Uri(
       scheme: 'mailto',
-      path: 'rocketsapp15@gmail.com', // Recipient email address
+      path: 'curibtech@gmail.com', // Recipient email address
       query: Uri.encodeFull(
           'subject=Contact Us&body=Hello, I would like to...'), // Pre-filled subject and body
     );

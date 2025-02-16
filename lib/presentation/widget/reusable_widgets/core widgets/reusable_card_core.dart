@@ -72,7 +72,7 @@ class ReusableCardCore extends StatelessWidget {
                 color: colorScheme.primary.withOpacity(0.6),
               ),
             )
-                : highlightKeywords( context: context, keyword: keyword, text: question, fontSize: 15, fontColor: colorScheme.primary, fontSizeKeyword: 10, isCenter: false), // Add highlight to the question text
+                : highlightKeywords( context: context, keyword: keyword, text: question, fontSize: 12, fontColor: colorScheme.primary, fontSizeKeyword: 10, isCenter: false), // Add highlight to the question text
             subtitle: isIgnore
                 ? null
                 : Column(
@@ -81,17 +81,17 @@ class ReusableCardCore extends StatelessWidget {
                 SizedBox(height: 2),
                 Text(
                   answer,
-                  style: TextStyle(fontSize: 16, color: colorScheme.secondary,fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 12, color: colorScheme.secondary,fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
                 isUpdating
                     ? Text(
                   "Updated on: $formattedTimestamp",
-                  style: TextStyle(fontSize: 12, color: colorScheme.onSurface.withOpacity(0.6)),
+                  style: TextStyle(fontSize: 10, color: colorScheme.onSurface.withOpacity(0.6)),
                 )
                     : Text(
                   "Created on: $formattedTimestamp",
-                  style: TextStyle(fontSize: 12, color: colorScheme.onSurface.withOpacity(0.6)),
+                  style: TextStyle(fontSize: 10, color: colorScheme.onSurface.withOpacity(0.6)),
                 ),
               ],
             ),

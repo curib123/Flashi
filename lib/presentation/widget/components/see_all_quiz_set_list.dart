@@ -3,14 +3,11 @@ import 'package:flashi/presentation/widget/reusable_widgets/reusable_create_set_
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_quiz_set_list.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_sort_and_see_all.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
+import 'package:flashi/provider/ai_model_logic_provider.dart';
 import 'package:flashi/provider/ai_model_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flashi/provider/sort_provider.dart';
 import 'package:flashi/util/helpers/ads/ad_helper.dart';
-import 'package:flashi/util/helpers/alert_box/model_dialog.dart';
-import 'package:flashi/util/helpers/widget/ai_model/ai_question_generator.dart';
-import 'package:flashi/util/helpers/file_text_extractor.dart';
-import 'package:flashi/util/helpers/modal/create_set_bottom_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:startapp_sdk/startapp.dart';
@@ -61,214 +58,6 @@ class _SeeAllQuizSetListState extends State<SeeAllQuizSetList> {
     });
   }
 
-  String extractedText = "";
-  bool isLoading = false;
-
-  Future<void> pickFileAndGenerate(QuizProvider quizProvider,AiModelProvider aiModelProvider) async {
-    setState(() => isLoading = true);
-    extractedText = await FileTextExtractor.pickAndExtractText();
-
-    if (extractedText.isEmpty || extractedText == "No file selected") {
-      setState(() => isLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Please select a valid file first"),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-
-    final questions = await AIQuestionGenerator.generateQuestions(extractedText,aiModelProvider.model,aiModelProvider.quiz_question_type,aiModelProvider.maxLength);
-    if (questions.isNotEmpty) {
-      final quizSetName = 'AI Generated ${quizProvider.quizSets.length + 1}';
-
-      quizProvider.addQuizSet({
-        'name': quizSetName,
-        'timestamp': DateTime.now(),
-        'description': 'AI Generated Flashcard content using PDF/docs file',
-        'cards': [],
-        'numberOfQuiz': 0,
-        'limitNumberOfQuiz': aiModelProvider.maxLength,
-      });
-
-      for (var questionData in questions) {
-        quizProvider.addCardToQuizSet(
-          quizSetName: quizSetName,
-          card: {
-            'isUpdating': false,
-            'question': questionData['question'] ?? '',
-            'answer': questionData['answer'] ?? '',
-            'isIgnore': false,
-            'keyword': '',
-            'timestamp': DateTime.now(),
-          },
-        );
-      }
-      Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Sucessfull Created Ai Generated Flashcard using pdf/docs"),
-          backgroundColor: Colors.green,
-        ),
-      );
-
-    }else{
-      Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          duration: Duration(seconds: 10),
-          content: Text("No internet/response error/Try Again/Choice Another Model"),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-    setState(() => isLoading = false);
-
-
-  }
-  void _showFlashcardDialog(QuizProvider quizProvider, ColorScheme colorScheme,AiModelProvider aiModelProvider) {
-    showDialog(
-      barrierDismissible: false, // Prevents closing when tapping outside
-      context: context,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            return AlertDialog(
-
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16.0), // Rounded corners for a modern feel
-              ),
-              title: Center(
-                child: Text(
-                  "Choose Flashcard Type",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                    color: colorScheme.primary,
-                  ),
-                ),
-              ),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    isLoading
-                        ? "Please wait while generating questions..."
-                        : "Would you like to create a custom flashcard or generate one from a pdf/docs file using AI?",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[700], // Slightly dim text for a modern look
-                    ),
-                  ),
-                  if (isLoading) // Show loading indicator when isLoading is true
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      child: CircularProgressIndicator(
-                        color: colorScheme.primary, // Match theme color
-                        strokeWidth: 3, // Slim and sleek
-                      ),
-                    ),
-                ],
-              ),
-              actions: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox(height: 5), // Small spacing for better look
-                      SizedBox(
-                        width: double.infinity, // Full-width button
-                        child: TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                            CreateSetBottomModal(
-                              context: context,
-                              buttonName: 'Save',
-                              isCreate: true,
-                              setName: '',
-                            );
-                          },
-                          style: TextButton.styleFrom(
-                            backgroundColor: colorScheme.secondary,
-                            foregroundColor: colorScheme.onSecondary, // Modern secondary color
-                            padding: EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10), // Rounded button
-                            ),
-                          ),
-                          child: Text(
-                            "Custom Flashcard",
-                            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        width: double.infinity, // Full-width button
-                        child: ElevatedButton(
-                          onPressed: ()  {
-                            ModelSelectionDialog.show(
-                              context,
-                              onTap: ()  async {
-                                print("AI Model selection changed!");
-                                setDialogState(() => isLoading = true); // Update dialog state
-                                await pickFileAndGenerate(quizProvider,aiModelProvider);
-                                setDialogState(() => isLoading = false); // Hide loader after completion
-                                // Perform any additional actions
-                              },
-                            );
-
-
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: colorScheme.primary, // Use theme primary color
-                            foregroundColor: Colors.white,
-                            padding: EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10), // Rounded button
-                            ),
-                          ),
-                          child: Text(
-                            "AI Generated",
-                            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        width: double.infinity, // Full-width button
-                        child: ElevatedButton(
-                          onPressed: ()  {
-                            Navigator.pop(context);
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: colorScheme.error, // Use theme primary color
-                            foregroundColor: Colors.white,
-                            padding: EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10), // Rounded button
-                            ),
-                          ),
-                          child: Text(
-                            "Cancel",
-                            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-  }
-
-
   @override
   Widget build(BuildContext context) {
 
@@ -306,8 +95,8 @@ class _SeeAllQuizSetListState extends State<SeeAllQuizSetList> {
   }
 
   Widget _body(BuildContext context) {
-    return Consumer3<QuizProvider, SortProvider,AiModelProvider>(
-      builder: (context, quizProvider, sortProvider,aiModelProvider, child) {
+    return Consumer4<QuizProvider, SortProvider,AiModelProvider,AiModelLogicProvider>(
+      builder: (context, quizProvider, sortProvider,aiModelProvider,aiModelLogicProvider, child) {
         final filteredQuizSets = quizProvider.filteredQuizSets.reversed.toList();
 
         return Stack(
@@ -360,7 +149,7 @@ class _SeeAllQuizSetListState extends State<SeeAllQuizSetList> {
               colorScheme: widget.colorScheme,
               name: 'Create Subject',
               onTap: () {
-                _showFlashcardDialog(quizProvider,Theme.of(context).colorScheme,aiModelProvider);
+                aiModelLogicProvider.showFlashcardDialog(context, quizProvider, Theme.of(context).colorScheme, aiModelProvider);
               },
             ),
             ReusableThemeSettingPosition(colorScheme: widget.colorScheme),

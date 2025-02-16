@@ -135,28 +135,46 @@ class _FlashcardReviewState extends State<FlashcardReview> {
           Padding(
             padding: const EdgeInsets.only(top: 5.0), // Adds space between indicator and cards
             child: Center(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center, // Center the indicators
-                  children: List.generate(
-                    widget.cards.length,
-                        (index) => Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 2.0),
-                      width:  widget.cards.length <= 15 ? 10 : 6,
-                      height:  widget.cards.length <= 15 ? 10 : 6,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: _currentPage == index
-                            ? Theme.of(context).colorScheme.secondary
-                            : Colors.grey,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.arrow_left, color: Colors.grey),
+                    onPressed: () {
+                      // Add logic to scroll left
+                    },
+                  ),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center, // Center the indicators
+                      children: List.generate(
+                        3,
+                            (index) => Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 2.0),
+                          width: widget.cards.length <= 15 ? 10 : 6,
+                          height: widget.cards.length <= 15 ? 10 : 6,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: _currentPage == index
+                                ? Theme.of(context).colorScheme.secondary
+                                : Colors.grey,
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
+                  IconButton(
+                    icon: Icon(Icons.arrow_right, color: Colors.grey),
+                    onPressed: () {
+                      // Add logic to scroll right
+                    },
+                  ),
+                ],
               ),
             ),
-          ),
+          )
+
         ],
       ),
     );

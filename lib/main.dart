@@ -1,5 +1,6 @@
 
 import 'package:flashi/home.dart';
+import 'package:flashi/provider/ai_model_logic_provider.dart';
 import 'package:flashi/provider/ai_model_provider.dart';
 import 'package:flashi/provider/bottom_navigation_provider.dart';
 import 'package:flashi/provider/notes_provider.dart';
@@ -51,6 +52,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => TextReaderProvider()), // Add TextReaderProvider
         ChangeNotifierProvider(create: (_) => PdfProvider()), // Add TextReaderProvider
         ChangeNotifierProvider(create: (_) => AiModelProvider()), // Add TextReaderProvider
+        ChangeNotifierProvider(create: (_) => AiModelLogicProvider()), // Add TextReaderProvider
 
         ChangeNotifierProvider(
             create: (context) => QuizProvider(
@@ -65,16 +67,8 @@ Future<void> main() async {
 }
 
 
-class RocketLearn extends StatefulWidget {
+class RocketLearn extends StatelessWidget {
   const RocketLearn({super.key});
-
-  @override
-  State<RocketLearn> createState() => _RocketLearnState();
-}
-
-class _RocketLearnState extends State<RocketLearn> {
-
-
 
   @override
   Widget build(BuildContext context) {
