@@ -60,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final checkVersionProvider = Provider.of<CheckVersionProvider>(context,listen: false);
     aiModelProvider.fetchLatestVersion();
     aiModelLogicProvider.fetchLatestVersion();
-    checkVersionProvider.fetchLatestVersion();
+    checkVersionProvider.checkAppVersion(context);
 
   }
 
