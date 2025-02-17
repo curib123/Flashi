@@ -34,6 +34,7 @@ class SeeAllQuizCard extends StatelessWidget {
     final quizProvider = Provider.of<QuizProvider>(context);
 
     return Scaffold(
+      resizeToAvoidBottomInset: true, // Prevents bottom overflow
       appBar: AppBar(
         foregroundColor: colorScheme.onPrimary,
         backgroundColor: colorScheme.primary,
@@ -61,7 +62,7 @@ class SeeAllQuizCard extends StatelessWidget {
       builder: (context, quizProvider, sortProvider, child) {
         return Stack(
           children: [
-            Column(
+            ListView(
               children: [
                 ReusableSortAndSeeAll(
                   dropdownValue: sortProvider.dropdownValueCard,

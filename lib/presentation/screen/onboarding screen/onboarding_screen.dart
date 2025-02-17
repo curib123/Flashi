@@ -3,25 +3,45 @@ import 'package:introduction_screen/introduction_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:flashi/provider/onboarding_provider.dart';
 
-class OnboardingScreen extends StatelessWidget {
+class OnboardingScreen extends StatefulWidget {
+  static const _animatedTextStyle = TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.teal);
+  static const _animatedBodyTextStyle = TextStyle(fontSize: 15, color: Colors.teal);
+
+  @override
+  State<OnboardingScreen> createState() => _OnboardingScreenState();
+}
+
+class _OnboardingScreenState extends State<OnboardingScreen> {
   List<PageViewModel> pages = [
     PageViewModel(
-      title: "Welcome to Flashi",
-      body: "Your go-to app for mastering any subject through interactive and engaging flashcards. Start your learning journey now!",
-      image: Center(child: _AnimatedMovingIcon(icon: Icons.school)),
+      title: "Welcome to Flashi Ai",
+      body: "Create custom flashcards easily—automatically with AI or manually to match your learning style!",
+      image: Center(child: _AnimatedMovingIcon(icon: Icons.school_rounded)),
       decoration: PageDecoration(
-        titleTextStyle: _animatedTextStyle,
-        bodyTextStyle: _animatedBodyTextStyle,
+        titleTextStyle: OnboardingScreen._animatedTextStyle,
+        bodyTextStyle: OnboardingScreen._animatedBodyTextStyle,
         imagePadding: EdgeInsets.only(bottom: 16),
       ),
     ),
+    PageViewModel(
+      title: "AI Assistant Chatbot",
+      body: "Study with ease—let the AI assistant chatbot guide you through your learning journey, offering accurate, correct, and tailored support to match your unique style!",
+      image: Center(child: _AnimatedMovingIcon(icon: Icons.android)),
+      decoration: PageDecoration(
+        titleTextStyle: OnboardingScreen._animatedTextStyle,
+        bodyTextStyle: OnboardingScreen._animatedBodyTextStyle,
+        imagePadding: EdgeInsets.only(bottom: 16),
+      ),
+    ),
+
+
     PageViewModel(
       title: "Create & Customize",
       body: "Create your own flashcards tailored to your learning style. Add questions and answer for personalized use",
       image: Center(child: _AnimatedMovingIcon(icon: Icons.create)),
       decoration: PageDecoration(
-        titleTextStyle: _animatedTextStyle,
-        bodyTextStyle: _animatedBodyTextStyle,
+        titleTextStyle: OnboardingScreen._animatedTextStyle,
+        bodyTextStyle: OnboardingScreen._animatedBodyTextStyle,
         imagePadding: EdgeInsets.only(bottom: 16),
       ),
     ),
@@ -30,41 +50,15 @@ class OnboardingScreen extends StatelessWidget {
       body: "Access your flashcards and study on-the-go, wherever you are. No internet required, just dive into your learning!",
       image: Center(child: _AnimatedMovingIcon(icon: Icons.mobile_friendly)),
       decoration: PageDecoration(
-        titleTextStyle: _animatedTextStyle,
-        bodyTextStyle: _animatedBodyTextStyle,
+        titleTextStyle: OnboardingScreen._animatedTextStyle,
+        bodyTextStyle: OnboardingScreen._animatedBodyTextStyle,
         imagePadding: EdgeInsets.only(bottom: 16),
       ),
     ),
-    PageViewModel(
-      title: "My Task Section",
-      body: "Easily manage your daily tasks and stay organized. Add, edit, and track tasks to boost your productivity effortlessly.",
-      image: Center(
-        child: _AnimatedMovingIcon(icon: Icons.task_rounded),
-      ),
-      decoration: PageDecoration(
-        titleTextStyle: _animatedTextStyle,
-        bodyTextStyle: _animatedBodyTextStyle,
-        imagePadding: const EdgeInsets.only(bottom: 16),
-      ),
-    ),
-    PageViewModel(
-      title: "My Notes",
-      body: "Capture your thoughts, ideas, and reminders effortlessly. Create, organize, and access your notes anytime to stay inspired and productive.",
-      image: Center(
-        child: _AnimatedMovingIcon(icon: Icons.note_rounded),
-      ),
-      decoration: PageDecoration(
-        titleTextStyle: _animatedTextStyle,
-        bodyTextStyle: _animatedBodyTextStyle,
-        imagePadding: const EdgeInsets.only(bottom: 16),
-      ),
-    ),
+
 
 
   ];
-
-  static const _animatedTextStyle = TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.teal);
-  static const _animatedBodyTextStyle = TextStyle(fontSize: 15, color: Colors.teal);
 
   @override
   Widget build(BuildContext context) {

@@ -12,7 +12,6 @@ import 'package:flashi/presentation/widget/components/create_note_screen.dart';
 import 'package:flashi/provider/sort_provider.dart';
 import 'package:flashi/util/helpers/ads/ad_helper.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 import 'package:startapp_sdk/startapp.dart';
@@ -222,46 +221,7 @@ Widget _buildNoteLayout(Map<String, dynamic> note, int index, ColorScheme colorS
       curve: Curves.fastEaseInToSlowEaseOut,
       verticalOffset: 100.0,
       child: FadeInAnimation(
-        child: Slidable(
-          startActionPane: ActionPane(
-            motion: const DrawerMotion(),
-            children: [
-              SlidableAction(
-                onPressed: (_) => notesProvider.deleteNoteByTitle(note['title']),
-                foregroundColor: colorScheme.error,
-                icon: Icons.delete,
-                label: 'Delete',
-              ),
-            ],
-          ),
-          endActionPane: ActionPane(
-            motion: const DrawerMotion(),
-            children: [
-              SlidableAction(
-                onPressed: (_) {
-                  notesProvider.titleController.text = note['title'];
-                  notesProvider.contentController.text = note['content'];
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (BuildContext pageContext) {
-                        return CreateNoteScreen(
-                          isCreate: false,
-                          title: note['title'],
-                          isRead: false,
-                          date: note['created_at'],
-                        );
-                      },
-                    ),
-                  );
-                },
-                foregroundColor: colorScheme.tertiary,
-                icon: Icons.edit,
-                label: 'Edit',
-              ),
-            ],
-          ),
-          child: layout == 'Tile'
+        child: layout == 'Tile'
               ? ReusableNotesSummaryTileCore(
             isNote: true,
             title: note['title'],
@@ -359,7 +319,7 @@ Widget _buildNoteLayout(Map<String, dynamic> note, int index, ColorScheme colorS
 
         ),
       ),
-    ),
+
   );
 }
 Widget _noNotesWidget(BuildContext context) {

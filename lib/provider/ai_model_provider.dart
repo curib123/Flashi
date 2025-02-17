@@ -6,7 +6,6 @@ class AiModelProvider with ChangeNotifier {
   String _model = '';
   int _maxLength = 0;
   String _quiz_question_type = '';
-  Map<String, String> questionTypes = {};
   List<String> listOfModels = [];
   List<String> listOfQuizQuestionTypes = [];
   List<int> ListOfMaxLength = [];
@@ -38,31 +37,12 @@ class AiModelProvider with ChangeNotifier {
 
       // Extract the AI models data
       List<dynamic> aiModels = data['ai_models'];
+      List<dynamic> questionTypes = data['listOfQuizQuestionTypes'];
 
       // Update the listOfModels with the model names from the fetched data
       listOfModels = aiModels.map<String>((model) => model['model_name'] as String).toList();
-
-      // Print details of the AI models (for debugging purposes)
-      aiModels.forEach((model) {
-        print('Model Name: ${model['model_name']}');
-        print('Version: ${model['version']}');
-        print('Description: ${model['description']}');
-        print('---');
-      });
-
-      // Extract the questionTypes data
-      questionTypes = Map<String, String>.from(data['questionTypes']);
-
-      // Print all question types and their details (for debugging purposes)
-      questionTypes.forEach((key, value) {
-        listOfQuizQuestionTypes.add(key.toString());
-      });
-
-      // Extract ListOfMaxLength
+      listOfQuizQuestionTypes = questionTypes.map<String>((model) => model['name'] as String).toList();
       ListOfMaxLength = List<int>.from(data['ListOfMaxLength']);
-
-      // Print the values (for debugging)
-      print('ListOfMaxLength: $ListOfMaxLength');
 
       // Notify listeners to update the UI
       notifyListeners();

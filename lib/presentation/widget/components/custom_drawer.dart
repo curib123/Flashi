@@ -52,7 +52,7 @@ class CustomDrawer extends StatelessWidget {
           //   onTap: () => Navigator.pop(context),
           // ),
           buildListTile(
-            icon: Icons.home_rounded,
+            icon: Icons.house_siding_rounded,
             title: 'Home',
             onTap: () {
               Navigator.pop(context);
@@ -85,7 +85,7 @@ class CustomDrawer extends StatelessWidget {
           const Divider(height: 1),
 
           buildListTile(
-            icon: Icons.note_rounded,
+            icon: Icons.text_snippet_rounded,
             title: 'My Notes',
             onTap: () {
               Navigator.pop(context);
@@ -100,22 +100,7 @@ class CustomDrawer extends StatelessWidget {
               bottomNavigationProvider.toogleNavigation(0);
             },
           ),
-          buildListTile(
-            icon: Icons.picture_as_pdf_rounded,
-            title: 'PDF Extractor',
-            onTap: () => {
-              Navigator.pop(context),
-            bottomNavigationProvider.toogleNavigation(3)
-            },
-          ),
-          buildListTile(
-            icon: Icons.text_snippet_rounded,
-            title: 'Text Reader',
-            onTap: () => {
-              Navigator.pop(context),
-            bottomNavigationProvider.toogleNavigation(1)
-            },
-          ),
+
           const Divider(height: 1),
           buildListTile(
             icon: Icons.import_export_rounded,

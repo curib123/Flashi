@@ -3,23 +3,21 @@ import 'package:flashi/home.dart';
 import 'package:flashi/provider/ai_model_logic_provider.dart';
 import 'package:flashi/provider/ai_model_provider.dart';
 import 'package:flashi/provider/bottom_navigation_provider.dart';
+import 'package:flashi/provider/check_version_provider.dart';
 import 'package:flashi/provider/notes_provider.dart';
 import 'package:flashi/provider/onboarding_provider.dart';
-import 'package:flashi/provider/pdf_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flashi/provider/reviewer_settings_provider.dart';
 import 'package:flashi/provider/save_info_ads_provider.dart';
 import 'package:flashi/provider/sort_provider.dart';
 import 'package:flashi/provider/study_scheduler_provider.dart';
 import 'package:flashi/provider/task_provider.dart';
-import 'package:flashi/provider/text_reader_provider.dart';
 import 'package:flashi/provider/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
 Future<void> main() async {
-
 
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -48,11 +46,10 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => OnboardingProvider()), // Add OnboardingProvider
         ChangeNotifierProvider(create: (_) => SaveInfoAdsProvider()), // Add SaveInfoAdsProvider
         ChangeNotifierProvider(create: (_) => StudySchedulerProvider()), // Add StudySchedulerProvider
-        ChangeNotifierProvider(create: (_) => TaskProvider()), // Add StudySchedulerProvider
-        ChangeNotifierProvider(create: (_) => TextReaderProvider()), // Add TextReaderProvider
-        ChangeNotifierProvider(create: (_) => PdfProvider()), // Add TextReaderProvider
+        ChangeNotifierProvider(create: (_) => TaskProvider()),
         ChangeNotifierProvider(create: (_) => AiModelProvider()), // Add TextReaderProvider
         ChangeNotifierProvider(create: (_) => AiModelLogicProvider()), // Add TextReaderProvider
+        ChangeNotifierProvider(create: (_) => CheckVersionProvider()), // Add TextReaderProvider
 
         ChangeNotifierProvider(
             create: (context) => QuizProvider(
@@ -61,14 +58,14 @@ Future<void> main() async {
 
         ), // Add QuizProvider
       ],
-      child: const RocketLearn(),
+      child: const Flashi(),
     ),
   );
 }
 
 
-class RocketLearn extends StatelessWidget {
-  const RocketLearn({super.key});
+class Flashi extends StatelessWidget {
+  const Flashi({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +73,7 @@ class RocketLearn extends StatelessWidget {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: "FlashLearn",
+      title: "Flashi Ai",
       home: const Home(),
       theme:  themeProvider.getLightTheme(),
       darkTheme: themeProvider.getDarkTheme(),

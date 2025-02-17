@@ -12,7 +12,6 @@ import 'package:flashi/util/helpers/modal/create_set_bottom_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 /// Reusable widget to display a list of quiz sets with animations and interactive actions.
@@ -64,45 +63,7 @@ class ReusableQuizSetList extends StatelessWidget {
                         curve: Curves.easeInOutCubicEmphasized,
                         verticalOffset: 100.0,
                         child: FadeInAnimation(
-                          child: Slidable(
-                            // Left swipe for delete action
-                            startActionPane: ActionPane(
-                              motion: const DrawerMotion(),
-                              children: [
-                                SlidableAction(
-                                  onPressed: (_) => showDeleteConfirmationDialog(
-                                    context: context,
-                                    setName: name,
-                                    onDelete: () => quizProvider.removeQuizSet(set),
-                                  ),
-                                  foregroundColor: Theme.of(context).colorScheme.error,
-                                  icon: Icons.delete,
-                                  label: 'Delete',
-                                ),
-                              ],
-                            ),
-                            // Right swipe for edit action
-                            endActionPane: ActionPane(
-                              motion: const DrawerMotion(),
-                              children: [
-                                SlidableAction(
-                                  onPressed: (_) {
-                                    quizProvider.nameController.text = name;
-                                    quizProvider.descriptionController.text = description;
-                                    CreateSetBottomModal(
-                                      context: context,
-                                      buttonName: 'Edit',
-                                      isCreate: false,
-                                      setName: name,
-                                    );
-                                  },
-                                  foregroundColor: Theme.of(context).colorScheme.tertiary,
-                                  icon: Icons.edit,
-                                  label: 'Edit',
-                                ),
-                              ],
-                            ),
-                            child: ReusableSetCore(
+                          child: ReusableSetCore(
                               name: name,
                               description: description,
                               numberOfQuiz: cards.length,
@@ -165,7 +126,6 @@ class ReusableQuizSetList extends StatelessWidget {
                             ),
                           ),
                         ),
-                      ),
                     );
                   },
                 ),

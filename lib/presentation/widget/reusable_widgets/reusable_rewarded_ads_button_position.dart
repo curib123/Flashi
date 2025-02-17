@@ -75,8 +75,10 @@ class _ReusableRewardedAdsButtonPositionState extends State<ReusableRewardedAdsB
       });
     }).onError<StartAppException>((ex, stackTrace) {
       debugPrint("Error loading Rewarded Video ad: ${ex.message}");
+      showMaintenanceDialog(context, 'Try Again', "No or Weak Internet Connection");
     }).onError((error, stackTrace) {
       debugPrint("Error loading Rewarded Video ad: $error");
+      showMaintenanceDialog(context, 'Try Again', "No or Weak Internet Connection");
     });
   }
 

@@ -13,85 +13,99 @@ class ModelSelectionDialog {
 
         ColorScheme colorScheme = Theme.of(context).colorScheme;
 
-        return AlertDialog(
+        return Dialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(16),  // Increased radius for a more modern look
           ),
           backgroundColor: colorScheme.background,
-          title: Text(
-            "Select Preferences",
-            style: TextStyle(color: colorScheme.primary, fontWeight: FontWeight.bold),
-          ),
-          content: StatefulBuilder(
-            builder: (context, setState) {
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Model Selection Dropdown
-                  _buildDropdown<String>(
-                    context,
-                    label: "Select AI Model",
-                    value: selectedModel,
-                    items: Provider.of<AiModelProvider>(context, listen: false)
-                        .listOfModels,
-                    onChanged: (newValue) {
-                      if (newValue != null) setState(() => selectedModel = newValue);
-                    },
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Title
+              Center(
+                child:   Text(
+                  "Customize Output",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: colorScheme.primary,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
                   ),
-                  const SizedBox(height: 16), // Spacing
-
-                  // Max Length Selection Dropdown
-                  _buildDropdown<int>(
-                    context,
-                    label: "Select Max Length",
-                    value: selectedMaxLength,
-                    items: Provider.of<AiModelProvider>(context, listen: false).ListOfMaxLength,
-                    onChanged: (newValue) {
-                      if (newValue != null) setState(() => selectedMaxLength = newValue);
-                    },
-                  ),
-                  const SizedBox(height: 16), // Spacing
-
-                  // Quiz Question Type Dropdown
-                  _buildDropdown<String>(
-                    context,
-                    label: "Select Quiz Type",
-                    value: selectedQuizType,
-                    items: Provider.of<AiModelProvider>(context, listen: false)
-                        .listOfQuizQuestionTypes,
-                    onChanged: (newValue) {
-                      if (newValue != null) setState(() => selectedQuizType = newValue);
-                    },
-                  ),
-                ],
-              );
-            },
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              style: TextButton.styleFrom(foregroundColor: colorScheme.secondary),
-              child: const Text("Cancel"),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                var provider = Provider.of<AiModelProvider>(context, listen: false);
-                provider.updateModel(selectedModel);
-                provider.updateMaxLength(selectedMaxLength);
-                provider.updateQuizQuestionType(selectedQuizType);
-                onTap?.call();
-                Navigator.pop(context);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: colorScheme.primary,
-                foregroundColor: colorScheme.onPrimary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              child: const Text("Generate"),
+                const SizedBox(height: 20),
+                // Model Selection Dropdown
+                _buildDropdown<String>(
+                  context,
+                  label: "Select AI Model",
+                  value: selectedModel,
+                  items: Provider.of<AiModelProvider>(context, listen: false).listOfModels,
+                  onChanged: (newValue) {
+                    if (newValue != null) selectedModel = newValue;
+                  },
+                ),
+                const SizedBox(height: 20), // Spacing
+
+                // Max Length Selection Dropdown
+                _buildDropdown<int>(
+                  context,
+                  label: "Select Max Length",
+                  value: selectedMaxLength,
+                  items: Provider.of<AiModelProvider>(context, listen: false).ListOfMaxLength,
+                  onChanged: (newValue) {
+                    if (newValue != null) selectedMaxLength = newValue;
+                  },
+                ),
+                const SizedBox(height: 20), // Spacing
+
+                // Quiz Question Type Dropdown
+                _buildDropdown<String>(
+                  context,
+                  label: "Select Quiz Type",
+                  value: selectedQuizType,
+                  items: Provider.of<AiModelProvider>(context, listen: false).listOfQuizQuestionTypes,
+                  onChanged: (newValue) {
+                    if (newValue != null) selectedQuizType = newValue;
+                  },
+                ),
+                const SizedBox(height: 30), // More spacing before buttons
+
+                // Action Buttons
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: TextButton.styleFrom(foregroundColor: colorScheme.secondary),
+                      child: const Text("Cancel", style: TextStyle(fontSize: 16)),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        var provider = Provider.of<AiModelProvider>(context, listen: false);
+                        provider.updateModel(selectedModel);
+                        provider.updateMaxLength(selectedMaxLength);
+                        provider.updateQuizQuestionType(selectedQuizType);
+                        onTap?.call();
+                        Navigator.pop(context);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: colorScheme.primary,
+                        foregroundColor: colorScheme.onPrimary,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      ),
+                      child: const Text("Generate", style: TextStyle(fontSize: 16)),
+                    ),
+                  ],
+                ),
+              ],
             ),
-          ],
+          ),
         );
       },
     );
@@ -117,12 +131,15 @@ class ModelSelectionDialog {
       labelStyle: TextStyle(color: colorScheme.primary),
       filled: true,
       fillColor: colorScheme.onPrimary,
-      enabledBorder: UnderlineInputBorder(
-        borderSide: BorderSide(color: colorScheme.primary, width: 1),
+      enabledBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: colorScheme.primary, width: 1.5),
+        borderRadius: BorderRadius.circular(8),
       ),
-      focusedBorder: UnderlineInputBorder(
-        borderSide: BorderSide(color: colorScheme.secondary, width: 1),
+      focusedBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: colorScheme.secondary, width: 1.5),
+        borderRadius: BorderRadius.circular(8),
       ),
+      contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
     );
   }
 }

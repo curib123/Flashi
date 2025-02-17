@@ -9,20 +9,16 @@ import 'package:flashi/presentation/widget/reusable_widgets/reusable_theme_setti
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_title_content.dart';
 import 'package:flashi/provider/ai_model_logic_provider.dart';
 import 'package:flashi/provider/ai_model_provider.dart';
+import 'package:flashi/provider/check_version_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flashi/provider/sort_provider.dart';
 import 'package:flashi/util/helpers/ads/ad_helper.dart';
-import 'package:flashi/util/helpers/alert_box/show_update_dialog_alert_box.dart';
 import 'package:flashi/util/helpers/empty_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:startapp_sdk/startapp.dart';
-import 'package:package_info_plus/package_info_plus.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 class HomeScreen extends StatefulWidget {
-
   const HomeScreen({super.key});
 
   @override
@@ -34,18 +30,14 @@ class _HomeScreenState extends State<HomeScreen> {
   var startAppSdk = StartAppSdk();
   StartAppBannerAd? bannerAd;
 
-  String currentVersion = "";
-  String latestVersion = ""; // Will be fetched from API
-  String downloadLink = "";
 
 
   @override
   void initState() {
     super.initState();
-    // TODO make sure to comment out this line before release
 
-    _checkAppVersion();
-  //  startAppSdk.setTestAdsEnabled(true);
+
+    //  startAppSdk.setTestAdsEnabled(true);
     startAppSdk.setTestAdsEnabled(AdHelper.isTestEnabled);
 
     // TODO use one of the following types: BANNER, MREC, COVER
@@ -65,41 +57,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
     final aiModelProvider = Provider.of<AiModelProvider>(context,listen: false);
     final aiModelLogicProvider = Provider.of<AiModelLogicProvider>(context,listen: false);
+    final checkVersionProvider = Provider.of<CheckVersionProvider>(context,listen: false);
     aiModelProvider.fetchLatestVersion();
     aiModelLogicProvider.fetchLatestVersion();
+    checkVersionProvider.fetchLatestVersion();
 
   }
 
-  // Function to get the current version of the app
-  Future<void> _checkAppVersion() async {
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    setState(() {
-      currentVersion = packageInfo.version;
-    });
-    // Fetch latest version from API
-    await _fetchLatestVersion();
-    if (latestVersion != currentVersion) {
-      showUpdateDialog(context,currentVersion,latestVersion,downloadLink);
-    }
-  }
 
-  Future<void> _fetchLatestVersion() async {
-    final response = await http.get(Uri.parse('https://curib123.github.io/flashi_/flashi.json'));
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      setState(() {
-        latestVersion = data['latest_version'];
-        downloadLink = data['download_link'];
-      });
-      print("Latest Version: $latestVersion");
-    } else {
-      print("Failed to load version data");
-      setState(() {
-        latestVersion = currentVersion;
-      });
-
-    }
-  }
 
   void change(QuizProvider quizProvider) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -149,7 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
             slivers: [
               // SliverAppBar for a custom collapsing header
               SliverAppBar(
-               backgroundColor: colorScheme.primary,
+                backgroundColor: colorScheme.primary,
                 leading: GestureDetector(
                   onTap: () => Scaffold.of(context).openDrawer(),
                   child: Icon(
@@ -161,7 +126,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 pinned: true, // Keeps the header visible when scrolling
                 floating: true, // Header doesn't float when scrolling
                 expandedHeight: 210, // Height of the expanded header
-                title:  ReusableTitleContent(colorScheme: colorScheme, title: "Flashi Ai", onUpgradePro: () {},
+                title:  ReusableTitleContent(colorScheme: colorScheme, title: "FLASHI AI", onUpgradePro: () {},
                     onSettings: () {
 
                       Navigator.push(
@@ -180,11 +145,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         Align(
                           alignment: Alignment.center,
                           child: Text(
-                           " AI-Powered Flashcards: Smarter, Faster!",
+                            "AI-Powered Flashcards Generator",
                             style: TextStyle(
                               color: colorScheme.onPrimary,
                               fontWeight: FontWeight.w700,
-                              fontSize: 14,
+                              fontSize: 16,
                             ),
                           ),
                         ),
@@ -243,7 +208,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ReusableQuizSetList(quizSets: filteredQuizSets)
                       else
 
-                         quizProvider.searchQuery == "12/15/03"
+                        quizProvider.searchQuery == "12/15/03"
                             ? Padding(
                           padding: const EdgeInsets.all(16.0),
                           child: Text(
@@ -261,7 +226,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
 
-         // Floating "Create Set" button
+          // Floating "Create Set" button
           ReusableCreateSetButtonPosition(
             icon: Icons.add_circle,
             colorScheme: colorScheme,

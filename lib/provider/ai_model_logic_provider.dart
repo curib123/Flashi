@@ -16,6 +16,7 @@ class AiModelLogicProvider extends ChangeNotifier {
   bool isLoading = false;
   bool isUnderMaintenance = false;
   String reasonMaintenance = '';
+  bool isFetchData = false;
 
   Future<void> fetchLatestVersion() async {
     final response = await http.get(Uri.parse('https://curib123.github.io/flashi_/flashi.json'));
@@ -25,8 +26,7 @@ class AiModelLogicProvider extends ChangeNotifier {
 
       isUnderMaintenance = data['under_maintenance'];
       reasonMaintenance = data['reason_maintenance_ai'];
-      print(isUnderMaintenance);
-      print(reasonMaintenance);
+      isFetchData = true;
       notifyListeners();
 
 
@@ -58,7 +58,6 @@ class AiModelLogicProvider extends ChangeNotifier {
       aiModelProvider.model,
       aiModelProvider.quiz_question_type,
       aiModelProvider.maxLength,
-      aiModelProvider.questionTypes
     );
 
     if (questions.isNotEmpty) {
@@ -109,7 +108,6 @@ class AiModelLogicProvider extends ChangeNotifier {
   }
 
   Future<void> showFlashcardDialog(BuildContext context, QuizProvider quizProvider, ColorScheme colorScheme, AiModelProvider aiModelProvider) async {
-
     showDialog(
       barrierDismissible: false,
       context: context,
@@ -137,11 +135,11 @@ class AiModelLogicProvider extends ChangeNotifier {
                   Text(
                     isLoading
                         ? "Please wait while generating questions..."
-                        : "Would you like to create a custom flashcard or generate one from a pdf/docs file using AI?",
+                        : "Would you like to create a custom flashcard or generate one from a pdf/docs file using AI or custom Ai generated?",
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[700],
+                      fontSize: isLoading ? 16 : 10,
+                      color: Colors.grey[600],
                     ),
                   ),
                   if (isLoading)
@@ -174,7 +172,7 @@ class AiModelLogicProvider extends ChangeNotifier {
                             );
                           },
                           style: TextButton.styleFrom(
-                            backgroundColor: colorScheme.secondary,
+                            backgroundColor: colorScheme.secondary.withOpacity(.8),
                             foregroundColor: colorScheme.onSecondary,
                             padding: EdgeInsets.symmetric(vertical: 12),
                             shape: RoundedRectangleBorder(
@@ -182,20 +180,44 @@ class AiModelLogicProvider extends ChangeNotifier {
                             ),
                           ),
                           child: Text(
-                            "Custom Flashcard",
-                            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+                            "Custom Basic Flashcard",
+                            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
                           ),
                         ),
                       ),
+                        SizedBox(
+                        width: double.infinity,
+                        child: TextButton(
+                          onPressed: () {
+                          showMaintenanceDialog(context, "Coming Soon", 'For now this feature is not available');
+                          },
+                          style: TextButton.styleFrom(
+                            backgroundColor: colorScheme.tertiary.withOpacity(.8),
+                            foregroundColor: colorScheme.onSecondary,
+                            padding: EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          child: Text(
+                            "Custom Ai Generated Flashcard",
+                            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+                          ),
+                        ),
+                      ),
+
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () async {
                             bool isConnected = await InternetConnection().hasInternetAccess;
-                            if (!isConnected) {
+                            print(isConnected);
+                            if (!isConnected && !isFetchData) {
                               showMaintenanceDialog(context, 'No Internet', "Please connect to the internet to generate a flashcard.");
                               return;
                             }
+
+                            print(isUnderMaintenance);
                             if(!isUnderMaintenance){
                               ModelSelectionDialog.show(
                                 context,
@@ -212,7 +234,7 @@ class AiModelLogicProvider extends ChangeNotifier {
 
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: colorScheme.primary,
+                            backgroundColor: colorScheme.primary.withOpacity(.8),
                             foregroundColor: Colors.white,
                             padding: EdgeInsets.symmetric(vertical: 12),
                             shape: RoundedRectangleBorder(
@@ -220,8 +242,8 @@ class AiModelLogicProvider extends ChangeNotifier {
                             ),
                           ),
                           child: Text(
-                            "AI Generated",
-                            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+                            "AI Generated From Pdf/docs",
+                            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
                           ),
                         ),
                       ),
@@ -232,7 +254,7 @@ class AiModelLogicProvider extends ChangeNotifier {
                             Navigator.pop(context);
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: colorScheme.error,
+                            backgroundColor: colorScheme.error.withOpacity(.8),
                             foregroundColor: Colors.white,
                             padding: EdgeInsets.symmetric(vertical: 12),
                             shape: RoundedRectangleBorder(
@@ -241,7 +263,7 @@ class AiModelLogicProvider extends ChangeNotifier {
                           ),
                           child: Text(
                             "Cancel",
-                            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+                            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
                           ),
                         ),
                       ),

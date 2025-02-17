@@ -13,7 +13,6 @@ import 'package:flashi/util/helpers/import_export_helper_class.dart';
 import 'package:flashi/util/helpers/modal/create_card_bottom_modal.dart';
 import 'package:flashi/util/helpers/modal/create_set_bottom_modal.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 import 'package:startapp_sdk/startapp.dart';
@@ -113,35 +112,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                     curve: Curves.easeInOutCubicEmphasized,
                     verticalOffset: 50.0,
                     child: FadeInAnimation(
-                      child: Slidable(
-                        startActionPane: ActionPane(
-                          motion: const DrawerMotion(),
-                          children: [
-                            SlidableAction(
-                              onPressed: (_) => showDeleteConfirmationDialog(
-                                context: context,
-                                setName: name,
-                                onDelete: () => quizProvider.removeQuizSet(set),
-                              ),
-                              foregroundColor: colorScheme.error,
-                              icon: Icons.delete,
-                              label: 'Delete',
-                            ),
-                          ],
-                        ),
-                        endActionPane: ActionPane(
-                          motion: const DrawerMotion(),
-                          children: [
-                            SlidableAction(
-                              onPressed: (_) => _showEditSetModal(
-                                  context, quizProvider, name, description),
-                              foregroundColor: colorScheme.tertiary,
-                              icon: Icons.edit,
-                              label: 'Edit',
-                            ),
-                          ],
-                        ),
-                        child:  Column(
+                      child: Column(
                           children: [
 
                             bannerAd != null ? StartAppBanner(bannerAd!) : Container(),
@@ -184,7 +155,6 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                       ),
                     ),
                   ),
-                ),
               );
             },
           ),
