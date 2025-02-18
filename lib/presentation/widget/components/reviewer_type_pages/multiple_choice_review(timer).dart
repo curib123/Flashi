@@ -1,13 +1,10 @@
-
-
 import 'dart:async';
 import 'dart:math';
-import 'package:flashi/util/helpers/ads/ad_helper.dart';
+import 'package:flashi/util/helpers/ads/ad_manager.dart';
+import 'package:flashi/util/helpers/ads/ad_unit_id.dart';
 import 'package:flashi/util/helpers/widget/highlight_keywords.dart';
 import 'package:flutter/material.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reviewer_widgets_core/multiple_choice_core.dart';
-import 'package:startapp_sdk/startapp.dart';
-
 class MultipleChoiceReviewTimer extends StatefulWidget {
   final String reviewer;
   final List<dynamic> cards;
@@ -35,17 +32,10 @@ class _MultipleChoiceReviewState extends State<MultipleChoiceReviewTimer> {
   late List<List<String>> _shuffledOptions;
   int _score = 0;
 
-  var startAppSdk = StartAppSdk();
-
-  StartAppInterstitialAd? interstitialAd;
 
   @override
   void initState() {
     super.initState();
-    // TODO make sure to comment out this line before release
-   // startAppSdk.setTestAdsEnabled(true);
-    startAppSdk.setTestAdsEnabled(AdHelper.isTestEnabled);
-    loadInterstitialAd();
     _pageController = PageController();
     _timerNotifier = ValueNotifier<int>(widget.timerDuration);
 
@@ -81,17 +71,6 @@ class _MultipleChoiceReviewState extends State<MultipleChoiceReviewTimer> {
     });
   }
 
-  void loadInterstitialAd() {
-    startAppSdk.loadInterstitialAd(prefs: StartAppAdPreferences(adTag: 'timer_multiple_choice')).then((interstitialAd) {
-      setState(() {
-        this.interstitialAd = interstitialAd;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Interstitial ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Interstitial ad: $error");
-    });
-  }
   @override
   void dispose() {
     _timer.cancel();
@@ -176,7 +155,8 @@ class _MultipleChoiceReviewState extends State<MultipleChoiceReviewTimer> {
   void showCongratulationPage() {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-
+    AdManager adManager = AdManager();
+    adManager.loadInterstitialAd(AdUnitId.interstitialAdUnitId);
 
     showDialog(
       context: context,
@@ -228,23 +208,8 @@ class _MultipleChoiceReviewState extends State<MultipleChoiceReviewTimer> {
                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               ),
               onPressed: () {
-                if (interstitialAd != null) {
-                  interstitialAd!.show().then((shown) {
-                    if (shown) {
-                      setState(() {
-                        // NOTE interstitial ad can be shown only once
-                        this.interstitialAd = null;
-
-                        // NOTE load again
-                        loadInterstitialAd();
-                      });
-                    }
-
-                    return null;
-                  }).onError((error, stackTrace) {
-                    debugPrint("Error showing Interstitial ad: $error");
-                  });
-                }
+               //ads here
+                adManager.showInterstitialAd();
                 Navigator.pop(context); // Close the dialog
                 Navigator.pop(context); // Go back to the previous screen
               },
@@ -265,23 +230,8 @@ class _MultipleChoiceReviewState extends State<MultipleChoiceReviewTimer> {
                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               ),
               onPressed: () {
-                if (interstitialAd != null) {
-                  interstitialAd!.show().then((shown) {
-                    if (shown) {
-                      setState(() {
-                        // NOTE interstitial ad can be shown only once
-                        this.interstitialAd = null;
-
-                        // NOTE load again
-                        loadInterstitialAd();
-                      });
-                    }
-
-                    return null;
-                  }).onError((error, stackTrace) {
-                    debugPrint("Error showing Interstitial ad: $error");
-                  });
-                }
+                  adManager.showInterstitialAd();
+                //ads here
                 Navigator.pop(context); // Close the dialog
                 restartQuiz(); // Restart the quiz
               },

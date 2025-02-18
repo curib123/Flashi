@@ -10,11 +10,10 @@ import 'package:flashi/presentation/widget/reusable_widgets/reusable_title_conte
 import 'package:flashi/provider/notes_provider.dart';
 import 'package:flashi/presentation/widget/components/create_note_screen.dart';
 import 'package:flashi/provider/sort_provider.dart';
-import 'package:flashi/util/helpers/ads/ad_helper.dart';
+import 'package:flashi/util/helpers/ads/ad_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
-import 'package:startapp_sdk/startapp.dart';
 
 class NoteScreen extends StatefulWidget {
   const NoteScreen({super.key});
@@ -25,32 +24,10 @@ class NoteScreen extends StatefulWidget {
 
 class _NoteScreenState extends State<NoteScreen> {
 
-  var startAppSdk = StartAppSdk();
-  double bannerHeight = 150.0;
-
-  StartAppBannerAd? bannerAd;
-
   @override
   void initState() {
     super.initState();
 
-    // TODO make sure to comment out this line before release
-   // startAppSdk.setTestAdsEnabled(true);
-    startAppSdk.setTestAdsEnabled(AdHelper.isTestEnabled);
-
-    // TODO use one of the following types: BANNER, MREC, COVER
-    startAppSdk.loadBannerAd(StartAppBannerType.BANNER).then((bannerAd) {
-      setState(() {
-        this.bannerAd = bannerAd;
-       bannerHeight = 150;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Banner ad: ${ex.message}");
-      bannerHeight = 100;
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Banner ad: $error");
-      bannerHeight = 100;
-    });
   }
 
   @override
@@ -60,7 +37,7 @@ class _NoteScreenState extends State<NoteScreen> {
     final notesProvider = Provider.of<NotesProvider>(context);
     final sortProvider = Provider.of<SortProvider>(context);
     var filteredNotes = notesProvider.filterNotesByTitle().reversed.toList();
-
+    AdManager adManager = AdManager();
 
 
     return Scaffold(
@@ -95,10 +72,10 @@ class _NoteScreenState extends State<NoteScreen> {
       ),
       body: Stack(
         children: [
-          sortProvider.dropdownValueNote == 'Tiles' ? _NoteBodyTile(colorScheme,filteredNotes,bannerHeight) : _NoteBodyBlock(colorScheme,filteredNotes,bannerHeight),
+          sortProvider.dropdownValueNote == 'Tiles' ? _NoteBodyTile(colorScheme,filteredNotes,adManager.bannerHeight) : _NoteBodyBlock(colorScheme,filteredNotes,adManager.bannerHeight),
           Container(
             color: colorScheme.onPrimary,
-            height:bannerHeight ,
+            height:adManager.bannerHeight ,
             child: Column(
               children: [
                 ReusableSearchBarCore(
@@ -118,8 +95,9 @@ class _NoteScreenState extends State<NoteScreen> {
                     isShowReviewLink: false,
                     onShowReviewLink: () {}
                 ),
-                bannerAd != null ? StartAppBanner(bannerAd!) : Container(),
 
+                //ads here
+                adManager.getThirdBannerAdWidget()
               ],
             ),
           ),

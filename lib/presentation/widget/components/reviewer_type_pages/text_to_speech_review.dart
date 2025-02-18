@@ -1,10 +1,10 @@
-
-import 'package:flashi/util/helpers/ads/ad_helper.dart';
+import 'package:flashi/util/helpers/ads/ad_manager.dart';
+import 'package:flashi/util/helpers/ads/ad_unit_id.dart';
 import 'package:flashi/util/helpers/widget/highlight_keywords.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reviewer_widgets_core/text_to_speech_card_core.dart';
-import 'package:startapp_sdk/startapp.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class TextToSpeechReview extends StatefulWidget {
   final String reviewer;
@@ -27,33 +27,18 @@ class _TextToSpeechReviewState extends State<TextToSpeechReview> {
   late final PageController _pageController; // Controller for PageView
   bool _isSpeaking = false; // Track if TTS is speaking
   int _currentIndex = 0; // Track current page index
+ AdManager adManager = AdManager();
 
-
-  var startAppSdk = StartAppSdk();
-
-  StartAppInterstitialAd? interstitialAd;
 
   @override
   void initState() {
     super.initState();
-    // TODO make sure to comment out this line before release
-    startAppSdk.setTestAdsEnabled(AdHelper.isTestEnabled);
-      loadInterstitialAd();
+    adManager.loadInterstitialAd(AdUnitId.interstitialAdUnitId);
+    adManager.showInterstitialAd();
     _pageController = PageController(initialPage: _currentIndex); // Start at the first card
 
   }
 
-  void loadInterstitialAd() {
-    startAppSdk.loadInterstitialAd(prefs: StartAppAdPreferences(adTag: 'text_to_speech')).then((interstitialAd) {
-      setState(() {
-        this.interstitialAd = interstitialAd;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Interstitial ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Interstitial ad: $error");
-    });
-  }
 
 
   @override
@@ -109,21 +94,7 @@ class _TextToSpeechReviewState extends State<TextToSpeechReview> {
       );
     }
 
-    if (interstitialAd != null) {
-      interstitialAd!.show().then((shown) {
-        if (shown) {
-          setState(() {
-            // NOTE interstitial ad can be shown only once
-            this.interstitialAd = null;
-
-          });
-        }
-
-        return null;
-      }).onError((error, stackTrace) {
-        debugPrint("Error showing Interstitial ad: $error");
-      });
-    }
+    //ads here
 
     return Column(
       children: [

@@ -14,12 +14,14 @@ import 'package:flashi/provider/study_scheduler_provider.dart';
 import 'package:flashi/provider/task_provider.dart';
 import 'package:flashi/provider/theme_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
 Future<void> main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
+  MobileAds.instance.initialize();
 
   await Hive.initFlutter(); // Initialize Hive
 // Open different boxes for various settings or data

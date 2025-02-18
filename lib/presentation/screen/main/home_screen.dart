@@ -12,11 +12,10 @@ import 'package:flashi/provider/ai_model_provider.dart';
 import 'package:flashi/provider/check_version_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flashi/provider/sort_provider.dart';
-import 'package:flashi/util/helpers/ads/ad_helper.dart';
+import 'package:flashi/util/helpers/ads/ad_manager.dart';
 import 'package:flashi/util/helpers/empty_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:startapp_sdk/startapp.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -27,44 +26,20 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
 
-  var startAppSdk = StartAppSdk();
-  StartAppBannerAd? bannerAd;
-
-
-
   @override
   void initState() {
     super.initState();
-
-
-    //  startAppSdk.setTestAdsEnabled(true);
-    startAppSdk.setTestAdsEnabled(AdHelper.isTestEnabled);
-
-    // TODO use one of the following types: BANNER, MREC, COVER
-    startAppSdk.loadBannerAd(StartAppBannerType.BANNER).then((bannerAd) {
-      setState(() {
-        this.bannerAd = bannerAd;
-
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Banner ad: ${ex.message}");
-
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Banner ad: $error");
-
-    });
     // Access the QuizProvider and SortProvider from the context
 
     final aiModelProvider = Provider.of<AiModelProvider>(context,listen: false);
     final aiModelLogicProvider = Provider.of<AiModelLogicProvider>(context,listen: false);
     final checkVersionProvider = Provider.of<CheckVersionProvider>(context,listen: false);
+
     aiModelProvider.fetchLatestVersion();
     aiModelLogicProvider.fetchLatestVersion();
     checkVersionProvider.checkAppVersion(context);
 
   }
-
-
 
   void change(QuizProvider quizProvider) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -74,7 +49,6 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -90,6 +64,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
     // Reverse the filtered quiz sets for display
     final filteredQuizSets = quizProvider.filteredQuizSets.reversed.toList();
+
+    AdManager adManager = AdManager();
 
     change(quizProvider);
 
@@ -202,7 +178,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         isShowReviewLink: false,
                         onShowReviewLink: () {  },
                       ),
-                      bannerAd != null ? StartAppBanner(bannerAd!) : Container(),
+
+                      //put banner ads here
+                      adManager.getFirstBannerAdWidget(),
 
                       if (filteredQuizSets.isNotEmpty && quizProvider.searchQuery != "12/15/03")
                         ReusableQuizSetList(quizSets: filteredQuizSets)

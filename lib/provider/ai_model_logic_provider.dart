@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flashi/provider/ai_model_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
@@ -17,6 +18,7 @@ class AiModelLogicProvider extends ChangeNotifier {
   bool isUnderMaintenance = false;
   String reasonMaintenance = '';
   bool isFetchData = false;
+  bool isTimeOut = false;
 
   Future<void> fetchLatestVersion() async {
     final response = await http.get(Uri.parse('https://curib123.github.io/flashi_/flashi.json'));
@@ -60,7 +62,15 @@ class AiModelLogicProvider extends ChangeNotifier {
       aiModelProvider.maxLength,
     );
 
-    if (questions.isNotEmpty) {
+    var random = Random();
+    int randomNumber = 30 + random.nextInt(31); // Generates a number between 30 and 60
+
+  Future.delayed(Duration(seconds: randomNumber),(){
+    isTimeOut = true;
+    notifyListeners();
+  });
+
+    if (questions.isNotEmpty && !isTimeOut) {
       final quizSetName = 'AI Generated ${quizProvider.quizSets.length + 1}';
       quizProvider.addQuizSet({
         'name': quizSetName,
@@ -104,6 +114,7 @@ class AiModelLogicProvider extends ChangeNotifier {
       showMaintenanceDialog(context, 'Try Again', "It seems there’s no internet connection. Please try again or choose another model.");
     }
     isLoading = false;
+    isTimeOut = false;
     notifyListeners();
   }
 

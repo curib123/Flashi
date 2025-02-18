@@ -1,4 +1,3 @@
-
 import 'package:flashi/presentation/screen/main/export_import_screen.dart';
 import 'package:flashi/presentation/screen/main/settings_screen.dart';
 import 'package:flashi/presentation/widget/components/see_all_quiz_card.dart';
@@ -6,7 +5,7 @@ import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusa
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_title_content.dart';
 import 'package:flashi/provider/quiz_provider.dart';
-import 'package:flashi/util/helpers/ads/ad_helper.dart';
+import 'package:flashi/util/helpers/ads/ad_manager.dart';
 import 'package:flashi/util/helpers/alert_box/delete_confirmation_alert_box.dart';
 import 'package:flashi/util/helpers/alert_box/review_selection_alert_box.dart';
 import 'package:flashi/util/helpers/import_export_helper_class.dart';
@@ -15,45 +14,9 @@ import 'package:flashi/util/helpers/modal/create_set_bottom_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
-import 'package:startapp_sdk/startapp.dart';
 
-class FavoriteScreen extends StatefulWidget {
+class FavoriteScreen extends StatelessWidget {
   const FavoriteScreen({super.key});
-
-  @override
-  State<FavoriteScreen> createState() => _FavoriteScreenState();
-}
-
-class _FavoriteScreenState extends State<FavoriteScreen> {
-  var startAppSdk = StartAppSdk();
-
-  StartAppBannerAd? bannerAd;
-
-
-
-  @override
-  void initState() {
-    super.initState();
-
-    // TODO make sure to comment out this line before release
-    //  startAppSdk.setTestAdsEnabled(true);
-    startAppSdk.setTestAdsEnabled(AdHelper.isTestEnabled);
-
-    // TODO use one of the following types: BANNER, MREC, COVER
-    startAppSdk.loadBannerAd(StartAppBannerType.MREC).then((bannerAd) {
-      setState(() {
-        this.bannerAd = bannerAd;
-
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Banner ad: ${ex.message}");
-
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Banner ad: $error");
-
-    });
-  }
-
 
   @override
   Widget build(BuildContext context) {
@@ -62,6 +25,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
     final quizSets = quizProvider.filteredQuizSetsFavorite;
 
     final ImportExportHelperClass helper = ImportExportHelperClass();  // Helper instance for export/import
+    AdManager adManager = AdManager();
 
     return Scaffold(
       appBar: AppBar(
@@ -114,8 +78,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                     child: FadeInAnimation(
                       child: Column(
                           children: [
-
-                            bannerAd != null ? StartAppBanner(bannerAd!) : Container(),
+                            adManager.getSecondBannerAdWidget(),
                             ReusableSetCore(
                               name: name,
                               description: description,

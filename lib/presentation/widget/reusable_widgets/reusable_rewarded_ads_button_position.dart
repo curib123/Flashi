@@ -1,13 +1,11 @@
-import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flashi/provider/save_info_ads_provider.dart';
-import 'package:flashi/util/helpers/ads/ad_helper.dart';
-import 'package:flashi/util/helpers/alert_box/show_maintenace_alert_box.dart';
+import 'package:flashi/util/helpers/ads/ad_manager.dart';
+import 'package:flashi/util/helpers/ads/ad_unit_id.dart';
 import 'package:flutter/material.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:provider/provider.dart';
-import 'package:startapp_sdk/startapp.dart';
 
-class ReusableRewardedAdsButtonPosition extends StatefulWidget {
+class ReusableRewardedAdsButtonPosition extends StatelessWidget {
   final ColorScheme colorScheme;
   final String name;
 
@@ -16,72 +14,6 @@ class ReusableRewardedAdsButtonPosition extends StatefulWidget {
     required this.colorScheme,
     required this.name,
   });
-
-  @override
-  State<ReusableRewardedAdsButtonPosition> createState() => _ReusableRewardedAdsButtonPositionState();
-}
-
-class _ReusableRewardedAdsButtonPositionState extends State<ReusableRewardedAdsButtonPosition> {
-  var startAppSdk = StartAppSdk();
-
-  StartAppRewardedVideoAd? rewardedVideoAd;
-
-  @override
-  void initState() {
-    super.initState();
-
-    // TODO make sure to comment out this line before release
-    startAppSdk.setTestAdsEnabled(AdHelper.isTestEnabled);
-
-    loadRewardedVideoAd();
-  }
-
-  void loadRewardedVideoAd() {
-    startAppSdk.loadRewardedVideoAd(
-      onAdNotDisplayed: () {
-        debugPrint('onAdNotDisplayed: rewarded video');
-
-        setState(() {
-          // NOTE rewarded video ad can be shown only once
-          this.rewardedVideoAd?.dispose();
-          this.rewardedVideoAd = null;
-        });
-      },
-      onAdHidden: () {
-        debugPrint('onAdHidden: rewarded video');
-
-        setState(() {
-          // NOTE rewarded video ad can be shown only once
-          this.rewardedVideoAd?.dispose();
-          this.rewardedVideoAd = null;
-        });
-      },
-      onVideoCompleted: () {
-        debugPrint('onVideoCompleted: rewarded video completed, user gain a reward');
-
-        final quizProvider = Provider.of<QuizProvider>(context, listen: false);
-        final saveInfoAdsProvider = Provider.of<SaveInfoAdsProvider>(
-            context, listen: false);
-
-        setState(() {
-          // TODO give reward to user
-          quizProvider.updateQuizSetLimit();
-          saveInfoAdsProvider.incrementAdsWatched();
-        });
-      },
-    ).then((rewardedVideoAd) {
-      setState(() {
-        this.rewardedVideoAd = rewardedVideoAd;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Rewarded Video ad: ${ex.message}");
-      showMaintenanceDialog(context, 'Try Again', "No or Weak Internet Connection");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Rewarded Video ad: $error");
-      showMaintenanceDialog(context, 'Try Again', "No or Weak Internet Connection");
-    });
-  }
-
 
   @override
   Widget build(BuildContext context) {
@@ -96,7 +28,7 @@ class _ReusableRewardedAdsButtonPositionState extends State<ReusableRewardedAdsB
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
           decoration: BoxDecoration(
-            color: widget.colorScheme.primary,
+            color: colorScheme.primary,
             borderRadius: BorderRadius.circular(30),
             boxShadow: [
               BoxShadow(
@@ -114,17 +46,17 @@ class _ReusableRewardedAdsButtonPositionState extends State<ReusableRewardedAdsB
                 children: [
                   Icon(
                     Icons.video_library_rounded,
-                    color: widget.colorScheme.onPrimary,
+                    color: colorScheme.onPrimary,
                     size: 28,
                   ),
                   const SizedBox(width: 8),
                   Flexible(
                     child: Text(
-                      saveInfoAdsProvider.adsWatchedToday < 5
-                          ? widget.name
+                      saveInfoAdsProvider.adsWatchedToday < 3
+                          ? name
                           : 'Ad Limit Reached',
                       style: TextStyle(
-                        color: widget.colorScheme.onPrimary,
+                        color: colorScheme.onPrimary,
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
                       ),
@@ -132,9 +64,9 @@ class _ReusableRewardedAdsButtonPositionState extends State<ReusableRewardedAdsB
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    '(${saveInfoAdsProvider.adsWatchedToday}/5)',
+                    '(${saveInfoAdsProvider.adsWatchedToday}/3)',
                     style: TextStyle(
-                      color: widget.colorScheme.onPrimary,
+                      color: colorScheme.onPrimary,
                       fontSize: 10,
                       fontWeight: FontWeight.w600,
                     ),
@@ -143,9 +75,9 @@ class _ReusableRewardedAdsButtonPositionState extends State<ReusableRewardedAdsB
               ),
               const SizedBox(height: 4),
               Text(
-                "Limited to 5 ads per day",
+                "Limited to 3 ads per day",
                 style: TextStyle(
-                  color: widget.colorScheme.onPrimary.withOpacity(0.8),
+                  color: colorScheme.onPrimary.withOpacity(0.8),
                   fontSize: 12,
                   fontWeight: FontWeight.w400,
                 ),
@@ -161,12 +93,23 @@ class _ReusableRewardedAdsButtonPositionState extends State<ReusableRewardedAdsB
     bool isConnected = await InternetConnection().hasInternetAccess;
 
     if (!isConnected) {
-      showMaintenanceDialog(context, 'No Internet', "Please connect to the internet.");
+      _showDialog(
+        context,
+        title: "No Internet",
+        message: "Please connect to the internet to watch an ad. Try turning on Wi-Fi or mobile data.",
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text("OK"),
+          ),
+        ],
+      );
       return;
     }
 
-    if (saveInfoAdsProvider.adsWatchedToday < 5) {
-
+    if (saveInfoAdsProvider.adsWatchedToday < 3) {
+      AdManager adManager = AdManager();
+      adManager.loadRewardedAd(AdUnitId.rewardedAdUnitId);
 
       showDialog(
         context: context,
@@ -186,8 +129,6 @@ class _ReusableRewardedAdsButtonPositionState extends State<ReusableRewardedAdsB
         ),
       );
 
-
-
       Future.delayed(const Duration(seconds: 10), () {
         Navigator.of(context).pop(); // Close loading dialog
         _showConfirmationDialog(context);
@@ -196,7 +137,7 @@ class _ReusableRewardedAdsButtonPositionState extends State<ReusableRewardedAdsB
       _showDialog(
         context,
         title: "Ad Limit Reached",
-        message: "You have reached the maximum of 5 ads for today. Please come back tomorrow!",
+        message: "You have reached the maximum of 3 ads for today. Please come back tomorrow!",
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -208,7 +149,6 @@ class _ReusableRewardedAdsButtonPositionState extends State<ReusableRewardedAdsB
   }
 
   void _showConfirmationDialog(BuildContext context) {
-
     _showDialog(
       context,
       title: "Watch Ad?",
@@ -217,13 +157,8 @@ class _ReusableRewardedAdsButtonPositionState extends State<ReusableRewardedAdsB
         TextButton(
           onPressed: () {
             Navigator.of(context).pop();
-            if (rewardedVideoAd != null) {
-              rewardedVideoAd!.show().onError((error, stackTrace) {
-                debugPrint("Error showing Rewarded Video ad: $error");
-                return false;
-              });
-            }
-
+            AdManager adManager = AdManager();
+            adManager.showRewarded(context);
           },
           child: const Text("Yes"),
         ),

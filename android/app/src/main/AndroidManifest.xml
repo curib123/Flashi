@@ -43,10 +43,9 @@
             android:name="flutterEmbedding"
             android:value="2" />
 
-        <!-- TODO replace YOUR_APP_ID with actual value -->
         <meta-data
-            android:name="com.startapp.sdk.APPLICATION_ID"
-            android:value="201522973" />
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3608052107276973~6900255777"/>
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

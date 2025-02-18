@@ -5,6 +5,7 @@ import 'package:flashi/presentation/widget/reusable_widgets/reusable_sort_and_se
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
 import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flashi/provider/sort_provider.dart';
+import 'package:flashi/util/helpers/ads/ad_manager.dart';
 import 'package:flashi/util/helpers/alert_box/delete_confirmation_alert_box.dart';
 import 'package:flashi/util/helpers/alert_box/highlight_keyword_alert_box.dart';
 import 'package:flashi/util/helpers/alert_box/review_selection_alert_box.dart';
@@ -33,6 +34,7 @@ class SeeAllQuizCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final quizProvider = Provider.of<QuizProvider>(context);
 
+
     return Scaffold(
       resizeToAvoidBottomInset: true, // Prevents bottom overflow
       appBar: AppBar(
@@ -58,6 +60,9 @@ class SeeAllQuizCard extends StatelessWidget {
   }
 
   Widget _body(BuildContext context) {
+
+    AdManager adManager = AdManager();
+
     return Consumer2<QuizProvider, SortProvider>(
       builder: (context, quizProvider, sortProvider, child) {
         return Stack(
@@ -84,6 +89,7 @@ class SeeAllQuizCard extends StatelessWidget {
                     );
                   }, onSeeAllPressed: () {  },
                 ),
+                adManager.getSixthBannerAdWidget(),
                 cards.isEmpty
                     ? noCardWidget(context)
                     : SizedBox(

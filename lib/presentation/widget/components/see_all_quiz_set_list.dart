@@ -7,12 +7,11 @@ import 'package:flashi/provider/ai_model_logic_provider.dart';
 import 'package:flashi/provider/ai_model_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flashi/provider/sort_provider.dart';
-import 'package:flashi/util/helpers/ads/ad_helper.dart';
+import 'package:flashi/util/helpers/ads/ad_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:startapp_sdk/startapp.dart';
 
-class SeeAllQuizSetList extends StatefulWidget {
+class SeeAllQuizSetList extends StatelessWidget {
   final String name;
   final ColorScheme colorScheme;
 
@@ -23,53 +22,18 @@ class SeeAllQuizSetList extends StatefulWidget {
   });
 
   @override
-  State<SeeAllQuizSetList> createState() => _SeeAllQuizSetListState();
-}
-
-class _SeeAllQuizSetListState extends State<SeeAllQuizSetList> {
-
-
-  var startAppSdk = StartAppSdk();
-
-  StartAppBannerAd? bannerAd;
-
-
-
-  @override
-  void initState() {
-    super.initState();
-
-    // TODO make sure to comment out this line before release
-    //  startAppSdk.setTestAdsEnabled(true);
-    startAppSdk.setTestAdsEnabled(AdHelper.isTestEnabled);
-
-    // TODO use one of the following types: BANNER, MREC, COVER
-    startAppSdk.loadBannerAd(StartAppBannerType.MREC).then((bannerAd) {
-      setState(() {
-        this.bannerAd = bannerAd;
-
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Banner ad: ${ex.message}");
-
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Banner ad: $error");
-
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
 
     // Access both providers directly
     final quizProvider = Provider.of<QuizProvider>(context);
+    AdManager adManager = AdManager();
 
 
     return Scaffold(
       appBar: AppBar(
-        foregroundColor: widget.colorScheme.onPrimary, // For text and icons color
-        backgroundColor: widget.colorScheme.primary, // Background color of the app bar
-        title: Text(widget.name),
+        foregroundColor: colorScheme.onPrimary, // For text and icons color
+        backgroundColor: colorScheme.primary, // Background color of the app bar
+        title: Text(name),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             bottomLeft: Radius.circular(20),
@@ -80,7 +44,7 @@ class _SeeAllQuizSetListState extends State<SeeAllQuizSetList> {
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios_new, // Custom Icon (back arrow)
-            color: widget.colorScheme.onPrimary, // Custom color for the icon
+            color: colorScheme.onPrimary, // Custom color for the icon
           ),
           onPressed: () {
 
@@ -95,6 +59,8 @@ class _SeeAllQuizSetListState extends State<SeeAllQuizSetList> {
   }
 
   Widget _body(BuildContext context) {
+    AdManager adManager = AdManager();
+
     return Consumer4<QuizProvider, SortProvider,AiModelProvider,AiModelLogicProvider>(
       builder: (context, quizProvider, sortProvider,aiModelProvider,aiModelLogicProvider, child) {
         final filteredQuizSets = quizProvider.filteredQuizSets.reversed.toList();
@@ -104,7 +70,7 @@ class _SeeAllQuizSetListState extends State<SeeAllQuizSetList> {
             ListView(
               children: [
                 ReusableSearchBarCore(
-                  colorScheme: widget.colorScheme,
+                  colorScheme: colorScheme,
                   hintText: 'search subject name ',
                   onChanged: (value) {
                     quizProvider.updateSearchQuery(value);
@@ -126,8 +92,9 @@ class _SeeAllQuizSetListState extends State<SeeAllQuizSetList> {
                   isShowReviewLink: false,
                   onShowReviewLink: () {  },
                 ),
-                bannerAd != null ? StartAppBanner(bannerAd!) : Container(),
-                filteredQuizSets.isEmpty
+                adManager.getFifthBannerAdWidget(),
+
+        filteredQuizSets.isEmpty
                     ? _noSetWidget(context)
                     : SizedBox(
                   width: MediaQuery.sizeOf(context).width,
@@ -146,20 +113,19 @@ class _SeeAllQuizSetListState extends State<SeeAllQuizSetList> {
             // Create Button Position
             ReusableCreateSetButtonPosition(
               icon: Icons.add_circle,
-              colorScheme: widget.colorScheme,
+              colorScheme: colorScheme,
               name: 'Create Subject',
               onTap: () {
                 aiModelLogicProvider.showFlashcardDialog(context, quizProvider, Theme.of(context).colorScheme, aiModelProvider);
               },
             ),
-            ReusableThemeSettingPosition(colorScheme: widget.colorScheme),
+            ReusableThemeSettingPosition(colorScheme: colorScheme),
           ],
         );
       },
     );
   }
 }
-
 
 Widget _noSetWidget(BuildContext context) {
   return SizedBox(
