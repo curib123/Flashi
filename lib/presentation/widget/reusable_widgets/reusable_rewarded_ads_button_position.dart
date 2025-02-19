@@ -1,6 +1,6 @@
 import 'package:flashi/provider/save_info_ads_provider.dart';
-import 'package:flashi/util/helpers/ads/ad_manager.dart';
-import 'package:flashi/util/helpers/ads/ad_unit_id.dart';
+import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
+import 'package:flashi/util/helpers/classes/ads/ad_unit_id.dart';
 import 'package:flutter/material.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:provider/provider.dart';

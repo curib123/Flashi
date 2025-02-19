@@ -1,7 +1,7 @@
 
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_quiz_set_list.dart';
 import 'package:flashi/provider/quiz_provider.dart';
-import 'package:flashi/util/helpers/import_export_helper_class.dart';
+import 'package:flashi/util/helpers/classes/other/import_export_helper_class.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

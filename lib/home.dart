@@ -3,8 +3,8 @@ import 'package:flashi/presentation/widget/components/custom_drawer.dart';
 import 'package:flashi/presentation/widget/components/custom_navigation_bar.dart';
 import 'package:flashi/provider/bottom_navigation_provider.dart';
 import 'package:flashi/provider/onboarding_provider.dart';
-import 'package:flashi/util/helpers/ads/ad_manager.dart';
-import 'package:flashi/util/helpers/ads/ad_unit_id.dart';
+import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
+import 'package:flashi/util/helpers/classes/ads/ad_unit_id.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

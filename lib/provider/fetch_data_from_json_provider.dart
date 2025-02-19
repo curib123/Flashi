@@ -2,13 +2,16 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-class AiModelProvider with ChangeNotifier {
+class FetchDataFromJsonProvider with ChangeNotifier {
+
   String _model = '';
   int _maxLength = 0;
   String _quiz_question_type = '';
   List<String> listOfModels = [];
   List<String> listOfQuizQuestionTypes = [];
   List<int> ListOfMaxLength = [];
+
+
 
   String get model => _model;
   int get maxLength => _maxLength;

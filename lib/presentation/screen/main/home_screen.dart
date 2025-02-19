@@ -8,12 +8,12 @@ import 'package:flashi/presentation/widget/reusable_widgets/reusable_sort_and_se
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_title_content.dart';
 import 'package:flashi/provider/ai_model_logic_provider.dart';
-import 'package:flashi/provider/ai_model_provider.dart';
+import 'package:flashi/provider/fetch_data_from_json_provider.dart';
 import 'package:flashi/provider/check_version_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flashi/provider/sort_provider.dart';
-import 'package:flashi/util/helpers/ads/ad_manager.dart';
-import 'package:flashi/util/helpers/empty_widgets.dart';
+import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
+import 'package:flashi/util/helpers/widget/other/empty_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -31,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     // Access the QuizProvider and SortProvider from the context
 
-    final aiModelProvider = Provider.of<AiModelProvider>(context,listen: false);
+    final aiModelProvider = Provider.of<FetchDataFromJsonProvider>(context,listen: false);
     final aiModelLogicProvider = Provider.of<AiModelLogicProvider>(context,listen: false);
     final checkVersionProvider = Provider.of<CheckVersionProvider>(context,listen: false);
 
@@ -58,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     // Access the QuizProvider and SortProvider from the context
     final quizProvider = Provider.of<QuizProvider>(context);
-    final aiModelProvider = Provider.of<AiModelProvider>(context);
+    final fetchDataFromJsonProvider = Provider.of<FetchDataFromJsonProvider>(context);
     final sortProvider = Provider.of<SortProvider>(context);
     final aiModelLogicProvider = Provider.of<AiModelLogicProvider>(context);
 
@@ -210,7 +210,7 @@ class _HomeScreenState extends State<HomeScreen> {
             colorScheme: colorScheme,
             name: 'Create Subject',
             onTap: ()  {
-              aiModelLogicProvider.showFlashcardDialog(context, quizProvider, colorScheme, aiModelProvider);
+              aiModelLogicProvider.showFlashcardDialog(context, quizProvider, colorScheme,fetchDataFromJsonProvider);
             },
           ),
 

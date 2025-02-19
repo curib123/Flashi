@@ -19,7 +19,7 @@ class AdManager {
   BannerAd? _bannerAd4;
   BannerAd? _bannerAd5;
   BannerAd? _bannerAd6;
-  double _bannerHeight = 100;
+  double _bannerHeight = 150;
   bool _isBannerAd1Loaded = false;
   bool _isBannerAd2Loaded= false;
   bool _isBannerAd3Loaded= false;
@@ -46,7 +46,7 @@ class AdManager {
 
         },
         onAdFailedToLoad: (Ad ad, LoadAdError error) {
-          _bannerHeight = 110;
+          _bannerHeight = 150;
           _isBannerAd1Loaded = false;
 
         },
@@ -64,7 +64,7 @@ class AdManager {
 
         },
         onAdFailedToLoad: (Ad ad, LoadAdError error) {
-          _bannerHeight = 110;
+          _bannerHeight = 150;
           _isBannerAd2Loaded = false;
 
         },
@@ -82,7 +82,7 @@ class AdManager {
 
         },
         onAdFailedToLoad: (Ad ad, LoadAdError error) {
-          _bannerHeight = 110;
+          _bannerHeight = 150;
           _isBannerAd3Loaded = false;
 
         },
@@ -99,7 +99,7 @@ class AdManager {
 
         },
         onAdFailedToLoad: (Ad ad, LoadAdError error) {
-          _bannerHeight = 110;
+          _bannerHeight = 150;
           _isBannerAd4Loaded = false;
 
         },
@@ -117,7 +117,7 @@ class AdManager {
 
         },
         onAdFailedToLoad: (Ad ad, LoadAdError error) {
-          _bannerHeight = 110;
+          _bannerHeight = 150;
           _isBannerAd5Loaded = false;
 
         },
@@ -134,7 +134,7 @@ _bannerAd6 = BannerAd(
 
         },
         onAdFailedToLoad: (Ad ad, LoadAdError error) {
-          _bannerHeight = 110;
+          _bannerHeight = 150;
           _isBannerAd6Loaded = false;
 
         },

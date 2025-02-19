@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:flashi/util/helpers/alert_box/show_update_dialog_alert_box.dart';
+import 'package:flashi/util/helpers/widget/alert_dialog/show_update_dialog_alert_box.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 

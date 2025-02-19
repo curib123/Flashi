@@ -8,9 +8,10 @@ import 'package:flashi/presentation/widget/reusable_widgets/reusable_theme_setti
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_title_content.dart';
 import 'package:flashi/provider/sort_provider.dart';
 import 'package:flashi/provider/task_provider.dart';
-import 'package:flashi/util/helpers/ads/ad_manager.dart';
-import 'package:flashi/util/helpers/alert_box/delete_confirmation_alert_box.dart';
-import 'package:flashi/util/helpers/modal/create_task_modal.dart';
+import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
+import 'package:flashi/util/helpers/widget/alert_dialog/delete_confirmation_alert_box.dart';
+import 'package:flashi/util/helpers/widget/other/empty_widgets.dart';
+import 'package:flashi/util/helpers/widget/modals/create_task_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
@@ -107,7 +108,7 @@ class TaskScreen extends StatelessWidget {
 Widget _taskTile(ColorScheme colorScheme,  double bannerHeight, TaskProvider taskProvider,List filteredTask,BuildContext context) {
 
   if (filteredTask.isEmpty) {
-    return _noTaskWidget(context); // Show No Task message if there are no tasks
+    return noTaskWidget(context); // Show No Task message if there are no tasks
   }
 
   return ListView.builder(
@@ -154,7 +155,7 @@ Widget _taskTile(ColorScheme colorScheme,  double bannerHeight, TaskProvider tas
 Widget _taskBlock(ColorScheme colorScheme, double bannerHeight, TaskProvider taskProvider,List filteredTask,BuildContext context) {
 
   if (filteredTask.isEmpty) {
-    return _noTaskWidget(context); // Show No Task message if there are no tasks
+    return noTaskWidget(context); // Show No Task message if there are no tasks
   }
 
   return GridView.builder(
@@ -204,35 +205,5 @@ Widget _taskBlock(ColorScheme colorScheme, double bannerHeight, TaskProvider tas
         ),
       );
     },
-  );
-}
-
-Widget _noTaskWidget(BuildContext context) {
-  return SizedBox(
-    height: MediaQuery.of(context).size.height,
-    width: MediaQuery.of(context).size.width,
-    child:   Center(
-  child: Column(
-  mainAxisAlignment: MainAxisAlignment.center,
-    children: [
-      const Icon(Icons.inbox, size: 100, color: Colors.grey),
-      const SizedBox(height: 20),
-      Text(
-        "No Task available",
-        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-          color: Colors.grey,
-        ),
-      ),
-      const SizedBox(height: 10),
-      Text(
-        "Add some task to see them here.",
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-          color: Colors.grey.shade600,
-        ),
-        textAlign: TextAlign.center,
-      ),
-    ],
-  ),
-  ),
   );
 }

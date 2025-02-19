@@ -2,7 +2,7 @@ import 'package:flashi/presentation/screen/main/export_import_screen.dart';
 import 'package:flashi/presentation/screen/main/favorate_screen.dart';
 import 'package:flashi/presentation/screen/main/settings_screen.dart';
 import 'package:flashi/provider/bottom_navigation_provider.dart';
-import 'package:flashi/util/helpers/wepage_launcher.dart';
+import 'package:flashi/util/helpers/classes/other/wepage_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:dart_openai/dart_openai.dart';
-import 'package:flashi/util/helpers/widget/ai_model/api_key.dart';
+import 'package:flashi/util/helpers/classes/api/ai/core/api_key_secure_storage.dart';
 
 class OpenAiLogic{
 

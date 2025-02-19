@@ -5,12 +5,12 @@ import 'package:flashi/presentation/widget/reusable_widgets/reusable_sort_and_se
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
 import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flashi/provider/sort_provider.dart';
-import 'package:flashi/util/helpers/ads/ad_manager.dart';
-import 'package:flashi/util/helpers/alert_box/delete_confirmation_alert_box.dart';
-import 'package:flashi/util/helpers/alert_box/highlight_keyword_alert_box.dart';
-import 'package:flashi/util/helpers/alert_box/review_selection_alert_box.dart';
-import 'package:flashi/util/helpers/empty_widgets.dart';
-import 'package:flashi/util/helpers/modal/create_card_bottom_modal.dart';
+import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
+import 'package:flashi/util/helpers/widget/alert_dialog/delete_confirmation_alert_box.dart';
+import 'package:flashi/util/helpers/widget/alert_dialog/highlight_keyword_alert_box.dart';
+import 'package:flashi/util/helpers/widget/alert_dialog/review_selection_alert_box.dart';
+import 'package:flashi/util/helpers/widget/other/empty_widgets.dart';
+import 'package:flashi/util/helpers/widget/modals/create_card_bottom_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

@@ -1,32 +1,31 @@
-# Flash Learn: Boost Your Learning with Customizable Flashcards
+# Flashi - AI-Powered Flashcard Generator
 
-Rocket Learn is an innovative flashcard app designed to help you learn and retain information in a fun and engaging way. Customize your own flashcards, choose from a variety of themes, and improve your study routine with an intuitive user interface.
+Flashi is an advanced AI-powered tool designed to help you create and customize flashcards effortlessly. Enhance your learning experience with intuitive features, a variety of themes, and AI-generated flashcards. You can also generate flashcards from PDF or Docs files and interact with a chatbot for study assistance.
 
-### Features:
-- Create and customize flashcards
-- Multiple color themes to choose from
-- light / Dark Themes
-- User-friendly interface
-- Customizable learning modes for different study techniques
+## Features
+- AI-powered flashcard generation
+- Create and personalize flashcards easily
+- Generate flashcards from PDF or Docs files
+- Multiple color themes, including Light and Dark modes
+- Intuitive and user-friendly interface
+- Customizable learning modes for various study techniques
+- Integrated chatbot for interactive learning assistance
 
-### Installation
-
-To get started with Rocket Learn, follow these steps:
+## Installation
+To start using Flashi, follow these steps:
 1. Clone this repository.
-2. Install the necessary dependencies.
-3. Run the app on your device.
+2. Install the required dependencies.
+3. Run the application on your device.
 
-### License
+## License
+This project is proprietary, and all rights are reserved by the author.
 
-This project is proprietary and all rights are reserved by the author.
+Unauthorized use, copying, modification, distribution, or display of this software or its source code is strictly prohibited without explicit written permission from the author.
 
-You are not permitted to use, copy, modify, distribute, or display this software or its source code without express written permission from the author.
+Legal action will be taken against any unauthorized use, distribution, or modification of this software.
 
-Unauthorized use, distribution, or modification of this software will result in legal action.
+Copyright (c) 2025 . All rights reserved.
 
-Copyright (c) 2024 [Rocket App]. All rights reserved.
-
-### Contact
-
-For any inquiries or permissions, please contact [studioanime34@gmail.com].
+## Contact
+For inquiries or permission requests, please contact [curibtech@gmail.com]
 

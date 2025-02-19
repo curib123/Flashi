@@ -1,4 +1,4 @@
-import 'package:flashi/util/helpers/wepage_launcher.dart';
+import 'package:flashi/util/helpers/classes/other/wepage_launcher.dart';
 import 'package:flutter/material.dart';
 
 void showUpdateDialog(BuildContext context, String currentVersion, String latestVersion, String downloadLink, String patchNote) {

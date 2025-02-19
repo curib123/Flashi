@@ -1,7 +1,7 @@
 
 import 'package:flashi/home.dart';
 import 'package:flashi/provider/ai_model_logic_provider.dart';
-import 'package:flashi/provider/ai_model_provider.dart';
+import 'package:flashi/provider/fetch_data_from_json_provider.dart';
 import 'package:flashi/provider/bottom_navigation_provider.dart';
 import 'package:flashi/provider/check_version_provider.dart';
 import 'package:flashi/provider/notes_provider.dart';
@@ -13,6 +13,7 @@ import 'package:flashi/provider/sort_provider.dart';
 import 'package:flashi/provider/study_scheduler_provider.dart';
 import 'package:flashi/provider/task_provider.dart';
 import 'package:flashi/provider/theme_provider.dart';
+import 'package:flashi/util/helpers/classes/api/ai/core/api_key_secure_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -37,6 +38,8 @@ Future<void> main() async {
   await Hive.openBox('textReader'); // Box for storing task
   await Hive.openBox('pdf'); // Box for storing task
 
+  await saveAPIKey('TZjSrnSAjyflYyNyFmPnMfHHSZ4Mw33q');
+
   runApp(
     MultiProvider(
       providers: [
@@ -49,9 +52,9 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => SaveInfoAdsProvider()), // Add SaveInfoAdsProvider
         ChangeNotifierProvider(create: (_) => StudySchedulerProvider()), // Add StudySchedulerProvider
         ChangeNotifierProvider(create: (_) => TaskProvider()),
-        ChangeNotifierProvider(create: (_) => AiModelProvider()), // Add TextReaderProvider
-        ChangeNotifierProvider(create: (_) => AiModelLogicProvider()), // Add TextReaderProvider
-        ChangeNotifierProvider(create: (_) => CheckVersionProvider()), // Add TextReaderProvider
+        ChangeNotifierProvider(create: (_) => FetchDataFromJsonProvider()), // Add TextReaderProvider
+        ChangeNotifierProvider(create: (_) => AiModelLogicProvider()), // Add AiModelLogicProvider
+        ChangeNotifierProvider(create: (_) => CheckVersionProvider()), // Add CheckVersionProvider
 
         ChangeNotifierProvider(
             create: (context) => QuizProvider(

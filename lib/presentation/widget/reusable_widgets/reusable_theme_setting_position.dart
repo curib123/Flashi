@@ -1,4 +1,4 @@
-import 'package:flashi/util/helpers/modal/theme_modal.dart';
+import 'package:flashi/util/helpers/widget/modals/theme_modal.dart';
 import 'package:flutter/material.dart';
 
 class ReusableThemeSettingPosition extends StatelessWidget {

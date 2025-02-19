@@ -10,7 +10,8 @@ import 'package:flashi/presentation/widget/reusable_widgets/reusable_title_conte
 import 'package:flashi/provider/notes_provider.dart';
 import 'package:flashi/presentation/widget/components/create_note_screen.dart';
 import 'package:flashi/provider/sort_provider.dart';
-import 'package:flashi/util/helpers/ads/ad_manager.dart';
+import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
+import 'package:flashi/util/helpers/widget/other/empty_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
@@ -149,7 +150,7 @@ Widget _NoteBodyBlock(ColorScheme colorScheme,List filteredNotes,double bannerHe
 Widget _buildNoteListView(List filteredNotes, ColorScheme colorScheme, NotesProvider notesProvider, String layout,BuildContext context,double bannerHeight) {
 
   return filteredNotes.isEmpty
-      ? _noNotesWidget(context)
+      ? noNotesWidget(context)
       : AnimationLimiter(
     child: ListView.builder(
       padding: EdgeInsets.symmetric(
@@ -168,7 +169,7 @@ Widget _buildNoteListView(List filteredNotes, ColorScheme colorScheme, NotesProv
 Widget _buildNoteGridView(List filteredNotes, ColorScheme colorScheme, NotesProvider notesProvider, String layout,BuildContext context,double bannerHeight) {
 
   return filteredNotes.isEmpty
-      ? _noNotesWidget(context)
+      ? noNotesWidget(context)
       : AnimationLimiter(
     child: GridView.builder(
       padding: EdgeInsets.symmetric(
@@ -298,34 +299,5 @@ Widget _buildNoteLayout(Map<String, dynamic> note, int index, ColorScheme colorS
         ),
       ),
 
-  );
-}
-Widget _noNotesWidget(BuildContext context) {
-  return SizedBox(
-    height: MediaQuery.of(context).size.height,
-    width: MediaQuery.of(context).size.width,
-    child:   Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.inbox, size: 100, color: Colors.grey),
-          const SizedBox(height: 20),
-          Text(
-            "No Notes available",
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: Colors.grey,
-            ),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            "Add some Notes to see them here.",
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.grey.shade600,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    ),
   );
 }

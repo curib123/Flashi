@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:flashi/util/helpers/widget/highlight_keywords.dart';
+import 'package:flashi/util/helpers/widget/other/highlight_keywords.dart';
 
 class ReusableCardCore extends StatelessWidget {
   final String question;
