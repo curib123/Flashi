@@ -75,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
         context,
         MaterialPageRoute(
           builder: (context) => SeeAllQuizSetList(
-            name: 'All Subjects',
+            name: 'All Flashcard',
             colorScheme: colorScheme,
           ),
         ),
@@ -135,7 +135,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           height: 85,
                           child: ReusableSearchBarCore(
                             colorScheme: colorScheme,
-                            hintText: 'Search Subject',
+                            hintText: 'Search FlashCards',
                             onChanged: (value) =>
                                 quizProvider.updateSearchQuery(value),
                             controller: quizProvider.searchController,
@@ -208,7 +208,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ReusableCreateSetButtonPosition(
             icon: Icons.add_circle,
             colorScheme: colorScheme,
-            name: 'Create Subject',
+            name: 'Create Flashcard',
             onTap: ()  {
               aiModelLogicProvider.showFlashcardDialog(context, quizProvider, colorScheme,fetchDataFromJsonProvider);
             },

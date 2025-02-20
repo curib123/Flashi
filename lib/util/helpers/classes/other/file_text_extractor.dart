@@ -59,10 +59,10 @@ class FileTextExtractor {
         final bytes = await file.readAsBytes();
         return docxToText(bytes);
       } else {
-        return "Unsupported file format";
+        return "";
       }
     } catch (e) {
-      return "Error extracting text: $e";
+      return "";
     }
   }
 }

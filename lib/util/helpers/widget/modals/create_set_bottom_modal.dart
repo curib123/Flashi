@@ -40,7 +40,7 @@ void CreateSetBottomModal({
                   Align(
                     alignment: Alignment.topLeft,
                     child: Text(
-                      isCreate ? "Create a Subject" : 'Edit the Subject: $setName',
+                      isCreate ? "Create a Flashcard" : 'Edit the Flashcard: $setName',
                       style: TextStyle(
                         color: colorScheme.primary,
                         fontSize: 25,
@@ -53,7 +53,7 @@ void CreateSetBottomModal({
                   const SizedBox(height: 30),
                   // TextField for Set Name
                   ReusableTextfieldCore(
-                    name: "Subject Name",
+                    name: "Flashcard Name",
                     controller: quizProvider.nameController,
                   ),
                   const SizedBox(height: 20),
@@ -83,7 +83,7 @@ void CreateSetBottomModal({
                           });
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('The Set $name is Created'),
+                              content: Text('The Flashcard $name is Created'),
                               backgroundColor: Colors.green,
                             ),
                           );
@@ -93,7 +93,7 @@ void CreateSetBottomModal({
                           quizProvider.editQuizSet(setName, newName: name, newDescription: description);
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('The Set $name is Updated '),
+                              content: Text('The Flashcard $name is Updated '),
                               backgroundColor: Colors.green,
                             ),
                           );

@@ -58,7 +58,7 @@ class ReusableSortAndSeeAll extends StatelessWidget {
             ),
             onPressed: onSeeAllPressed,
             child:const Text(
-              "ALL  SUBJECTS",
+              "ALL  FLASHCARD",
               style: TextStyle(
                 color: Colors.white, // Assuming a contrasting text color
                 fontWeight: FontWeight.bold,

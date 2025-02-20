@@ -6,7 +6,10 @@ void showLoadingDialog(BuildContext context) {
     context: context,
     barrierDismissible: false, // Prevent closing by tapping outside
     builder: (context) {
-      return _LoadingDialog();
+      return WillPopScope(
+        onWillPop: () async => false, // Prevent back button dismissal
+        child: _LoadingDialog(),
+      );
     },
   );
 }
@@ -38,33 +41,33 @@ class _LoadingDialogState extends State<_LoadingDialog> with SingleTickerProvide
   Widget build(BuildContext context) {
     return Dialog(
       backgroundColor: Colors.transparent, // Fully transparent background
-      elevation: 0, // No shadow
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2), // Subtle blur effect
         child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.05), // Semi-transparent white background
-            borderRadius: BorderRadius.circular(15),
-          ),
           padding: const EdgeInsets.all(20.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center, // Center vertically
+            crossAxisAlignment: CrossAxisAlignment.center, // Center horizontally
             children: [
               RotationTransition(
                 turns: _controller, // Continuous rotation
                 child: Icon(
-                  Icons.hourglass_bottom,
-                  size: 60,
+                  Icons.android,
+                  size: 65,
                   color: Theme.of(context).colorScheme.onPrimary,
                 ),
               ),
               SizedBox(height: 20),
-              Text(
-                "Please wait...",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.onPrimary,
+              Center( // Ensures the text is centered
+                child: Text(
+                  "AI is processing... Please wait...",
+                  textAlign: TextAlign.center, // Centers the text
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
                 ),
               ),
             ],

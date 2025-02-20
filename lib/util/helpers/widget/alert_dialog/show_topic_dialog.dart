@@ -13,24 +13,49 @@ void showTopicDialog(BuildContext context, {required Function()? onTap}) {
   showDialog(
     context: context,
     builder: (context) {
-      return Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      return AlertDialog(
         backgroundColor: colorScheme.onPrimary,
-        child: GestureDetector(
-          onTap: () => FocusScope.of(context).unfocus(),
-          child: Padding(
-            padding: const EdgeInsets.all(20),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15.0),
+        ),
+        titlePadding: EdgeInsets.zero,
+        contentPadding: const EdgeInsets.all(10),
+        title: Container(
+          decoration: BoxDecoration(
+            color: colorScheme.primary,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(15),
+              topRight: Radius.circular(15),
+              bottomLeft: Radius.circular(20.0),
+              bottomRight: Radius.circular(20.0),
+            ),
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 15.0),
+          child: Center(
+            child: Text(
+              "Customize Prompt",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+                color: colorScheme.onPrimary,
+              ),
+            ),
+          ),
+        ),
+        content: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: SingleChildScrollView( // Wrap content with SingleChildScrollView to avoid overflow
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Customize Prompt",
+                  "Make sure to input topics and provide an accurate description for the best results.",
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: colorScheme.primary,
+                    fontSize: 10,
+                    color: Colors.grey[700],
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -84,7 +109,13 @@ void showTopicDialog(BuildContext context, {required Function()? onTap}) {
                           );
                         }
                       },
-                      child: const Text("Generate"),
+                      child: Row(
+                        children: [
+                          Icon(Icons.auto_awesome, color: colorScheme.onPrimary),
+                          SizedBox(width: 10,),
+                          Text(  "Generate", style: const TextStyle(fontSize: 16))
+                        ],
+                      ),
                     ),
                   ],
                 ),

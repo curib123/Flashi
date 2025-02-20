@@ -17,28 +17,49 @@ class ModelSelectionDialog {
 
         ColorScheme colorScheme = Theme.of(context).colorScheme;
 
-        return Dialog(
+        return AlertDialog(
+          backgroundColor: colorScheme.onPrimary,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(15.0),
           ),
-          backgroundColor: colorScheme.background,
-          child: Padding(
+          titlePadding: EdgeInsets.zero,
+          contentPadding: const EdgeInsets.all(10),
+          title: Container(
+            decoration: BoxDecoration(
+              color: colorScheme.primary,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(15),
+                topRight: Radius.circular(15),
+                bottomLeft: Radius.circular(20.0),
+                bottomRight: Radius.circular(20.0),
+              ),
+            ),
+            padding: const EdgeInsets.symmetric(vertical: 15.0),
+            child: Center(
+              child: Text(
+                "Customize Prompt",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                  color: colorScheme.onPrimary,
+                ),
+              ),
+            ),
+          ),
+          content: Padding(
             padding: const EdgeInsets.all(10.0),
             child: SingleChildScrollView( // Wrap content with SingleChildScrollView to avoid overflow
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Title
-                  Center(
-                    child: Text(
-                      "Customize Output",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: colorScheme.primary,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                      ),
+                  Text(
+                    "Select best model, max length, and quiz type for your flashcard.",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: Colors.grey[700],
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -93,8 +114,6 @@ class ModelSelectionDialog {
                           provider.updateModel(selectedModel);
                           provider.updateMaxLength(selectedMaxLength);
                           provider.updateQuizQuestionType(selectedQuizType);
-                          aiModelLogicProvider.updateIsLoading();
-                          !isCustomPrompt && aiModelLogicProvider.isLoading  ? showLoadingDialog(context) : null;
                           onTap?.call();
 
                         },
@@ -104,9 +123,15 @@ class ModelSelectionDialog {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                         ),
-                        child: Text( isCustomPrompt ? "Next" : "Upload File", style: const TextStyle(fontSize: 16)),
+                        child: Row(
+                          children: [
+                           isCustomPrompt ?  Icon(Icons.arrow_forward, color: colorScheme.onPrimary) : Icon(Icons.upload_file_rounded,color: colorScheme.onPrimary,),
+                            SizedBox(width: 10,),
+                            Text(isCustomPrompt ? "Next" : "Upload File", style: const TextStyle(fontSize: 16))
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -125,7 +150,7 @@ class ModelSelectionDialog {
     return DropdownButtonFormField<T>(
       decoration: _inputDecoration(colorScheme, label),
       value: value,
-      dropdownColor: colorScheme.surface,
+      dropdownColor: colorScheme.onPrimary,
       style: TextStyle(color: colorScheme.primary),
       items: items.map((item) => DropdownMenuItem(value: item, child: Text(item.toString()))).toList(),
       onChanged: onChanged,
@@ -138,16 +163,12 @@ class ModelSelectionDialog {
       labelText: label,
       labelStyle: TextStyle(color: colorScheme.primary),
       filled: true,
-      fillColor: colorScheme.onPrimary,
-      enabledBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: colorScheme.primary, width: 1.5),
-        borderRadius: BorderRadius.circular(8),
+      fillColor: colorScheme.primary.withOpacity(0.1),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8), // Add border radius
+        borderSide: BorderSide.none, // No visible border
       ),
-      focusedBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: colorScheme.secondary, width: 1.5),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+      contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 12),
     );
   }
 }

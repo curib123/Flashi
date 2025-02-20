@@ -43,7 +43,7 @@ void CreateCardBottomModal({
                   Align(
                     alignment: Alignment.topLeft,
                     child: Text(
-                      isCreate ? "Create Card In Set : $name" : 'Edit The Card: $cardName',
+                      isCreate ? "Create Card In Flashcard : $name" : 'Edit The Card: $cardName',
                       style: TextStyle(
                         color: colorScheme.primary,
                         fontSize: 18,
