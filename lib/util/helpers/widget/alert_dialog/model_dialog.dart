@@ -1,7 +1,6 @@
 
 import 'package:flashi/provider/ai_model_logic_provider.dart';
 import 'package:flashi/provider/fetch_data_from_json_provider.dart';
-import 'package:flashi/util/helpers/widget/alert_dialog/loading_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

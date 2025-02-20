@@ -94,7 +94,7 @@ class CustomDrawer extends StatelessWidget {
           ),
           buildListTile(
             icon: Icons.task_rounded,
-            title: 'My Task ',
+            title: 'Flashi Chatbot ',
             onTap: () {
               Navigator.pop(context);
               bottomNavigationProvider.toogleNavigation(0);

@@ -4,7 +4,6 @@ import 'package:http/http.dart' as http;
 
 class MistralAiLogic {
   static Future<List<Map<String, String>>> generateQuestionsFromFile(String content,String modelType,String type,int maxLength) async {
-    await saveAPIKey('TZjSrnSAjyflYyNyFmPnMfHHSZ4Mw33q'); // Save API key (remove if stored separately)
 
     String? apiKey = await getAPIKey(); // Retrieve stored API key
 

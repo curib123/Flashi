@@ -28,7 +28,7 @@ class CustomNavigationBar extends StatelessWidget {
         buttonBackgroundColor: colorScheme.primary, // Active button color
         index: currentIndex, // Current active index
         items: <Widget>[
-          Icon(Icons.task_rounded, size: 35, color: colorScheme.onPrimary),
+          Icon(Icons.android_rounded, size: 35, color: colorScheme.onPrimary),
           Icon(Icons.house_siding_rounded, size: 40, color: colorScheme.onPrimary),
           Icon(Icons.text_snippet_rounded, size: 35, color: colorScheme.onPrimary),
         ],

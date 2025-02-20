@@ -1,13 +1,13 @@
 
+import 'package:flashi/presentation/screen/main/chat_bot_screen.dart';
 import 'package:flashi/presentation/screen/main/note_screen.dart';
 import 'package:flashi/presentation/screen/main/home_screen.dart';
-import 'package:flashi/presentation/screen/main/task_screen.dart';
 import 'package:flutter/material.dart';
 
 class BottomNavigationProvider with ChangeNotifier{
 
   final List<Widget> _screen = [
-    TaskScreen(),
+    ChatBotScreen(),
     HomeScreen(),
     NoteScreen(),
   ];
