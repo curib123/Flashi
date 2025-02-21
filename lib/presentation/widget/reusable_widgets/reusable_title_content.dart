@@ -46,7 +46,7 @@ class _ReusableTitleContentState extends State<ReusableTitleContent> {
                 style: TextStyle(
                   color: widget.colorScheme.onPrimary,
                   fontWeight: FontWeight.bold,
-                  fontSize: widget.title.length >= 12 ? 16 : 18,
+                  fontSize: widget.title.length >= 10 ? 14 : 16,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
