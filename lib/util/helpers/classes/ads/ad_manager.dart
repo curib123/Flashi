@@ -1,3 +1,4 @@
+import 'package:flashi/provider/ai_credits_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flashi/provider/save_info_ads_provider.dart';
 import 'package:flutter/material.dart';
@@ -271,6 +272,7 @@ _bannerAd6 = BannerAd(
                 onAdFailedToShowFullScreenContent: (ad, err) {
                   // Dispose the ad here to free resources.
                   ad.dispose();
+
                 },
                 // Called when the ad dismissed full screen content.
                 onAdDismissedFullScreenContent: (ad) {
@@ -292,15 +294,22 @@ _bannerAd6 = BannerAd(
     );
   }
 
-  void showRewarded(BuildContext context){
+  void showRewarded(BuildContext context,String whatRewards){
     // Access the QuizProvider and SortProvider from the context
     final quizProvider = Provider.of<QuizProvider>(context,listen: false);
     final saveInfoAdsProvider = Provider.of<SaveInfoAdsProvider>(context,listen: false);
+    final aiCreditProvider = Provider.of<AiCreditProvider>(context,listen: false);
 
     _rewardedAd?.show(onUserEarnedReward: (AdWithoutView ad, RewardItem rewardItem) {
-      // Reward the user for watching an ad.
-      quizProvider.updateQuizSetLimit();
-      saveInfoAdsProvider.incrementAdsWatched();
+
+      if(whatRewards == "cards"){
+        // Reward the user for watching an ad.
+        quizProvider.updateQuizSetLimit();
+        saveInfoAdsProvider.incrementAdsWatched();
+      }else if(whatRewards == "credits"){
+        aiCreditProvider.addCredits(2);
+        aiCreditProvider.AddAdsWatched();
+      }
 
     });
   }

@@ -34,10 +34,10 @@ class CustomDrawer extends StatelessWidget {
         children: [
           UserAccountsDrawerHeader(
             accountName: const Text("Flashi Ai"),
-            accountEmail: const Text("Ai Based FlashCard Creator"),
+            accountEmail: const Text("Ai-Powered Flashcard Generator"),
             currentAccountPicture: CircleAvatar(
               backgroundColor: colorScheme.onTertiary,
-              child: Icon(Icons.person_2_rounded,size: 50,color: colorScheme.primary,),
+              child: Icon(Icons.person,size: 50,color: colorScheme.primary,),
 
             ),
           ),
@@ -61,7 +61,7 @@ class CustomDrawer extends StatelessWidget {
           ),
           buildListTile(
             icon: Icons.favorite_rounded,
-            title: 'Favorites Set',
+            title: 'My Favorites',
             onTap: () {
               Navigator.pop(context);
               Navigator.push(
@@ -70,20 +70,6 @@ class CustomDrawer extends StatelessWidget {
               );
             },
           ),
-          buildListTile(
-            icon: Icons.settings_rounded,
-            title: 'Settings',
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const SettingsScreen()),
-              );
-            },
-          ),
-
-          const Divider(height: 1),
-
           buildListTile(
             icon: Icons.text_snippet_rounded,
             title: 'My Notes',
@@ -94,10 +80,22 @@ class CustomDrawer extends StatelessWidget {
           ),
           buildListTile(
             icon: Icons.task_rounded,
-            title: 'Flashi Chatbot ',
+            title: 'My Chatbot ',
             onTap: () {
               Navigator.pop(context);
               bottomNavigationProvider.toogleNavigation(0);
+            },
+          ),
+
+          buildListTile(
+            icon: Icons.settings_rounded,
+            title: 'Settings',
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsScreen()),
+              );
             },
           ),
 

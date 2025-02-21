@@ -1,10 +1,17 @@
+import 'package:flashi/provider/ai_credits_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
+import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
+import 'package:flashi/util/helpers/classes/ads/ad_unit_id.dart';
 import 'package:flashi/util/helpers/classes/other/import_export_helper_class.dart';
+import 'package:flashi/util/helpers/widget/alert_dialog/loading_dialog.dart';
+import 'package:flashi/util/helpers/widget/alert_dialog/show_maintenace_alert_box.dart';
+import 'package:flashi/util/helpers/widget/alert_dialog/show_watch_ads_dialog.dart';
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:provider/provider.dart';
 
 class ReusableTitleContent extends StatefulWidget {
-
   final ColorScheme colorScheme;
   final String title;
   final VoidCallback onUpgradePro;
@@ -17,62 +24,112 @@ class ReusableTitleContent extends StatefulWidget {
 }
 
 class _ReusableTitleContentState extends State<ReusableTitleContent> {
-
   final ImportExportHelperClass _helper = ImportExportHelperClass(); // Helper instance for export/import
+  AdManager adManager = AdManager();
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
 
-
+    adManager.loadRewardedAd(AdUnitId.rewardedAdUnitId);
+  }
   @override
   Widget build(BuildContext context) {
-    final quizProvider = Provider.of<QuizProvider>(context);
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Container(
-          child: Text(
-            widget.title,
-            style: TextStyle(
-              color: widget.colorScheme.onPrimary,
-              fontWeight: FontWeight.bold,
-              fontSize: widget.title.length >= 12 ?   18: 20,
-              overflow: TextOverflow.ellipsis
-            ),
-          ),
-        ),
-        Row(
+    return Consumer2<QuizProvider, AiCreditProvider>(
+      builder: (context, quizProvider, aiCreditProvider, child) {
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // IconButton(
-            //     onPressed: onUpgradePro,
-            //     icon: Icon(
-            //       Icons.diamond_rounded,
-            //       color: colorScheme.onPrimary,
-            //       size: 30,
-            //     )),
-            GestureDetector(
-              onTap: (){_helper.importList(context, quizProvider);},
-              child: CircleAvatar(
-                backgroundColor: Colors.transparent,
-                child: Icon(
-                  Icons.archive_rounded,
-                  size: 30,
+            Container(
+              child: Text(
+                widget.title,
+                style: TextStyle(
                   color: widget.colorScheme.onPrimary,
+                  fontWeight: FontWeight.bold,
+                  fontSize: widget.title.length >= 12 ? 16 : 18,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ),
-            const SizedBox(width: 10),
-            GestureDetector(
-              onTap: widget.onSettings,
-              child: CircleAvatar(
-                backgroundColor: Colors.transparent,
-                child: Icon(
-                  Icons.settings,
-                  size: 30,
-                  color: widget.colorScheme.onPrimary,
+            Row(
+              children: [
+                GestureDetector(
+                  onTap: () async {
+                   adManager.loadRewardedAd(AdUnitId.rewardedAdUnitId);
+                    bool isConnected = await InternetConnection().hasInternetAccess;
+
+                 if(isConnected){
+                   showWatchAdDialog(
+                       context: context,
+                       title: "Earn Free Credits!",
+                       message: "Watch a short ad and instantly earn 2 free credits!",
+                       cancelText: "Maybe Later",
+                       confirmText: "Watch Ads",
+                     onWatchAd: () {
+                       showLoadingDialog(context, text: "Loading ads... Please wait.\nIf it doesn’t appear, try again.");
+                       Future.delayed(const Duration(seconds: 10), () {
+                         Navigator.of(context).pop();
+                         adManager.showRewarded(context, 'credits');
+                       });
+                     },
+                   );
+                 }else{
+                   showMaintenanceDialog(context, "No Internet", "Please connect to internet");
+                 }
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(50)),
+                      color: widget.colorScheme.onPrimary,
+                    ),
+                    child: Row(
+                      children: [
+                        Text(
+                          aiCreditProvider.credits.toString(),
+                          style: TextStyle(fontSize: 15, color: widget.colorScheme.primary,fontWeight: FontWeight.w600),
+                        ),
+                        SizedBox(width: 5),
+                        Icon(Icons.token_rounded, size: 15, color: FlexColor.goldDarkPrimary),
+                        SizedBox(width: 5),
+                        Icon(Icons.add_circle_rounded,size: 15,color: widget.colorScheme.primary,)
+                      ],
+                    ),
+
+                  ),
                 ),
-              ),
+                SizedBox(width: 10),
+                GestureDetector(
+                  onTap: () {
+                    _helper.importList(context, quizProvider);
+                  },
+                  child: CircleAvatar(
+                    backgroundColor: Colors.transparent,
+                    child: Icon(
+                      Icons.archive_rounded,
+                      size: 30,
+                      color: widget.colorScheme.onPrimary,
+                    ),
+                  ),
+                ),
+
+                SizedBox(width: 10),
+                GestureDetector(
+                  onTap: widget.onSettings,
+                  child: CircleAvatar(
+                    backgroundColor: Colors.transparent,
+                    child: Icon(
+                      Icons.settings_rounded,
+                      size: 30,
+                      color: widget.colorScheme.onPrimary,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
-        ),
-      ],
+        );
+      },
     );
   }
 }

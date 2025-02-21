@@ -1,34 +1,47 @@
 import 'dart:io';
 
 class AdUnitId {
-  // Platform-specific ad unit IDs
+  static bool isTest = true; // Change this flag to switch between test and real ads
+
   static String get bannerAdUnitId {
     if (Platform.isAndroid) {
-      return 'ca-app-pub-3940256099942544/9214589741'; // Test Banner Ad Unit for Android
+      return isTest
+          ? 'ca-app-pub-3940256099942544/9214589741'  // Test Ad Unit for Android
+          : 'ca-app-pub-3608052107276973/3779236597'; // Real Ad Unit for Android
     } else if (Platform.isIOS) {
-      return 'your_ios_banner_ad_unit_id_here'; // Replace with your iOS banner ad unit ID
+      return isTest
+          ? 'your_ios_test_banner_ad_unit_id_here'  // Test Ad Unit for iOS
+          : 'your_ios_real_banner_ad_unit_id_here'; // Real Ad Unit for iOS
     } else {
-      return 'default_banner_ad_unit_id'; // Default banner ad unit
+      return 'default_banner_ad_unit_id';
     }
   }
 
   static String get interstitialAdUnitId {
     if (Platform.isAndroid) {
-      return 'ca-app-pub-3940256099942544/1033173712'; // Test Interstitial Ad Unit for Android
+      return isTest
+          ? 'ca-app-pub-3940256099942544/1033173712'  // Test Ad Unit for Android
+          : 'ca-app-pub-3608052107276973/5369620055'; // Real Ad Unit for Android
     } else if (Platform.isIOS) {
-      return 'your_ios_interstitial_ad_unit_id_here'; // Replace with your iOS interstitial ad unit ID
+      return isTest
+          ? 'your_ios_test_interstitial_ad_unit_id_here'  // Test Ad Unit for iOS
+          : 'your_ios_real_interstitial_ad_unit_id_here'; // Real Ad Unit for iOS
     } else {
-      return 'default_interstitial_ad_unit_id'; // Default interstitial ad unit
+      return 'default_interstitial_ad_unit_id';
     }
   }
 
   static String get rewardedAdUnitId {
     if (Platform.isAndroid) {
-      return 'ca-app-pub-3940256099942544/5224354917'; // Test Rewarded Ad Unit for Android
+      return isTest
+          ? 'ca-app-pub-3940256099942544/5224354917'  // Test Ad Unit for Android
+          : 'ca-app-pub-3608052107276973/2522597885'; // Real Ad Unit for Android
     } else if (Platform.isIOS) {
-      return 'your_ios_rewarded_ad_unit_id_here'; // Replace with your iOS rewarded ad unit ID
+      return isTest
+          ? 'your_ios_test_rewarded_ad_unit_id_here'  // Test Ad Unit for iOS
+          : 'your_ios_real_rewarded_ad_unit_id_here'; // Real Ad Unit for iOS
     } else {
-      return 'default_rewarded_ad_unit_id'; // Default rewarded ad unit
+      return 'default_rewarded_ad_unit_id';
     }
   }
 

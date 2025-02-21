@@ -27,8 +27,6 @@ class _HomeState extends State<Home> {
     AdManager adManager = AdManager();
     // Load the ads using the platform-specific ad unit IDs
     adManager.loadBannerAd(AdUnitId.bannerAdUnitId);
-    adManager.loadInterstitialAd(AdUnitId.interstitialAdUnitId);
-    adManager.loadRewardedAd(AdUnitId.rewardedAdUnitId);
 
   }
   @override

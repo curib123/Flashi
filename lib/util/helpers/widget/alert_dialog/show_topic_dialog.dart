@@ -1,6 +1,13 @@
+import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_credits_info_core.dart';
+import 'package:flashi/provider/ai_credits_provider.dart';
 import 'package:flashi/provider/ai_model_logic_provider.dart';
+import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
+import 'package:flashi/util/helpers/classes/ads/ad_unit_id.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/loading_dialog.dart';
+import 'package:flashi/util/helpers/widget/alert_dialog/show_maintenace_alert_box.dart';
+import 'package:flashi/util/helpers/widget/alert_dialog/show_watch_ads_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:provider/provider.dart';
 
 void showTopicDialog(BuildContext context, {required Function()? onTap}) {
@@ -8,7 +15,8 @@ void showTopicDialog(BuildContext context, {required Function()? onTap}) {
   final TextEditingController topicController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
 
-  AiModelLogicProvider aiModelLogicProvider = Provider.of<AiModelLogicProvider>(context,listen: false);
+  AdManager adManager = AdManager();
+  adManager.loadRewardedAd(AdUnitId.rewardedAdUnitId);
 
   showDialog(
     context: context,
@@ -45,7 +53,7 @@ void showTopicDialog(BuildContext context, {required Function()? onTap}) {
         ),
         content: Padding(
           padding: const EdgeInsets.all(10.0),
-          child: SingleChildScrollView( // Wrap content with SingleChildScrollView to avoid overflow
+          child: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -71,53 +79,105 @@ void showTopicDialog(BuildContext context, {required Function()? onTap}) {
                   colorScheme: colorScheme,
                   maxLines: 4,
                 ),
-                const SizedBox(height: 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      style: TextButton.styleFrom(
-                        foregroundColor: colorScheme.primary,
-                        textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
-                      ),
-                      child: const Text("Cancel"),
-                    ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: colorScheme.primary,
-                        foregroundColor: colorScheme.onPrimary,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                      ),
-                      onPressed: () {
-                        String topic = topicController.text.trim();
-                        String description = descriptionController.text.trim();
-
-                        if (topic.isNotEmpty && description.isNotEmpty) {
-                          showLoadingDialog(context);
-                          aiModelLogicProvider.updateTopicAndDescription(topic, description);
-                          onTap?.call();
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: const Text("Both fields are required."),
-                              backgroundColor: Colors.redAccent,
+                const SizedBox(height: 10),
+                Consumer<AiCreditProvider>(
+                  builder: (context, aiCreditProvider, _) {
+                    return Column(
+                      children: [
+                        ReusableCreditsInfoCore(credits: aiCreditProvider.credits, colorScheme: colorScheme),
+                        const SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              style: TextButton.styleFrom(
+                                foregroundColor: colorScheme.primary,
+                                textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+                              ),
+                              child: const Text("Cancel"),
                             ),
-                          );
-                        }
-                      },
-                      child: Row(
-                        children: [
-                          Icon(Icons.auto_awesome, color: colorScheme.onPrimary),
-                          SizedBox(width: 10,),
-                          Text(  "Generate", style: const TextStyle(fontSize: 16))
-                        ],
-                      ),
-                    ),
-                  ],
+                            Consumer<AiModelLogicProvider>(
+                              builder: (context, aiModelLogicProvider, _) {
+                                return ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: colorScheme.primary,
+                                    foregroundColor: colorScheme.onPrimary,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                                  ),
+                                  onPressed: () async {
+                                    if (aiCreditProvider.credits != 0) {
+                                      String topic = topicController.text.trim();
+                                      String description = descriptionController.text.trim();
+
+                                      if (topic.isNotEmpty && description.isNotEmpty) {
+                                        showLoadingDialog(context, text: "Please wait .. AI Processing..");
+                                        aiModelLogicProvider.updateTopicAndDescription(topic, description);
+                                        onTap?.call();
+                                      } else {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            content: const Text("Both fields are required."),
+                                            backgroundColor: Colors.redAccent,
+                                          ),
+                                        );
+                                      }
+                                    } else {
+                                      adManager.loadRewardedAd(AdUnitId.rewardedAdUnitId);
+                                      bool isConnected =
+                                          await InternetConnection().hasInternetAccess;
+
+                                      if(isConnected){
+                                        if(aiCreditProvider.watchAd()){
+                                          showWatchAdDialog(
+                                            context: context,
+                                            title: "Earn Free Credits!",
+                                            message: "Watch a short ad and instantly earn 2 free credits!",
+                                            cancelText: "Maybe Later",
+                                            confirmText: "Watch Ad",
+                                            onWatchAd: () {
+                                              showLoadingDialog(context, text: "Loading ads... Please wait.\nIf it doesn’t appear, try again.");
+                                              Future.delayed(const Duration(seconds: 10), () {
+                                                Navigator.of(context).pop();
+                                                adManager.showRewarded(context, 'credits');
+                                              });
+                                            },
+                                          );
+                                        }else{
+                                          showMaintenanceDialog(context, "No More Ads for Today!", "That’s it for today! You’ve reached your daily limit of ${aiCreditProvider.maxAdsPerDay} ads. See you again tomorrow!");
+                                        }
+                                      }else{
+                                        showMaintenanceDialog(context, "No Internet", "Please connect to internet");
+                                      }
+                                    }
+                                  },
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        aiCreditProvider.credits  != 0
+                                            ? Icons.auto_awesome
+                                            : Icons.play_circle_fill,
+                                        color: colorScheme.onPrimary,
+                                        size: 25,
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Text(
+                                        aiCreditProvider.credits  != 0 ? "Generate" : "Watch Ads",
+                                        style: TextStyle(fontSize: aiCreditProvider.credits  != 0 ? 18 : 15),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ],
             ),
@@ -144,8 +204,8 @@ Widget _buildTextField({
       fillColor: colorScheme.primary.withOpacity(0.1),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12), // Add border radius
-        borderSide: BorderSide.none, // No visible border
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide.none,
       ),
     ),
   );

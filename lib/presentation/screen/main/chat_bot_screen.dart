@@ -1,17 +1,60 @@
 import 'package:flashi/presentation/screen/main/settings_screen.dart';
+import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_typing_animation_core.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_title_content.dart';
 import 'package:flashi/provider/chatbot_provider.dart';
+import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
+import 'package:flashi/util/helpers/classes/ads/ad_unit_id.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-class ChatBotScreen extends StatelessWidget {
+class ChatBotScreen extends StatefulWidget {
   const ChatBotScreen({super.key});
+
+  @override
+  State<ChatBotScreen> createState() => _ChatBotScreenState();
+}
+
+class _ChatBotScreenState extends State<ChatBotScreen> {
+
+  late final ScrollController _scrollController;
+  TextEditingController messageController = TextEditingController();
+  AdManager adManager = AdManager();
+
+  @override
+  void initState() {
+    super.initState();
+
+    Future.delayed(Duration(minutes: 5),(){
+      adManager.loadInterstitialAd(AdUnitId.interstitialAdUnitId);
+    });
+    _scrollController = ScrollController();
+  }
+
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.minScrollExtent, // Change this
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
+
+@override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _scrollController.dispose(); // Prevent memory leak
+    adManager.showInterstitialAd();
+  }
 
   @override
   Widget build(BuildContext context) {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
-    TextEditingController messageController = TextEditingController();
 
     return Scaffold(
       appBar: AppBar(
@@ -51,11 +94,16 @@ class ChatBotScreen extends StatelessWidget {
               Expanded(
                 child: Consumer<ChatBotProvider>(
                   builder: (context, chatProvider, child) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      _scrollToBottom();
+                    });
                     return ListView.builder(
+                      controller: _scrollController, // Add this
                       reverse: true,
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                       itemCount: chatProvider.messages.length + (chatProvider.isTyping ? 1 : 0),
                       itemBuilder: (context, index) {
+
                         if (index == 0 && chatProvider.isTyping) {
                           return Align(
                             alignment: Alignment.centerLeft,
@@ -66,7 +114,7 @@ class ChatBotScreen extends StatelessWidget {
                                 color: colorScheme.secondaryContainer,
                                 borderRadius: BorderRadius.circular(20),
                               ),
-                              child: const DotWavingAnimation(),
+                              child: const ReusableTypingAnimationCore(),
                             ),
                           );
                         }
@@ -74,29 +122,71 @@ class ChatBotScreen extends StatelessWidget {
                         bool isUser = message['sender'] == 'user';
                         return Align(
                           alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(vertical: 6),
-                            padding: const EdgeInsets.all(14),
-                            decoration: BoxDecoration(
-                              color: isUser ? colorScheme.primaryContainer : colorScheme.secondaryContainer,
-                              borderRadius: BorderRadius.circular(20),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black26,
-                                  blurRadius: 6,
-                                  offset: Offset(0, 2),
+                          child: Stack(
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+                                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                                decoration: BoxDecoration(
+                                  color: isUser ? colorScheme.primaryContainer : colorScheme.secondaryContainer,
+                                  borderRadius: BorderRadius.only(
+                                    topLeft: const Radius.circular(18),
+                                    topRight: const Radius.circular(18),
+                                    bottomLeft: isUser ? const Radius.circular(18) : const Radius.circular(4),
+                                    bottomRight: isUser ? const Radius.circular(4) : const Radius.circular(18),
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.1),
+                                      blurRadius: 3,
+                                      offset: const Offset(0, 1),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                            child: Text(
-                              message['text']!,
-                              style: TextStyle(
-                                color: colorScheme.onPrimaryContainer,
-                                fontSize: 16,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(right: 30), // Space for the copy icon
+                                  child: SelectableText(
+                                    message['text']!.replaceAll('*', '').replaceAll('#', ''), // Removes * and #
+                                    style: TextStyle(
+                                      color: isUser ? colorScheme.onPrimaryContainer : colorScheme.onSecondaryContainer,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ),
                               ),
-                            ),
+                              if (!isUser)
+                                Positioned(
+                                  top: 15,
+                                  right: 15,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Clipboard.setData(
+                                        ClipboardData(text: message['text']!.replaceAll('*', '').replaceAll('#', '')),
+                                      );
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          backgroundColor: colorScheme.primary,
+                                          content: Text(
+                                            'Copied to clipboard',
+                                            style: TextStyle(color: colorScheme.onPrimary),
+                                          ),
+                                          duration: Duration(seconds: 2),
+                                        ),
+                                      );
+                                    },
+                                    child: Icon(
+                                      Icons.copy,
+                                      size: 18,
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                ),
+                            ],
                           ),
                         );
+
+
+
                       },
                     );
                   },
@@ -117,7 +207,7 @@ class ChatBotScreen extends StatelessWidget {
                           decoration: InputDecoration(
                             filled: true,
                             fillColor: colorScheme.primary.withOpacity(0.1),
-                            hintText: "Type a message...",
+                            hintText: "Ask Questions ...",
                             hintStyle: TextStyle(color: colorScheme.primary),
                             border: OutlineInputBorder(
                               borderSide: BorderSide.none,
@@ -125,7 +215,7 @@ class ChatBotScreen extends StatelessWidget {
                             ),
                             contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                           ),
-                          style: TextStyle(color: colorScheme.primary,fontWeight: FontWeight.bold),
+                          style: TextStyle(color: colorScheme.primary,fontWeight: FontWeight.w500),
                         ),
                       ),
                     ),
@@ -136,9 +226,11 @@ class ChatBotScreen extends StatelessWidget {
                         color: colorScheme.primary,
                       ),
                       child: IconButton(
-                        icon: Icon(Icons.send, color: colorScheme.onPrimary),
+                        icon: Icon(Icons.send, color: colorScheme.onPrimary,size: 30,),
                         onPressed: () {
+                          _scrollToBottom(); // Scroll after sending
                           if (messageController.text.trim().isNotEmpty) {
+                            // Scroll to the bottom after a short delay
                             var chatProvider = Provider.of<ChatBotProvider>(context, listen: false);
                             chatProvider.setTyping(true);
                             chatProvider.sendMessage(messageController.text).then((_) {
@@ -146,6 +238,8 @@ class ChatBotScreen extends StatelessWidget {
                             });
                             messageController.clear();
                           }
+
+
                         },
                       ),
                     ),
@@ -162,56 +256,3 @@ class ChatBotScreen extends StatelessWidget {
   }
 }
 
-// Dot Waving Animation Widget
-class DotWavingAnimation extends StatefulWidget {
-  const DotWavingAnimation({super.key});
-
-  @override
-  _DotWavingAnimationState createState() => _DotWavingAnimationState();
-}
-
-class _DotWavingAnimationState extends State<DotWavingAnimation> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: const Duration(seconds: 1),
-      vsync: this,
-    )..repeat();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: List.generate(3, (index) {
-        return AnimatedBuilder(
-          animation: _controller,
-          builder: (context, child) {
-            return Transform.translate(
-              offset: Offset(0, 4 * (1 - (_controller.value + (index * 0.2)) % 1)),
-              child: child,
-            );
-          },
-          child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 2),
-            width: 8,
-            height: 8,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary,
-              shape: BoxShape.circle,
-            ),
-          ),
-        );
-      }),
-    );
-  }
-}

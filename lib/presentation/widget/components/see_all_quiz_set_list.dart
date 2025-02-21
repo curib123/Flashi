@@ -3,6 +3,7 @@ import 'package:flashi/presentation/widget/reusable_widgets/reusable_create_set_
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_quiz_set_list.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_sort_and_see_all.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
+import 'package:flashi/provider/ai_credits_provider.dart';
 import 'package:flashi/provider/ai_model_logic_provider.dart';
 import 'package:flashi/provider/fetch_data_from_json_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
@@ -61,8 +62,8 @@ class SeeAllQuizSetList extends StatelessWidget {
   Widget _body(BuildContext context) {
     AdManager adManager = AdManager();
 
-    return Consumer4<QuizProvider, SortProvider,FetchDataFromJsonProvider,AiModelLogicProvider>(
-      builder: (context, quizProvider, sortProvider,fetchDataFromJsonProvider,aiModelLogicProvider, child) {
+    return Consumer5<QuizProvider, SortProvider,FetchDataFromJsonProvider,AiModelLogicProvider,AiCreditProvider>(
+      builder: (context, quizProvider, sortProvider,fetchDataFromJsonProvider,aiModelLogicProvider,aiCreditProvider, child) {
         final filteredQuizSets = quizProvider.filteredQuizSets.reversed.toList();
 
         return Stack(
@@ -116,7 +117,7 @@ class SeeAllQuizSetList extends StatelessWidget {
               colorScheme: colorScheme,
               name: 'Create Flashcard',
               onTap: () {
-              aiModelLogicProvider.showFlashcardDialog(context, quizProvider, colorScheme,fetchDataFromJsonProvider);
+              aiModelLogicProvider.showFlashcardDialog(context, quizProvider, colorScheme,fetchDataFromJsonProvider,aiCreditProvider);
               },
             ),
 

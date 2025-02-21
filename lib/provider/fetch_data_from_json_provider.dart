@@ -1,58 +1,80 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 
 class FetchDataFromJsonProvider with ChangeNotifier {
+  final Box _fetchDataFromJson = Hive.box('fetchDataFromJson');
 
   String _model = '';
-  int _maxLength = 0;
+  int _ListOfMaxLength = 0;
   String _quiz_question_type = '';
   List<String> listOfModels = [];
   List<String> listOfQuizQuestionTypes = [];
-  List<int> ListOfMaxLength = [];
-
-
+  List<int> listOfMaxLength = [];
 
   String get model => _model;
-  int get maxLength => _maxLength;
+  int get ListOfMaxLength => _ListOfMaxLength;
   String get quiz_question_type => _quiz_question_type;
 
+  /// Load data from Hive
+  void hiveLoad() {
+    _model = _fetchDataFromJson.get('model', defaultValue: '');
+    _ListOfMaxLength = _fetchDataFromJson.get('maxLength', defaultValue: 20);
+    _quiz_question_type = _fetchDataFromJson.get('quiz_question_type', defaultValue: '');
+
+    listOfModels = List<String>.from(_fetchDataFromJson.get('listOfModels', defaultValue: []));
+    listOfQuizQuestionTypes = List<String>.from(_fetchDataFromJson.get('listOfQuizQuestionTypes', defaultValue: []));
+    listOfMaxLength = List<int>.from(_fetchDataFromJson.get('listOfMaxLength', defaultValue: []));
+
+    notifyListeners();
+  }
+
+  /// Save data to Hive
+  void hiveSave() {
+    _fetchDataFromJson.put('model', _model);
+    _fetchDataFromJson.put('maxLength', _ListOfMaxLength);
+    _fetchDataFromJson.put('quiz_question_type', _quiz_question_type);
+
+    _fetchDataFromJson.put('listOfModels', listOfModels);
+    _fetchDataFromJson.put('listOfQuizQuestionTypes', listOfQuizQuestionTypes);
+    _fetchDataFromJson.put('listOfMaxLength', listOfMaxLength);
+  }
+
+  /// Update functions with Hive saving
   void updateModel(String newModel) {
     _model = newModel;
+    hiveSave();
     notifyListeners();
   }
 
   void updateQuizQuestionType(String newValue) {
     _quiz_question_type = newValue;
+    hiveSave();
     notifyListeners();
   }
 
-  void updateMaxLength(int newValue) {
-    _maxLength = newValue;
+  void updateListOfMaxLength(int newValue) {
+    _ListOfMaxLength = newValue;
+    hiveSave();
     notifyListeners();
   }
 
+  /// Fetch latest version from API
   Future<void> fetchLatestVersion() async {
     final response = await http.get(Uri.parse('https://curib123.github.io/flashi_/flashi.json'));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
 
-      // Extract the AI models data
-      List<dynamic> aiModels = data['ai_models'];
-      List<dynamic> questionTypes = data['listOfQuizQuestionTypes'];
+      listOfModels = List<String>.from(data['ai_models'].map((model) => model['model_name']));
+      listOfQuizQuestionTypes = List<String>.from(data['listOfQuizQuestionTypes'].map((type) => type['name']));
+      listOfMaxLength = List<int>.from(data['ListOfMaxLength']);
 
-      // Update the listOfModels with the model names from the fetched data
-      listOfModels = aiModels.map<String>((model) => model['model_name'] as String).toList();
-      listOfQuizQuestionTypes = questionTypes.map<String>((model) => model['name'] as String).toList();
-      ListOfMaxLength = List<int>.from(data['ListOfMaxLength']);
-
-      // Notify listeners to update the UI
+      hiveSave(); // Save the fetched data to Hive
       notifyListeners();
     } else {
       print("Failed to load data");
     }
   }
-
-
 }

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
+import 'package:flashi/provider/ai_credits_provider.dart';
 import 'package:flashi/provider/fetch_data_from_json_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flashi/util/helpers/classes/api/ai/core/ai_question_generator.dart';
@@ -47,9 +48,9 @@ class AiModelLogicProvider extends ChangeNotifier {
 
   Future<void> pickFileAndGenerate(BuildContext context,
       QuizProvider quizProvider,
-      FetchDataFromJsonProvider fetchDataFromJsonProvider) async {
+      FetchDataFromJsonProvider fetchDataFromJsonProvider,AiCreditProvider aiCreditProvider) async {
 
-    showLoadingDialog(context);
+    showLoadingDialog(context,text:   "AI is processing... Please wait...");
     extractedText = await FileTextExtractor.pickAndExtractText();
 
     if (extractedText.isEmpty) {
@@ -68,7 +69,7 @@ class AiModelLogicProvider extends ChangeNotifier {
         extractedText,
         fetchDataFromJsonProvider.model,
         fetchDataFromJsonProvider.quiz_question_type,
-        fetchDataFromJsonProvider.maxLength,
+        fetchDataFromJsonProvider.ListOfMaxLength,
       );
 
       var random = Random();
@@ -90,7 +91,7 @@ class AiModelLogicProvider extends ChangeNotifier {
             'description': 'AI Generated Flashcard content using PDF/docs file',
             'cards': [],
             'numberOfQuiz': 0,
-            'limitNumberOfQuiz': fetchDataFromJsonProvider.maxLength,
+            'limitNumberOfQuiz': fetchDataFromJsonProvider.ListOfMaxLength,
           });
 
           for (var questionData in questions) {
@@ -110,6 +111,7 @@ class AiModelLogicProvider extends ChangeNotifier {
           Navigator.pop(context);
           Navigator.pop(context);
 
+          aiCreditProvider.useCredit(1);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
@@ -140,7 +142,7 @@ class AiModelLogicProvider extends ChangeNotifier {
 
   Future<void> GenerateFlashCardFromCustomTopic(BuildContext context,
       QuizProvider quizProvider,
-      FetchDataFromJsonProvider fetchDataFromJsonProvider) async {
+      FetchDataFromJsonProvider fetchDataFromJsonProvider,AiCreditProvider aiCreditProvider) async {
     if (topic.isEmpty) {
       notifyListeners();
       Navigator.pop(context);
@@ -158,7 +160,7 @@ class AiModelLogicProvider extends ChangeNotifier {
       description,
       fetchDataFromJsonProvider.model,
       fetchDataFromJsonProvider.quiz_question_type,
-      fetchDataFromJsonProvider.maxLength,
+      fetchDataFromJsonProvider.ListOfMaxLength,
     );
 
     print(questions);
@@ -183,7 +185,7 @@ class AiModelLogicProvider extends ChangeNotifier {
           'description': "Ai Generated Flashcard of ${topic}",
           'cards': [],
           'numberOfQuiz': 0,
-          'limitNumberOfQuiz': fetchDataFromJsonProvider.maxLength,
+          'limitNumberOfQuiz': fetchDataFromJsonProvider.ListOfMaxLength,
         });
 
         for (var questionData in questions) {
@@ -199,10 +201,12 @@ class AiModelLogicProvider extends ChangeNotifier {
             },
           );
         }
+
         Navigator.pop(context);
         Navigator.pop(context);
         Navigator.pop(context);
         Navigator.pop(context);
+        aiCreditProvider.useCredit(1);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -234,11 +238,18 @@ class AiModelLogicProvider extends ChangeNotifier {
       QuizProvider quizProvider,
       ColorScheme colorScheme,
       FetchDataFromJsonProvider fetchDataFromJsonProvider,
+      AiCreditProvider aiCreditProvider
       ) async {
     showDialog(
       barrierDismissible: true,
       context: context,
       builder: (BuildContext context) {
+
+        void _fetchDataFromJson(){
+          fetchLatestVersion();
+          fetchDataFromJsonProvider.fetchLatestVersion();
+        }
+
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
@@ -293,7 +304,7 @@ class AiModelLogicProvider extends ChangeNotifier {
                     _buildDialogButton(
                       icon: Icons.style_rounded,
                       context,
-                      label: "Basic Flashcard",
+                      label: "Create Own Flashcard",
                       gradientColors: [
                         colorScheme.primary,
                         colorScheme.primary.withOpacity(0.5)
@@ -317,6 +328,7 @@ class AiModelLogicProvider extends ChangeNotifier {
                         colorScheme.secondary.withOpacity(0.5)
                       ],
                       onPressed: () async {
+
                         bool isConnected =
                         await InternetConnection().hasInternetAccess;
                         if (!isConnected && !isFetchData) {
@@ -325,9 +337,9 @@ class AiModelLogicProvider extends ChangeNotifier {
                             'No Internet',
                             "Please connect to the internet to generate a flashcard.",
                           );
-                          fetchLatestVersion();
-                          fetchDataFromJsonProvider.fetchLatestVersion();
                           return;
+                        }else{
+                          _fetchDataFromJson();
                         }
                         if (!isUnderMaintenance) {
                           ModelSelectionDialog.show(
@@ -335,7 +347,7 @@ class AiModelLogicProvider extends ChangeNotifier {
                             true,
                             onTap: () => showTopicDialog(context, onTap: () {
                               GenerateFlashCardFromCustomTopic(
-                                  context, quizProvider, fetchDataFromJsonProvider);
+                                  context, quizProvider, fetchDataFromJsonProvider,aiCreditProvider);
                             }),
                           );
                         } else {
@@ -347,12 +359,13 @@ class AiModelLogicProvider extends ChangeNotifier {
                     _buildDialogButton(
                       icon: Icons.file_copy_rounded,
                       context,
-                      label: "AI-Generated From Documents",
+                      label: "AI-Generated From Document",
                       gradientColors: [
                         colorScheme.tertiary,
                         colorScheme.tertiary.withOpacity(0.5)
                       ],
                       onPressed: () async {
+
                         bool isConnected =
                         await InternetConnection().hasInternetAccess;
                         if (!isConnected && !isFetchData) {
@@ -362,6 +375,8 @@ class AiModelLogicProvider extends ChangeNotifier {
                             "Please connect to the internet to generate a flashcard.",
                           );
                           return;
+                        }else{
+                          _fetchDataFromJson();
                         }
                         if (!isUnderMaintenance) {
                           ModelSelectionDialog.show(
@@ -369,7 +384,7 @@ class AiModelLogicProvider extends ChangeNotifier {
                             false,
                             onTap: () async {
                               await pickFileAndGenerate(
-                                  context, quizProvider, fetchDataFromJsonProvider);
+                                  context, quizProvider, fetchDataFromJsonProvider,aiCreditProvider);
                             },
                           );
                         } else {
@@ -427,7 +442,7 @@ class AiModelLogicProvider extends ChangeNotifier {
                       Text(
                         label,
                         style: const TextStyle(
-                          fontSize: 10,
+                          fontSize: 11,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),

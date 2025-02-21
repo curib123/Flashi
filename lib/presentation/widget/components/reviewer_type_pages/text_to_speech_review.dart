@@ -33,7 +33,11 @@ class _TextToSpeechReviewState extends State<TextToSpeechReview> {
   @override
   void initState() {
     super.initState();
-    adManager.loadInterstitialAd(AdUnitId.interstitialAdUnitId);
+
+    Future.delayed(Duration(minutes: 3),(){
+      adManager.loadInterstitialAd(AdUnitId.interstitialAdUnitId);
+    });
+
     adManager.showInterstitialAd();
     _pageController = PageController(initialPage: _currentIndex); // Start at the first card
 

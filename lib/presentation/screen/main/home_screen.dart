@@ -7,12 +7,14 @@ import 'package:flashi/presentation/widget/reusable_widgets/reusable_quiz_set_li
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_sort_and_see_all.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_title_content.dart';
+import 'package:flashi/provider/ai_credits_provider.dart';
 import 'package:flashi/provider/ai_model_logic_provider.dart';
 import 'package:flashi/provider/fetch_data_from_json_provider.dart';
 import 'package:flashi/provider/check_version_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flashi/provider/sort_provider.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
+import 'package:flashi/util/helpers/classes/ads/ad_unit_id.dart';
 import 'package:flashi/util/helpers/widget/other/empty_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -26,10 +28,16 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
 
+  AdManager adManager = AdManager();
+
   @override
   void initState() {
     super.initState();
     // Access the QuizProvider and SortProvider from the context
+
+    Future.delayed(Duration(minutes: 5),(){
+      adManager.loadInterstitialAd(AdUnitId.interstitialAdUnitId);
+    });
 
     final aiModelProvider = Provider.of<FetchDataFromJsonProvider>(context,listen: false);
     final aiModelLogicProvider = Provider.of<AiModelLogicProvider>(context,listen: false);
@@ -51,6 +59,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    adManager.showInterstitialAd();
+  }
+  @override
   Widget build(BuildContext context) {
 
     // Retrieve the current theme's color scheme
@@ -61,6 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final fetchDataFromJsonProvider = Provider.of<FetchDataFromJsonProvider>(context);
     final sortProvider = Provider.of<SortProvider>(context);
     final aiModelLogicProvider = Provider.of<AiModelLogicProvider>(context);
+    final aiCreditProvider = Provider.of<AiCreditProvider>(context);
 
     // Reverse the filtered quiz sets for display
     final filteredQuizSets = quizProvider.filteredQuizSets.reversed.toList();
@@ -210,7 +225,7 @@ class _HomeScreenState extends State<HomeScreen> {
             colorScheme: colorScheme,
             name: 'Create Flashcard',
             onTap: ()  {
-              aiModelLogicProvider.showFlashcardDialog(context, quizProvider, colorScheme,fetchDataFromJsonProvider);
+              aiModelLogicProvider.showFlashcardDialog(context, quizProvider, colorScheme,fetchDataFromJsonProvider,aiCreditProvider);
             },
           ),
 

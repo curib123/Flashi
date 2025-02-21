@@ -11,6 +11,7 @@ import 'package:flashi/provider/notes_provider.dart';
 import 'package:flashi/presentation/widget/components/create_note_screen.dart';
 import 'package:flashi/provider/sort_provider.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
+import 'package:flashi/util/helpers/classes/ads/ad_unit_id.dart';
 import 'package:flashi/util/helpers/widget/other/empty_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -24,13 +25,23 @@ class NoteScreen extends StatefulWidget {
 }
 
 class _NoteScreenState extends State<NoteScreen> {
+  AdManager adManager = AdManager();
 
   @override
   void initState() {
     super.initState();
+    Future.delayed(Duration(minutes: 5),(){
+      adManager.loadInterstitialAd(AdUnitId.interstitialAdUnitId);
+    });
 
   }
 
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    adManager.showInterstitialAd();
+  }
   @override
   Widget build(BuildContext context) {
 
@@ -38,7 +49,6 @@ class _NoteScreenState extends State<NoteScreen> {
     final notesProvider = Provider.of<NotesProvider>(context);
     final sortProvider = Provider.of<SortProvider>(context);
     var filteredNotes = notesProvider.filterNotesByTitle().reversed.toList();
-    AdManager adManager = AdManager();
 
 
     return Scaffold(

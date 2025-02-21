@@ -1,6 +1,7 @@
 import 'package:flashi/provider/save_info_ads_provider.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_unit_id.dart';
+import 'package:flashi/util/helpers/widget/alert_dialog/loading_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:provider/provider.dart';
@@ -111,27 +112,12 @@ class ReusableRewardedAdsButtonPosition extends StatelessWidget {
       AdManager adManager = AdManager();
       adManager.loadRewardedAd(AdUnitId.rewardedAdUnitId);
 
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => WillPopScope(
-          onWillPop: () async => false,
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: const [
-                CircularProgressIndicator(),
-                SizedBox(height: 16),
-                Text("Loading ad...")
-              ],
-            ),
-          ),
-        ),
-      );
+      showLoadingDialog(context, text: "Loading ads... Please wait.\nIf it doesn’t appear, try again.");
 
       Future.delayed(const Duration(seconds: 10), () {
         Navigator.of(context).pop(); // Close loading dialog
         _showConfirmationDialog(context);
+
       });
     } else {
       _showDialog(
@@ -149,26 +135,49 @@ class ReusableRewardedAdsButtonPosition extends StatelessWidget {
   }
 
   void _showConfirmationDialog(BuildContext context) {
-    _showDialog(
-      context,
-      title: "Watch Ad?",
-      message: "Would you like to watch an ad to get free 5 card slots reward?",
-      actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-            AdManager adManager = AdManager();
-            adManager.showRewarded(context);
-          },
-          child: const Text("Yes"),
-        ),
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text("No"),
-        ),
-      ],
+    final colorScheme = Theme.of(context).colorScheme;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            "Watch Ad?",
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          content: const Text(
+            "Would you like to watch an ad to get a free 5 card slots reward?",
+            style: TextStyle(fontSize: 16),
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.0),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                AdManager().showRewarded(context, "cards");
+              },
+              style: TextButton.styleFrom(
+                foregroundColor: colorScheme.primary,
+                textStyle: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              child: const Text("Yes"),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              style: TextButton.styleFrom(
+                foregroundColor: colorScheme.error,
+                textStyle: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              child: const Text("No"),
+            ),
+          ],
+        );
+      },
     );
   }
+
 
   void _showDialog(BuildContext context, {
     required String title,

@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 
-void showLoadingDialog(BuildContext context) {
+void showLoadingDialog(BuildContext context, {required String text}) {
   showDialog(
     context: context,
     barrierDismissible: false, // Prevent closing by tapping outside
     builder: (context) {
       return WillPopScope(
         onWillPop: () async => false, // Prevent back button dismissal
-        child: _LoadingDialog(),
+        child: _LoadingDialog(text: text), // Pass text to _LoadingDialog
       );
     },
   );
 }
 
 class _LoadingDialog extends StatefulWidget {
+  final String text; // Define a text property
+
+  const _LoadingDialog({required this.text}); // Constructor with required text
+
   @override
   _LoadingDialogState createState() => _LoadingDialogState();
 }
@@ -27,7 +31,7 @@ class _LoadingDialogState extends State<_LoadingDialog> with SingleTickerProvide
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: Duration(seconds: 1), // Rotation duration
+      duration: const Duration(seconds: 1), // Rotation duration
     )..repeat(); // Continuous rotation
   }
 
@@ -45,6 +49,10 @@ class _LoadingDialogState extends State<_LoadingDialog> with SingleTickerProvide
         filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2), // Subtle blur effect
         child: Container(
           padding: const EdgeInsets.all(20.0),
+          decoration: BoxDecoration(
+            color: Colors.black.withOpacity(0.1), // Semi-transparent background
+            borderRadius: BorderRadius.circular(10),
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center, // Center vertically
@@ -58,10 +66,10 @@ class _LoadingDialogState extends State<_LoadingDialog> with SingleTickerProvide
                   color: Theme.of(context).colorScheme.onPrimary,
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Center( // Ensures the text is centered
                 child: Text(
-                  "AI is processing... Please wait...",
+                  widget.text, // Use widget.text instead of text
                   textAlign: TextAlign.center, // Centers the text
                   style: TextStyle(
                     fontSize: 13,

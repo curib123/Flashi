@@ -1,5 +1,6 @@
 
 import 'package:flashi/home.dart';
+import 'package:flashi/provider/ai_credits_provider.dart';
 import 'package:flashi/provider/ai_model_logic_provider.dart';
 import 'package:flashi/provider/chatbot_provider.dart';
 import 'package:flashi/provider/fetch_data_from_json_provider.dart';
@@ -33,6 +34,7 @@ Future<void> main() async {
   await Hive.openBox('onboarding'); // Box for storing onboarding
   await Hive.openBox('timerBox');
   await Hive.openBox('chatMessages');
+  await Hive.openBox('fetchDataFromJson');
 
   await saveAPIKey('TZjSrnSAjyflYyNyFmPnMfHHSZ4Mw33q');
 
@@ -50,6 +52,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => AiModelLogicProvider()), // Add AiModelLogicProvider
         ChangeNotifierProvider(create: (_) => CheckVersionProvider()), // Add CheckVersionProvider
         ChangeNotifierProvider(create: (_) => ChatBotProvider()), // Add CheckVersionProvider
+        ChangeNotifierProvider(create: (_) => AiCreditProvider()), // Add CheckVersionProvider
 
         ChangeNotifierProvider(
             create: (context) => QuizProvider(
