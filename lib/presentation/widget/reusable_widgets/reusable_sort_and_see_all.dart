@@ -1,4 +1,7 @@
+import 'package:flashi/provider/quiz_provider.dart';
+import 'package:flashi/util/helpers/classes/other/import_export_helper_class.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ReusableSortAndSeeAll extends StatelessWidget {
   final String dropdownValue;
@@ -26,7 +29,7 @@ class ReusableSortAndSeeAll extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0.0),
+      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 0.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -47,6 +50,8 @@ class ReusableSortAndSeeAll extends StatelessWidget {
             }).toList(),
             onChanged: onSortChanged,
           ),
+
+
           // "See All" button
           isShowSeeAllLink
               ? TextButton(

@@ -23,7 +23,7 @@ class _ExportImportScreenState extends State<ExportImportScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Import / Restore Set',
+          'Import / Export Set',
           style: TextStyle(
             color: colorScheme.onPrimary,
             fontWeight: FontWeight.bold,

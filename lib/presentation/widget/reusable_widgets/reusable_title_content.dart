@@ -2,7 +2,6 @@ import 'package:flashi/provider/ai_credits_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_unit_id.dart';
-import 'package:flashi/util/helpers/classes/other/import_export_helper_class.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/loading_dialog.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/show_maintenace_alert_box.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/show_watch_ads_dialog.dart';
@@ -24,7 +23,7 @@ class ReusableTitleContent extends StatefulWidget {
 }
 
 class _ReusableTitleContentState extends State<ReusableTitleContent> {
-  final ImportExportHelperClass _helper = ImportExportHelperClass(); // Helper instance for export/import
+
   AdManager adManager = AdManager();
   @override
   void initState() {
@@ -51,14 +50,16 @@ class _ReusableTitleContentState extends State<ReusableTitleContent> {
                 ),
               ),
             ),
+            // SizedBox(width: 20,),
             Row(
               children: [
                 GestureDetector(
                   onTap: () async {
                    adManager.loadRewardedAd(AdUnitId.rewardedAdUnitId);
                     bool isConnected = await InternetConnection().hasInternetAccess;
-
+                   showLoadingDialog(context, text: "Loading ads... Please wait.\nIf it doesn’t appear, try again.");
                  if(isConnected){
+                   Navigator.of(context).pop();
                    showWatchAdDialog(
                        context: context,
                        title: "Earn Free Credits!",
@@ -74,11 +75,12 @@ class _ReusableTitleContentState extends State<ReusableTitleContent> {
                      },
                    );
                  }else{
+                   Navigator.of(context).pop();
                    showMaintenanceDialog(context, "No Internet", "Please connect to internet");
                  }
                   },
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    padding: EdgeInsets.only(left:10),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.all(Radius.circular(50)),
                       color: widget.colorScheme.onPrimary,
@@ -90,30 +92,16 @@ class _ReusableTitleContentState extends State<ReusableTitleContent> {
                           style: TextStyle(fontSize: 15, color: widget.colorScheme.primary,fontWeight: FontWeight.w600),
                         ),
                         SizedBox(width: 5),
-                        Icon(Icons.token_rounded, size: 15, color: FlexColor.goldDarkPrimary),
+                        Icon(Icons.token_rounded, size: 20, color: FlexColor.goldDarkPrimary),
                         SizedBox(width: 5),
-                        Icon(Icons.add_circle_rounded,size: 15,color: widget.colorScheme.primary,)
+                        Icon(Icons.add_circle_rounded,size: 30,color: widget.colorScheme.secondary,)
                       ],
                     ),
 
                   ),
                 ),
-                SizedBox(width: 10),
-                GestureDetector(
-                  onTap: () {
-                    _helper.importList(context, quizProvider);
-                  },
-                  child: CircleAvatar(
-                    backgroundColor: Colors.transparent,
-                    child: Icon(
-                      Icons.archive_rounded,
-                      size: 30,
-                      color: widget.colorScheme.onPrimary,
-                    ),
-                  ),
-                ),
 
-                SizedBox(width: 10),
+                SizedBox(width: 20),
                 GestureDetector(
                   onTap: widget.onSettings,
                   child: CircleAvatar(

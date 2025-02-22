@@ -1,5 +1,7 @@
 import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_search_bar_core.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_create_set_button_position.dart';
+import 'package:flashi/presentation/widget/reusable_widgets/reusable_favorate_position.dart';
+import 'package:flashi/presentation/widget/reusable_widgets/reusable_import_position.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_quiz_set_list.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_sort_and_see_all.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
@@ -122,6 +124,8 @@ class SeeAllQuizSetList extends StatelessWidget {
             ),
 
             ReusableThemeSettingPosition(colorScheme: colorScheme),
+            ReusableImportPosition(colorScheme: colorScheme),
+            ReusableFavoratePosition(colorScheme: colorScheme),
           ],
         );
       },

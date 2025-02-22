@@ -21,7 +21,7 @@ class CustomDrawer extends StatelessWidget {
       required VoidCallback onTap,
     }) {
       return ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 15),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 15,vertical: 5),
         leading: Icon(icon, color: colorScheme.primary),
         title: Text(title, style: textStyle),
         onTap: onTap,
@@ -52,16 +52,16 @@ class CustomDrawer extends StatelessWidget {
           //   onTap: () => Navigator.pop(context),
           // ),
           buildListTile(
-            icon: Icons.house_siding_rounded,
+            icon: Icons.home_rounded,
             title: 'Home',
             onTap: () {
               Navigator.pop(context);
-              bottomNavigationProvider.toogleNavigation(2);
+              bottomNavigationProvider.toogleNavigation(1);
             },
           ),
           buildListTile(
             icon: Icons.favorite_rounded,
-            title: 'My Favorites',
+            title: 'Favorites',
             onTap: () {
               Navigator.pop(context);
               Navigator.push(
@@ -72,15 +72,15 @@ class CustomDrawer extends StatelessWidget {
           ),
           buildListTile(
             icon: Icons.text_snippet_rounded,
-            title: 'My Notes',
+            title: 'Notes',
             onTap: () {
               Navigator.pop(context);
-              bottomNavigationProvider.toogleNavigation(4);
+              bottomNavigationProvider.toogleNavigation(2);
             },
           ),
           buildListTile(
-            icon: Icons.task_rounded,
-            title: 'My Chatbot ',
+            icon: Icons.smart_toy_rounded,
+            title: 'Chatbot ',
             onTap: () {
               Navigator.pop(context);
               bottomNavigationProvider.toogleNavigation(0);
@@ -101,8 +101,8 @@ class CustomDrawer extends StatelessWidget {
 
           const Divider(height: 1),
           buildListTile(
-            icon: Icons.import_export_rounded,
-            title: 'Import/Export Set Card',
+            icon: Icons.add_card_sharp,
+            title: 'Import Flashcard',
             onTap: () => {
               Navigator.pop(context),
             Navigator.push(

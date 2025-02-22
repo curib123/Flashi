@@ -50,7 +50,6 @@ class _LoadingDialogState extends State<_LoadingDialog> with SingleTickerProvide
         child: Container(
           padding: const EdgeInsets.all(20.0),
           decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.1), // Semi-transparent background
             borderRadius: BorderRadius.circular(10),
           ),
           child: Column(
@@ -61,7 +60,7 @@ class _LoadingDialogState extends State<_LoadingDialog> with SingleTickerProvide
               RotationTransition(
                 turns: _controller, // Continuous rotation
                 child: Icon(
-                  Icons.android,
+                  Icons.smart_toy_rounded,
                   size: 65,
                   color: Theme.of(context).colorScheme.onPrimary,
                 ),

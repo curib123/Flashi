@@ -45,6 +45,20 @@ class AdUnitId {
     }
   }
 
+  static String get appOpenAdUnitId {
+    if (Platform.isAndroid) {
+      return isTest
+          ? 'ca-app-pub-3940256099942544/9257395921'  // Test Ad Unit for Android
+          : 'ca-app-pub-3608052107276973/5419251163'; // Real Ad Unit for Android
+    } else if (Platform.isIOS) {
+      return isTest
+          ? 'your_ios_test_rewarded_ad_unit_id_here'  // Test Ad Unit for iOS
+          : 'your_ios_real_rewarded_ad_unit_id_here'; // Real Ad Unit for iOS
+    } else {
+      return 'default_rewarded_ad_unit_id';
+    }
+  }
+
   // Private constructor to prevent instantiation
   AdUnitId._();
 }

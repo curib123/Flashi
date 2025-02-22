@@ -76,7 +76,7 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
         foregroundColor: colorScheme.onPrimary,
         title: ReusableTitleContent(
           colorScheme: colorScheme,
-          title: "My Chatbot ",
+          title: "Chatbot ",
           onUpgradePro: () {},
           onSettings: () {
             Navigator.push(
@@ -89,6 +89,10 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
       ),
       body: Stack(
         children: [
+         Positioned(
+           top: MediaQuery.of(context).size.height * 0.3,
+           right: MediaQuery.of(context).size.width * 0.35,
+             child:  Icon(Icons.smart_toy_rounded,size: 100,color: colorScheme.primary.withOpacity(0.3),),),
           Column(
             children: [
               Expanded(
@@ -108,8 +112,8 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
                           return Align(
                             alignment: Alignment.centerLeft,
                             child: Container(
-                              margin: const EdgeInsets.symmetric(vertical: 6),
-                              padding: const EdgeInsets.all(14),
+                              margin: const EdgeInsets.symmetric(vertical: 3),
+                              padding: const EdgeInsets.all(10),
                               decoration: BoxDecoration(
                                 color: colorScheme.secondaryContainer,
                                 borderRadius: BorderRadius.circular(20),

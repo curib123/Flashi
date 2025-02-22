@@ -3,6 +3,7 @@ import 'package:flashi/presentation/widget/components/see_all_quiz_set_list.dart
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_favorate_position.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_search_bar_core.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_create_set_button_position.dart';
+import 'package:flashi/presentation/widget/reusable_widgets/reusable_import_position.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_quiz_set_list.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_sort_and_see_all.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
@@ -15,6 +16,7 @@ import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flashi/provider/sort_provider.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_unit_id.dart';
+import 'package:flashi/util/helpers/classes/ads/app_lifecycle_reactor.dart';
 import 'package:flashi/util/helpers/widget/other/empty_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -29,11 +31,16 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
 
   AdManager adManager = AdManager();
+  late AppLifecycleReactor _appLifecycleReactor;
 
   @override
   void initState() {
     super.initState();
     // Access the QuizProvider and SortProvider from the context
+
+    AdManager adManager = AdManager()..loadOpenAppAd(AdUnitId.appOpenAdUnitId);
+    _appLifecycleReactor = AppLifecycleReactor(
+        adManager: adManager);
 
     Future.delayed(Duration(minutes: 5),(){
       adManager.loadInterstitialAd(AdUnitId.interstitialAdUnitId);
@@ -150,7 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           height: 85,
                           child: ReusableSearchBarCore(
                             colorScheme: colorScheme,
-                            hintText: 'Search FlashCards',
+                            hintText: 'Search Flashcards',
                             onChanged: (value) =>
                                 quizProvider.updateSearchQuery(value),
                             controller: quizProvider.searchController,
@@ -231,6 +238,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
           // Floating theme settings button
           ReusableThemeSettingPosition(colorScheme: colorScheme),
+          ReusableImportPosition(colorScheme: colorScheme),
           ReusableFavoratePosition(colorScheme: colorScheme),
 
         ],

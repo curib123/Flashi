@@ -28,6 +28,7 @@ class _HomeState extends State<Home> {
     // Load the ads using the platform-specific ad unit IDs
     adManager.loadBannerAd(AdUnitId.bannerAdUnitId);
 
+
   }
   @override
   Widget build(BuildContext context) {

@@ -14,15 +14,16 @@ class OnboardingScreen extends StatefulWidget {
 class _OnboardingScreenState extends State<OnboardingScreen> {
   List<PageViewModel> pages = [
     PageViewModel(
-      title: "Welcome to Flashi Ai",
-      body: "Create custom flashcards easily—automatically with AI or manually to match your learning style!",
-      image: Center(child: _AnimatedMovingIcon(icon: Icons.school_rounded)),
+      title: "AI-Powered Flashcards",
+      body: "Generate smart flashcards instantly using AI! Create custom prompts or extract key points from PDFs and Docs to supercharge your learning.",
+      image: Center(child: _AnimatedMovingIcon(icon: Icons.auto_awesome_rounded)), // AI-inspired icon
       decoration: PageDecoration(
         titleTextStyle: OnboardingScreen._animatedTextStyle,
         bodyTextStyle: OnboardingScreen._animatedBodyTextStyle,
         imagePadding: EdgeInsets.only(bottom: 16),
       ),
     ),
+
     PageViewModel(
       title: "AI Assistant Chatbot",
       body: "Study with ease—let the AI assistant chatbot guide you through your learning journey, offering accurate, correct, and tailored support to match your unique style!",
@@ -33,7 +34,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         imagePadding: EdgeInsets.only(bottom: 16),
       ),
     ),
-
 
     PageViewModel(
       title: "Create & Customize",
@@ -47,7 +47,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     ),
     PageViewModel(
       title: "Learn Anytime, Anywhere",
-      body: "Access your flashcards and study on-the-go, wherever you are. No internet required, just dive into your learning!",
+      body: "Access your flashcards and study on-the-go, wherever you are, just dive into your learning!",
       image: Center(child: _AnimatedMovingIcon(icon: Icons.mobile_friendly)),
       decoration: PageDecoration(
         titleTextStyle: OnboardingScreen._animatedTextStyle,
@@ -55,8 +55,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         imagePadding: EdgeInsets.only(bottom: 16),
       ),
     ),
-
-
 
   ];
 

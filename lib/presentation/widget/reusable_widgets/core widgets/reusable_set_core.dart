@@ -11,7 +11,6 @@ class ReusableSetCore extends StatelessWidget {
   final VoidCallback onEdit; // Action for "Edit"
   final VoidCallback onFavorate; // Action for "Favorate"
   final VoidCallback onShare; // Action for "Share"
-  final VoidCallback onImport; // Action for "Share"
   final VoidCallback onExport; // Action for "Share"
   final VoidCallback onViewAllCards; // Action for "View All Cards"
   final DateTime timestamp; // Added timestamp parameter
@@ -32,7 +31,6 @@ class ReusableSetCore extends StatelessWidget {
     required this.timestamp,
     required this.isFavorate,
     required this.onShare,
-    required this.onImport,
     required this.onExport,
   });
 
@@ -148,8 +146,6 @@ class ReusableSetCore extends StatelessWidget {
                           onViewAllCards();
                         }else if(value == 'export'){
                           onExport();
-                        }else if(value == 'import'){
-                          onImport();
                         }else if(value == 'share'){
                           onShare();
                         }
@@ -161,7 +157,7 @@ class ReusableSetCore extends StatelessWidget {
                             child: Row(
                               children: [
                                 isFavorate ?  Icon(Icons.favorite, color: colorScheme.error) :  Icon(Icons.favorite_outline, color: colorScheme.error),
-                                const SizedBox(width: 1),
+                                const SizedBox(width: 5),
                                 Text('Favorate', style: TextStyle(color: colorScheme.primary)),
                               ],
                             ),
@@ -171,7 +167,7 @@ class ReusableSetCore extends StatelessWidget {
                             child: Row(
                               children: [
                                 Icon(Icons.edit, color: colorScheme.primary),
-                                const SizedBox(width: 1),
+                                const SizedBox(width: 5),
                                 Text('Edit', style: TextStyle(color: colorScheme.primary)),
                               ],
                             ),
@@ -181,8 +177,8 @@ class ReusableSetCore extends StatelessWidget {
                             value: 'view_all',
                             child: Row(
                               children: [
-                                Icon(Icons.add_card, color: colorScheme.primary),
-                                const SizedBox(width: 1),
+                                Icon(Icons.view_agenda_rounded, color: colorScheme.primary),
+                                const SizedBox(width: 5),
                                 Text('View All Cards', style: TextStyle(color: colorScheme.primary)),
                               ],
                             ),
@@ -199,23 +195,13 @@ class ReusableSetCore extends StatelessWidget {
                           //   ),
                           // ), // Export Option
 
-                           PopupMenuItem<String>(
-                            value: 'import',
-                            child: Row(
-                              children: [
-                                Icon(Icons.file_download_rounded, color: colorScheme.primary),
-                                const SizedBox(width: 1),
-                                Text('Import Set from folder', style: TextStyle(color: colorScheme.primary,fontSize: 13)),
-                              ],
-                            ),
-                          ), PopupMenuItem<String>(
+                          PopupMenuItem<String>(
                             value: 'export',
                             child: Row(
                               children: [
-                                Icon(Icons.file_upload_rounded, color: colorScheme.primary),
-                                const SizedBox(width: 1),
-                                Text('Export Set / '
-                                    'Save in Folder', style: TextStyle(color: colorScheme.primary,fontSize: 13)),
+                                Icon(Icons.save, color: colorScheme.primary),
+                                const SizedBox(width: 5),
+                                Text('Save in Folder', style: TextStyle(color: colorScheme.primary,fontSize: 13)),
                               ],
                             ),
                           ),

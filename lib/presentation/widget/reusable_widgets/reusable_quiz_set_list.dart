@@ -116,13 +116,8 @@ class ReusableQuizSetList extends StatelessWidget {
                               onExport: () {
                                 helper.exportList(context, set);
                               },
-                              onImport: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) =>  ExportImportScreen()),
-                              );
 
-                            },
+
                             ),
                           ),
                         ),
