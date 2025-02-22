@@ -27,7 +27,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     PageViewModel(
       title: "AI Assistant Chatbot",
       body: "Study with ease—let the AI assistant chatbot guide you through your learning journey, offering accurate, correct, and tailored support to match your unique style!",
-      image: Center(child: _AnimatedMovingIcon(icon: Icons.android)),
+      image: Center(child: _AnimatedMovingIcon(icon: Icons.smart_toy_rounded)),
       decoration: PageDecoration(
         titleTextStyle: OnboardingScreen._animatedTextStyle,
         bodyTextStyle: OnboardingScreen._animatedBodyTextStyle,
