@@ -28,7 +28,7 @@ AdManager adManager = AdManager();
   void initState() {
     super.initState();
 
-    Future.delayed(Duration(minutes: 3),(){
+    Future.delayed(Duration(minutes: 5),(){
       adManager.loadInterstitialAd(AdUnitId.interstitialAdUnitId);
     });
 

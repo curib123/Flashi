@@ -6,43 +6,40 @@ import 'package:docx_to_text/docx_to_text.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class FileTextExtractor {
+  /// Request necessary permissions for file access
+  Future<bool> requestPermissions() async {
+    if (Platform.isAndroid) {
+      final deviceInfo = DeviceInfoPlugin();
+      final androidInfo = await deviceInfo.androidInfo;
 
-  /// Requests necessary permissions before file selection
-  static Future<bool> requestPermissions() async {
-    if (!await Permission.storage.isGranted) {
-      var status = await Permission.storage.request();
-      if (status != PermissionStatus.granted) return false;
+      if (androidInfo.version.sdkInt >= 33) {
+        // Android 13+ (Scoped Storage) - No need for extra permissions
+        return true;
+      } else if (androidInfo.version.sdkInt >= 30) {
+        // Android 11 & 12 (Needs Manage External Storage)
+        PermissionStatus manageStorageStatus =
+        await Permission.manageExternalStorage.request();
+        return manageStorageStatus.isGranted;
+      } else {
+        // Android 10 and below
+        PermissionStatus storageStatus = await Permission.storage.request();
+        return storageStatus.isGranted;
+      }
     }
-
-    if (!await Permission.manageExternalStorage.isGranted) {
-      var status = await Permission.manageExternalStorage.request();
-      if (status != PermissionStatus.granted) return false;
-    }
-
-    return true;
+    return true; // For iOS or other platforms, no special permissions needed
   }
 
   /// Picks a file and extracts text from PDF or DOCX
   static Future<String> pickAndExtractText() async {
-    final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-    AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+    FileTextExtractor extractor = FileTextExtractor();
 
-    bool hasPermission = await requestPermissions();
+    bool hasPermission = await extractor.requestPermissions();
     if (!hasPermission) return "Permission denied. Please allow access to continue.";
 
-    FilePickerResult? result;
-
-    if( androidInfo.version.sdkInt >= 30){
-      result = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['pdf', 'docx'],
-      );
-    }else{
-      result = await FilePicker.platform.pickFiles(
-        type: FileType.any,
-      );
-    }
-
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf', 'docx'],
+    );
 
     if (result == null) return "No file selected";
 
@@ -59,10 +56,10 @@ class FileTextExtractor {
         final bytes = await file.readAsBytes();
         return docxToText(bytes);
       } else {
-        return "";
+        return "Unsupported file format";
       }
     } catch (e) {
-      return "";
+      return "Error reading file: $e";
     }
   }
 }

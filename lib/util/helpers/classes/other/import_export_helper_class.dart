@@ -9,13 +9,26 @@ import 'package:flashi/provider/quiz_provider.dart';
 class ImportExportHelperClass {
   final String directory = '/storage/emulated/0/Flashi';
 
-  Future<void> requestPermissions() async {
-    if (!await Permission.storage.isGranted) {
-      await Permission.storage.request();
+  Future<bool> requestPermissions() async {
+    if (Platform.isAndroid) {
+      final deviceInfo = DeviceInfoPlugin();
+      final androidInfo = await deviceInfo.androidInfo;
+
+      if (androidInfo.version.sdkInt >= 33) {
+        // Android 13+ (Scoped Storage) - No need for extra permissions
+        return true;
+      } else if (androidInfo.version.sdkInt >= 30) {
+        // Android 11 & 12 (Needs Manage External Storage)
+        PermissionStatus manageStorageStatus =
+        await Permission.manageExternalStorage.request();
+        return manageStorageStatus.isGranted;
+      } else {
+        // Android 10 and below
+        PermissionStatus storageStatus = await Permission.storage.request();
+        return storageStatus.isGranted;
+      }
     }
-    if (!await Permission.manageExternalStorage.isGranted) {
-      await Permission.manageExternalStorage.request();
-    }
+    return true; // For iOS or other platforms, no special permissions needed
   }
 
   Future<void> exportList(BuildContext context, Map<String, dynamic> sets) async {

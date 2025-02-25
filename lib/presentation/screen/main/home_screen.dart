@@ -41,7 +41,6 @@ class _HomeScreenState extends State<HomeScreen> {
     AdManager adManager = AdManager()..loadOpenAppAd(AdUnitId.appOpenAdUnitId);
     _appLifecycleReactor = AppLifecycleReactor(
         adManager: adManager);
-
     Future.delayed(Duration(minutes: 5),(){
       adManager.loadInterstitialAd(AdUnitId.interstitialAdUnitId);
     });

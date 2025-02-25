@@ -26,9 +26,6 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
   void initState() {
     super.initState();
 
-    Future.delayed(Duration(minutes: 5),(){
-      adManager.loadInterstitialAd(AdUnitId.interstitialAdUnitId);
-    });
     _scrollController = ScrollController();
   }
 

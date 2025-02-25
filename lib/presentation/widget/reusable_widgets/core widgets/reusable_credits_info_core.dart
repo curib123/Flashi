@@ -26,7 +26,7 @@ class ReusableCreditsInfoCore extends StatelessWidget {
             ),
           ),
           Text(
-            "You receive 10 free credits daily!",
+            "Your credits reset to 5 daily if below 5!",
             style: TextStyle(
               fontSize: 8,
               fontWeight: FontWeight.w500,

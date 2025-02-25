@@ -8,16 +8,16 @@ void showLoadingDialog(BuildContext context, {required String text}) {
     builder: (context) {
       return WillPopScope(
         onWillPop: () async => false, // Prevent back button dismissal
-        child: _LoadingDialog(text: text), // Pass text to _LoadingDialog
+        child: _LoadingDialog(text: text),
       );
     },
   );
 }
 
 class _LoadingDialog extends StatefulWidget {
-  final String text; // Define a text property
+  final String text;
 
-  const _LoadingDialog({required this.text}); // Constructor with required text
+  const _LoadingDialog({required this.text});
 
   @override
   _LoadingDialogState createState() => _LoadingDialogState();
@@ -31,8 +31,8 @@ class _LoadingDialogState extends State<_LoadingDialog> with SingleTickerProvide
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 1), // Rotation duration
-    )..repeat(); // Continuous rotation
+      duration: const Duration(seconds: 1),
+    )..repeat();
   }
 
   @override
@@ -43,37 +43,49 @@ class _LoadingDialogState extends State<_LoadingDialog> with SingleTickerProvide
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final backgroundColor = theme.colorScheme.background.withOpacity(0.9);
+    final textColor = theme.colorScheme.onBackground;
+
     return Dialog(
-      backgroundColor: Colors.transparent, // Fully transparent background
+      backgroundColor: Colors.transparent,
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2), // Subtle blur effect
+        filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
         child: Container(
           padding: const EdgeInsets.all(20.0),
           decoration: BoxDecoration(
+            color: backgroundColor,
             borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                blurRadius: 5,
+                spreadRadius: 2,
+              ),
+            ],
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center, // Center vertically
-            crossAxisAlignment: CrossAxisAlignment.center, // Center horizontally
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               RotationTransition(
-                turns: _controller, // Continuous rotation
+                turns: _controller,
                 child: Icon(
                   Icons.smart_toy_rounded,
                   size: 65,
-                  color: Theme.of(context).colorScheme.onPrimary,
+                  color: theme.colorScheme.primary,
                 ),
               ),
               const SizedBox(height: 20),
-              Center( // Ensures the text is centered
+              Center(
                 child: Text(
-                  widget.text, // Use widget.text instead of text
-                  textAlign: TextAlign.center, // Centers the text
+                  widget.text,
+                  textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.onPrimary,
+                    color: textColor,
                   ),
                 ),
               ),

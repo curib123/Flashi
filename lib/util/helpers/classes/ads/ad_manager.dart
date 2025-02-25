@@ -381,7 +381,7 @@ _bannerAd6 = BannerAd(
         saveInfoAdsProvider.incrementAdsWatched();
       }else if(whatRewards == "credits"){
         aiCreditProvider.addCredits(2);
-        aiCreditProvider.AddAdsWatched();
+        aiCreditProvider.addAdsWatched();
       }
 
     });

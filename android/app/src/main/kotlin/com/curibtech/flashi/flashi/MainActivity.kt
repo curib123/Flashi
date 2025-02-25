@@ -1,4 +1,4 @@
-package com.curib.flashi
+package com.curibtech.flashi
 
 import io.flutter.embedding.android.FlutterActivity
 

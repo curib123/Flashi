@@ -1,7 +1,6 @@
 import 'package:flashi/provider/ai_credits_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 void showWatchAdDialog({
   required BuildContext context,
   required String title,
@@ -50,6 +49,13 @@ void showWatchAdDialog({
                     color: colorScheme.primary,
                   ),
                 ),
+                if (aiCreditProvider.adCooldown > 0) ...[
+                  SizedBox(height: 10),
+                  Text(
+                    "Next ad available in: ${aiCreditProvider.adCooldown}s",
+                    style: TextStyle(fontSize: 14, color: Colors.red),
+                  ),
+                ],
                 SizedBox(height: 16),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -59,22 +65,26 @@ void showWatchAdDialog({
                       child: Text(cancelText, style: TextStyle(color: colorScheme.secondary)),
                     ),
                     ElevatedButton(
-                      onPressed: aiCreditProvider.adsWatchedToday < aiCreditProvider.maxAdsPerDay
+                      onPressed: (aiCreditProvider.adsWatchedToday < aiCreditProvider.maxAdsPerDay &&
+                          aiCreditProvider.adCooldown == 0)
                           ? () {
                         Navigator.pop(context);
                         onWatchAd();
                       }
-                          : null, // Disable button if max ads reached
+                          : null, // Disable button if cooldown is active
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: aiCreditProvider.adsWatchedToday < aiCreditProvider.maxAdsPerDay
+                        backgroundColor: (aiCreditProvider.adsWatchedToday < aiCreditProvider.maxAdsPerDay &&
+                            aiCreditProvider.adCooldown == 0)
                             ? colorScheme.primary
-                            : Colors.grey, // Gray out if max reached
+                            : colorScheme.error,
                         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
                       child: Text(
-                        confirmText,
-                        style: TextStyle(color: colorScheme.onPrimary),
+                        aiCreditProvider.adCooldown > 0
+                            ? "Wait ${aiCreditProvider.adCooldown}s"
+                            : confirmText,
+                        style: TextStyle(color:  aiCreditProvider.adCooldown > 0 ? colorScheme.onError : colorScheme.onPrimary,fontWeight: FontWeight.w600),
                       ),
                     ),
                   ],

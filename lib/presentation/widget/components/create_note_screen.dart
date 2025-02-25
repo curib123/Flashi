@@ -18,7 +18,8 @@ class CreateNoteScreen extends StatelessWidget {
     Key? key,
     required this.isCreate,
     required this.title,
-    required this.isRead, required this.date,
+    required this.isRead,
+    required this.date,
   }) : super(key: key);
 
   @override
@@ -27,123 +28,134 @@ class CreateNoteScreen extends StatelessWidget {
     final noteProvider = Provider.of<NotesProvider>(context);
     final size = MediaQuery.of(context).size;
 
-
-
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: _buildAppBar(colorScheme, context,title),
+      // Use background from the theme instead of a hard-coded white.
+      backgroundColor: colorScheme.background,
+      appBar: _buildAppBar(colorScheme, context, title),
       body: Stack(
         children: [
-          _buildBody(size,noteProvider),
-          _buildTitleInputField(noteProvider),
-         !isRead ? ReusableCreateSetButtonPosition(
-           icon: Icons.add_rounded,
-            colorScheme: colorScheme,
-            name: isCreate ?  'Save' : 'Save Changes',
-            onTap: () => {
-              if(noteProvider.titleController.text.isNotEmpty){
-                _onSaveTap(context, noteProvider)
-              }else{
-           ElegantNotification.info(
-           width: 300,
-           notificationMargin: 0,
-           stackedOptions: StackedOptions(
-             type: StackedType.same,
-             key: '',
-           ),
-           position: Alignment.topCenter,
-           animation: AnimationType.fromTop,
-           title: Text('ALERT'),
-           description: Text('REQUIRED TITLE'),
-           onDismiss: () {},
-         ).show(context),
-              }
-            },
-          ): const Text(''),
+          _buildBody(size, noteProvider, colorScheme),
+          _buildTitleInputField(noteProvider, colorScheme),
+          if (!isRead)
+            ReusableCreateSetButtonPosition(
+              icon: Icons.add_circle,
+              colorScheme: colorScheme,
+              name: isCreate ? 'Save' : 'Save Changes',
+              onTap: () {
+                if (noteProvider.titleController.text.isNotEmpty) {
+                  _onSaveTap(context, noteProvider);
+                } else {
+                  ElegantNotification.info(
+                    width: 300,
+                    notificationMargin: 0,
+                    stackedOptions: StackedOptions(
+                      type: StackedType.same,
+                      key: '',
+                    ),
+                    position: Alignment.topCenter,
+                    animation: AnimationType.fromTop,
+                    title: const Text('ALERT'),
+                    description: const Text('REQUIRED TITLE'),
+                    onDismiss: () {},
+                  ).show(context);
+                }
+              },
+            )
+          else
+            const SizedBox.shrink(),
           ReusableThemeSettingPosition(colorScheme: colorScheme),
         ],
       ),
     );
   }
 
-  AppBar _buildAppBar(ColorScheme colorScheme, BuildContext context,String title) {
+  AppBar _buildAppBar(ColorScheme colorScheme, BuildContext context, String title) {
     return AppBar(
       leading: IconButton(
         icon: Icon(Icons.arrow_back_ios_new_rounded, color: colorScheme.onPrimary),
         onPressed: () => Navigator.of(context).pop(),
       ),
-      title: !isRead ? Text(
+      title: !isRead
+          ? Text(
         isCreate ? "Create Note" : "Edit Note",
         style: TextStyle(
           fontWeight: FontWeight.bold,
           fontSize: 20,
           color: colorScheme.onPrimary,
         ),
-      ) : Row(
+      )
+          : Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [Text('View Note', style: TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 20,
-          color: colorScheme.onPrimary,
-        ),),
-        SizedBox(width: 10),
-        IconButton(
-          icon: Icon(Icons.edit, color: colorScheme.onPrimary),
-          onPressed: () => {
-
-            Navigator.pop(context),
-            Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => CreateNoteScreen(
-                isCreate: false,
-                title: title,
-                isRead: false,
-                date: date,
-              ),
-            )),
-
-
-        },
-        ),],
+        children: [
+          Text(
+            'View Note',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+              color: colorScheme.onPrimary,
+            ),
+          ),
+          const SizedBox(width: 10),
+          IconButton(
+            icon: Icon(Icons.edit, color: colorScheme.onPrimary),
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => CreateNoteScreen(
+                  isCreate: false,
+                  title: title,
+                  isRead: false,
+                  date: date,
+                ),
+              ));
+            },
+          ),
+        ],
       ),
       backgroundColor: colorScheme.primary,
       elevation: 2,
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
       ),
     );
   }
 
-  Widget _buildBody(Size size, NotesProvider noteProvider) {
+  Widget _buildBody(Size size, NotesProvider noteProvider, ColorScheme colorScheme) {
     String formattedDate = DateFormat('MMM dd, yyyy - hh:mm a').format(date);
     return ListView(
-      padding: EdgeInsets.symmetric(horizontal: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       children: [
-        SizedBox(height: 80),
-        Text('Content ',style: TextStyle(color: Colors.grey),),
-        _buildContentInputField(size,noteProvider),
-        Center(child: Text(formattedDate))
+        const SizedBox(height: 80),
+        // Instead of a fixed Colors.grey, use onSurface with some opacity.
+        Text(
+          'Content',
+          style: TextStyle(color: colorScheme.onSurface.withOpacity(0.6)),
+        ),
+        _buildContentInputField(size, noteProvider, colorScheme),
+        Center(child: Text(formattedDate, style: TextStyle(color: colorScheme.onSurface))),
       ],
     );
   }
 
-  Widget _buildTitleInputField(NotesProvider noteProvider) {
-    return  Container(
-          color: Colors.white,
-          padding: EdgeInsets.symmetric(horizontal: 20,vertical: 15),
-          child: TextField(
-            readOnly: isRead,
-            controller: noteProvider.titleController,
-            decoration: InputDecoration(
-              hintText: 'Title Here',
-              border: InputBorder.none,
-            ),
-            style: TextStyle(fontSize: 18),
-          ),
-
+  Widget _buildTitleInputField(NotesProvider noteProvider, ColorScheme colorScheme) {
+    return Container(
+      // Use the surface color for a card-like background.
+      color: colorScheme.surface,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+      child: TextField(
+        readOnly: isRead,
+        controller: noteProvider.titleController,
+        decoration: const InputDecoration(
+          hintText: 'Title Here',
+          border: InputBorder.none,
+        ),
+        // Use onSurface so the text contrasts with the surface color.
+        style: TextStyle(fontSize: 18, color: null),
+      ),
     );
   }
 
-  Widget _buildContentInputField(Size size, NotesProvider noteProvider) {
+  Widget _buildContentInputField(Size size, NotesProvider noteProvider, ColorScheme colorScheme) {
     return Container(
       width: size.width,
       child: TextField(
@@ -154,14 +166,17 @@ class CreateNoteScreen extends StatelessWidget {
         decoration: InputDecoration(
           hintText: 'Type your content here...',
           border: InputBorder.none,
+          // Fill with the surface color.
+          filled: true,
+          fillColor: colorScheme.surface,
         ),
-        style: TextStyle(fontSize: 16),
+        style: TextStyle(fontSize: 16, color: colorScheme.onSurface),
       ),
     );
   }
 
   void _onSaveTap(BuildContext context, NotesProvider noteProvider) {
-    if (isCreate ) {
+    if (isCreate) {
       noteProvider.addNote({
         'title': noteProvider.titleController.text,
         'content': noteProvider.contentController.text,
@@ -170,7 +185,7 @@ class CreateNoteScreen extends StatelessWidget {
       });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Succesfully Added'),
+          content: const Text('Successfully Added'),
           backgroundColor: Colors.green,
         ),
       );
@@ -179,17 +194,18 @@ class CreateNoteScreen extends StatelessWidget {
       Navigator.pop(context);
     } else {
       noteProvider.editNoteByTitle(
-          title,
-          {
-            'title': noteProvider.titleController.text,
-            'content': noteProvider.contentController.text,
-            'created_at': DateTime.now(),
-            'favorite': false,
-          });
+        title,
+        {
+          'title': noteProvider.titleController.text,
+          'content': noteProvider.contentController.text,
+          'created_at': DateTime.now(),
+          'favorite': false,
+        },
+      );
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Succesfully Updated'),
+          content: const Text('Successfully Updated'),
           backgroundColor: Colors.green,
         ),
       );

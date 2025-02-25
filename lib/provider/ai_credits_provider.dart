@@ -2,15 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:ntp/ntp.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'dart:async';
 
 class AiCreditProvider with ChangeNotifier {
   final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
   int _credits = 0;
-  int _defaultCredits = 10;
-  int _maxAdsPerDay = 10; // Maximum ads a user can watch per day
+  int _defaultCredits = 5;
+  int _maxAdsPerDay = 10;
   int _adsWatchedToday = 0;
+  int adCooldown = 0;
+  int maxCooldown = 120;
 
   DateTime? _lastUpdated;
+  Timer? _countdownTimer; // Added Timer reference
 
   int get credits => _credits;
   int get adsWatchedToday => _adsWatchedToday;
@@ -26,12 +30,7 @@ class AiCreditProvider with ChangeNotifier {
     _adsWatchedToday = await _getSecureInt('ads_watched') ?? 0;
 
     String? lastUpdatedStr = await _secureStorage.read(key: 'last_updated');
-    if (lastUpdatedStr != null) {
-      _lastUpdated = DateTime.tryParse(lastUpdatedStr);
-    } else {
-      _lastUpdated = await _getNetworkTime();
-      await _saveCredits();
-    }
+    _lastUpdated = lastUpdatedStr != null ? DateTime.tryParse(lastUpdatedStr) : await _getNetworkTime();
 
     await _checkForDailyReset();
   }
@@ -41,7 +40,7 @@ class AiCreditProvider with ChangeNotifier {
     try {
       return await NTP.now();
     } catch (e) {
-      throw Exception("No internet connection!");
+      return DateTime.now(); // Fallback to device time if no internet
     }
   }
 
@@ -51,10 +50,10 @@ class AiCreditProvider with ChangeNotifier {
 
     final now = await _getNetworkTime();
     if (_lastUpdated == null || now.difference(_lastUpdated!).inDays > 0) {
-      if (_credits <= _defaultCredits) {
+      if (_credits < _defaultCredits) {
         _credits = _defaultCredits;
       }
-      _adsWatchedToday = 0; // Reset daily ad watch count
+      _adsWatchedToday = 0;
       _lastUpdated = now;
       await _saveCredits();
     }
@@ -66,7 +65,9 @@ class AiCreditProvider with ChangeNotifier {
   Future<void> _saveCredits() async {
     await _secureStorage.write(key: 'credits', value: _credits.toString());
     await _secureStorage.write(key: 'ads_watched', value: _adsWatchedToday.toString());
-    await _secureStorage.write(key: 'last_updated', value: _lastUpdated!.toIso8601String());
+    if (_lastUpdated != null) {
+      await _secureStorage.write(key: 'last_updated', value: _lastUpdated!.toIso8601String());
+    }
   }
 
   /// Retrieve integer from secure storage
@@ -82,31 +83,47 @@ class AiCreditProvider with ChangeNotifier {
   }
 
   /// Use credits
-  void useCredit(int amount) {
+  Future<void> useCredit(int amount) async {
     if (_credits >= amount) {
       _credits -= amount;
-      _saveCredits();
+      await _saveCredits();
       notifyListeners();
     }
   }
 
   /// Add credits
-  void addCredits(int amount) {
+  Future<void> addCredits(int amount) async {
     _credits += amount;
-    _saveCredits();
+    await _saveCredits();
     notifyListeners();
   }
 
   /// Watch ad to earn credits (with daily limit)
   bool watchAd() {
-    if (_adsWatchedToday >= _maxAdsPerDay) {
-      return false; // Ads limit reached
+    if (_adsWatchedToday >= _maxAdsPerDay || adCooldown > 0) {
+      return false;
     }
     return true;
   }
 
-  void AddAdsWatched() {
+  /// Increment ads watched count and start cooldown timer
+  void addAdsWatched() {
     _adsWatchedToday++;
+    adCooldown = maxCooldown;
+    _startCooldownTimer();
     notifyListeners();
+  }
+
+  /// Start ad cooldown timer
+  void _startCooldownTimer() {
+    _countdownTimer?.cancel(); // Cancel existing timer if any
+    _countdownTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if (adCooldown > 0) {
+        adCooldown--;
+        notifyListeners();
+      } else {
+        timer.cancel();
+      }
+    });
   }
 }

@@ -30,9 +30,6 @@ class _NoteScreenState extends State<NoteScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(minutes: 5),(){
-      adManager.loadInterstitialAd(AdUnitId.interstitialAdUnitId);
-    });
 
   }
 

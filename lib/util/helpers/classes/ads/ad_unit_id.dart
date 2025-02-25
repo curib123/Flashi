@@ -1,7 +1,7 @@
 import 'dart:io';
 
 class AdUnitId {
-  static bool isTest = true; // Change this flag to switch between test and real ads
+  static bool isTest = false; // Change this flag to switch between test and real ads
 
   static String get bannerAdUnitId {
     if (Platform.isAndroid) {
