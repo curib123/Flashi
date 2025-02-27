@@ -46,6 +46,8 @@ class AiModelLogicProvider extends ChangeNotifier {
     }
   }
 
+
+
   Future<void> pickFileAndGenerate(BuildContext context,
       QuizProvider quizProvider,
       FetchDataFromJsonProvider fetchDataFromJsonProvider,AiCreditProvider aiCreditProvider) async {
@@ -53,18 +55,7 @@ class AiModelLogicProvider extends ChangeNotifier {
     showLoadingDialog(context,text:   "AI is processing... Please wait...");
     extractedText = await FileTextExtractor.pickAndExtractText();
 
-    if (extractedText.isEmpty) {
-      Navigator.pop(context);
-      showMaintenanceDialog(context,   "Invalid File", "Only PDF and DOCX files are allowed. Please try again.");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Please select a valid file first"),
-          backgroundColor: Colors.red,
-        ),
-      );
-
-      return;
-    }else{
+    if ( handleExtractedTextError(context, extractedText)) {
       final questions = await AIQuestionGenerator.generateQuestionsFromFile(
         extractedText,
         fetchDataFromJsonProvider.model,
@@ -111,7 +102,14 @@ class AiModelLogicProvider extends ChangeNotifier {
           Navigator.pop(context);
           Navigator.pop(context);
 
-          aiCreditProvider.useCredit(1);
+          for (int i = 0; i < fetchDataFromJsonProvider.listOfMaxLength.length; i++)
+          {
+            if (fetchDataFromJsonProvider.listOfMaxLength[i] == fetchDataFromJsonProvider.ListOfMaxLength) // Check if value matches maxLength
+                {
+              int creditAmount = i + 1; // Use index +1 as credit amount
+              aiCreditProvider.useCredit(creditAmount);
+            }
+          }
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
@@ -133,12 +131,12 @@ class AiModelLogicProvider extends ChangeNotifier {
               "It seems there’s no internet connection. Please try again or choose another model.");
         }
       });
+    }
+
 
       isTimeOut = false;
       notifyListeners();
     }
-
-  }
 
   Future<void> GenerateFlashCardFromCustomTopic(BuildContext context,
       QuizProvider quizProvider,
@@ -411,7 +409,7 @@ class AiModelLogicProvider extends ChangeNotifier {
     IconData? icon, // Optional icon parameter
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
+      padding: const EdgeInsets.symmetric(vertical: 5),
       child: SizedBox(
         width: double.infinity,
         child: Container(
@@ -430,7 +428,7 @@ class AiModelLogicProvider extends ChangeNotifier {
               onTap: onPressed,
               borderRadius: BorderRadius.circular(12),
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 13),
+                padding: const EdgeInsets.symmetric(vertical: 15),
                 child: Center(
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -457,4 +455,51 @@ class AiModelLogicProvider extends ChangeNotifier {
       ),
     );
   }
+}
+bool handleExtractedTextError(BuildContext context, String extractedText) {
+  final Map<String, Map<String, String>> errorMessages = {
+    "Invalid file": {
+      "title": "Invalid File",
+      "message": "Only PDF and DOCX files are allowed. Please try again.",
+      "snackbar": "Please select a valid file first"
+    },
+    "Error reading file": {
+      "title": "Error reading file",
+      "message": "Only PDF and DOCX files are allowed. Please try again.",
+      "snackbar": "Error reading file"
+    },
+    "Unsupported file format": {
+      "title": "Unsupported file format",
+      "message": "Unsupported file format. Only PDF and DOCX files are allowed. Please try again.",
+      "snackbar": "Unsupported file format"
+    },
+    "No file selected": {
+      "title": "No file",
+      "message": "No file selected. Select DOCX or PDF file only.",
+      "snackbar": "No file selected"
+    },
+    "Permission denied. Please allow access to continue.": {
+      "title": "Permission",
+      "message": "Permission denied. Please allow access to continue.",
+      "snackbar": "Permission denied. Please allow access to continue."
+    },
+  };
+
+  if (errorMessages.containsKey(extractedText)) {
+    Navigator.pop(context);
+    showMaintenanceDialog(
+      context,
+      errorMessages[extractedText]!["title"]!,
+      errorMessages[extractedText]!["message"]!,
+    );
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(errorMessages[extractedText]!["snackbar"]!),
+        backgroundColor: Colors.red,
+      ),
+    );
+    return false; // Return false if an error is found
+  }
+
+  return true; // Return true if no error
 }

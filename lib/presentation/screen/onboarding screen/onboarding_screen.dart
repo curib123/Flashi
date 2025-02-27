@@ -1,3 +1,5 @@
+import 'package:flashi/provider/ai_credits_provider.dart';
+import 'package:flashi/util/helpers/widget/alert_dialog/show_free_credits_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:provider/provider.dart';
@@ -84,7 +86,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   void _navigateToHome(BuildContext context) {
     // Complete the onboarding process
     final onboardingProvider = Provider.of<OnboardingProvider>(context, listen: false);
+    final aiCreditProvider = Provider.of<AiCreditProvider>(context, listen: false);
     onboardingProvider.completeOnboarding();
+
+    showFreeCreditsDialog(
+      context: context,
+      rewardText: "You have Free ${aiCreditProvider.defaultCredits} credits daily",
+      onClaim: () async {
+        // Save other relevant data
+        await aiCreditProvider.handleDataChange();
+      },
+    );
   }
 }
 

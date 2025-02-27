@@ -17,6 +17,7 @@ import 'package:flashi/provider/sort_provider.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_unit_id.dart';
 import 'package:flashi/util/helpers/classes/ads/app_lifecycle_reactor.dart';
+import 'package:flashi/util/helpers/widget/alert_dialog/show_free_credits_dialog.dart';
 import 'package:flashi/util/helpers/widget/other/empty_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -48,11 +49,34 @@ class _HomeScreenState extends State<HomeScreen> {
     final aiModelProvider = Provider.of<FetchDataFromJsonProvider>(context,listen: false);
     final aiModelLogicProvider = Provider.of<AiModelLogicProvider>(context,listen: false);
     final checkVersionProvider = Provider.of<CheckVersionProvider>(context,listen: false);
+    final aiCreditProvider = Provider.of<AiCreditProvider>(context,listen: false);
 
     aiModelProvider.fetchLatestVersion();
     aiModelLogicProvider.fetchLatestVersion();
     checkVersionProvider.checkAppVersion(context);
+    handleFreeCreditsDialog(aiCreditProvider, context);
 
+
+  }
+
+  void handleFreeCreditsDialog(AiCreditProvider aiCreditProvider,BuildContext context){
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() async {
+        if (!await aiCreditProvider.hasInternet()) return;
+
+        final now = await aiCreditProvider.getNetworkTime();
+         if (aiCreditProvider.lastUpdated == null || now.difference(aiCreditProvider.lastUpdated!).inDays > 0) {
+           showFreeCreditsDialog(
+             context: context,
+             rewardText: "You have Free ${aiCreditProvider.defaultCredits} credits daily",
+             onClaim: () async {
+               await aiCreditProvider.handleDataChange(now: now);
+             },
+           );
+
+         }
+      });
+    });
   }
 
   void change(QuizProvider quizProvider) {

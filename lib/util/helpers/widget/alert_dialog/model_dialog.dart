@@ -80,17 +80,20 @@ class ModelSelectionDialog {
                         onChanged: (newValue) {
                           if (newValue != null) selectedModel = newValue;
                         },
+                        getCredits: null,
+
                       ),
                       const SizedBox(height: 20),
 
                       _buildDropdown<int>(
                         context,
-                        label: "Select Max Length",
+                        label: "Select Q&A Max Length",
                         value: selectedMaxLength,
                         items: fetchDataProvider.listOfMaxLength,
                         onChanged: (newValue) {
                           if (newValue != null) selectedMaxLength = newValue;
                         },
+                        getCredits: (item) => item ~/ 10,
                       ),
                       const SizedBox(height: 20),
 
@@ -102,6 +105,7 @@ class ModelSelectionDialog {
                         onChanged: (newValue) {
                           if (newValue != null) selectedQuizType = newValue;
                         },
+                        getCredits: null,
                       ),
                       const SizedBox(height: 10),
 
@@ -202,14 +206,31 @@ class ModelSelectionDialog {
     );
   }
 
-  static Widget _buildDropdown<T>(BuildContext context, {required String label, required T value, required List<T> items, required ValueChanged<T?> onChanged}) {
+  static Widget _buildDropdown<T>(BuildContext context, {
+    required String label,
+    required T value,
+    required List<T> items,
+    required ValueChanged<T?> onChanged,
+    required int Function(T item)? getCredits, // Make it nullable to avoid errors for non-int types
+  }) {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
+
     return DropdownButtonFormField<T>(
       decoration: _inputDecoration(colorScheme, label),
       value: value,
       dropdownColor: colorScheme.onPrimary,
       style: TextStyle(color: colorScheme.primary),
-      items: items.map((item) => DropdownMenuItem(value: item, child: Text(item.toString()))).toList(),
+      items: items.map((item) {
+        String itemText = item.toString();
+
+        // Check if item is an integer and get credits dynamically
+        if (item is int && getCredits != null) {
+          int credits = getCredits(item);
+          itemText = "$item - $credits credits to use";
+        }
+
+        return DropdownMenuItem(value: item, child: Text(itemText));
+      }).toList(),
       onChanged: onChanged,
     );
   }

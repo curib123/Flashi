@@ -12,7 +12,7 @@ class MistralAiLogic {
       return [];
     }
 
-    List<String> chunks = splitTextIntoChunks(content, 1000);
+    List<String> chunks = splitTextIntoChunks(content, 2000);
     List<Map<String, String>> allQuestions = [];
 
     for (String chunk in chunks) {
@@ -30,7 +30,7 @@ class MistralAiLogic {
       switch (type) {
         case 'Identification':
           return """
-      Generate ${maxLength} summarize identification questions and answers from the following text in this format accurately dont put title,heading or guide:
+      Generate exactly ${maxLength} summarize identification questions and answers from the following text in this format accurately dont put title,heading or guide:
       Question: It is <definition/explanation/short question>.
       Answer: <term/answer>
       TEXT:
@@ -43,7 +43,7 @@ class MistralAiLogic {
       """;
         case 'Fill_In_The_Blank':
           return """
-      Generate ${maxLength} summarize fill-in-the-blank  questions and answers from the following text in this format accurately dont put title,heading or guide:
+      Generate exactly ${maxLength} summarize fill-in-the-blank  questions and answers from the following text in this format accurately dont put title,heading or guide:
       TEXT:
       "$textChunk"
       Example Output:
@@ -54,7 +54,7 @@ class MistralAiLogic {
       """;
         case 'Definition':
           return """
-      Generate ${maxLength} summarize Definition  questions and answers from the following text in this format accurately dont put title,heading or guide:
+      Generate exactly ${maxLength} summarize Definition  questions and answers from the following text in this format accurately dont put title,heading or guide:
       TEXT:
       "$textChunk"
       Example Output:
@@ -65,7 +65,7 @@ class MistralAiLogic {
       """;
         case 'Enumeration':
           return """
-      Generate ${maxLength} summarize enumeration-type  questions and answers from the following text in this format accurately dont put title,heading or guide:
+      Generate exactly ${maxLength} summarize enumeration-type  questions and answers from the following text in this format accurately dont put title,heading or guide:
       TEXT:
       "$textChunk"
       Example Output:
@@ -76,7 +76,7 @@ class MistralAiLogic {
       """;
         case 'True_False':
           return """
-      Generate ${maxLength}  true or false  questions and answers from the following text in this format accurately dont put title,heading or guide:
+      Generate exactly ${maxLength}  true or false  questions and answers from the following text in this format accurately dont put title,heading or guide:
       TEXT:
       "$textChunk"
       Example Output:
@@ -105,7 +105,6 @@ class MistralAiLogic {
             {"role": "system", "content": "You are an expert quiz generator that is correct and accurate."},
             {"role": "user", "content": generatePrompt()}
           ],
-          "max_tokens": 1000
         }),
       );
 
@@ -165,10 +164,12 @@ class MistralAiLogic {
 
 
   static List<String> splitTextIntoChunks(String text, int chunkSize) {
-    List<String> words = text.split(' ');
+    if (text.length <= chunkSize) return [text]; // Return as is if within size
+
     List<String> chunks = [];
-    for (int i = 0; i < words.length; i += chunkSize) {
-      chunks.add(words.sublist(i, i + chunkSize > words.length ? words.length : i + chunkSize).join(' '));
+    for (int i = 0; i < text.length; i += chunkSize) {
+      int end = (i + chunkSize < text.length) ? i + chunkSize : text.length;
+      chunks.add(text.substring(i, end));
     }
     return chunks;
   }

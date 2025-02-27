@@ -59,7 +59,7 @@ class FileTextExtractor {
         return "Unsupported file format";
       }
     } catch (e) {
-      return "Error reading file: $e";
+      return "Error reading file";
     }
   }
 }

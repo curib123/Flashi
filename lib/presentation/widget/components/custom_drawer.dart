@@ -21,7 +21,7 @@ class CustomDrawer extends StatelessWidget {
       required VoidCallback onTap,
     }) {
       return ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 15,vertical: 5),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 15,vertical: 2),
         leading: Icon(icon, color: colorScheme.primary),
         title: Text(title, style: textStyle),
         onTap: onTap,
@@ -112,6 +112,31 @@ class CustomDrawer extends StatelessWidget {
             },
           ),
 
+            buildListTile(
+            icon: Icons.bug_report_rounded,
+            title: 'Bug/Issues report',
+            onTap: () => {
+              Navigator.pop(context),
+              // TODO: Navigate to privacy policy screen
+
+            WebPageLauncher('https://docs.google.com/forms/d/e/1FAIpQLSfo0nmWC3OwBB0XIq4o3e32eyGSUufRBj4ZmAooJBf5iFXXew/viewform?usp=header').launch()
+
+          },
+
+          ),
+
+          buildListTile(
+            icon: Icons.facebook_rounded,
+            title: 'Official FB Page',
+            onTap: () => {
+              Navigator.pop(context),
+              // TODO: Navigate to privacy policy screen
+
+            WebPageLauncher('https://www.facebook.com/profile.php?id=61573206800066').launch()
+
+          },
+
+          ),
           buildListTile(
             icon: Icons.privacy_tip_rounded,
             title: 'Privacy Policy',
@@ -119,12 +144,13 @@ class CustomDrawer extends StatelessWidget {
               Navigator.pop(context),
               // TODO: Navigate to privacy policy screen
 
-            WebPageLauncher('https://curib123.github.io/flashi_/privacy_policy.html').launch()
+              WebPageLauncher('https://curib123.github.io/flashi_/privacy_policy.html').launch()
 
-          },
+            },
 
-          ), buildListTile(
-            icon: Icons.privacy_tip_rounded,
+          ),
+          buildListTile(
+            icon: Icons.info_rounded,
             title: 'Terms and Conditions',
             onTap: () => {
               Navigator.pop(context),

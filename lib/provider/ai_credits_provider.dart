@@ -1,3 +1,4 @@
+import 'package:flashi/util/helpers/widget/alert_dialog/show_free_credits_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:ntp/ntp.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -7,7 +8,7 @@ import 'dart:async';
 class AiCreditProvider with ChangeNotifier {
   final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
   int _credits = 0;
-  int _defaultCredits = 5;
+  int _defaultCredits = 10;
   int _maxAdsPerDay = 10;
   int _adsWatchedToday = 0;
   int adCooldown = 0;
@@ -17,49 +18,43 @@ class AiCreditProvider with ChangeNotifier {
   Timer? _countdownTimer; // Added Timer reference
 
   int get credits => _credits;
+  int get defaultCredits => _defaultCredits;
   int get adsWatchedToday => _adsWatchedToday;
   int get maxAdsPerDay => _maxAdsPerDay;
+  DateTime? get lastUpdated => _lastUpdated;
 
-  AiCreditProvider() {
-    _loadCredits();
+
+  AiCreditProvider(){
+    loadCredits();
   }
 
   /// Load credits and ad watch count securely
-  Future<void> _loadCredits() async {
-    _credits = await _getSecureInt('credits') ?? 10;
+  Future<void> loadCredits() async {
+    _credits = await _getSecureInt('credits') ?? 0;
     _adsWatchedToday = await _getSecureInt('ads_watched') ?? 0;
-
     String? lastUpdatedStr = await _secureStorage.read(key: 'last_updated');
-    _lastUpdated = lastUpdatedStr != null ? DateTime.tryParse(lastUpdatedStr) : await _getNetworkTime();
+    _lastUpdated = lastUpdatedStr != null ? DateTime.tryParse(lastUpdatedStr) : await getNetworkTime();
 
-    await _checkForDailyReset();
+    notifyListeners();
   }
 
   /// Get real-time NTP time (prevents local time cheats)
-  Future<DateTime> _getNetworkTime() async {
+  Future<DateTime> getNetworkTime() async {
     try {
       return await NTP.now();
     } catch (e) {
       return DateTime.now(); // Fallback to device time if no internet
     }
   }
-
-  /// Reset daily credits and ad watch count
-  Future<void> _checkForDailyReset() async {
-    if (!await _hasInternet()) return;
-
-    final now = await _getNetworkTime();
-    if (_lastUpdated == null || now.difference(_lastUpdated!).inDays > 0) {
-      if (_credits < _defaultCredits) {
-        _credits = _defaultCredits;
-      }
-      _adsWatchedToday = 0;
-      _lastUpdated = now;
-      await _saveCredits();
-    }
-
+  Future<void> handleDataChange({DateTime? now}) async{
+    _credits += _defaultCredits;
+    _adsWatchedToday = 0;
+    _lastUpdated = now;
+    _adsWatchedToday = 0;
+    await _saveCredits();
     notifyListeners();
   }
+
 
   /// Save credits and ad watch count securely
   Future<void> _saveCredits() async {
@@ -77,7 +72,7 @@ class AiCreditProvider with ChangeNotifier {
   }
 
   /// Check if user is online
-  Future<bool> _hasInternet() async {
+  Future<bool> hasInternet() async {
     var connectivityResult = await Connectivity().checkConnectivity();
     return connectivityResult != ConnectivityResult.none;
   }
