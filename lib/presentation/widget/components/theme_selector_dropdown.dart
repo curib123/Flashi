@@ -35,7 +35,7 @@ class ThemeSelector extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Section for selecting a theme
-        const Text("Select Theme", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        const Text("Select Theme", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
         const SizedBox(height: 16),
         DropdownButton<FlexScheme>(
           value: themeProvider.currentScheme ?? schemes.first,
@@ -70,8 +70,8 @@ class ThemeSelector extends StatelessWidget {
         const SizedBox(height: 16),
 
         // Section for selecting a theme mode
-        const Text("Select Theme Mode", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 16),
+        const Text("Select Theme Mode", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 10),
         DropdownButton<ThemeMode>(
           value: themeProvider.themeMode,
           isExpanded: true,
@@ -108,12 +108,12 @@ class ThemeSelector extends StatelessWidget {
           },
         ),
 
-        const SizedBox(height: 16),
+        const SizedBox(height: 10),
 
         // Section for selecting a font
-        const Text("Select Font", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        const Text("Select Font", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
         const Text("Need Internet", style: TextStyle(fontSize: 10, fontWeight: FontWeight.normal)),
-        const SizedBox(height: 16),
+        const SizedBox(height: 10),
         DropdownButton<String>(
           value: themeProvider.currentFont ?? aestheticFonts.first['name'],
           isExpanded: true,
@@ -136,26 +136,19 @@ class ThemeSelector extends StatelessWidget {
           },
         ),
 
-        const SizedBox(height: 16),
-
-        // Close button for the modal
-        Align(
-          alignment: Alignment.bottomRight,
-          child: isShowCloseBtn ?  ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              foregroundColor: Theme.of(context).colorScheme.onPrimary,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-              elevation: 5,
-              textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            onPressed: () {
-              Navigator.pop(context); // Close the modal bottom sheet
-            },
-            child: const Text("Close"),
-          ) : null
+        const SizedBox(height: 10),
+        const Text("Adjust Font Size", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+        Slider(
+          value: themeProvider.fontScale,
+          min: 0.5, // Min font scale (50%)
+          max: 1.0, // Max font scale (200%)
+          divisions: 15,
+          label: themeProvider.fontScale.toStringAsFixed(1),
+          onChanged: (value) {
+            themeProvider.updateFontSize(value);
+          },
         ),
+
       ],
     );
   }

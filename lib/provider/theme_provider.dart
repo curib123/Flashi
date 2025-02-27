@@ -9,12 +9,13 @@ class ThemeProvider extends ChangeNotifier {
   FlexScheme _currentScheme = FlexScheme.cyanM3; // Default to purpleM3
   ThemeMode _themeMode = ThemeMode.light;
   String _currentFont = 'Montserrat'; // Default font
+  double _fontScale = 0.8; // Default system font scale
+
+
 
   final Box _settingsBox = Hive.box('theme');
 
-  Future<bool> isConnected() async {
-    return await InternetConnection().hasInternetAccess;
-  }
+
 
 
   ThemeProvider() {
@@ -26,6 +27,7 @@ class ThemeProvider extends ChangeNotifier {
     _settingsBox.get('themeMode', defaultValue: ThemeMode.light.index)
     ];
     _currentFont = _settingsBox.get('currentFont', defaultValue: 'Montserrat');
+    _fontScale = _settingsBox.get('fontSize', defaultValue: 1.0);
   }
 
   // Getters for current theme properties
@@ -35,10 +37,23 @@ class ThemeProvider extends ChangeNotifier {
 
   String get currentFont => _currentFont;
 
+  double get fontScale => _fontScale;
+
+  Future<bool> isConnected() async {
+    return await InternetConnection().hasInternetAccess;
+  }
+
   // Method to update the color scheme
   void setScheme(FlexScheme scheme) {
     _currentScheme = scheme;
     _settingsBox.put('currentScheme', scheme.index); // Save to Hive
+    notifyListeners();
+  }
+  // Method to update the color scheme
+
+  void updateFontSize(double value) {
+    _fontScale = value;
+    _settingsBox.put('fontSize', _fontScale); // Save to Hive
     notifyListeners();
   }
 
@@ -73,6 +88,7 @@ class ThemeProvider extends ChangeNotifier {
       scheme: _currentScheme,
       textTheme:  GoogleFonts.getTextTheme(_currentFont) ,
       fontFamily: !_isConnected ? 'Montserrat' : null, // Corrected syntax
+
     );
   }
 

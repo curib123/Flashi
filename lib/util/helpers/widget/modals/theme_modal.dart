@@ -8,9 +8,11 @@ void openThemeSelector(BuildContext context) {
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),
     builder: (context) {
-      return const Padding(
+      return  ListView(
         padding: EdgeInsets.all(16.0),
-        child: ThemeSelector(isShowCloseBtn: true,), // Add the ThemeSelector here
+        children: [
+          ThemeSelector(isShowCloseBtn: true,),
+        ],  // Add the ThemeSelector here
       );
     },
   );

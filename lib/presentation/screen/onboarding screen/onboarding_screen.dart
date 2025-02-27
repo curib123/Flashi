@@ -89,14 +89,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final aiCreditProvider = Provider.of<AiCreditProvider>(context, listen: false);
     onboardingProvider.completeOnboarding();
 
-    showFreeCreditsDialog(
-      context: context,
-      rewardText: "You have Free ${aiCreditProvider.defaultCredits} credits daily",
-      onClaim: () async {
-        // Save other relevant data
-        await aiCreditProvider.handleDataChange();
-      },
-    );
+    // showFreeCreditsDialog(
+    //   context: context,
+    //   rewardText: "You have Free ${aiCreditProvider.defaultCredits} credits daily",
+    //   onClaim: () async {
+    //     // Save other relevant data
+    //     await aiCreditProvider.handleDataChange();
+    //   },
+    // );
   }
 }
 

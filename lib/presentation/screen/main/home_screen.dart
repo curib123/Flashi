@@ -60,8 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void handleFreeCreditsDialog(AiCreditProvider aiCreditProvider,BuildContext context){
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() async {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
         if (!await aiCreditProvider.hasInternet()) return;
 
         final now = await aiCreditProvider.getNetworkTime();
@@ -75,7 +74,6 @@ class _HomeScreenState extends State<HomeScreen> {
            );
 
          }
-      });
     });
   }
 
