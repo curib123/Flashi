@@ -56,23 +56,22 @@ class _HomeScreenState extends State<HomeScreen> {
     checkVersionProvider.checkAppVersion(context);
     handleFreeCreditsDialog(aiCreditProvider, context);
 
-
   }
 
   void handleFreeCreditsDialog(AiCreditProvider aiCreditProvider,BuildContext context) async{
-        if (!await aiCreditProvider.hasInternet()) return;
+        if (await aiCreditProvider.hasInternet()) {
+          final now = await aiCreditProvider.getNetworkTime();
+          if (aiCreditProvider.lastUpdated == null || now.difference(aiCreditProvider.lastUpdated!).inDays > 0) {
+            showFreeCreditsDialog(
+              context: context,
+              rewardText: "You have Free ${aiCreditProvider.addedCredits} credits",
+              onClaim: () async {
+                await aiCreditProvider.handleDataChange(now: now);
+              },
+            );
 
-        final now = await aiCreditProvider.getNetworkTime();
-         if (aiCreditProvider.lastUpdated == null || now.difference(aiCreditProvider.lastUpdated!).inDays > 0) {
-           showFreeCreditsDialog(
-             context: context,
-             rewardText: "You have Free ${aiCreditProvider.defaultCredits} credits daily",
-             onClaim: () async {
-               await aiCreditProvider.handleDataChange(now: now);
-             },
-           );
-
-         }
+          }
+        };
 
   }
 

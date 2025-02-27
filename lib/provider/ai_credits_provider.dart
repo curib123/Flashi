@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'dart:math';
+
 import 'package:flashi/util/helpers/widget/alert_dialog/show_free_credits_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:ntp/ntp.dart';
@@ -13,11 +16,13 @@ class AiCreditProvider with ChangeNotifier {
   int _adsWatchedToday = 0;
   int adCooldown = 0;
   int maxCooldown = 120;
+  int _addedCredits = 0;
 
   DateTime? _lastUpdated;
   Timer? _countdownTimer; // Added Timer reference
 
   int get credits => _credits;
+  int get addedCredits => _addedCredits;
   int get defaultCredits => _defaultCredits;
   int get adsWatchedToday => _adsWatchedToday;
   int get maxAdsPerDay => _maxAdsPerDay;
@@ -33,7 +38,11 @@ class AiCreditProvider with ChangeNotifier {
     _credits = await _getSecureInt('credits') ?? 0;
     _adsWatchedToday = await _getSecureInt('ads_watched') ?? 0;
     String? lastUpdatedStr = await _secureStorage.read(key: 'last_updated');
-    _lastUpdated = lastUpdatedStr != null ? DateTime.tryParse(lastUpdatedStr) : await getNetworkTime();
+    _lastUpdated = lastUpdatedStr != null
+        ? DateTime.tryParse(lastUpdatedStr)
+        : (await getNetworkTime()).subtract(Duration(days: 1));
+
+
     notifyListeners();
   }
 
@@ -45,11 +54,27 @@ class AiCreditProvider with ChangeNotifier {
       return DateTime.now(); // Fallback to device time if no internet
     }
   }
-  Future<void> handleDataChange({DateTime? now}) async{
-    _credits += _defaultCredits;
+  Future<void> handleDataChange({DateTime? now}) async {
+    final random = Random();
+    // Variable to store the random value
+
+    if (_credits <= 10) {
+      _addedCredits = random.nextInt(6) + 15; // 15-20 credits
+    } else if (_credits > 10 && _credits <= 15) {
+      _addedCredits = random.nextInt(6) + 10; // 10-15 credits
+    } else if (_credits > 15 && _credits <= 20) {
+      _addedCredits = random.nextInt(5) + 7;  // 7-11 credits
+    } else {
+      _addedCredits = random.nextInt(5) + 3;  // 3-7 credits
+    }
+
+    _credits += addedCredits;
+
+    print("Random credits added: $addedCredits"); // Debugging log to track the random value
+
     _adsWatchedToday = 0;
-    _lastUpdated = now;
-    _adsWatchedToday = 0;
+    if (now != null) _lastUpdated = now; // Only update if `now` is provided
+
     await _saveCredits();
     notifyListeners();
   }
@@ -59,6 +84,7 @@ class AiCreditProvider with ChangeNotifier {
   Future<void> _saveCredits() async {
     await _secureStorage.write(key: 'credits', value: _credits.toString());
     await _secureStorage.write(key: 'ads_watched', value: _adsWatchedToday.toString());
+
     if (_lastUpdated != null) {
       await _secureStorage.write(key: 'last_updated', value: _lastUpdated!.toIso8601String());
     }
@@ -70,10 +96,21 @@ class AiCreditProvider with ChangeNotifier {
     return value != null ? int.tryParse(value) : null;
   }
 
-  /// Check if user is online
+  /// Check if user is online with an actual internet connection
   Future<bool> hasInternet() async {
     var connectivityResult = await Connectivity().checkConnectivity();
-    return connectivityResult != ConnectivityResult.none;
+
+    if (connectivityResult == ConnectivityResult.none) {
+      return false; // No network connection
+    }
+
+    // Check real internet access by making a small request
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      return result.isNotEmpty && result.first.rawAddress.isNotEmpty;
+    } catch (e) {
+      return false; // No internet access
+    }
   }
 
   /// Use credits
