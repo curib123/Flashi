@@ -72,7 +72,7 @@ class AiModelLogicProvider extends ChangeNotifier {
         notifyListeners();
       });
 
-      Future.delayed(Duration(seconds: 10), () {
+      Future.delayed(Duration(seconds: 5), () {
         if (questions.isNotEmpty && !isTimeOut) {
           final quizSetName = 'AI Generated From File ${quizProvider.quizSets
               .length + 1}';
@@ -204,7 +204,15 @@ class AiModelLogicProvider extends ChangeNotifier {
         Navigator.pop(context);
         Navigator.pop(context);
         Navigator.pop(context);
-        aiCreditProvider.useCredit(1);
+
+        for (int i = 0; i < fetchDataFromJsonProvider.listOfMaxLength.length; i++)
+        {
+          if (fetchDataFromJsonProvider.listOfMaxLength[i] == fetchDataFromJsonProvider.ListOfMaxLength) // Check if value matches maxLength
+              {
+            int creditAmount = i + 1; // Use index +1 as credit amount
+            aiCreditProvider.useCredit(creditAmount);
+          }
+        }
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(

@@ -1,6 +1,7 @@
 import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_credits_info_core.dart';
 import 'package:flashi/provider/ai_credits_provider.dart';
 import 'package:flashi/provider/ai_model_logic_provider.dart';
+import 'package:flashi/provider/fetch_data_from_json_provider.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_unit_id.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/loading_dialog.dart';
@@ -97,8 +98,8 @@ void showTopicDialog(BuildContext context, {required Function()? onTap}) {
                               ),
                               child: const Text("Cancel"),
                             ),
-                            Consumer<AiModelLogicProvider>(
-                              builder: (context, aiModelLogicProvider, _) {
+                            Consumer2<AiModelLogicProvider,FetchDataFromJsonProvider>(
+                              builder: (context, aiModelLogicProvider,fetchDataFromJsonProvider, _) {
                                 return ElevatedButton(
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: colorScheme.primary,
@@ -109,7 +110,7 @@ void showTopicDialog(BuildContext context, {required Function()? onTap}) {
                                     padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                                   ),
                                   onPressed: () async {
-                                    if (aiCreditProvider.credits != 0) {
+                                    if (aiCreditProvider.credits  >= fetchDataFromJsonProvider.creditsPerLength) {
                                       String topic = topicController.text.trim();
                                       String description = descriptionController.text.trim();
 
@@ -157,7 +158,7 @@ void showTopicDialog(BuildContext context, {required Function()? onTap}) {
                                   child: Row(
                                     children: [
                                       Icon(
-                                        aiCreditProvider.credits  != 0
+                                        aiCreditProvider.credits  >= fetchDataFromJsonProvider.creditsPerLength
                                             ? Icons.auto_awesome
                                             : Icons.play_circle_fill,
                                         color: colorScheme.onPrimary,
@@ -165,8 +166,8 @@ void showTopicDialog(BuildContext context, {required Function()? onTap}) {
                                       ),
                                       const SizedBox(width: 10),
                                       Text(
-                                        aiCreditProvider.credits  != 0 ? "Generate" : "Watch Ads",
-                                        style: TextStyle(fontSize: aiCreditProvider.credits  != 0 ? 18 : 15),
+                                        aiCreditProvider.credits  >= fetchDataFromJsonProvider.creditsPerLength? "Generate" : "Watch Ads",
+                                        style: TextStyle(fontSize:aiCreditProvider.credits  >= fetchDataFromJsonProvider.creditsPerLength ? 18 : 15),
                                       ),
                                     ],
                                   ),

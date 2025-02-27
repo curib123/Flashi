@@ -105,6 +105,7 @@ class MistralAiLogic {
             {"role": "system", "content": "You are an expert quiz generator that is correct and accurate."},
             {"role": "user", "content": generatePrompt()}
           ],
+          "max_tokens": 3000
         }),
       );
 
@@ -179,7 +180,6 @@ class MistralAiLogic {
   static Future<List<Map<String, String>>> generateQuestionsCustomAiGenerated(
       String topic,String description, String modelType, String type, int maxLength) async {
 
-    await saveAPIKey('TZjSrnSAjyflYyNyFmPnMfHHSZ4Mw33q'); // Save API key (remove if stored separately)
 
     String? apiKey = await getAPIKey(); // Retrieve stored API key
 
@@ -205,7 +205,7 @@ class MistralAiLogic {
       switch (type) {
         case 'Identification':
           return """
-Generate ${maxLength} concise identification questions and answers based on the given Topic: "$topic" and Description: "$description".
+Generate exactly ${maxLength} concise identification questions and answers based on the given Topic: "$topic" and Description: "$description".
 Each question should ask for a specific term or concept related to the topic.
 Avoid guides,title,heading or extra information.
 
@@ -216,7 +216,7 @@ Answer: Metabolism
 
         case 'Fill_In_The_Blank':
           return """
-Generate ${maxLength} fill-in-the-blank questions and answers based on the given Topic: "$topic" and Description: "$description".
+Generate exactly ${maxLength} fill-in-the-blank questions and answers based on the given Topic: "$topic" and Description: "$description".
 Each question should have a missing key term related to the topic.
 Avoid guides,title,heading or extra information.
 
@@ -227,7 +227,7 @@ Answer: Metabolism
 
         case 'Definition':
           return """
-Generate ${maxLength} definition-based questions and answers based on the given Topic: "$topic" and Description: "$description".
+Generate exactly ${maxLength} definition-based questions and answers based on the given Topic: "$topic" and Description: "$description".
 Each question should ask for the meaning of a specific concept.
 Avoid guides,title,heading or extra information.
 
@@ -238,7 +238,7 @@ Answer: Metabolism is the process of converting food into energy.
 
         case 'Enumeration':
           return """
-Generate ${maxLength} enumeration-type questions and answers based on the given Topic: "$topic" and Description: "$description".
+Generate exactly ${maxLength} enumeration-type questions and answers based on the given Topic: "$topic" and Description: "$description".
 Each question should require listing multiple related items.
 Avoid guides,title,heading or extra information.
 
@@ -249,7 +249,7 @@ Answer: Prophase, Metaphase, Anaphase, Telophase
 
         case 'True_False':
           return """
-Generate ${maxLength} true or false questions and answers based on the given Topic: "$topic" and Description: "$description".
+Generate exactly ${maxLength} true or false questions and answers based on the given Topic: "$topic" and Description: "$description".
 Each question should be a factual statement that can be answered with "True" or "False."
 Avoid guides,title,heading or extra information.
 
@@ -277,7 +277,7 @@ Answer: True
             {"role": "system", "content": "You are an expert quiz generator that is facts and correct."},
             {"role": "user", "content": generatePrompt()}
           ],
-          "max_tokens": 1000
+          "max_tokens": 3000
         }),
       );
 

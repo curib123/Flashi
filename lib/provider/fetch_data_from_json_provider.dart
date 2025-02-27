@@ -8,13 +8,16 @@ class FetchDataFromJsonProvider with ChangeNotifier {
 
   String _model = '';
   int _ListOfMaxLength = 0;
+  int _creditsPerLength = 0;
   String _quiz_question_type = '';
   List<String> listOfModels = [];
   List<String> listOfQuizQuestionTypes = [];
   List<int> listOfMaxLength = [];
 
+
   String get model => _model;
   int get ListOfMaxLength => _ListOfMaxLength;
+  int get creditsPerLength => _creditsPerLength;
   String get quiz_question_type => _quiz_question_type;
 
   /// Load data from Hive
@@ -39,6 +42,11 @@ class FetchDataFromJsonProvider with ChangeNotifier {
     _fetchDataFromJson.put('listOfModels', listOfModels);
     _fetchDataFromJson.put('listOfQuizQuestionTypes', listOfQuizQuestionTypes);
     _fetchDataFromJson.put('listOfMaxLength', listOfMaxLength);
+  }
+
+  void updateCreditsPerLength(int value){
+    _creditsPerLength = value;
+    notifyListeners();
   }
 
   /// Update functions with Hive saving

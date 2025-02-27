@@ -34,7 +34,6 @@ class AiCreditProvider with ChangeNotifier {
     _adsWatchedToday = await _getSecureInt('ads_watched') ?? 0;
     String? lastUpdatedStr = await _secureStorage.read(key: 'last_updated');
     _lastUpdated = lastUpdatedStr != null ? DateTime.tryParse(lastUpdatedStr) : await getNetworkTime();
-
     notifyListeners();
   }
 

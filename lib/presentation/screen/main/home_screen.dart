@@ -59,8 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   }
 
-  void handleFreeCreditsDialog(AiCreditProvider aiCreditProvider,BuildContext context){
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
+  void handleFreeCreditsDialog(AiCreditProvider aiCreditProvider,BuildContext context) async{
         if (!await aiCreditProvider.hasInternet()) return;
 
         final now = await aiCreditProvider.getNetworkTime();
@@ -74,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
            );
 
          }
-    });
+
   }
 
   void change(QuizProvider quizProvider) {

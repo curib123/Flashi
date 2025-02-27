@@ -92,6 +92,17 @@ class ModelSelectionDialog {
                         items: fetchDataProvider.listOfMaxLength,
                         onChanged: (newValue) {
                           if (newValue != null) selectedMaxLength = newValue;
+
+                          fetchDataProvider.updateListOfMaxLength(selectedMaxLength);
+
+                          for (int i = 0; i < fetchDataProvider.listOfMaxLength.length; i++)
+                          {
+                            if (fetchDataProvider.listOfMaxLength[i] == fetchDataProvider.ListOfMaxLength) // Check if value matches maxLength
+                                {
+                              int creditAmount = i + 1; // Use index +1 as credit amount
+                              fetchDataProvider.updateCreditsPerLength(creditAmount);
+                            }
+                          }
                         },
                         getCredits: (item) => item ~/ 10,
                       ),
@@ -104,6 +115,7 @@ class ModelSelectionDialog {
                         items: fetchDataProvider.listOfQuizQuestionTypes,
                         onChanged: (newValue) {
                           if (newValue != null) selectedQuizType = newValue;
+
                         },
                         getCredits: null,
                       ),
@@ -113,7 +125,6 @@ class ModelSelectionDialog {
                         builder: (context, aiCreditProvider, _) {
                           return Column(
                             children: [
-                              if (!isCustomPrompt)
                                 ReusableCreditsInfoCore(credits: aiCreditProvider.credits, colorScheme: colorScheme),
                               const SizedBox(height: 10),
                               Row(
@@ -127,12 +138,11 @@ class ModelSelectionDialog {
                                   ElevatedButton(
                                     onPressed: () async {
                                       fetchDataProvider.updateModel(selectedModel);
-                                      fetchDataProvider.updateListOfMaxLength(selectedMaxLength);
                                       fetchDataProvider.updateQuizQuestionType(selectedQuizType);
 
                                       if (isCustomPrompt) {
                                         onTap?.call();
-                                      } else if (aiCreditProvider.credits  != 0) {
+                                      } else if (aiCreditProvider.credits  >= fetchDataProvider.creditsPerLength) {
                                         onTap?.call();
                                       } else {
                                         adManager.loadRewardedAd(AdUnitId.rewardedAdUnitId);
@@ -174,14 +184,14 @@ class ModelSelectionDialog {
                                     child: Row(
                                       children: [
                                         Icon(
-                                          isCustomPrompt ? Icons.arrow_forward : aiCreditProvider.credits != 0 ? Icons.upload_file_rounded : Icons.play_circle_fill,
+                                          isCustomPrompt ? Icons.arrow_forward :aiCreditProvider.credits  >= fetchDataProvider.creditsPerLength ? Icons.upload_file_rounded : Icons.play_circle_fill,
                                           color: colorScheme.onPrimary,
                                         ),
                                         const SizedBox(width: 10),
                                         Text(
                                           isCustomPrompt
                                               ? "Next"
-                                              : aiCreditProvider.credits  != 0
+                                              :aiCreditProvider.credits  >= fetchDataProvider.creditsPerLength
                                               ? "Upload File"
                                               : "Watch Ads",
                                           style: const TextStyle(fontSize: 16),
