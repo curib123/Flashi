@@ -5,7 +5,6 @@ import 'package:flashi/util/helpers/classes/ads/ad_unit_id.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/loading_dialog.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/show_maintenace_alert_box.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/show_watch_ads_dialog.dart';
-import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:provider/provider.dart';
@@ -45,7 +44,7 @@ class _ReusableTitleContentState extends State<ReusableTitleContent> {
                 style: TextStyle(
                   color: widget.colorScheme.onPrimary,
                   fontWeight: FontWeight.bold,
-                  fontSize: widget.title.length >= 10 ? 14 : 16,
+                  fontSize: widget.title.length >= 12 ? 14 : 18,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),

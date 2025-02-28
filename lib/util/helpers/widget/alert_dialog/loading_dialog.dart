@@ -4,10 +4,10 @@ import 'dart:ui';
 void showLoadingDialog(BuildContext context, {required String text}) {
   showDialog(
     context: context,
-    barrierDismissible: false, // Prevent closing by tapping outside
+    barrierDismissible: false,
     builder: (context) {
       return WillPopScope(
-        onWillPop: () async => false, // Prevent back button dismissal
+        onWillPop: () async => false,
         child: _LoadingDialog(text: text),
       );
     },
@@ -23,7 +23,8 @@ class _LoadingDialog extends StatefulWidget {
   _LoadingDialogState createState() => _LoadingDialogState();
 }
 
-class _LoadingDialogState extends State<_LoadingDialog> with SingleTickerProviderStateMixin {
+class _LoadingDialogState extends State<_LoadingDialog>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
   @override
@@ -32,7 +33,7 @@ class _LoadingDialogState extends State<_LoadingDialog> with SingleTickerProvide
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 1),
-    )..repeat();
+    )..repeat(reverse: true);
   }
 
   @override
@@ -78,16 +79,24 @@ class _LoadingDialogState extends State<_LoadingDialog> with SingleTickerProvide
                 ),
               ),
               const SizedBox(height: 20),
-              Center(
-                child: Text(
-                  widget.text,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.bold,
-                    color: textColor,
-                  ),
-                ),
+              TweenAnimationBuilder<double>(
+                tween: Tween(begin: -0.2, end: 0.2),
+                duration: const Duration(seconds: 1),
+                curve: Curves.easeInOut,
+                builder: (context, value, child) {
+                  return Transform.translate(
+                    offset: Offset(0, value * 10),
+                    child: Text(
+                      widget.text,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        color: textColor,
+                      ),
+                    ),
+                  );
+                },
               ),
             ],
           ),
