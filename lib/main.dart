@@ -10,7 +10,6 @@ import 'package:flashi/provider/notes_provider.dart';
 import 'package:flashi/provider/onboarding_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flashi/provider/reviewer_settings_provider.dart';
-import 'package:flashi/provider/save_info_ads_provider.dart';
 import 'package:flashi/provider/sort_provider.dart';
 import 'package:flashi/provider/theme_provider.dart';
 import 'package:flashi/util/helpers/classes/api/ai/core/api_key_secure_storage.dart';
@@ -47,7 +46,6 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => ReviewerSettingsProvider()), // Add SortProvider
         ChangeNotifierProvider(create: (_) => NotesProvider()), // Add SortProvider
         ChangeNotifierProvider(create: (_) => OnboardingProvider()), // Add OnboardingProvider
-        ChangeNotifierProvider(create: (_) => SaveInfoAdsProvider()), // Add SaveInfoAdsProvider
         ChangeNotifierProvider(create: (_) => FetchDataFromJsonProvider()), // Add TextReaderProvider
         ChangeNotifierProvider(create: (_) => AiModelLogicProvider()), // Add AiModelLogicProvider
         ChangeNotifierProvider(create: (_) => CheckVersionProvider()), // Add CheckVersionProvider

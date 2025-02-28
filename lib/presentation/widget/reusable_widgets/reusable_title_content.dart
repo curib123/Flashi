@@ -63,7 +63,7 @@ class _ReusableTitleContentState extends State<ReusableTitleContent> {
                    showWatchAdDialog(
                        context: context,
                        title: "Earn Free Credits!",
-                       message: "Watch a short ad and instantly earn 2 free credits!",
+                       message: "Watch a short ad and instantly earn 5 free credits!",
                        cancelText: "Maybe Later",
                        confirmText: "Watch Ads",
                      onWatchAd: () {
@@ -92,9 +92,9 @@ class _ReusableTitleContentState extends State<ReusableTitleContent> {
                           style: TextStyle(fontSize: 15, color: widget.colorScheme.primary,fontWeight: FontWeight.w600),
                         ),
                         SizedBox(width: 5),
-                        Icon(Icons.token_rounded, size: 20, color: FlexColor.goldDarkPrimary),
+                        Icon(Icons.token_rounded, size: 20, color: widget.colorScheme.secondary),
                         SizedBox(width: 5),
-                        Icon(Icons.add_circle_rounded,size: 30,color: widget.colorScheme.secondary,)
+                        Icon(Icons.add_circle_rounded,size: 30,color: widget.colorScheme.primary,)
                       ],
                     ),
 

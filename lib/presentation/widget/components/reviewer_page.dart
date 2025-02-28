@@ -1,6 +1,7 @@
 import 'package:flashi/presentation/widget/components/reviewer_type_pages/flashcard_review.dart';
 import 'package:flashi/presentation/widget/components/reviewer_type_pages/multiple_choice_review(basic).dart';
 import 'package:flashi/presentation/widget/components/reviewer_type_pages/multiple_choice_review(timer).dart';
+import 'package:flashi/presentation/widget/components/reviewer_type_pages/text_input_review_basic.dart';
 import 'package:flashi/presentation/widget/components/reviewer_type_pages/text_to_speech_review.dart';
 import 'package:flashi/provider/reviewer_settings_provider.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/reviewer_settings_alert_box.dart';
@@ -78,6 +79,9 @@ class ReviewerPage extends StatelessWidget {
       case 'Text-to-Speech Review':
       // Return the widget for text-to-speech review
         return TextToSpeechReview(reviewer: reviewer, cards: filteredCardsIsIgnore, setname: setname); // Replace with the actual widget
+      case 'Text Input Basic Review':
+      // Return the widget for text-to-speech review
+        return TextInputReviewBasic(reviewer: reviewer, cards: filteredCardsIsIgnore, setname: setname); // Replace with the actual widget
 
       default:
         return const Center(

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flashi/presentation/screen/main/settings_screen.dart';
 import 'package:flashi/presentation/widget/components/see_all_quiz_set_list.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_favorate_position.dart';
@@ -37,7 +39,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // Access the QuizProvider and SortProvider from the context
 
     AdManager adManager = AdManager()..loadOpenAppAd(AdUnitId.appOpenAdUnitId);
     _appLifecycleReactor = AppLifecycleReactor(
@@ -54,17 +55,34 @@ class _HomeScreenState extends State<HomeScreen> {
     aiModelProvider.fetchLatestVersion();
     aiModelLogicProvider.fetchLatestVersion();
     checkVersionProvider.checkAppVersion(context);
-    handleFreeCreditsDialog(aiCreditProvider, context);
+    Future.delayed(Duration(seconds: 2),(){
+      handleFreeCreditsDialog(aiCreditProvider, context);
+    });
 
   }
 
   void handleFreeCreditsDialog(AiCreditProvider aiCreditProvider,BuildContext context) async{
         if (await aiCreditProvider.hasInternet()) {
           final now = await aiCreditProvider.getNetworkTime();
+          final random = Random();
+
+          print(now);
+          print(aiCreditProvider.lastUpdated);
+
+          if (aiCreditProvider.credits <= 10) {
+            aiCreditProvider.updateAddedCredits(random.nextInt(6) + 15);
+          } else if (aiCreditProvider.credits > 10 && aiCreditProvider.credits <= 15) {
+           aiCreditProvider.updateAddedCredits( random.nextInt(6) + 10);
+          } else if (aiCreditProvider.credits > 15 && aiCreditProvider.credits <= 20) {
+           aiCreditProvider.updateAddedCredits(random.nextInt(5) + 7);
+          } else {
+           aiCreditProvider.updateAddedCredits(random.nextInt(5) + 3);
+          }
+
           if (aiCreditProvider.lastUpdated == null || now.difference(aiCreditProvider.lastUpdated!).inDays > 0) {
             showFreeCreditsDialog(
               context: context,
-              rewardText: "You have Free ${aiCreditProvider.addedCredits} credits",
+              rewardText: "You have free ${aiCreditProvider.addedCredits} credits",
               onClaim: () async {
                 await aiCreditProvider.handleDataChange(now: now);
               },

@@ -3,9 +3,11 @@ import 'package:flashi/presentation/widget/reusable_widgets/reusable_quiz_card_l
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_rewarded_ads_button_position.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_sort_and_see_all.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
+import 'package:flashi/provider/ai_credits_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flashi/provider/sort_provider.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
+import 'package:flashi/util/helpers/widget/alert_dialog/add_slot_alert_dialog.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/delete_confirmation_alert_box.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/highlight_keyword_alert_box.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/review_selection_alert_box.dart';
@@ -63,8 +65,8 @@ class SeeAllQuizCard extends StatelessWidget {
 
     AdManager adManager = AdManager();
 
-    return Consumer2<QuizProvider, SortProvider>(
-      builder: (context, quizProvider, sortProvider, child) {
+    return Consumer3<QuizProvider, SortProvider,AiCreditProvider>(
+      builder: (context, quizProvider, sortProvider,aiCreditProvider, child) {
         return Stack(
           children: [
             ListView(
@@ -175,10 +177,21 @@ class SeeAllQuizCard extends StatelessWidget {
                 },
               )
             else
-              ReusableRewardedAdsButtonPosition(
-                colorScheme: colorScheme,
-                name: "Watch an ad to get 5 free slots!",
-              ),
+              aiCreditProvider.credits > 0 ? ReusableCreateSetButtonPosition(
+                 colorScheme: colorScheme,
+                 name: "Add More Slot",
+                 onTap: (){
+                   showAddSlotAlertDialog(context: context, onConfirm: (){
+                     aiCreditProvider.useCredit(1);
+                     quizProvider.updateQuizSetLimit(2);
+                   });
+                 },
+                 icon: Icons.add_circle_rounded
+             ) :
+            ReusableRewardedAdsButtonPosition(
+              colorScheme: colorScheme,
+              name: "Watch Ad Free 5 Credits",
+            ),
             ReusableThemeSettingPosition(colorScheme: colorScheme),
           ],
         );

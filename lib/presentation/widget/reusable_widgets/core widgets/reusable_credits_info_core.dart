@@ -51,7 +51,7 @@ class ReusableCreditsInfoCore extends StatelessWidget {
                       child: Icon(
                         Icons.token_rounded,
                         size: 15, // Adjust size for balance
-                        color: FlexColor.goldDarkPrimary,
+                        color: colorScheme.secondary,
                       ),
                     ),
                     TextSpan(text: " free credits left"),

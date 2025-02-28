@@ -86,7 +86,7 @@ void showFreeCreditsDialog({
                     },
                     child: Text(
                       "Claim Reward",
-                      style: TextStyle(color: colorScheme.onPrimary),
+                      style: TextStyle(color: colorScheme.onPrimary,fontWeight: FontWeight.bold),
                     ),
                   ),
                 ],

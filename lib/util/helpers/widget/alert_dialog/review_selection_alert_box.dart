@@ -35,14 +35,20 @@ void showReviewSelection({
     ),
     _createReviewerItem(
       context: context,
+      icon: Icons.task_rounded,
+      title: 'Text Input Basic Review',
+      subtitle: 'Identify and input the correct answer',
+      cards: cards,
+      setname: setname,
+    ),
+    _createReviewerItem(
+      context: context,
       icon: Icons.volume_up,
       title: 'Text-to-Speech Review',
       subtitle: 'Listen to prompts and review',
       cards: cards,
       setname: setname,
     ),
-
-
   ];
 
   showDialog(
@@ -80,16 +86,16 @@ Map<String, dynamic> _createReviewerItem({
     'iconData': icon,
     'title': title,
     'subtitle': subtitle,
-    'onTap': () => _handleTap(title, context, cards,setname),
+    'onTap': () => _handleTap(title, context, cards, setname),
   };
 }
 
-void _handleTap(String title, BuildContext context, List<dynamic> cards,  final String setname) {
+void _handleTap(String title, BuildContext context, List<dynamic> cards, String setname) {
   print('$title tapped');
   Navigator.push(
     context,
     MaterialPageRoute(
-      builder: (context) => ReviewerPage(reviewer: title, cards: cards, setname: setname,) ,
+      builder: (context) => ReviewerPage(reviewer: title, cards: cards, setname: setname,),
     ),
   );
 }
@@ -160,21 +166,100 @@ class _ReviewerSelectionScrollView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.5,
-      child: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: Column(
-          children: reviewerList.map((reviewer) {
-            return ReusableReviewerCardCore(
-              iconData: reviewer['iconData'] ?? Icons.help,
-              title: reviewer['title'] ?? 'No Title',
-              subtitle: reviewer['subtitle'] ?? 'No Subtitle',
-              onTap: reviewer['onTap'],
-            );
-          }).toList(),
+    return Column(
+      children: [
+        Container(
+          height: MediaQuery.of(context).size.height * 0.5,
+          child: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: Column(
+              children: List.generate(reviewerList.length, (index) {
+                final reviewer = reviewerList[index];
+                return TweenAnimationBuilder<double>(
+                  duration: Duration(milliseconds: 400),
+                  curve: Curves.easeInOut,
+                  tween: Tween<double>(begin: 0, end: 1),
+                  builder: (context, value, child) {
+                    return Opacity(
+                      opacity: value,
+                      child: Transform.translate(
+                        offset: Offset(0, (1 - value) * 20),
+                        child: ReusableReviewerCardCore(
+                          iconData: reviewer['iconData'] ?? Icons.help,
+                          title: reviewer['title'] ?? 'No Title',
+                          subtitle: reviewer['subtitle'] ?? 'No Subtitle',
+                          onTap: reviewer['onTap'],
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }),
+            ),
+          ),
         ),
-      ),
+        Padding(
+          padding: const EdgeInsets.all(0.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "Swipe up to see more...",
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 14,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+              SizedBox(width: 8),
+              _AnimatedArrowIcon(),
+            ],
+          ),
+        ),
+      ],
     );
+  }
+}
+
+class _AnimatedArrowIcon extends StatefulWidget {
+  @override
+  _AnimatedArrowIconState createState() => _AnimatedArrowIconState();
+}
+
+class _AnimatedArrowIconState extends State<_AnimatedArrowIcon>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 800),
+    )..repeat(reverse: true);
+
+    _animation = Tween<double>(begin: 0, end: 5).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        return Transform.translate(
+          offset: Offset(0, _animation.value),
+          child: Icon(Icons.keyboard_arrow_up, color: Colors.grey,size: 30,),
+        );
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 }

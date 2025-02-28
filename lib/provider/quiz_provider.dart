@@ -173,7 +173,7 @@ class QuizProvider with ChangeNotifier {
   }
 
 // Update the limitNumberOfQuiz by adding 1 to the previous value for a specific quiz set
-  void updateQuizSetLimit() {
+  void updateQuizSetLimit(int value) {
     // Fetch the quiz set using the provided quiz set name
     Map<String, dynamic>? quizSet = searchQuizSet(quizSetName: _currentQuizSetNameToSetLimit);
 
@@ -181,7 +181,7 @@ class QuizProvider with ChangeNotifier {
     if (quizSet != null) {
       // Fetch the current limit and increment it by 1
       int currentLimit = quizSet['limitNumberOfQuiz'] ?? 0;  // Default to 0 if limitNumberOfQuiz doesn't exist
-      quizSet['limitNumberOfQuiz'] = currentLimit + 5;
+      quizSet['limitNumberOfQuiz'] = currentLimit + value;
 
       // Save changes and notify listeners
       saveQuizSets();

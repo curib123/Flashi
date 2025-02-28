@@ -1,6 +1,5 @@
 import 'package:flashi/provider/ai_credits_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
-import 'package:flashi/provider/save_info_ads_provider.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_unit_id.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -369,18 +368,12 @@ _bannerAd6 = BannerAd(
 
   void showRewarded(BuildContext context,String whatRewards){
     // Access the QuizProvider and SortProvider from the context
-    final quizProvider = Provider.of<QuizProvider>(context,listen: false);
-    final saveInfoAdsProvider = Provider.of<SaveInfoAdsProvider>(context,listen: false);
     final aiCreditProvider = Provider.of<AiCreditProvider>(context,listen: false);
 
     _rewardedAd?.show(onUserEarnedReward: (AdWithoutView ad, RewardItem rewardItem) {
 
-      if(whatRewards == "cards"){
-        // Reward the user for watching an ad.
-        quizProvider.updateQuizSetLimit();
-        saveInfoAdsProvider.incrementAdsWatched();
-      }else if(whatRewards == "credits"){
-        aiCreditProvider.addCredits(2);
+      if(whatRewards == "credits"){
+        aiCreditProvider.addCredits(5);
         aiCreditProvider.addAdsWatched();
       }
 

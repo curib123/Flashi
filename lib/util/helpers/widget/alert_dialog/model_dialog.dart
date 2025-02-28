@@ -140,6 +140,7 @@ class ModelSelectionDialog {
                                       fetchDataProvider.updateModel(selectedModel);
                                       fetchDataProvider.updateQuizQuestionType(selectedQuizType);
 
+
                                       if (isCustomPrompt) {
                                         onTap?.call();
                                       } else if (aiCreditProvider.credits  >= fetchDataProvider.creditsPerLength) {
@@ -154,7 +155,7 @@ class ModelSelectionDialog {
                                             showWatchAdDialog(
                                               context: context,
                                               title: "Earn Free Credits!",
-                                              message: "Watch a short ad and instantly earn 2 free credits!",
+                                              message: "Watch a short ad and instantly earn 5 free credits!",
                                               cancelText: "Maybe Later",
                                               confirmText: "Watch Ad",
                                               onWatchAd: () {

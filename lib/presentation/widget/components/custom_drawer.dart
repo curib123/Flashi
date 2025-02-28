@@ -3,6 +3,7 @@ import 'package:flashi/presentation/screen/main/favorate_screen.dart';
 import 'package:flashi/presentation/screen/main/settings_screen.dart';
 import 'package:flashi/provider/bottom_navigation_provider.dart';
 import 'package:flashi/util/helpers/classes/other/wepage_launcher.dart';
+import 'package:flashi/util/helpers/widget/alert_dialog/about_alert_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -99,6 +100,8 @@ class CustomDrawer extends StatelessWidget {
             },
           ),
 
+
+
           const Divider(height: 1),
           buildListTile(
             icon: Icons.add_card_sharp,
@@ -137,6 +140,7 @@ class CustomDrawer extends StatelessWidget {
           },
 
           ),
+          const Divider(height: 1),
           buildListTile(
             icon: Icons.privacy_tip_rounded,
             title: 'Privacy Policy',
@@ -179,6 +183,17 @@ class CustomDrawer extends StatelessWidget {
               Navigator.pop(context),
               // TODO: Navigate to contact us screen},
               WebPageLauncher('').launchEmail()
+            }
+          ),
+
+          buildListTile(
+            icon: Icons.info_rounded,
+            title: 'About Us',
+            onTap: () =>
+            {
+            Navigator.pop(context),
+              showAnimatedAboutDialog(context)
+
             }
           ),
           // buildListTile(

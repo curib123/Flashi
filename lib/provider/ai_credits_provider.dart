@@ -55,18 +55,6 @@ class AiCreditProvider with ChangeNotifier {
     }
   }
   Future<void> handleDataChange({DateTime? now}) async {
-    final random = Random();
-    // Variable to store the random value
-
-    if (_credits <= 10) {
-      _addedCredits = random.nextInt(6) + 15; // 15-20 credits
-    } else if (_credits > 10 && _credits <= 15) {
-      _addedCredits = random.nextInt(6) + 10; // 10-15 credits
-    } else if (_credits > 15 && _credits <= 20) {
-      _addedCredits = random.nextInt(5) + 7;  // 7-11 credits
-    } else {
-      _addedCredits = random.nextInt(5) + 3;  // 3-7 credits
-    }
 
     _credits += addedCredits;
 
@@ -76,6 +64,11 @@ class AiCreditProvider with ChangeNotifier {
     if (now != null) _lastUpdated = now; // Only update if `now` is provided
 
     await _saveCredits();
+    notifyListeners();
+  }
+
+  void updateAddedCredits(int value) {
+    _addedCredits = value;
     notifyListeners();
   }
 
