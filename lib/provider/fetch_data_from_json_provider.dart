@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 class FetchDataFromJsonProvider with ChangeNotifier {
   final Box _fetchDataFromJson = Hive.box('fetchDataFromJson');
 
-  String _model = '';
+  String _model = 'pixtral-12b-2409';
   int _ListOfMaxLength = 0;
   int _creditsPerLength = 0;
   String _quiz_question_type = '';
@@ -22,7 +22,7 @@ class FetchDataFromJsonProvider with ChangeNotifier {
 
   /// Load data from Hive
   void hiveLoad() {
-    _model = _fetchDataFromJson.get('model', defaultValue: '');
+    _model = _fetchDataFromJson.get('model', defaultValue: 'pixtral-12b-2409');
     _ListOfMaxLength = _fetchDataFromJson.get('maxLength', defaultValue: 20);
     _quiz_question_type = _fetchDataFromJson.get('quiz_question_type', defaultValue: '');
 

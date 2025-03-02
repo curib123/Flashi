@@ -94,6 +94,10 @@ flutter:
     - asset/font/Montserrat-Regular.ttf
     - asset/font/Montserrat-Bold.ttf
     - asset/icon/icon.png
+    - asset/images/onboarding_1.png
+    - asset/images/onboarding_2.png
+    - asset/images/onboarding_3.jpg
+    - asset/images/onboarding_4.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

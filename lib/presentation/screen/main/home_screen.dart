@@ -5,6 +5,7 @@ import 'package:flashi/presentation/widget/components/see_all_quiz_set_list.dart
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_favorate_position.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_search_bar_core.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_create_set_button_position.dart';
+import 'package:flashi/presentation/widget/reusable_widgets/reusable_fun_facts_position.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_import_position.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_quiz_set_list.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_sort_and_see_all.dart';
@@ -14,11 +15,13 @@ import 'package:flashi/provider/ai_credits_provider.dart';
 import 'package:flashi/provider/ai_model_logic_provider.dart';
 import 'package:flashi/provider/fetch_data_from_json_provider.dart';
 import 'package:flashi/provider/check_version_provider.dart';
+import 'package:flashi/provider/fun_facts_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flashi/provider/sort_provider.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_unit_id.dart';
 import 'package:flashi/util/helpers/classes/ads/app_lifecycle_reactor.dart';
+import 'package:flashi/util/helpers/widget/alert_dialog/fun_facts_alert_dialog.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/show_free_credits_dialog.dart';
 import 'package:flashi/util/helpers/widget/other/empty_widgets.dart';
 import 'package:flutter/material.dart';
@@ -47,19 +50,31 @@ class _HomeScreenState extends State<HomeScreen> {
       adManager.loadInterstitialAd(AdUnitId.interstitialAdUnitId);
     });
 
-    final aiModelProvider = Provider.of<FetchDataFromJsonProvider>(context,listen: false);
+    final fetchDataFromJsonProvider = Provider.of<FetchDataFromJsonProvider>(context,listen: false);
     final aiModelLogicProvider = Provider.of<AiModelLogicProvider>(context,listen: false);
     final checkVersionProvider = Provider.of<CheckVersionProvider>(context,listen: false);
     final aiCreditProvider = Provider.of<AiCreditProvider>(context,listen: false);
+    final funFactsProvider = Provider.of<FunFactsProvider>(context,listen: false);
 
-    aiModelProvider.fetchLatestVersion();
+    fetchDataFromJsonProvider.fetchLatestVersion();
     aiModelLogicProvider.fetchLatestVersion();
     checkVersionProvider.checkAppVersion(context);
-    Future.delayed(Duration(seconds: 2),(){
+    funFactsProvider.updateFunFacts(fetchDataFromJsonProvider);
+
+
+    Future.delayed(Duration(seconds: 5),(){
+      print(funFactsProvider.funFacts);
       handleFreeCreditsDialog(aiCreditProvider, context);
+      if (funFactsProvider.funFacts.isNotEmpty && !funFactsProvider.isAlreadyShow) {
+        showFunFactDialog(context, facts: funFactsProvider.funFacts);
+        funFactsProvider.toggleFunFacts();
+      }
     });
 
+
+
   }
+
 
   void handleFreeCreditsDialog(AiCreditProvider aiCreditProvider,BuildContext context) async{
         if (await aiCreditProvider.hasInternet()) {
@@ -275,6 +290,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
           // Floating theme settings button
           ReusableThemeSettingPosition(colorScheme: colorScheme),
+          ReusableFunFactsPosition(colorScheme: colorScheme),
           ReusableImportPosition(colorScheme: colorScheme),
           ReusableFavoratePosition(colorScheme: colorScheme),
 

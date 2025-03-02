@@ -12,14 +12,14 @@ Widget noSetWidget(BuildContext context) {
           const Icon(Icons.inbox, size: 100, color: Colors.grey),
           const SizedBox(height: 20),
           Text(
-            "No Subject  Available",
+            "No Flashcards  Available",
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
               color: Colors.grey,
             ),
           ),
           const SizedBox(height: 10),
           Text(
-            "Create Some Subject to See Them Here.",
+            "Create Some Flashcards to See Them Here.",
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: Colors.grey.shade600,
             ),

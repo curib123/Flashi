@@ -9,7 +9,7 @@ class ReusableFavoratePosition extends StatelessWidget {
   Widget build(BuildContext context) {
     return  Positioned(
       bottom: 115 ,
-      right: 15,
+      right: 5,
       child: GestureDetector(
         onTap: () => {
           Navigator.push(

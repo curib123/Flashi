@@ -4,6 +4,7 @@ import 'package:flashi/util/helpers/classes/ads/ad_unit_id.dart';
 import 'package:flashi/util/helpers/widget/other/highlight_keywords.dart';
 import 'package:flutter/material.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reviewer_widgets_core/multiple_choice_core.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class MultipleChoiceReviewBasic extends StatefulWidget {
@@ -69,7 +70,7 @@ AdManager adManager = AdManager();
     // Automatically navigate to the next page
     if (_pageController.page?.toInt() == widget.cards.length - 1) {
       // If it's the last question, show congratulations
-      showCongratulationDialog();
+      showCongratulationDialog(context);
     } else {
       Future.delayed(Duration(seconds: 2), () {
         _pageController.nextPage(
@@ -81,92 +82,107 @@ AdManager adManager = AdManager();
   }
 
 
-  void showCongratulationDialog() async {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-
-
+  void showCongratulationDialog(BuildContext context) {
     showDialog(
       context: context,
-      barrierDismissible: false, // Prevent closing by tapping outside
+      barrierDismissible: false,
       builder: (context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          title: Center(
-            child: Text(
-              '🎉 Congratulations! 🎉',
-              style: theme.textTheme.headlineSmall?.copyWith(
-                color: colorScheme.primary,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+        return Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: Theme.of(context).colorScheme.surface,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 10,
+                  spreadRadius: 2,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.emoji_events, // 🏆 Trophy icon
+                  size: 50,
+                  color: Theme.of(context).colorScheme.primary,
+                ).animate().fadeIn(duration: 500.ms).moveY(begin: -20, end: 0, curve: Curves.easeOutBack),
+
+                const SizedBox(height: 15),
+                Text(
+                  '🎉 Congratulations! 🎉',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ).animate().fadeIn(duration: 500.ms),
+
+                const SizedBox(height: 10),
+                Text(
+                  'You have completed the quiz!',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                  textAlign: TextAlign.center,
+                ).animate().fadeIn(duration: 600.ms, delay: 100.ms),
+
+                const SizedBox(height: 8),
+                Text(
+                  'Your score is $_score out of ${widget.cards.length}.',
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: Theme.of(context).colorScheme.secondary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  textAlign: TextAlign.center,
+                ).animate().fadeIn(duration: 600.ms, delay: 200.ms),
+
+                const SizedBox(height: 15),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        adManager.showInterstitialAd();
+                        Navigator.pop(context);
+                        Navigator.pop(context);
+                      },
+                      icon: const Icon(Icons.check_circle, size: 18), // ✅ OK icon
+                      label: const Text('OK'),
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      ),
+                    ).animate().fadeIn(duration: 700.ms, delay: 300.ms),
+
+                    const SizedBox(width: 10),
+
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        adManager.showInterstitialAd();
+                        Navigator.pop(context);
+                        restartQuiz();
+                      },
+                      icon:  Icon(Icons.replay, size: 18,color:  Theme.of(context).colorScheme.onSecondary,), // 🔄 Restart icon
+                      label: const Text('Restart'),
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Theme.of(context).colorScheme.onSecondary,
+                        backgroundColor: Theme.of(context).colorScheme.secondary,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      ),
+                    ).animate().fadeIn(duration: 700.ms, delay: 400.ms),
+                  ],
+                ),
+              ],
             ),
           ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'You have completed the quiz!',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurface,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 10),
-              Text(
-                'Your score is $_score out of ${widget.cards.length}.',
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: colorScheme.secondary,
-                  fontWeight: FontWeight.w600,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-          actionsAlignment: MainAxisAlignment.center,
-          actions: [
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                foregroundColor: colorScheme.onPrimary,
-                backgroundColor: colorScheme.primary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              ),
-              onPressed: () {
-                  adManager.showInterstitialAd();
-                //ads here
-                Navigator.pop(context); // Close the dialog
-                Navigator.pop(context); // Go back to the previous screen
-              },
-              child: const Text('OK'),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                foregroundColor: colorScheme.onSecondary,
-                backgroundColor: colorScheme.secondary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              ),
-              onPressed: () {
-                adManager.showInterstitialAd();
-               //ads here
-                Navigator.pop(context); // Close the dialog
-                restartQuiz(); // Restart the quiz
-              },
-              child: const Text('Restart'),
-            ),
-          ],
         );
       },
     );
   }
+
 
   void restartQuiz() {
     setState(() {
