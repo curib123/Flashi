@@ -1,24 +1,24 @@
 
-import 'package:flashi/provider/fun_facts_provider.dart';
-import 'package:flashi/util/helpers/widget/alert_dialog/fun_facts_alert_dialog.dart';
+import 'package:flashi/provider/DailyQuestionProvider.dart';
+import 'package:flashi/util/helpers/widget/alert_dialog/showDailyQuestionDialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class ReusableFunFactsPosition extends StatelessWidget {
+class ReusableDailyQuestPosition extends StatelessWidget {
   final ColorScheme colorScheme;
-  const ReusableFunFactsPosition({super.key, required this.colorScheme});
+  const ReusableDailyQuestPosition({super.key, required this.colorScheme});
 
   @override
   Widget build(BuildContext context) {
 
-    final funFactsProvider = Provider.of<FunFactsProvider>(context);
+    final dailyQuestionProvider = Provider.of<DailyQuestionProvider>(context);
 
     return Positioned(
       bottom: 210,
       right: 5, // Adjusted for balance (optional)
       child: GestureDetector(
         onTap: () {
-           showFunFactDialog(context,facts: funFactsProvider.funFacts) ;
+          showDailyQuestionDialog(context, questions: dailyQuestionProvider.funFacts) ;
         },
         child: Container(
           padding: const EdgeInsets.all(5),

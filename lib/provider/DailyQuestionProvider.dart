@@ -3,16 +3,16 @@ import 'package:flashi/util/helpers/classes/api/Trivia/fun_fact_generator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-class FunFactsProvider with ChangeNotifier {
+class DailyQuestionProvider with ChangeNotifier {
   late final Box _chatBox;
-  List<String> _funFacts = [];
+  List<Map<String, String>> _funFacts = [];
   bool _isAlreadyShow = false;
 
-  List<String> get funFacts => _funFacts;
+  List<Map<String, String>> get funFacts => _funFacts;
   bool get isAlreadyShow => _isAlreadyShow;
 
-  FunFactsProvider() {
-    _chatBox = Hive.box('funFacts'); // Ensure the box is opened before using
+  DailyQuestionProvider() {
+    _chatBox = Hive.box('DailyQuestionProvider'); // Ensure the box is opened before using
     loadFunFacts(); // Load fun facts on initialization
   }
 
@@ -31,30 +31,36 @@ class FunFactsProvider with ChangeNotifier {
     }
   }
 
-
   // ✅ Generate and save fun facts to Hive
-  // ✅ Update fun facts only if not empty
   Future<void> updateFunFacts(FetchDataFromJsonProvider fetchDataFromJsonProvider) async {
-    List<String> facts = await TriviaGenerator.fetchTrivia();
+    List<Map<String, String>> facts = await TriviaGenerator.fetchTrivia();
 
- Future.delayed(Duration(seconds: 5),(){
-   if (facts.isNotEmpty) {
-     _funFacts = facts;
-     saveFunFacts();
-     notifyListeners();
-   }
- });
+    Future.delayed(Duration(seconds: 5), () {
+      if (facts.isNotEmpty) {
+        _funFacts = List<Map<String, String>>.from(facts);
+        saveFunFacts();
+        notifyListeners();
+      }
+    });
   }
 
-  // ✅ Save fun facts to Hive
+  // ✅ Save fun facts to Hive with proper type conversion
   void saveFunFacts() {
-    _chatBox.put('savedFunFacts', _funFacts);
+    _chatBox.put('DailyQuestionProvider', _funFacts.map((e) => e.cast<String, dynamic>()).toList());
   }
 
-  // ✅ Load fun facts from Hive with proper type handling
+  // ✅ Load fun facts from Hive safely
   void loadFunFacts() {
-    final storedData = _chatBox.get('savedFunFacts', defaultValue: []);
-    _funFacts = storedData is List ? List<String>.from(storedData) : [];
+    final storedData = _chatBox.get('DailyQuestionProvider', defaultValue: []);
+
+    if (storedData is List) {
+      _funFacts = storedData
+          .whereType<Map<dynamic, dynamic>>() // Ensure only maps are processed
+          .map((e) => Map<String, String>.from(e)) // Convert to correct type
+          .toList();
+    } else {
+      _funFacts = [];
+    }
     notifyListeners();
   }
 

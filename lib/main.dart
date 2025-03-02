@@ -1,12 +1,12 @@
 
 import 'package:flashi/home.dart';
+import 'package:flashi/provider/DailyQuestionProvider.dart';
 import 'package:flashi/provider/ai_credits_provider.dart';
 import 'package:flashi/provider/ai_model_logic_provider.dart';
 import 'package:flashi/provider/chatbot_provider.dart';
 import 'package:flashi/provider/fetch_data_from_json_provider.dart';
 import 'package:flashi/provider/bottom_navigation_provider.dart';
 import 'package:flashi/provider/check_version_provider.dart';
-import 'package:flashi/provider/fun_facts_provider.dart';
 import 'package:flashi/provider/notes_provider.dart';
 import 'package:flashi/provider/onboarding_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
@@ -35,7 +35,7 @@ Future<void> main() async {
   await Hive.openBox('timerBox');
   await Hive.openBox('chatMessages');
   await Hive.openBox('fetchDataFromJson');
-  await Hive.openBox('funFacts');
+  await Hive.openBox('DailyQuestionProvider');
 
   await saveAPIKey('TZjSrnSAjyflYyNyFmPnMfHHSZ4Mw33q');
 
@@ -53,7 +53,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => CheckVersionProvider()), // Add CheckVersionProvider
         ChangeNotifierProvider(create: (_) => ChatBotProvider()), // Add CheckVersionProvider
         ChangeNotifierProvider(create: (_) => AiCreditProvider()), // Add CheckVersionProvider
-        ChangeNotifierProvider(create: (_) => FunFactsProvider()), // Add CheckVersionProvider
+        ChangeNotifierProvider(create: (_) => DailyQuestionProvider()), // Add CheckVersionProvider
 
         ChangeNotifierProvider(
             create: (context) => QuizProvider(
