@@ -72,7 +72,7 @@ class AiModelLogicProvider extends ChangeNotifier {
         notifyListeners();
       });
 
-      Future.delayed(Duration(seconds: 5), () {
+      Future.delayed(Duration(seconds: 10), () {
         if (questions.isNotEmpty && !isTimeOut) {
           final quizSetName = 'AI Generated From File ${quizProvider.quizSets
               .length + 1}';

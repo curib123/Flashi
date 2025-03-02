@@ -85,11 +85,11 @@ class _HomeScreenState extends State<HomeScreen> {
           print(aiCreditProvider.lastUpdated);
 
           if (aiCreditProvider.credits <= 10) {
-            aiCreditProvider.updateAddedCredits(random.nextInt(6) + 15);
+            aiCreditProvider.updateAddedCredits(random.nextInt(6) + 10);
           } else if (aiCreditProvider.credits > 10 && aiCreditProvider.credits <= 15) {
-           aiCreditProvider.updateAddedCredits( random.nextInt(6) + 10);
+           aiCreditProvider.updateAddedCredits( random.nextInt(6) + 7);
           } else if (aiCreditProvider.credits > 15 && aiCreditProvider.credits <= 20) {
-           aiCreditProvider.updateAddedCredits(random.nextInt(5) + 7);
+           aiCreditProvider.updateAddedCredits(random.nextInt(5) + 5);
           } else {
            aiCreditProvider.updateAddedCredits(random.nextInt(5) + 3);
           }

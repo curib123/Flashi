@@ -54,9 +54,9 @@ class ModelSelectionDialog {
             child: SingleChildScrollView(
               child: Consumer<FetchDataFromJsonProvider>(
                 builder: (context, fetchDataProvider, _) {
-                  String selectedModel = fetchDataProvider.listOfModels.first;
-                  int selectedMaxLength = fetchDataProvider.listOfMaxLength.first;
-                  String selectedQuizType = fetchDataProvider.listOfQuizQuestionTypes.first;
+                  String selectedModel = fetchDataProvider.model;
+                  int selectedMaxLength = fetchDataProvider.ListOfMaxLength;
+                  String selectedQuizType = fetchDataProvider.quiz_question_type;
 
                   return Column(
                     mainAxisSize: MainAxisSize.min,
@@ -93,7 +93,7 @@ class ModelSelectionDialog {
                         onChanged: (newValue) {
                           if (newValue != null) selectedMaxLength = newValue;
 
-                          fetchDataProvider.updateListOfMaxLength(selectedMaxLength);
+                          fetchDataProvider.updateListOfMaxLength(newValue!);
 
                           for (int i = 0; i < fetchDataProvider.listOfMaxLength.length; i++)
                           {
@@ -139,8 +139,6 @@ class ModelSelectionDialog {
                                     onPressed: () async {
                                       fetchDataProvider.updateModel(selectedModel);
                                       fetchDataProvider.updateQuizQuestionType(selectedQuizType);
-
-
                                       if (isCustomPrompt) {
                                         onTap?.call();
                                       } else if (aiCreditProvider.credits  >= fetchDataProvider.creditsPerLength) {

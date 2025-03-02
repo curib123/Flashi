@@ -6,10 +6,10 @@ import 'package:http/http.dart' as http;
 class FetchDataFromJsonProvider with ChangeNotifier {
   final Box _fetchDataFromJson = Hive.box('fetchDataFromJson');
 
-  String _model = 'pixtral-12b-2409';
-  int _ListOfMaxLength = 0;
+  String _model = 'mistral-small-latest';
+  int _ListOfMaxLength = 10;
   int _creditsPerLength = 0;
-  String _quiz_question_type = '';
+  String _quiz_question_type = 'Identification';
   List<String> listOfModels = [];
   List<String> listOfQuizQuestionTypes = [];
   List<int> listOfMaxLength = [];
@@ -20,11 +20,15 @@ class FetchDataFromJsonProvider with ChangeNotifier {
   int get creditsPerLength => _creditsPerLength;
   String get quiz_question_type => _quiz_question_type;
 
+  FetchDataFromJsonProvider(){
+    hiveLoad();
+  }
+
   /// Load data from Hive
   void hiveLoad() {
-    _model = _fetchDataFromJson.get('model', defaultValue: 'pixtral-12b-2409');
-    _ListOfMaxLength = _fetchDataFromJson.get('maxLength', defaultValue: 20);
-    _quiz_question_type = _fetchDataFromJson.get('quiz_question_type', defaultValue: '');
+    _model = _fetchDataFromJson.get('model', defaultValue: _model);
+    _ListOfMaxLength = _fetchDataFromJson.get('maxLength', defaultValue: _ListOfMaxLength);
+    _quiz_question_type = _fetchDataFromJson.get('quiz_question_type', defaultValue: _quiz_question_type);
 
     listOfModels = List<String>.from(_fetchDataFromJson.get('listOfModels', defaultValue: []));
     listOfQuizQuestionTypes = List<String>.from(_fetchDataFromJson.get('listOfQuizQuestionTypes', defaultValue: []));
