@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'dart:math';void showDailyQuestionDialog(BuildContext context, {required List<Map<String, String>> questions}) {
+import 'dart:math';
+
+void showDailyQuestionDialog(BuildContext context, {required List<Map<String, String>> questions}) {
   final theme = Theme.of(context);
   final FlutterTts flutterTts = FlutterTts();
 
@@ -17,9 +19,7 @@ import 'dart:math';void showDailyQuestionDialog(BuildContext context, {required 
     ];
   }
 
-  // Shuffle the questions list
-  questions.shuffle(Random());
-
+  questions.shuffle(Random()); // Shuffle questions
   int currentIndex = 0;
   bool isAnswered = false;
   String? selectedAnswer;
@@ -29,7 +29,6 @@ import 'dart:math';void showDailyQuestionDialog(BuildContext context, {required 
     await flutterTts.speak(text);
   }
 
-  // Speak the first question before opening the dialog
   speakText(questions[currentIndex]["question"] ?? "");
 
   showDialog(
@@ -45,7 +44,6 @@ import 'dart:math';void showDailyQuestionDialog(BuildContext context, {required 
             questionData["fake_choice_2"] ?? "",
             questionData["fake_choice_3"] ?? ""
           ];
-
           choices.shuffle(Random());
 
           void selectAnswer(String choice) {
@@ -71,8 +69,6 @@ import 'dart:math';void showDailyQuestionDialog(BuildContext context, {required 
                   currentIndex++;
                   isAnswered = false;
                   selectedAnswer = null;
-
-                  // Speak the next question
                   speakText(questions[currentIndex]["question"] ?? "");
                 } else {
                   Navigator.pop(context);
@@ -131,17 +127,28 @@ import 'dart:math';void showDailyQuestionDialog(BuildContext context, {required 
                       return SizedBox(
                         width: MediaQuery.of(context).size.width * 0.3,
                         child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: buttonColor,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                            padding: const EdgeInsets.symmetric(vertical: 14),
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+                              if (isAnswered) {
+                                return buttonColor; // Keep color when disabled
+                              }
+                              return theme.colorScheme.primary;
+                            }),
+                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            ),
+                            padding: MaterialStateProperty.all(const EdgeInsets.symmetric(vertical: 14)),
                           ),
                           onPressed: isAnswered ? null : () => selectAnswer(choice),
                           child: Text(
                             choice,
-                            style: TextStyle(color: Colors.white, fontSize: 16),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: choice.length > 20 ? 12 : (choice.length > 10 ? 14 : 16),
+                            ),
                             textAlign: TextAlign.center,
                           ),
+
                         ),
                       );
                     }).toList(),
