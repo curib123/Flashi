@@ -44,17 +44,17 @@ class ImportExportHelperClass {
       final filePath = "${rootDirectory.path}/$fileName";
       final file = File(filePath);
 
-      await file.writeAsString(jsonEncode(_convertTimestampsToString(sets)));
+      await file.writeAsString(jsonEncode(convertTimestampsToString(sets)));
 
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Export Successful: The list has been exported to $filePath"),
+          content: Text("Save Successful: The list has been save to $filePath"),
           backgroundColor: Colors.green,
         ),
       );
 
-      _convertStringsToTimestamps(sets);
+      convertStringsToTimestamps(sets);
 
 
     } catch (e) {
@@ -142,7 +142,7 @@ class ImportExportHelperClass {
     }
   }
 
-  Map<String, dynamic> _convertTimestampsToString(Map<String, dynamic> data) {
+  static Map<String, dynamic> convertTimestampsToString(Map<String, dynamic> data) {
     Map<String, dynamic> convertedData = Map<String, dynamic>.from(data);
 
     // Convert top-level timestamp to String
@@ -165,7 +165,7 @@ class ImportExportHelperClass {
     return convertedData;
   }
 
-  Map<String, dynamic> _convertStringsToTimestamps(Map<String, dynamic> data) {
+ static Map<String, dynamic> convertStringsToTimestamps(Map<String, dynamic> data) {
     Map<String, dynamic> convertedData = Map<String, dynamic>.from(data);
 
     // Convert top-level timestamp from String to DateTime

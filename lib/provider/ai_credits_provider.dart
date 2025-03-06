@@ -72,6 +72,11 @@ class AiCreditProvider with ChangeNotifier {
     notifyListeners();
   }
 
+ void updateCredits(int value) {
+    _credits = value;
+    notifyListeners();
+  }
+
 
   /// Save credits and ad watch count securely
   Future<void> _saveCredits() async {

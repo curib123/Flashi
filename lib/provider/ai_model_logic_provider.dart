@@ -50,10 +50,14 @@ class AiModelLogicProvider extends ChangeNotifier {
 
   Future<void> pickFileAndGenerate(BuildContext context,
       QuizProvider quizProvider,
-      FetchDataFromJsonProvider fetchDataFromJsonProvider,AiCreditProvider aiCreditProvider) async {
+      FetchDataFromJsonProvider fetchDataFromJsonProvider,
+      AiCreditProvider aiCreditProvider,
+      Future<String> pickAndExtractText(),
+
+      ) async {
 
     showLoadingDialog(context,text:   "AI is processing... Please wait...");
-    extractedText = await FileTextExtractor.pickAndExtractText();
+    extractedText = await pickAndExtractText();
 
     if ( handleExtractedTextError(context, extractedText)) {
       final questions = await AIQuestionGenerator.generateQuestionsFromFile(
@@ -328,7 +332,7 @@ class AiModelLogicProvider extends ChangeNotifier {
                     _buildDialogButton(
                       icon: Icons.auto_awesome,
                       context,
-                      label: "AI-Generated Flashcard",
+                      label: "Custom AI-Generated ",
                       gradientColors: [
                         colorScheme.secondary,
                         colorScheme.secondary.withOpacity(0.5)
@@ -365,7 +369,7 @@ class AiModelLogicProvider extends ChangeNotifier {
                     _buildDialogButton(
                       icon: Icons.file_copy_rounded,
                       context,
-                      label: "AI-Generated From Document",
+                      label: "AI-Generated From Pdf/Docs",
                       gradientColors: [
                         colorScheme.tertiary,
                         colorScheme.tertiary.withOpacity(0.5)
@@ -390,8 +394,61 @@ class AiModelLogicProvider extends ChangeNotifier {
                             false,
                             onTap: () async {
                               await pickFileAndGenerate(
-                                  context, quizProvider, fetchDataFromJsonProvider,aiCreditProvider);
+                                context,
+                                quizProvider,
+                                fetchDataFromJsonProvider,
+                                aiCreditProvider,
+                                    () async {
+                                  return await FileTextExtractor.pickAndExtractText();
+                                },
+                              );
                             },
+
+                          );
+                        } else {
+                          showMaintenanceDialog(context, 'Under Maintenance',
+                              reasonMaintenance);
+                        }
+                      },
+                    ),
+
+                    _buildDialogButton(
+                      icon: Icons.picture_in_picture,
+                      context,
+                      label: "AI-Generated From Image",
+                      gradientColors: [
+                        colorScheme.tertiary,
+                        colorScheme.tertiary.withOpacity(0.5)
+                      ],
+                      onPressed: () async {
+                        bool isConnected =
+                        await InternetConnection().hasInternetAccess;
+                        if (!isConnected && !isFetchData) {
+                          showMaintenanceDialog(
+                            context,
+                            'No Internet',
+                            "Please connect to the internet to generate a flashcard.",
+                          );
+                          return;
+                        }else{
+                          _fetchDataFromJson();
+                        }
+                        if (!isUnderMaintenance) {
+                          ModelSelectionDialog.show(
+                            context,
+                            false,
+                            onTap: () async {
+                              await pickFileAndGenerate(
+                                context,
+                                quizProvider,
+                                fetchDataFromJsonProvider,
+                                aiCreditProvider,
+                                    () async {
+                                  return await AIQuestionGenerator.analyzeImage( FileTextExtractor.pickOrCaptureImage(context), "Get the text in image");
+                                },
+                              );
+                            },
+
                           );
                         } else {
                           showMaintenanceDialog(context, 'Under Maintenance',
@@ -490,6 +547,11 @@ bool handleExtractedTextError(BuildContext context, String extractedText) {
       "title": "Permission",
       "message": "Permission denied. Please allow access to continue.",
       "snackbar": "Permission denied. Please allow access to continue."
+    },
+    "Error: No image selected.": {
+      "title": "No Image",
+      "message": "Please select an image first.",
+      "snackbar": "Please select an image first.",
     },
   };
 

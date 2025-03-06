@@ -3,6 +3,7 @@ import 'package:flashi/home.dart';
 import 'package:flashi/provider/DailyQuestionProvider.dart';
 import 'package:flashi/provider/ai_credits_provider.dart';
 import 'package:flashi/provider/ai_model_logic_provider.dart';
+import 'package:flashi/provider/auth_provider.dart';
 import 'package:flashi/provider/chatbot_provider.dart';
 import 'package:flashi/provider/fetch_data_from_json_provider.dart';
 import 'package:flashi/provider/bottom_navigation_provider.dart';
@@ -18,11 +19,17 @@ import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
   MobileAds.instance.initialize();
+
+  const supabaseUrl = 'https://dgssqjhjfomxojfkbeks.supabase.co';
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRnc3NxamhqZm9teG9qZmtiZWtzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDExNzQzNTMsImV4cCI6MjA1Njc1MDM1M30.CBa29vkdnCouCYp81dB5Qu04kEy0cfi4FQQTyCqr7L8';
+
+  await Supabase.initialize(url: supabaseUrl, anonKey: supabaseKey);
 
   await Hive.initFlutter(); // Initialize Hive
 // Open different boxes for various settings or data
@@ -54,6 +61,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => ChatBotProvider()), // Add CheckVersionProvider
         ChangeNotifierProvider(create: (_) => AiCreditProvider()), // Add CheckVersionProvider
         ChangeNotifierProvider(create: (_) => DailyQuestionProvider()), // Add CheckVersionProvider
+        ChangeNotifierProvider(create: (_) => AuthProvider()), // Add CheckVersionProvider
 
         ChangeNotifierProvider(
             create: (context) => QuizProvider(
@@ -65,6 +73,8 @@ Future<void> main() async {
       child: const Flashi(),
     ),
   );
+
+
 }
 
 

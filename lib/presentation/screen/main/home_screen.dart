@@ -14,6 +14,7 @@ import 'package:flashi/presentation/widget/reusable_widgets/reusable_title_conte
 import 'package:flashi/provider/DailyQuestionProvider.dart';
 import 'package:flashi/provider/ai_credits_provider.dart';
 import 'package:flashi/provider/ai_model_logic_provider.dart';
+import 'package:flashi/provider/auth_provider.dart';
 import 'package:flashi/provider/fetch_data_from_json_provider.dart';
 import 'package:flashi/provider/check_version_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
@@ -37,14 +38,14 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
 
   AdManager adManager = AdManager();
-  late AppLifecycleReactor _appLifecycleReactor;
+  late AppLifecycleReactor appLifecycleReactor;
 
   @override
   void initState() {
     super.initState();
 
     AdManager adManager = AdManager()..loadOpenAppAd(AdUnitId.appOpenAdUnitId);
-    _appLifecycleReactor = AppLifecycleReactor(
+    appLifecycleReactor = AppLifecycleReactor(
         adManager: adManager);
     Future.delayed(Duration(minutes: 5),(){
       adManager.loadInterstitialAd(AdUnitId.interstitialAdUnitId);
@@ -55,12 +56,20 @@ class _HomeScreenState extends State<HomeScreen> {
     final checkVersionProvider = Provider.of<CheckVersionProvider>(context,listen: false);
     final aiCreditProvider = Provider.of<AiCreditProvider>(context,listen: false);
     final dailyQuestionProvider = Provider.of<DailyQuestionProvider>(context,listen: false);
+    final authProvider = Provider.of<AuthProvider>(context,listen: false);
+    final quizProvider = Provider.of<QuizProvider>(context,listen: false);
 
     fetchDataFromJsonProvider.fetchLatestVersion();
     aiModelLogicProvider.fetchLatestVersion();
     checkVersionProvider.checkAppVersion(context);
     dailyQuestionProvider.updateFunFacts(fetchDataFromJsonProvider);
+    Future.delayed(Duration(seconds: 1),() async {
+      aiCreditProvider.updateCredits(authProvider.user_credits);
+     await authProvider.saveFlashcards(authProvider.user_id,quizProvider.quizSets);
+     await authProvider.saveUserCredits(authProvider.user_id, aiCreditProvider.credits);
 
+    });
+    print(quizProvider.quizSets);
 
     Future.delayed(Duration(seconds: 5),(){
       print(dailyQuestionProvider.funFacts);

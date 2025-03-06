@@ -52,6 +52,24 @@ class QuizProvider with ChangeNotifier {
     notifyListeners();
 
   }
+  Future<void> updateQuizSets(Future<List<Map<String, dynamic>>> newQuizSetsFuture, {bool merge = true}) async {
+    List<Map<String, dynamic>> newQuizSets = await newQuizSetsFuture; // Await the future result
+
+    if (merge) {
+      // Merge: Add newQuizSets to _quizSets, ensuring no duplicates
+      for (var newSet in newQuizSets) {
+        if (!_quizSets.any((existingSet) => existingSet['id'] == newSet['id'])) {
+          _quizSets.add(newSet);
+        }
+      }
+    } else {
+      // Discard existing data and replace with new data
+      _quizSets = List.from(newQuizSets);
+    }
+
+    saveQuizSets(); // Ensure it's saved before proceeding
+    notifyListeners(); // Notify UI to update
+  }
 
 
 

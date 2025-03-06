@@ -1,3 +1,4 @@
+import 'package:flashi/presentation/screen/authentication/sign_in_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:provider/provider.dart';
@@ -92,8 +93,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
       child: IntroductionScreen(
         globalBackgroundColor: Colors.white,
         pages: pages,
-        onDone: () => _navigateToHome(context),
-        onSkip: () => _navigateToHome(context),
+        onDone: () => _navigateAuth(context),
+        onSkip: () => _navigateAuth(context),
         showSkipButton: true,
         skip: Text("Skip", style: TextStyle(color: Colors.black)),
         next: Icon(Icons.arrow_forward, color: Colors.black),
@@ -109,9 +110,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
     );
   }
 
-  void _navigateToHome(BuildContext context) {
-    final onboardingProvider = Provider.of<OnboardingProvider>(context, listen: false);
+  void _navigateAuth(BuildContext context) {
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => SignInScreen()),
+    );
+
+    final onboardingProvider = Provider.of<OnboardingProvider>(context,listen: false);
     onboardingProvider.completeOnboarding();
+
+
   }
 
   @override
