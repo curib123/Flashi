@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:flashi/presentation/screen/main/settings_screen.dart';
 import 'package:flashi/presentation/widget/components/see_all_quiz_set_list.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_daily_quest_position.dart';
@@ -17,6 +16,7 @@ import 'package:flashi/provider/ai_model_logic_provider.dart';
 import 'package:flashi/provider/auth_provider.dart';
 import 'package:flashi/provider/fetch_data_from_json_provider.dart';
 import 'package:flashi/provider/check_version_provider.dart';
+import 'package:flashi/provider/notes_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flashi/provider/sort_provider.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
@@ -58,18 +58,20 @@ class _HomeScreenState extends State<HomeScreen> {
     final dailyQuestionProvider = Provider.of<DailyQuestionProvider>(context,listen: false);
     final authProvider = Provider.of<AuthProvider>(context,listen: false);
     final quizProvider = Provider.of<QuizProvider>(context,listen: false);
+    final notesProvider = Provider.of<NotesProvider>(context,listen: false);
 
     fetchDataFromJsonProvider.fetchLatestVersion();
     aiModelLogicProvider.fetchLatestVersion();
     checkVersionProvider.checkAppVersion(context);
     dailyQuestionProvider.updateFunFacts(fetchDataFromJsonProvider);
-    Future.delayed(Duration(seconds: 1),() async {
-      aiCreditProvider.updateCredits(authProvider.user_credits);
+
+    Future.delayed(Duration(seconds: 3),() async {
+
      await authProvider.saveFlashcards(authProvider.user_id,quizProvider.quizSets);
      await authProvider.saveUserCredits(authProvider.user_id, aiCreditProvider.credits);
+     await authProvider.saveNotes(authProvider.user_id, notesProvider.notes);
 
     });
-    print(quizProvider.quizSets);
 
     Future.delayed(Duration(seconds: 5),(){
       print(dailyQuestionProvider.funFacts);
@@ -150,6 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     AdManager adManager = AdManager();
 
+
     change(quizProvider);
 
     // Navigate to the SeeAllQuizSetList screen
@@ -169,122 +172,127 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Stack(
         children: [
           // Main scrollable content using CustomScrollView
-          CustomScrollView(
-            slivers: [
-              // SliverAppBar for a custom collapsing header
-              SliverAppBar(
-                backgroundColor: colorScheme.primary,
-                leading: GestureDetector(
-                  onTap: () => Scaffold.of(context).openDrawer(),
-                  child: Icon(
-                    Icons.notes_rounded,
-                    size: 30,
-                    color: colorScheme.onPrimary,
+          RefreshIndicator(
+            onRefresh: () {
+              setState(() {});
+              return Future.delayed(Duration.zero);
+            },
+            child: CustomScrollView(
+              slivers: [
+                // SliverAppBar for a custom collapsing header
+                SliverAppBar(
+                  backgroundColor: colorScheme.primary,
+                  leading: GestureDetector(
+                    onTap: () => Scaffold.of(context).openDrawer(),
+                    child: Icon(
+                      Icons.notes_rounded,
+                      size: 30,
+                      color: colorScheme.onPrimary,
+                    ),
                   ),
-                ),
-                pinned: true, // Keeps the header visible when scrolling
-                floating: true, // Header doesn't float when scrolling
-                expandedHeight: 210, // Height of the expanded header
-                title:  ReusableTitleContent(colorScheme: colorScheme, title: "FLASHI AI", onUpgradePro: () {},
-                    onSettings: () {
-
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const SettingsScreen()),
-                      );
-
-                    }),
-                flexibleSpace: FlexibleSpaceBar(
-                  background: Container(
-                    padding: EdgeInsets.all(10),
-                    alignment: Alignment.bottomCenter,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Align(
-                          alignment: Alignment.center,
-                          child: Text(
-                            "AI-Powered Flashcards Generator",
-                            style: TextStyle(
-                              color: colorScheme.onPrimary,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 16,
+                  pinned: true, // Keeps the header visible when scrolling
+                  floating: true, // Header doesn't float when scrolling
+                  expandedHeight: 190, // Height of the expanded header
+                  title:  ReusableTitleContent(colorScheme: colorScheme, title: "FLASHI", onUpgradePro: () {},
+                      onSettings: () {
+            
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const SettingsScreen()),
+                        );
+            
+                      }),
+                  flexibleSpace: FlexibleSpaceBar(
+                    background: Container(
+                      padding: EdgeInsets.all(10),
+                      alignment: Alignment.bottomCenter,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Align(
+                            alignment: Alignment.center,
+                            child: Text(
+                              "Learn Smarter Retain Faster",
+                              style: TextStyle(
+                                color: colorScheme.onPrimary,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 16,
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 15),
-                        // Search bar for filtering quiz sets
-                        Container(
-                          height: 85,
-                          child: ReusableSearchBarCore(
-                            colorScheme: colorScheme,
-                            hintText: 'Search Flashcards',
-                            onChanged: (value) =>
-                                quizProvider.updateSearchQuery(value),
-                            controller: quizProvider.searchController,
-                          ),
-                        )
-                      ],
+                          SizedBox(height: 10,),
+                          // Search bar for filtering quiz sets
+                          Container(
+                            height: 80,
+                            child: ReusableSearchBarCore(
+                              colorScheme: colorScheme,
+                              hintText: 'Search Flashcards',
+                              onChanged: (value) =>
+                                  quizProvider.updateSearchQuery(value),
+                              controller: quizProvider.searchController,
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+            
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                      bottomRight: Radius.circular(35),
+                      bottomLeft: Radius.circular(35),
                     ),
                   ),
                 ),
-
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.only(
-                    bottomRight: Radius.circular(35),
-                    bottomLeft: Radius.circular(35),
+            
+                // Content section below the header
+                SliverToBoxAdapter(
+                  child: Container(
+                    padding: const EdgeInsets.only(top: 10, bottom: 200,right: 2,left: 2),
+                    child: Stack(
+                      children: [
+                        Column(
+                          children: [
+                            // Sorting and "See All" button
+                           Column(
+                             children: [
+                               ReusableSortAndSeeAll(
+                                 dropdownValue: sortProvider.dropdownValueSet,
+                                 sortOptions: sortProvider.sortOptionsSet,
+                                 onSortChanged: (newValue) {
+                                   sortProvider.updateSortValueSet(newValue!);
+                                   quizProvider.sortQuizSets(newValue);
+                                 },
+                                 onSeeAllPressed: ()  {
+                                   quizProvider.searchController.text = quizProvider.searchQuery;
+                                   gotoSeeAllQuizSetList();
+                                 },
+                                 isShowSeeAllLink: true,
+                                 isShowReviewLink: false,
+                                 onShowReviewLink: () { },
+                               ),
+                               // Positioned Banner Ads (Floating Above the Content)
+                               adManager.getFirstBannerAdWidget(),
+                             ],
+                           ),
+            
+                            // Quiz set list or message
+                            if (filteredQuizSets.isNotEmpty)
+                              ReusableQuizSetList(quizSets: filteredQuizSets)
+                            else
+                              noSetWidget(context)
+            
+                          ],
+                        ),
+            
+            
+                      ],
+                    )
+            
                   ),
                 ),
-              ),
-
-              // Content section below the header
-              SliverToBoxAdapter(
-                child: Container(
-                  padding: const EdgeInsets.only(top: 10, bottom: 200,right: 2,left: 2),
-                  child: Column(
-                    children: [
-                      // Sorting and "See All" button
-                      ReusableSortAndSeeAll(
-                        dropdownValue: sortProvider.dropdownValueSet,
-                        sortOptions: sortProvider.sortOptionsSet,
-                        onSortChanged: (newValue) {
-                          sortProvider.updateSortValueSet(newValue!);
-                          quizProvider.sortQuizSets(newValue);
-                        },
-                        onSeeAllPressed: ()  {
-                          // Update search query and navigate to See All
-                          quizProvider.searchController.text =
-                              quizProvider.searchQuery;
-                          gotoSeeAllQuizSetList();
-                        },
-                        isShowSeeAllLink: true,
-                        isShowReviewLink: false,
-                        onShowReviewLink: () {  },
-                      ),
-
-                      //put banner ads here
-                      adManager.getFirstBannerAdWidget(),
-
-                      if (filteredQuizSets.isNotEmpty && quizProvider.searchQuery != "12/15/03")
-                        ReusableQuizSetList(quizSets: filteredQuizSets)
-                      else
-
-                        quizProvider.searchQuery == "12/15/03"
-                            ? Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Text(
-                            'Developer: John Paul Curib',
-                            style: TextStyle(color: colorScheme.primary),
-                          ),
-                        )
-                            : noSetWidget(context),
-
-
-                    ],
-                  ),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
 
           // Floating "Create Set" button

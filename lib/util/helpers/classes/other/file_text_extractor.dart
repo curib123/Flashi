@@ -72,57 +72,80 @@ class FileTextExtractor {
     if (!hasPermission) return null; // Return null if permission is denied
 
     final ImagePicker picker = ImagePicker();
-    ImageSource? source = await extractor.showImageSourceDialog(context);
+    ImageSource? source = await extractor.showImageSourceModal(context);
     if (source == null) return null; // User canceled
 
     XFile? imageFile = await picker.pickImage(source: source);
     return imageFile != null ? File(imageFile.path) : null;
   }
 
-
-  Future<ImageSource?> showImageSourceDialog(BuildContext context) async {
+  Future<ImageSource?> showImageSourceModal(BuildContext context) async {
     final colorScheme = Theme
         .of(context)
         .colorScheme;
 
-    return showGeneralDialog<ImageSource>(
+    return showModalBottomSheet<ImageSource>(
       context: context,
-      barrierDismissible: true,
-      barrierLabel: "Image Source",
-      transitionDuration: Duration(milliseconds: 300),
-      pageBuilder: (context, animation, secondaryAnimation) {
-        return ScaleTransition(
-          scale: animation,
-          child: AlertDialog(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20)),
-            title: Column(
-              children: [
-                Text("Select Image Source",
-                    style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16)),
+      backgroundColor: Colors.transparent, // Fix transparency issue
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return  Container(
+          width: MediaQuery.sizeOf(context).width,
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+            decoration: BoxDecoration(
+              color: colorScheme.surface,
+              // Ensure background is not fully transparent
+              borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(20)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 10,
+                  offset: const Offset(0, -4),
+                ),
               ],
             ),
-            content: Column(
+            child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 15),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[400],
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const Text(
+                  "Select Image Source",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                const SizedBox(height: 15),
                 _buildOption(
                   context,
                   icon: Icons.camera_alt_rounded,
                   text: "Open Camera",
-                  color: colorScheme.onSecondary,
+                  color: colorScheme.primary,
                   source: ImageSource.camera,
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 12),
                 _buildOption(
                   context,
                   icon: Icons.image_rounded,
                   text: "Open Gallery",
-                  color: colorScheme.onSecondary,
+                  color: colorScheme.secondary,
                   source: ImageSource.gallery,
                 ),
+                const SizedBox(height: 10),
               ],
             ),
-          ),
         );
       },
     );
@@ -137,14 +160,15 @@ class FileTextExtractor {
     return ElevatedButton.icon(
       style: ElevatedButton.styleFrom(
         backgroundColor: color,
-        foregroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Colors.white,
+        // Ensure text is visible on any background
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
       ),
       onPressed: () => Navigator.pop(context, source),
-      icon: Icon(icon, size: 24),
-      label: Text(text, style: TextStyle(fontSize: 16)),
+      icon: Icon(icon, size: 24, color: Colors.white),
+      label: Text(
+          text, style: const TextStyle(fontSize: 16, color: Colors.white)),
     );
   }
 }
-

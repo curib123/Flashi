@@ -1,19 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
 class ReusableSetCore extends StatelessWidget {
   final String name;
   final String description;
   final int numberOfQuiz;
-  final VoidCallback onTap;
-  final VoidCallback onAddCard; // Action for "Add Cards"
-  final VoidCallback onReview; // Action for "Review"
-  final VoidCallback onDelete; // Action for "Delete"
-  final VoidCallback onEdit; // Action for "Edit"
-  final VoidCallback onFavorate; // Action for "Favorate"
-  final VoidCallback onShare; // Action for "Share"
-  final VoidCallback onExport; // Action for "Share"
-  final VoidCallback onViewAllCards; // Action for "View All Cards"
-  final DateTime timestamp; // Added timestamp parameter
+  final VoidCallback onTap, onAddCard, onReview, onDelete, onEdit, onFavorate, onShare, onExport, onViewAllCards;
+  final DateTime timestamp;
   final bool isFavorate;
 
   const ReusableSetCore({
@@ -25,9 +18,9 @@ class ReusableSetCore extends StatelessWidget {
     required this.onAddCard,
     required this.onReview,
     required this.onDelete,
-    required this.onEdit, // Added parameter
-    required this.onFavorate, // Added parameter
-    required this.onViewAllCards, // Added parameter
+    required this.onEdit,
+    required this.onFavorate,
+    required this.onViewAllCards,
     required this.timestamp,
     required this.isFavorate,
     required this.onShare,
@@ -41,58 +34,54 @@ class ReusableSetCore extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(18.0),
         gradient: LinearGradient(
           colors: [
-            colorScheme.tertiaryContainer.withOpacity(.8),
-            colorScheme.primaryContainer.withOpacity(.8),
+            colorScheme.primaryContainer.withOpacity(0.9),
+            colorScheme.secondaryContainer.withOpacity(0.3),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        shape: BoxShape.rectangle,
-        borderRadius: BorderRadius.circular(15.0),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            blurRadius: 10.0,
-            offset: const Offset(0, 5), // Shadow position
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 12.0,
+            offset: Offset(4, 4),
           ),
+
         ],
-        color: Colors.white, // Background color
       ),
-      margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
+      margin: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
       child: InkWell(
-        borderRadius: BorderRadius.circular(15.0),
+        borderRadius: BorderRadius.circular(18.0),
         onTap: onTap,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header with More Options icon
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 15,horizontal: 10),
-              child: Row(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
                 children: [
-                  // Left-side icon or avatar
                   Container(
-                    width: 55,
-                    height: 55,
+                    width: 60,
+                    height: 60,
                     decoration: BoxDecoration(
-                      color: colorScheme.primary.withOpacity(.1),
+                      color: colorScheme.primary.withOpacity(0.15),
                       shape: BoxShape.circle,
                     ),
                     child: Center(
                       child: Text(
                         numberOfQuiz.toString(),
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 22,
                           fontWeight: FontWeight.bold,
                           color: colorScheme.primary,
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 15.0),
-                  // Text information
+                  const SizedBox(width: 16.0),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,7 +89,7 @@ class ReusableSetCore extends StatelessWidget {
                         Text(
                           name,
                           style: TextStyle(
-                            fontSize: name.length <= 13 ? 18 : 15,
+                            fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: colorScheme.primary,
                           ),
@@ -118,152 +107,74 @@ class ReusableSetCore extends StatelessWidget {
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: 12,
                             color: colorScheme.tertiary,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  // More Options Dropdown
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: PopupMenuButton<String>(
-                      padding: EdgeInsets.all(3),
-                      elevation: 15,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                      shadowColor: colorScheme.primary,
-                      color: colorScheme.onPrimary,
-                      icon: Icon(Icons.more_vert, color: colorScheme.primary),
-                      onSelected: (String value) {
-                        if (value == 'delete') {
-                          onDelete();
-                        } else if (value == 'edit') {
-                          onEdit();
-                        } else if(value == 'favorate'){
-                          onFavorate();
-                        } else if(value == 'view_all'){
-                          onViewAllCards();
-                        }else if(value == 'export'){
-                          onExport();
-                        }else if(value == 'share'){
-                          onShare();
-                        }
-                      },
-                      itemBuilder: (BuildContext context) {
-                        return [
-                          PopupMenuItem<String>(
-                            value: 'favorate',
-                            child: Row(
-                              children: [
-                                isFavorate ?  Icon(Icons.favorite, color: colorScheme.error) :  Icon(Icons.favorite_outline, color: colorScheme.error),
-                                const SizedBox(width: 5),
-                                Text('Favorate', style: TextStyle(color: colorScheme.primary)),
-                              ],
-                            ),
-                          ),
-                          PopupMenuItem<String>(
-                            value: 'edit',
-                            child: Row(
-                              children: [
-                                Icon(Icons.edit, color: colorScheme.primary),
-                                const SizedBox(width: 5),
-                                Text('Edit', style: TextStyle(color: colorScheme.primary)),
-                              ],
-                            ),
-                          ),
-                          // View All Cards Option
-                          PopupMenuItem<String>(
-                            value: 'view_all',
-                            child: Row(
-                              children: [
-                                Icon(Icons.view_agenda_rounded, color: colorScheme.primary),
-                                const SizedBox(width: 5),
-                                Text('View All Cards', style: TextStyle(color: colorScheme.primary)),
-                              ],
-                            ),
-                          ),
-                          // // Share Option
-                          // PopupMenuItem<String>(
-                          //   value: 'Share',
-                          //   child: Row(
-                          //     children: [
-                          //       Icon(Icons.share, color: colorScheme.primary),
-                          //       const SizedBox(width: 1),
-                          //       Text('Share Set', style: TextStyle(color: colorScheme.primary)),
-                          //     ],
-                          //   ),
-                          // ), // Export Option
-
-                          PopupMenuItem<String>(
-                            value: 'export',
-                            child: Row(
-                              children: [
-                                Icon(Icons.save, color: colorScheme.primary),
-                                const SizedBox(width: 5),
-                                Text('Save in Folder', style: TextStyle(color: colorScheme.primary,fontSize: 13)),
-                              ],
-                            ),
-                          ),
-                          // Delete Option
-                          PopupMenuItem<String>(
-                            value: 'delete',
-                            child: Row(
-                              children: [
-                                Icon(Icons.delete, color: colorScheme.error),
-                                const SizedBox(width: 1),
-                                Text('Delete', style: TextStyle(color: colorScheme.error)),
-                              ],
-                            ),
-                          ),
-                          // PopupMenuItem<String>(
-                          //   value: 'share',
-                          //   child: Row(
-                          //     children: [
-                          //       Icon(Icons.share_rounded, color: colorScheme.primary),
-                          //       const SizedBox(width: 1),
-                          //       Text('Share Subject', style: TextStyle(color: colorScheme.primary)),
-                          //     ],
-                          //   ),
-                          // ),
-                        ];
-                      },
-                    ),
+                  PopupMenuButton<String>(
+                    padding: EdgeInsets.zero,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    color: colorScheme.surface,
+                    icon: Icon(Icons.more_vert, color: colorScheme.primary),
+                    onSelected: (String value) {
+                      switch (value) {
+                        case 'favorate': onFavorate(); break;
+                        case 'edit': onEdit(); break;
+                        case 'view_all': onViewAllCards(); break;
+                        case 'export': onExport(); break;
+                        case 'share': onShare(); break;
+                        case 'delete': onDelete(); break;
+                      }
+                    },
+                    itemBuilder: (context) => [
+                      _buildPopupMenuItem('Favorate', isFavorate ? Icons.favorite : Icons.favorite_border, 'favorate', colorScheme.error),
+                      _buildPopupMenuItem('Edit', Icons.edit, 'edit', colorScheme.primary),
+                      _buildPopupMenuItem('View All Cards', Icons.view_agenda, 'view_all', colorScheme.primary),
+                      _buildPopupMenuItem('Save in Folder', Icons.save, 'export', colorScheme.primary),
+                      _buildPopupMenuItem('Delete', Icons.delete, 'delete', colorScheme.error),
+                    ],
                   ),
                 ],
               ),
-            ),
-            // Displaying timestamp
-            Divider(height: 1.0, color: colorScheme.primary),
-            // Bottom Buttons
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-              child: Row(
+              Divider(height: 20.0, color: colorScheme.primary.withOpacity(0.6)),
+              Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Add Cards Button
-                  TextButton.icon(
-                    onPressed: onAddCard,
-                    icon: Icon(Icons.add_circle, color: colorScheme.primary),
-                    label: Text(
-                      "Add Cards",
-                      style: TextStyle(color: colorScheme.primary),
-                    ),
-                  ),
-                  // Review Button
-                  TextButton.icon(
-                    onPressed: onReview,
-                    icon: Icon(Icons.rate_review, color: colorScheme.secondary),
-                    label: Text(
-                      "Review",
-                      style: TextStyle(color: colorScheme.secondary),
-                    ),
-                  ),
+                  _buildActionButton('Add Cards', Icons.add_circle, onAddCard, colorScheme.primary),
+                  _buildActionButton('Quiz Mode', Icons.rate_review, onReview, colorScheme.secondary),
                 ],
               ),
-            ),
-          ],
+            ],
+          ),
         ),
+      ),
+    );
+  }
+
+  PopupMenuItem<String> _buildPopupMenuItem(String text, IconData icon, String value, Color iconColor) {
+    return PopupMenuItem<String>(
+      value: value,
+      child: Row(
+        children: [
+          Icon(icon, color: iconColor),
+          const SizedBox(width: 10),
+          Text(text, style: TextStyle(color: iconColor)),
+        ],
+      ),
+    );
+  }
+
+  TextButton _buildActionButton(String label, IconData icon, VoidCallback onPressed, Color color) {
+    return TextButton.icon(
+      onPressed: onPressed,
+      icon: Icon(icon, color: color),
+      label: Text(label, style: TextStyle(color: color)),
+      style: TextButton.styleFrom(
+        backgroundColor: color.withOpacity(0.1),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
   }

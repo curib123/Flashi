@@ -11,6 +11,7 @@ import 'package:flashi/provider/fetch_data_from_json_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flashi/provider/sort_provider.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
+import 'package:flashi/util/helpers/widget/other/empty_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -29,7 +30,6 @@ class SeeAllQuizSetList extends StatelessWidget {
 
     // Access both providers directly
     final quizProvider = Provider.of<QuizProvider>(context);
-    AdManager adManager = AdManager();
 
 
     return Scaffold(
@@ -98,7 +98,7 @@ class SeeAllQuizSetList extends StatelessWidget {
                 adManager.getFifthBannerAdWidget(),
 
         filteredQuizSets.isEmpty
-                    ? _noSetWidget(context)
+                    ? noSetWidget(context)
                     : SizedBox(
                   width: MediaQuery.sizeOf(context).width,
                   height: MediaQuery.sizeOf(context).height * 0.60,
@@ -133,32 +133,3 @@ class SeeAllQuizSetList extends StatelessWidget {
   }
 }
 
-Widget _noSetWidget(BuildContext context) {
-  return SizedBox(
-    height: MediaQuery.of(context).size.height * 0.30,
-    width: MediaQuery.of(context).size.width,
-    child:   Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.inbox, size: 100, color: Colors.grey),
-          const SizedBox(height: 20),
-          Text(
-            "No Flashcard available",
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: Colors.grey,
-            ),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            "Create some Flashcard to see them here.",
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.grey.shade600,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    ),
-  );
-}

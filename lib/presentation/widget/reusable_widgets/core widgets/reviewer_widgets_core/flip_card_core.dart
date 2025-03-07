@@ -46,9 +46,15 @@ class _FlipCardCoreState extends State<FlipCardCore> {
         back: _buildCardSide(
           context,
           content: Center(
-            child: Text(widget.answer, // Convert answer to Text widget
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500, color: Theme.of(context).colorScheme.onPrimary)),
+            child: Text(
+              widget.answer,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
           ),
           isFront: false,
         ),
@@ -62,49 +68,45 @@ class _FlipCardCoreState extends State<FlipCardCore> {
 
     return Stack(
       children: [
-        Card(
-          elevation: 8,
-          shadowColor: Colors.black.withOpacity(0.2),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          child: Container(
-            width: size.width * 0.90,
-            height: size.height * 0.80,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              gradient: LinearGradient(
-                colors: isFront
-                    ? [colorScheme.primary.withOpacity(.8), colorScheme.tertiary.withOpacity(.8)] // Gradient for front side
-                    : [colorScheme.tertiary.withOpacity(.8), colorScheme.primary.withOpacity(.8)], // Gradient for back side
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.15),
-                  offset: Offset(2, 4),
-                  blurRadius: 8,
-                ),
-              ],
+        Container(
+          width: size.width * 0.90,
+          height: size.height * 0.80,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            gradient: LinearGradient(
+              colors: isFront
+                  ? [colorScheme.primary.withOpacity(.7), colorScheme.tertiary.withOpacity(.7)]
+                  : [colorScheme.tertiary.withOpacity(.7), colorScheme.primary.withOpacity(.7)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
-            padding: const EdgeInsets.all(16),
-            child: Center(child: content), // Use Widget directly
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                offset: Offset(4, 8),
+                blurRadius: 12,
+              ),
+            ],
+            border: Border.all(color: Colors.white.withOpacity(0.3), width: 1),
           ),
+          padding: const EdgeInsets.all(20),
+          child: Center(child: content),
         ),
         Positioned(
-          top: 8,
-          left: 8,
+          top: 12,
+          left: 12,
           child: IconButton(
-            icon: Icon(Icons.edit, color: colorScheme.onPrimary, size: 24),
+            icon: Icon(Icons.edit, color: Colors.white, size: 26),
             onPressed: widget.onEdit,
           ),
         ),
-        if (!isFront) // Only show the speaker icon for answers
+        if (!isFront)
           Positioned(
-            top: 8,
-            right: 8,
+            top: 12,
+            right: 12,
             child: IconButton(
-              icon: Icon(Icons.volume_up, color: colorScheme.onPrimary, size: 24),
-              onPressed: () => _speak(widget.answer), // Read aloud the answer
+              icon: Icon(Icons.volume_up, color: Colors.white, size: 26),
+              onPressed: () => _speak(widget.answer),
             ),
           ),
         Positioned(
@@ -112,9 +114,11 @@ class _FlipCardCoreState extends State<FlipCardCore> {
           left: size.width * 0.45,
           child: Transform.translate(
             offset: const Offset(-14, 0),
-            child: isFront
-                ? Icon(Icons.rotate_right, color: colorScheme.onPrimary, size: 40)
-                : Icon(Icons.rotate_left, color: colorScheme.onPrimary, size: 40),
+            child: Icon(
+              isFront ? Icons.flip : Icons.flip,
+              color: Colors.white,
+              size: 36,
+            ),
           ),
         ),
       ],

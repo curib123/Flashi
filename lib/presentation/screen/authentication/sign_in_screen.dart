@@ -1,6 +1,7 @@
 import 'package:flashi/presentation/screen/authentication/sign_up_screen.dart';
 import 'package:flashi/provider/ai_credits_provider.dart';
 import 'package:flashi/provider/auth_provider.dart';
+import 'package:flashi/provider/notes_provider.dart';
 import 'package:flashi/provider/onboarding_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/show_email_dialog.dart';
@@ -27,21 +28,26 @@ class SignInScreen extends StatelessWidget {
             icon: Icon(Icons.arrow_back_ios_new_rounded, color: colorScheme.primary),
             onPressed: () => _navigateHome(),
           ),
-          title: Text(
-            "Skip",
-            style: TextStyle(
-              color: colorScheme.primary,
-              fontSize: 15, // Slightly adjusted for better fit
-              fontWeight: FontWeight.bold,
-            ),
-            overflow: TextOverflow.ellipsis, // Handles overflow gracefully
-          ),
+          title:
+              GestureDetector(
+                onTap: () => _navigateHome(),
+                child: Text(
+                  "Skip",
+                  style: TextStyle(
+                    color: colorScheme.primary,
+                    fontSize: 15, // Slightly adjusted for better fit
+                    fontWeight: FontWeight.bold,
+                  ),
+                  overflow: TextOverflow.ellipsis, // Handles overflow gracefully
+
+                          ),
+              ),
           centerTitle: false, // Aligns title to the left (optional)
         ),
 
       backgroundColor: colorScheme.background,
-      body: Consumer3<AuthProvider,QuizProvider,AiCreditProvider>(
-        builder: (context, authProvider,quizProvider,aiCreditProvider, child) {
+      body: Consumer4<AuthProvider,QuizProvider,AiCreditProvider,NotesProvider>(
+        builder: (context, authProvider,quizProvider,aiCreditProvider, notesProvider,child) {
           return ListView(
             padding: const EdgeInsets.symmetric(horizontal: 32.0),
             children: [
@@ -93,7 +99,7 @@ class SignInScreen extends StatelessWidget {
                       minimumSize: Size(double.infinity, 50),
                     ),
                     onPressed: () async {
-                      await authProvider.signIn(context, quizProvider,aiCreditProvider);
+                      await authProvider.signIn(context, quizProvider,aiCreditProvider,notesProvider);
                     },
                     child: Text("Sign In", style: GoogleFonts.poppins(fontSize: 18, color: colorScheme.onPrimary)),
                   ),
@@ -112,13 +118,13 @@ class SignInScreen extends StatelessWidget {
                     ],
                   ),
                   SizedBox(height: 10),
-                  GestureDetector(
-                    onTap: () {
-                      // TODO: Implement password reset feature
-                      showEmailResetInputDialog(context, authProvider);
-                    },
-                    child: Text("Forgot Password?", style: GoogleFonts.poppins(color: colorScheme.primary, fontWeight: FontWeight.bold)),
-                  ),
+                  // GestureDetector(
+                  //   onTap: () {
+                  //
+                  //     showEmailResetInputDialog(context, authProvider);
+                  //   },
+                  //   child: Text("Forgot Password?", style: GoogleFonts.poppins(color: colorScheme.primary, fontWeight: FontWeight.bold)),
+                  // ),
                 ],
               ),
             ],

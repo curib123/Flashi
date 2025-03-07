@@ -27,6 +27,7 @@ class CustomDrawer extends StatelessWidget {
       return ListTile(
         leading: Icon(icon, color: colorScheme.primary, size: 26),
         title: Text(title, style: textStyle),
+        titleAlignment: ListTileTitleAlignment.center,
         onTap: onTap,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
@@ -36,6 +37,7 @@ class CustomDrawer extends StatelessWidget {
     return Consumer3<BottomNavigationProvider, AuthProvider,QuizProvider>(
       builder: (context, bottomNavProvider, authProvider,quizProvider, child) {
         return Drawer(
+          backgroundColor: colorScheme.onPrimary,
           shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
                   topRight: Radius.circular(20),
@@ -46,15 +48,15 @@ class CustomDrawer extends StatelessWidget {
                 width: MediaQuery.sizeOf(context).shortestSide,
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 decoration: BoxDecoration(
-                  color: colorScheme.primary,
+                  color: colorScheme.onPrimary,
                 ),
                 child: Column(
                   children: [
                     const SizedBox(height: 20),
                     CircleAvatar(
-                      backgroundColor: colorScheme.onTertiary,
+                      backgroundColor: colorScheme.primary,
                       radius: 30, // Bigger for better focus
-                      child: Icon(Icons.person, size: 40, color: colorScheme.primary),
+                      child: Icon(Icons.person, size: 40, color: colorScheme.onTertiary),
                     ),
                     const SizedBox(height: 10),
                     Container(
@@ -63,15 +65,15 @@ class CustomDrawer extends StatelessWidget {
                       child: Column(
                         children: [
                           Text(authProvider.username,
-                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white)),
+                              style:  TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color:colorScheme.primary)),
                           const SizedBox(height: 5),
                           Text(authProvider.email,
-                              style: const TextStyle(fontSize: 13, color: Colors.white70)),
+                              style:  TextStyle(fontSize: 13, color: colorScheme.primary.withOpacity(0.7))),
                         ],
                       ),
                     ),
                     // Optional: Add a divider for better separation
-                    Divider(color: Colors.white.withOpacity(0.2), thickness: 1, indent: 20, endIndent: 20),
+                    Divider(color: colorScheme.primary.withOpacity(0.2), thickness: 1, indent: 20, endIndent: 20),
                   ],
                 ),
               ),
@@ -103,7 +105,7 @@ class CustomDrawer extends StatelessWidget {
                             });
                       },
                     ),
-                    const Divider(),
+
                     buildListTile(
                       icon: Icons.home_rounded,
                       title: 'Home',
@@ -134,7 +136,7 @@ class CustomDrawer extends StatelessWidget {
                                 builder: (context) => const SettingsScreen()));
                       },
                     ),
-                    const Divider(),
+
                     buildListTile(
                       icon: Icons.add_card_sharp,
                       title: 'Import Flashcard',
@@ -163,7 +165,7 @@ class CustomDrawer extends StatelessWidget {
                         WebPageLauncher('https://www.facebook.com/...').launch();
                       },
                     ),
-                    const Divider(),
+
                     buildListTile(
                       icon: Icons.privacy_tip_rounded,
                       title: 'Privacy Policy',

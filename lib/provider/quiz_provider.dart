@@ -1,4 +1,5 @@
 
+import 'package:flashi/util/helpers/widget/other/default_templates_quizset.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:hive/hive.dart';
 
@@ -32,7 +33,7 @@ class QuizProvider with ChangeNotifier {
   void loadQuizSets() {
 
 
-    var quizSetsFromStorage = _settingsBox.get('quizSets', defaultValue: []);
+    var quizSetsFromStorage = _settingsBox.get('quizSets', defaultValue: default_templates);
 
     if (quizSetsFromStorage is List) {
       _quizSets = List<Map<String, dynamic>>.from(
@@ -56,19 +57,32 @@ class QuizProvider with ChangeNotifier {
     List<Map<String, dynamic>> newQuizSets = await newQuizSetsFuture; // Await the future result
 
     if (merge) {
-      // Merge: Add newQuizSets to _quizSets, ensuring no duplicates
+      // Create a Set to store unique (id, name) pairs
+      Set<String> existingKeys = _quizSets.map((e) => "${e["id"]}-${e["name"]}").toSet();
+
       for (var newSet in newQuizSets) {
-        if (!_quizSets.any((existingSet) => existingSet['id'] == newSet['id'])) {
+        String key = "${newSet["id"]}-${newSet["name"]}";
+        if (!existingKeys.contains(key)) {
           _quizSets.add(newSet);
+          existingKeys.add(key);
         }
       }
     } else {
-      // Discard existing data and replace with new data
-      _quizSets = List.from(newQuizSets);
+      // Replace existing data but ensure uniqueness based on id and name
+      Set<String> addedKeys = {};
+      _quizSets = [];
+
+      for (var newSet in newQuizSets) {
+        String key = "${newSet["id"]}-${newSet["name"]}";
+        if (!addedKeys.contains(key)) {
+          _quizSets.add(newSet);
+          addedKeys.add(key);
+        }
+      }
     }
 
-    saveQuizSets(); // Ensure it's saved before proceeding
-    notifyListeners(); // Notify UI to update
+    saveQuizSets(); // Save the updated list
+    notifyListeners(); // Notify UI
   }
 
 

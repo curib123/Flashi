@@ -1,15 +1,14 @@
 import 'dart:io';
-import 'dart:math';
-
-import 'package:flashi/util/helpers/widget/alert_dialog/show_free_credits_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:ntp/ntp.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'dart:async';
 
 class AiCreditProvider with ChangeNotifier {
   final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
+  String? _deviceId;
   int _credits = 0;
   int _defaultCredits = 10;
   int _maxAdsPerDay = 10;
@@ -17,9 +16,8 @@ class AiCreditProvider with ChangeNotifier {
   int adCooldown = 0;
   int maxCooldown = 120;
   int _addedCredits = 0;
-
   DateTime? _lastUpdated;
-  Timer? _countdownTimer; // Added Timer reference
+  Timer? _countdownTimer;
 
   int get credits => _credits;
   int get addedCredits => _addedCredits;
@@ -28,20 +26,35 @@ class AiCreditProvider with ChangeNotifier {
   int get maxAdsPerDay => _maxAdsPerDay;
   DateTime? get lastUpdated => _lastUpdated;
 
-
-  AiCreditProvider(){
-    loadCredits();
+  AiCreditProvider() {
+    _init();
   }
 
-  /// Load credits and ad watch count securely
-  Future<void> loadCredits() async {
-    _credits = await _getSecureInt('credits') ?? 0;
-    _adsWatchedToday = await _getSecureInt('ads_watched') ?? 0;
-    String? lastUpdatedStr = await _secureStorage.read(key: 'last_updated');
-    _lastUpdated = lastUpdatedStr != null
-        ? DateTime.tryParse(lastUpdatedStr)
-        : (await getNetworkTime()).subtract(Duration(days: 1));
+  Future<void> _init() async {
+    await _getDeviceId();
+    await loadCredits();
+  }
 
+  /// Get a unique device identifier
+  Future<void> _getDeviceId() async {
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    if (Platform.isAndroid) {
+      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+      _deviceId = androidInfo.id; // Unique Android ID
+    } else if (Platform.isIOS) {
+      IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+      _deviceId = iosInfo.identifierForVendor; // Unique iOS ID
+    }
+  }
+
+  /// Load credits securely based on device ID
+  Future<void> loadCredits() async {
+    if (_deviceId == null) return;
+
+    _credits = await _getSecureInt('${_deviceId}_credits') ?? _defaultCredits;
+    _adsWatchedToday = await _getSecureInt('${_deviceId}_ads_watched') ?? 0;
+    String? lastUpdatedStr = await _secureStorage.read(key: '${_deviceId}_last_updated');
+    _lastUpdated = lastUpdatedStr != null ? DateTime.tryParse(lastUpdatedStr) : await getNetworkTime();
 
     notifyListeners();
   }
@@ -51,17 +64,14 @@ class AiCreditProvider with ChangeNotifier {
     try {
       return await NTP.now();
     } catch (e) {
-      return DateTime.now(); // Fallback to device time if no internet
+      return DateTime.now(); // Fallback to device time
     }
   }
+
   Future<void> handleDataChange({DateTime? now}) async {
-
     _credits += addedCredits;
-
-    print("Random credits added: $addedCredits"); // Debugging log to track the random value
-
     _adsWatchedToday = 0;
-    if (now != null) _lastUpdated = now; // Only update if `now` is provided
+    if (now != null) _lastUpdated = now;
 
     await _saveCredits();
     notifyListeners();
@@ -72,19 +82,18 @@ class AiCreditProvider with ChangeNotifier {
     notifyListeners();
   }
 
- void updateCredits(int value) {
+  Future<void>  updateCredits(int value) async {
     _credits = value;
     notifyListeners();
   }
 
-
-  /// Save credits and ad watch count securely
+  /// Save credits securely tied to the device ID
   Future<void> _saveCredits() async {
-    await _secureStorage.write(key: 'credits', value: _credits.toString());
-    await _secureStorage.write(key: 'ads_watched', value: _adsWatchedToday.toString());
-
+    if (_deviceId == null) return;
+    await _secureStorage.write(key: '${_deviceId}_credits', value: _credits.toString());
+    await _secureStorage.write(key: '${_deviceId}_ads_watched', value: _adsWatchedToday.toString());
     if (_lastUpdated != null) {
-      await _secureStorage.write(key: 'last_updated', value: _lastUpdated!.toIso8601String());
+      await _secureStorage.write(key: '${_deviceId}_last_updated', value: _lastUpdated!.toIso8601String());
     }
   }
 
@@ -94,20 +103,16 @@ class AiCreditProvider with ChangeNotifier {
     return value != null ? int.tryParse(value) : null;
   }
 
-  /// Check if user is online with an actual internet connection
+  /// Check if user is online
   Future<bool> hasInternet() async {
     var connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult == ConnectivityResult.none) return false;
 
-    if (connectivityResult == ConnectivityResult.none) {
-      return false; // No network connection
-    }
-
-    // Check real internet access by making a small request
     try {
       final result = await InternetAddress.lookup('google.com');
       return result.isNotEmpty && result.first.rawAddress.isNotEmpty;
     } catch (e) {
-      return false; // No internet access
+      return false;
     }
   }
 
@@ -129,10 +134,7 @@ class AiCreditProvider with ChangeNotifier {
 
   /// Watch ad to earn credits (with daily limit)
   bool watchAd() {
-    if (_adsWatchedToday >= _maxAdsPerDay || adCooldown > 0) {
-      return false;
-    }
-    return true;
+    return _adsWatchedToday < _maxAdsPerDay && adCooldown <= 0;
   }
 
   /// Increment ads watched count and start cooldown timer
@@ -145,7 +147,7 @@ class AiCreditProvider with ChangeNotifier {
 
   /// Start ad cooldown timer
   void _startCooldownTimer() {
-    _countdownTimer?.cancel(); // Cancel existing timer if any
+    _countdownTimer?.cancel();
     _countdownTimer = Timer.periodic(Duration(seconds: 1), (timer) {
       if (adCooldown > 0) {
         adCooldown--;

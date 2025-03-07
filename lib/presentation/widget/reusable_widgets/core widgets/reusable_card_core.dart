@@ -14,7 +14,6 @@ class ReusableCardCore extends StatelessWidget {
   final Function() onIgnore;
   final Function() onKeyword;
   final Function() onRemoveKeyword;
-
   final FlutterTts flutterTts = FlutterTts();
 
   ReusableCardCore({
@@ -34,173 +33,105 @@ class ReusableCardCore extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Get the current color scheme
     final colorScheme = Theme.of(context).colorScheme;
-
-    // Format the timestamp
     String formattedTimestamp = "${timestamp.day}/${timestamp.month}/${timestamp.year} ${timestamp.hour}:${timestamp.minute}";
 
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
-      elevation: 15,
-      shadowColor: colorScheme.shadow.withOpacity(0.5),
+      margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+      elevation: 10,
+      shadowColor: colorScheme.shadow.withOpacity(0.3),
       child: InkWell(
-        onTap: () {
-          // Add functionality to reveal the answer or other interactions
-        },
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(18),
+        onTap: () {},
         child: Container(
+          padding: const EdgeInsets.all(15),
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [colorScheme.tertiaryContainer, colorScheme.secondaryContainer],
+              colors: [colorScheme.tertiaryContainer, colorScheme.secondaryContainer.withOpacity(0.2)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(18),
           ),
-          child: ListTile(
-            contentPadding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 20.0),
-            title: isIgnore
-                ? Text(
-              "This card has been hidden and marked as ignored.",
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-                color: colorScheme.primary.withOpacity(0.6),
-              ),
-            )
-                : highlightKeywords( context: context, keyword: keyword, text: question, fontSize: 12, fontColor: colorScheme.primary, fontSizeKeyword: 10, isCenter: false), // Add highlight to the question text
-            subtitle: isIgnore
-                ? null
-                : Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 2),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (isIgnore)
                 Text(
-                  answer,
-                  style: TextStyle(fontSize: 12, color: colorScheme.secondary,fontWeight: FontWeight.bold),
+                  "This card is hidden.",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colorScheme.primary.withOpacity(0.5)),
+                )
+              else ...[
+                highlightKeywords(
+                  context: context,
+                  keyword: keyword,
+                  text: question,
+                  fontSize: 14,
+                  fontColor: colorScheme.primary,
+                  fontSizeKeyword: 12,
+                  isCenter: false,
                 ),
                 const SizedBox(height: 8),
-                isUpdating
-                    ? Text(
-                  "Updated on: $formattedTimestamp",
-                  style: TextStyle(fontSize: 10, color: colorScheme.onSurface.withOpacity(0.6)),
-                )
-                    : Text(
-                  "Created on: $formattedTimestamp",
-                  style: TextStyle(fontSize: 10, color: colorScheme.onSurface.withOpacity(0.6)),
+                Text(
+                  answer,
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: colorScheme.secondary),
                 ),
+              //  const SizedBox(height: 10),
+                // Text(
+                //   isUpdating ? "Updated on: $formattedTimestamp" : "Created on: $formattedTimestamp",
+                //   style: TextStyle(fontSize: 12, color: colorScheme.onSurface.withOpacity(0.6)),
+                // ),
               ],
-            ),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.volume_up, color: colorScheme.primary),
-                  onPressed: () async {
-                    await flutterTts.speak('The question: $question The Answer: $answer');
-                  },
-                  splashColor: colorScheme.primary.withOpacity(0.2),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.volume_up_rounded, color: colorScheme.primary),
+                      onPressed: () async {
+                        await flutterTts.speak('The question: $question The answer: $answer');
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.more_vert_rounded, color: colorScheme.primary),
+                      onPressed: () => _showPopupMenu(context, colorScheme),
+                    ),
+                  ],
                 ),
-                IconButton(
-                  icon: Icon(Icons.more_vert, color: colorScheme.primary),
-                  onPressed: () {
-                    _showPopupMenu(context, colorScheme);
-                  },
-                  splashColor: colorScheme.primary.withOpacity(0.2),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 
-
-  // Popup menu for more options (Edit, Remove, Ignore)
   void _showPopupMenu(BuildContext context, ColorScheme colorScheme) {
-    RenderBox renderBox = context.findRenderObject() as RenderBox;
-    Offset position = renderBox.localToGlobal(Offset.zero); // Get the position
-
-    showMenu(
+    showModalBottomSheet(
       context: context,
-      position: RelativeRect.fromLTRB(
-        position.dx + renderBox.size.width - 48, // Position based on widget size
-        position.dy + 50, // Slightly above to avoid overflow
-        0.0,
-        0.0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (context) => Wrap(
+        children: [
+          _buildMenuItem(context, colorScheme, 'Edit', Icons.edit, onEdit),
+          _buildMenuItem(context, colorScheme, 'Remove', Icons.delete, onRemove, isDestructive: true),
+          _buildMenuItem(context, colorScheme, 'Highlight keyword', Icons.key, onKeyword),
+          _buildMenuItem(context, colorScheme, 'Remove keyword', Icons.key_off, onRemoveKeyword),
+          _buildMenuItem(context, colorScheme, isIgnore ? 'Unignore' : 'Ignore', Icons.visibility, onIgnore),
+        ],
       ),
-      items: [
-        PopupMenuItem(
-          value: 'edit',
-          child: Row(
-            children: [
-              Icon(Icons.edit, color: colorScheme.primary),
-              SizedBox(width: 8),
-              Text('Edit', style: TextStyle(color: colorScheme.primary)),
-            ],
-          ),
-        ),
-        PopupMenuItem(
-          value: 'remove',
-          child: Row(
-            children: [
-              Icon(Icons.delete, color: colorScheme.error),
-              SizedBox(width: 8),
-              Text('Remove', style: TextStyle(color: colorScheme.error)),
-            ],
-          ),
-        ),
-        PopupMenuItem(
-          value: 'keyword',
-          child: Row(
-            children: [
-              Icon(Icons.key, color: colorScheme.primary),
-              SizedBox(width: 8),
-              Text('Highlight keyword', style: TextStyle(color: colorScheme.primary)),
-            ],
-          ),
-        ),  PopupMenuItem(
-          value: 'remove_keyword',
-          child: Row(
-            children: [
-              Icon(Icons.key_off, color: colorScheme.error),
-              SizedBox(width: 8),
-              Text('Remove keyword', style: TextStyle(color: colorScheme.primary)),
-            ],
-          ),
-        ),
-        PopupMenuItem(
-          value: 'ignore',
-          child: Row(
-            children: [
-              Icon(
-                isIgnore ? Icons.visibility_off : Icons.visibility,
-                color: colorScheme.primary,
-              ),
-              SizedBox(width: 8),
-              Text(isIgnore ? 'Unignore' : 'Ignore', style: TextStyle(color: colorScheme.primary)),
-            ],
-          ),
-        ),
-      ],
-      elevation: 13.0,
-    ).then((value) {
-      if (value == 'edit') {
-        onEdit();
-      } else if (value == 'remove') {
-        onRemove();
-      } else if (value == 'ignore') {
-        onIgnore();
-      } else if (value == 'keyword') {
-        onKeyword();
-      }else if (value == 'remove_keyword') {
-        onRemoveKeyword();
-      }
-    });
+    );
+  }
+
+  Widget _buildMenuItem(BuildContext context, ColorScheme colorScheme, String text, IconData icon, Function() onTap, {bool isDestructive = false}) {
+    return ListTile(
+      leading: Icon(icon, color: isDestructive ? colorScheme.error : colorScheme.primary),
+      title: Text(text, style: TextStyle(color: isDestructive ? colorScheme.error : colorScheme.primary)),
+      onTap: () {
+        Navigator.pop(context);
+        onTap();
+      },
+    );
   }
 }

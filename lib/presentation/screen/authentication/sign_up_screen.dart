@@ -29,14 +29,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
           icon: Icon(Icons.arrow_back_ios_new_rounded, color: colorScheme.primary),
           onPressed: () => _navigateHome(),
         ),
-        title: Text(
-          "Skip",
-          style: TextStyle(
-            color: colorScheme.primary,
-            fontSize: 15, // Slightly adjusted for better fit
-            fontWeight: FontWeight.bold,
+        title:   GestureDetector(
+          onTap: () => _navigateHome(),
+          child: Text(
+            "Skip",
+            style: TextStyle(
+              color: colorScheme.primary,
+              fontSize: 15, // Slightly adjusted for better fit
+              fontWeight: FontWeight.bold,
+            ),
+            overflow: TextOverflow.ellipsis, // Handles overflow gracefully
+
           ),
-          overflow: TextOverflow.ellipsis, // Handles overflow gracefully
         ),
         centerTitle: false, // Aligns title to the left (optional)
       ),

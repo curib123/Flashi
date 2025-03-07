@@ -55,14 +55,14 @@ class ReusableNotesSummaryBlockCore extends StatelessWidget {
       gradient: LinearGradient(
         colors: isNote
             ? [
+          colorScheme.secondaryContainer.withOpacity(0.2),
           colorScheme.primaryContainer,
-          colorScheme.secondaryContainer,
         ]
             : [
+          colorScheme.tertiaryContainer.withOpacity(0.2),
           colorScheme.secondaryContainer,
-          colorScheme.tertiaryContainer,
         ], // Fallback gradient colors
-        begin: Alignment.bottomRight,
+        begin: Alignment.bottomCenter,
         end: Alignment.topLeft,
       ),
       borderRadius: BorderRadius.circular(15),

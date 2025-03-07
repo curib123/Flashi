@@ -41,9 +41,9 @@ void CreateCardBottomModal({
                 children: [
                   const SizedBox(height: 10),
                   Align(
-                    alignment: Alignment.topLeft,
+                    alignment: Alignment.topCenter,
                     child: Text(
-                      isCreate ? "Create Card In Flashcard : $name" : 'Edit The Card: $cardName',
+                      isCreate ? "Create Card " : 'Edit Card',
                       style: TextStyle(
                         color: colorScheme.primary,
                         fontSize: 18,

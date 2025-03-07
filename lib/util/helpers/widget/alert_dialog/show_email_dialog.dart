@@ -69,7 +69,6 @@ void showEmailResetInputDialog(BuildContext context, AuthProvider authProvider) 
           ElevatedButton(
             onPressed: () async {
               authProvider.emailController.text = emailController.text;
-              Navigator.pop(context); // Close dialog
               await authProvider.resetPassword(context);
             },
             style: ElevatedButton.styleFrom(

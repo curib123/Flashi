@@ -1,9 +1,11 @@
 import 'package:flashi/provider/ai_credits_provider.dart';
+import 'package:flashi/provider/auth_provider.dart';
+import 'package:flashi/provider/notes_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_unit_id.dart';
+import 'package:flashi/util/helpers/widget/alert_dialog/auth_dialog.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/loading_dialog.dart';
-import 'package:flashi/util/helpers/widget/alert_dialog/show_maintenace_alert_box.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/show_watch_ads_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
@@ -33,8 +35,8 @@ class _ReusableTitleContentState extends State<ReusableTitleContent> {
   }
   @override
   Widget build(BuildContext context) {
-    return Consumer2<QuizProvider, AiCreditProvider>(
-      builder: (context, quizProvider, aiCreditProvider, child) {
+    return Consumer4<QuizProvider, AiCreditProvider,AuthProvider,NotesProvider>(
+      builder: (context, quizProvider, aiCreditProvider,authProvider,notesProvider, child) {
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -49,6 +51,7 @@ class _ReusableTitleContentState extends State<ReusableTitleContent> {
                 ),
               ),
             ),
+
             // SizedBox(width: 20,),
             Row(
               children: [
@@ -75,13 +78,13 @@ class _ReusableTitleContentState extends State<ReusableTitleContent> {
                    );
                  }else{
                    Navigator.of(context).pop();
-                   showMaintenanceDialog(context, "No Internet", "Please connect to internet");
+                   showAuthDialog(context, "Error", "Please connect to internet");
                  }
                   },
                   child: Container(
                     padding: EdgeInsets.only(left:10),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(50)),
+                      borderRadius: BorderRadius.all(Radius.circular(20)),
                       color: widget.colorScheme.onPrimary,
                     ),
                     child: Row(
@@ -99,8 +102,36 @@ class _ReusableTitleContentState extends State<ReusableTitleContent> {
 
                   ),
                 ),
+                IconButton(
+                    onPressed: () async {
+                      bool isConnected = await InternetConnection().hasInternetAccess;
 
-                SizedBox(width: 20),
+                      if(isConnected ){
+
+                        if(authProvider.user_id.isNotEmpty){
+                          await authProvider.saveFlashcards(authProvider.user_id,quizProvider.quizSets);
+                          await authProvider.saveUserCredits(authProvider.user_id, aiCreditProvider.credits);
+                          await authProvider.saveNotes(authProvider.user_id, notesProvider.notes);
+
+                          Future.delayed(Duration(seconds: 5),()  {
+                            showAuthDialog(context, type: "success","Success", "Your data has been successfully saved!");
+
+
+                          });
+                        }else{
+                          showAuthDialog(context,type: "warning", "Warning", "Please sign in to sync your data.");
+
+                        }
+
+                      }else{
+                        showAuthDialog(context,type: "error", "Error", "No Internet Connection");
+                      }
+
+                     ;
+                    },
+                    icon: Icon(Icons.save,color: widget.colorScheme.onPrimary,)
+                ),
+
                 GestureDetector(
                   onTap: widget.onSettings,
                   child: CircleAvatar(

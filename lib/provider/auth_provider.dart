@@ -1,6 +1,7 @@
 
 import 'package:flashi/presentation/screen/authentication/sign_in_screen.dart';
 import 'package:flashi/provider/ai_credits_provider.dart';
+import 'package:flashi/provider/notes_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/auth_dialog.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/loading_dialog.dart';
@@ -25,7 +26,6 @@ class AuthProvider extends ChangeNotifier {
   String username = "Guest Account";
   String email = "AI-Powered Flashcard Generator";
   String user_id = "";
-  int user_credits = 0;
 
   String DefaultUsername = "Guest Account";
   String DefaultEmail = "AI-Powered Flashcard Generator";
@@ -58,27 +58,26 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateUserCredits(int newUserCredits) {
-    user_credits = newUserCredits;
-    notifyListeners();
-  }
+
 
   /// Check for internet connection before making network requests
   Future<bool> hasInternet() async {
     return await InternetConnection().hasInternetAccess;
   }
 
-  Future<void> signIn(BuildContext context,QuizProvider quizProvider, AiCreditProvider aiCreditProvider) async {
+  Future<void> signIn(BuildContext context,QuizProvider quizProvider, AiCreditProvider aiCreditProvider,NotesProvider notesProvider) async {
     if (!await hasInternet()) {
-      showAuthDialog(context, "Error", "No internet connection. Please try again.");
+      showAuthDialog(context,type: "error", "Error", "No internet connection. Please try again.");
       return;
     }
 
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
 
+
+
     if (email.isEmpty || password.isEmpty) {
-      showAuthDialog(context, "Error", "Please enter email and password");
+      showAuthDialog(context,type: "error", "Error", "Please enter email and password");
       return;
     }
 
@@ -94,41 +93,45 @@ class AuthProvider extends ChangeNotifier {
         await supabase.auth.refreshSession();
 
         String fetchedUsername = response.user!.userMetadata?['username'] ?? "User";
-        int FetchCredits = await fetchUserCredits(user_id) ?? 0;
-        final fetchedUserId = response.user!.id;
+        final fetchedUserId = response.user!.id ?? "";;
         updateUsername(fetchedUsername);
         updateUserId(fetchedUserId);
-        updateUserCredits(FetchCredits);
-        aiCreditProvider.updateCredits(user_credits);
         updateEmail(response.user!.email ?? "AI-Powered Flashcard Generator");
-
-        print(" user credits : ${user_credits}");
 
         // Securely store email and username
         await secureStorage.write(key: "email", value: email);
         await secureStorage.write(key: "username", value: fetchedUsername);
         await secureStorage.write(key: "user_id", value: fetchedUserId);
+        int FetchCredits = await fetchUserCredits(user_id) ?? 0;
 
 
         showMergeFlashcardDialog(
           context,
-          onMerge: ()  {
+          onMerge: ()  async {
             if (context.mounted) {
-              quizProvider.updateQuizSets(fetchFlashcards(user_id), merge: true);
-              saveFlashcards(user_id, quizProvider.quizSets);
-              saveUserCredits(user_id, user_credits);
-              Navigator.pop(context);
-              Navigator.pop(context);
-              Navigator.pop(context);
+              aiCreditProvider.updateCredits(FetchCredits);
+              await quizProvider.updateQuizSets(fetchFlashcards(user_id), merge: true);
+              notesProvider.updateNotes(await fetchNotes(user_id),merge: true);
+             await saveFlashcards(user_id, quizProvider.quizSets);
+              showLoadingDialog(context, text: "Merge successful");
+             Future.delayed(Duration(seconds: 5),(){
+               Navigator.pop(context);
+               Navigator.pop(context);
+               Navigator.pop(context);
+               Navigator.pop(context);
+
+             });
+
 
             }
           },
-          onDiscard: ()  {
+          onDiscard: ()  async {
             if (context.mounted) {
-              quizProvider.updateQuizSets(fetchFlashcards(user_id), merge: false);
-              saveFlashcards(user_id, quizProvider.quizSets);
-              saveUserCredits(user_id, user_credits);
-              Navigator.pop(context);
+           await aiCreditProvider.updateCredits(FetchCredits);
+           await quizProvider.updateQuizSets(fetchFlashcards(user_id), merge: false);
+           notesProvider.updateNotes(await fetchNotes(user_id),merge: false);
+           await   saveFlashcards(user_id, quizProvider.quizSets);
+             Navigator.pop(context);
               Navigator.pop(context);
               Navigator.pop(context);
             }
@@ -148,24 +151,24 @@ class AuthProvider extends ChangeNotifier {
       } else {
         if (!context.mounted) return;
         Navigator.pop(context);
-        showAuthDialog(context, "Error", "Invalid credentials");
+        showAuthDialog(context,type: "error", "Error", "Invalid credentials");
       }
     } catch (e) {
       if (!context.mounted) return;
       Navigator.pop(context);
-      showAuthDialog(context, "Error", "Sign in failed: ${e.toString()}");
+      showAuthDialog(context,type: "error", "Error", "Sign in failed: ${e.toString()}");
     }
 
   }
 
   Future<void> signUp(BuildContext context) async {
     if (!isAgree) {
-      showAuthDialog(context, "Error", "You must agree to the Terms & Conditions and Privacy Policy.");
+      showAuthDialog(context,type: "error", "Error", "You must agree to the Terms & Conditions and Privacy Policy.");
       return;
     }
 
     if (!await hasInternet()) {
-      showAuthDialog(context, "Error", "No internet connection. Please try again.");
+      showAuthDialog(context,type: "error", "Error", "No internet connection. Please try again.");
       return;
     }
 
@@ -175,23 +178,23 @@ class AuthProvider extends ChangeNotifier {
     final username = usernameController.text.trim();
 
     if (email.isEmpty || password.isEmpty || confirmPassword.isEmpty || username.isEmpty) {
-      showAuthDialog(context, "Error", "Please fill all fields");
+      showAuthDialog(context,type: "error", "Error", "Please fill all fields");
       return;
     }
 
     // Email validation check
     if (!email.contains("@") || !email.contains(".")) {
-      showAuthDialog(context, "Error", "Please enter a valid email address");
+      showAuthDialog(context,type: "error", "Error", "Please enter a valid email address");
       return;
     }
 
     if (password.length < 6) {
-      showAuthDialog(context, "Error", "Password must be at least 6 characters long");
+      showAuthDialog(context,type: "error", "Error", "Password must be at least 6 characters long");
       return;
     }
 
     if (password != confirmPassword) {
-      showAuthDialog(context, "Error", "Passwords do not match");
+      showAuthDialog(context,type: "error", "Error", "Passwords do not match");
       return;
     }
 
@@ -208,7 +211,7 @@ class AuthProvider extends ChangeNotifier {
 
       if (response.user != null) {
 
-        showAuthDialog(context, "Success", "Account created for ${response.user!.email}");
+        showAuthDialog(context,type: "success", "Success", "Account created for ${response.user!.email}");
         Future.delayed(Duration(seconds: 2), () {
           Navigator.pop(context);
           Navigator.pushReplacement(
@@ -219,7 +222,7 @@ class AuthProvider extends ChangeNotifier {
           );
         });
       } else {
-        showAuthDialog(context, "Error", "Account creation failed");
+        showAuthDialog(context,type: "error", "Error", "Account creation failed");
       }
     } catch (e) {
       Navigator.pop(context); // Close loading dialog
@@ -236,7 +239,7 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> signOut(BuildContext context,QuizProvider quizProvider) async {
     if (!await hasInternet()) {
-      showAuthDialog(context, "Error", "No internet connection. Please try again.");
+      showAuthDialog(context,type: "error", "Error", "No internet connection. Please try again.");
       return;
     }
 
@@ -244,36 +247,36 @@ class AuthProvider extends ChangeNotifier {
       await supabase.auth.signOut();
       await secureStorage.delete(key: "email");   // Remove email from secure storage
       await secureStorage.delete(key: "username"); // Remove username from secure storage
+      await secureStorage.delete(key: "user_id"); // Remove userid from secure storage
 
       updateUsername(DefaultUsername);
       updateEmail(DefaultEmail);
-      showAuthDialog(context, "Success", "Signed out successfully");
+      updateUserId("");
+      showAuthDialog(context,type: "success", "Success", "Signed out successfully");
     } catch (e) {
-      showAuthDialog(context, "Error", "Sign out failed: ${e.toString()}");
+      showAuthDialog(context,type: "error", "Error", "Sign out failed: ${e.toString()}");
     }
   }
 
   /// Load user data from secure storage
   Future<void> loadUserData() async {
+
     email = await secureStorage.read(key: "email") ?? "AI-Powered Flashcard Generator";
     username = await secureStorage.read(key: "username") ?? "Guest Account";
     user_id = await secureStorage.read(key: "user_id") ?? "";
-
-    int FetchCredits = await fetchUserCredits(user_id) ?? 0;
-    updateUserCredits(FetchCredits);
     notifyListeners();
   }
 
   Future<void> resetPassword(BuildContext context) async {
     if (!await hasInternet()) {
-      showAuthDialog(context, "Error", "No internet connection. Please try again.");
+      showAuthDialog(context,type: "error", "Error", "No internet connection. Please try again.");
       return;
     }
 
     final email = emailController.text.trim();
 
     if (email.isEmpty) {
-      showAuthDialog(context, "Error", "Please enter your email address");
+      showAuthDialog(context,type: "error", "Error", "Please enter your email address");
       return;
     }
 
@@ -287,7 +290,7 @@ class AuthProvider extends ChangeNotifier {
           "A password reset email has been sent to $email. Check your inbox.");
     } catch (e) {
       Navigator.pop(context); // Close loading dialog
-      showAuthDialog(context, "Error", "Failed to send reset email: ${e.toString()}");
+      showAuthDialog(context,type: "error", "Error", "Failed to send reset email: ${e.toString()}");
     }
   }
 
@@ -342,6 +345,85 @@ class AuthProvider extends ChangeNotifier {
       print("Flashcards saved successfully!");
     } catch (e) {
       throw Exception("Error saving flashcards: $e");
+    }
+  }
+
+
+// Function to save notes to Supabase
+  Future<void> saveNotes(String userId, List<Map<String, dynamic>> _notes) async {
+    try {
+      if (userId.isEmpty) {
+        throw Exception("User ID is required.");
+      }
+
+      // Convert DateTime fields to String format for database storage
+      List<Map<String, dynamic>> sanitizedNotes = _notes.map((note) {
+        return {
+          for (var entry in note.entries)
+            if (entry.value is DateTime)
+              entry.key: (entry.value as DateTime).toIso8601String()
+            else
+              entry.key: entry.value
+        };
+      }).toList();
+
+      // Check if the user already has notes saved
+      final existingData = await supabase
+          .from('notes')
+          .select('data')
+          .eq('user_id', userId)
+          .maybeSingle();
+
+      if (existingData != null) {
+        // Update existing notes
+        await supabase.from('notes').update({
+          'data': sanitizedNotes,
+        }).eq('user_id', userId);
+      } else {
+        // Insert new notes entry
+        await supabase.from('notes').insert({
+          'user_id': userId,
+          'data': sanitizedNotes,
+        });
+      }
+
+      print("Notes saved successfully!");
+    } catch (e) {
+      throw Exception("Failed to save notes: $e");
+    }
+  }
+
+  // Function to fetch notes from Supabase
+  Future<List<Map<String, dynamic>>> fetchNotes(String userId) async {
+    try {
+      if (userId.isEmpty) {
+        throw Exception("User ID is required.");
+      }
+
+      final response = await supabase
+          .from('notes')
+          .select('data')
+          .eq('user_id', userId)
+          .maybeSingle();
+
+      if (response == null || response['data'] == null) {
+        return []; // Return an empty list if no notes found
+      }
+
+      // Convert stored DateTime strings back to DateTime objects if needed
+      List<Map<String, dynamic>> fetchedNotes =
+      List<Map<String, dynamic>>.from(response['data']).map((note) {
+        return {
+          for (var entry in note.entries)
+            entry.key: (entry.value is String && DateTime.tryParse(entry.value) != null)
+                ? DateTime.parse(entry.value)
+                : entry.value
+        };
+      }).toList();
+
+      return fetchedNotes;
+    } catch (e) {
+      throw Exception("Failed to fetch notes: $e");
     }
   }
 

@@ -25,6 +25,28 @@ class NotesProvider with ChangeNotifier {
     loadNotesHive();  // Load notes when the provider is initialized
   }
 
+  void updateNotes(List<Map<String, dynamic>> newNotes, {required bool merge}) {
+    if (merge) {
+      // Maintain a set to track unique entries based on both ID and title
+      Set<String> existingKeys = _notes.map((e) => "${e["id"]}-${e["title"]}").toSet();
+
+      for (var newNote in newNotes) {
+        String key = "${newNote["id"]}-${newNote["title"]}";
+        if (!existingKeys.contains(key)) {
+          _notes.add(newNote);
+          existingKeys.add(key);
+        }
+      }
+    } else {
+      // Directly replace existing notes with the new ones
+      _notes = List.from(newNotes);
+    }
+
+    notifyListeners();
+  }
+
+
+
   // Method to handle search query change
   void onSearchChanged(String value) {
     _searchQuery = value;

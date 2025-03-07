@@ -3,8 +3,8 @@ import 'package:flashi/provider/ai_credits_provider.dart';
 import 'package:flashi/provider/fetch_data_from_json_provider.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_unit_id.dart';
+import 'package:flashi/util/helpers/widget/alert_dialog/auth_dialog.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/loading_dialog.dart';
-import 'package:flashi/util/helpers/widget/alert_dialog/show_maintenace_alert_box.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/show_watch_ads_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
@@ -87,7 +87,7 @@ class ModelSelectionDialog {
 
                       _buildDropdown<int>(
                         context,
-                        label: "Select Q&A Max Length",
+                        label: "How Many Question and Answer?",
                         value: selectedMaxLength,
                         items: fetchDataProvider.listOfMaxLength,
                         onChanged: (newValue) {
@@ -165,10 +165,11 @@ class ModelSelectionDialog {
                                               },
                                             );
                                           }else{
-                                            showMaintenanceDialog(context, "No More Ads for Today!", "That’s it for today! You’ve reached your daily limit of ${aiCreditProvider.maxAdsPerDay} ads. See you again tomorrow!");
+                                            showAuthDialog(context,type: "error", "Error", "No More Ads for Today!");
+
                                           }
                                         }else{
-                                          showMaintenanceDialog(context, "No Internet", "Please connect to internet");
+                                          showAuthDialog(context,type: "error", "Error", "Please connect to internet");
                                         }
                                       }
                                     },

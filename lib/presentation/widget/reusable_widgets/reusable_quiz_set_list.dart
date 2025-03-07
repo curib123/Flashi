@@ -4,6 +4,7 @@ import 'package:flashi/presentation/screen/main/export_import_screen.dart';
 import 'package:flashi/presentation/widget/components/see_all_quiz_card.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_set_core.dart';
 import 'package:flashi/provider/quiz_provider.dart';
+import 'package:flashi/util/helpers/widget/alert_dialog/auth_dialog.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/delete_confirmation_alert_box.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/review_selection_alert_box.dart';
 import 'package:flashi/util/helpers/classes/other/import_export_helper_class.dart';
@@ -80,7 +81,7 @@ class ReusableQuizSetList extends StatelessWidget {
 
                                 } else {
                                   _navigateToSeeAllQuizCard(context, name, set, index, set['cards']);
-                                  _showCustomDialog(context);
+                                  showAuthDialog(context,type: "warning", "warning", "You have run out of slots. Watch an ad to gain 5 additional slots and continue studying.");
                                 }
                                 quizProvider.updateCurrentQuizSetNameToSetLimit(name);
                               },
@@ -134,28 +135,7 @@ class ReusableQuizSetList extends StatelessWidget {
 
   }
 
-  void _showCustomDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Out of Slots"),
-          content: Text(
-            "You have run out of slots. Watch an ad to gain 5 additional slots and continue studying.",
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-              child: Text("Exit"),
-            ),
 
-          ],
-        );
-      },
-    );
-  }
 
 
   /// Navigate to the quiz card screen.

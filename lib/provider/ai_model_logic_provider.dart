@@ -4,9 +4,9 @@ import 'package:flashi/provider/ai_credits_provider.dart';
 import 'package:flashi/provider/fetch_data_from_json_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flashi/util/helpers/classes/api/ai/core/ai_question_generator.dart';
+import 'package:flashi/util/helpers/widget/alert_dialog/auth_dialog.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/loading_dialog.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/model_dialog.dart';
-import 'package:flashi/util/helpers/widget/alert_dialog/show_maintenace_alert_box.dart';
 import 'package:flashi/util/helpers/classes/other/file_text_extractor.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/show_topic_dialog.dart';
 import 'package:flashi/util/helpers/widget/modals/create_set_bottom_modal.dart';
@@ -47,19 +47,15 @@ class AiModelLogicProvider extends ChangeNotifier {
   }
 
 
-
   Future<void> pickFileAndGenerate(BuildContext context,
       QuizProvider quizProvider,
       FetchDataFromJsonProvider fetchDataFromJsonProvider,
       AiCreditProvider aiCreditProvider,
-      Future<String> pickAndExtractText(),
-
-      ) async {
-
-    showLoadingDialog(context,text:   "AI is processing... Please wait...");
+      Future<String> pickAndExtractText(),) async {
+    showLoadingDialog(context, text: "AI is processing... Please wait...");
     extractedText = await pickAndExtractText();
 
-    if ( handleExtractedTextError(context, extractedText)) {
+    if (handleExtractedTextError(context, extractedText)) {
       final questions = await AIQuestionGenerator.generateQuestionsFromFile(
         extractedText,
         fetchDataFromJsonProvider.model,
@@ -106,9 +102,11 @@ class AiModelLogicProvider extends ChangeNotifier {
           Navigator.pop(context);
           Navigator.pop(context);
 
-          for (int i = 0; i < fetchDataFromJsonProvider.listOfMaxLength.length; i++)
-          {
-            if (fetchDataFromJsonProvider.listOfMaxLength[i] == fetchDataFromJsonProvider.ListOfMaxLength) // Check if value matches maxLength
+          for (int i = 0; i <
+              fetchDataFromJsonProvider.listOfMaxLength.length; i++) {
+            if (fetchDataFromJsonProvider.listOfMaxLength[i] ==
+                fetchDataFromJsonProvider
+                    .ListOfMaxLength) // Check if value matches maxLength
                 {
               int creditAmount = i + 1; // Use index +1 as credit amount
               aiCreditProvider.useCredit(creditAmount);
@@ -131,20 +129,21 @@ class AiModelLogicProvider extends ChangeNotifier {
               backgroundColor: Colors.red,
             ),
           );
-          showMaintenanceDialog(context, 'Try Again',
-              "It seems there’s no internet connection. Please try again or choose another model.");
+          showAuthDialog(context, "Error",
+              "Weak internet connection or choose another model");
         }
       });
     }
 
 
-      isTimeOut = false;
-      notifyListeners();
-    }
+    isTimeOut = false;
+    notifyListeners();
+  }
 
   Future<void> GenerateFlashCardFromCustomTopic(BuildContext context,
       QuizProvider quizProvider,
-      FetchDataFromJsonProvider fetchDataFromJsonProvider,AiCreditProvider aiCreditProvider) async {
+      FetchDataFromJsonProvider fetchDataFromJsonProvider,
+      AiCreditProvider aiCreditProvider) async {
     if (topic.isEmpty) {
       notifyListeners();
       Navigator.pop(context);
@@ -178,40 +177,16 @@ class AiModelLogicProvider extends ChangeNotifier {
 
     Future.delayed(Duration(seconds: 10), () {
       if (questions.isNotEmpty && !isTimeOut) {
-        String title = "Ai Generated ${topic} ${quizProvider.quizSets.length +
-            1}";
-
-        quizProvider.addQuizSet({
-          'name': title,
-          'timestamp': DateTime.now(),
-          'description': "Ai Generated Flashcard of ${topic}",
-          'cards': [],
-          'numberOfQuiz': 0,
-          'limitNumberOfQuiz': fetchDataFromJsonProvider.ListOfMaxLength,
-        });
-
-        for (var questionData in questions) {
-          quizProvider.addCardToQuizSet(
-            quizSetName: title,
-            card: {
-              'isUpdating': false,
-              'question': questionData['question'] ?? '',
-              'answer': questionData['answer'] ?? '',
-              'isIgnore': false,
-              'keyword': '',
-              'timestamp': DateTime.now(),
-            },
-          );
-        }
-
         Navigator.pop(context);
         Navigator.pop(context);
         Navigator.pop(context);
         Navigator.pop(context);
 
-        for (int i = 0; i < fetchDataFromJsonProvider.listOfMaxLength.length; i++)
-        {
-          if (fetchDataFromJsonProvider.listOfMaxLength[i] == fetchDataFromJsonProvider.ListOfMaxLength) // Check if value matches maxLength
+        for (int i = 0; i <
+            fetchDataFromJsonProvider.listOfMaxLength.length; i++) {
+          if (fetchDataFromJsonProvider.listOfMaxLength[i] ==
+              fetchDataFromJsonProvider
+                  .ListOfMaxLength) // Check if value matches maxLength
               {
             int creditAmount = i + 1; // Use index +1 as credit amount
             aiCreditProvider.useCredit(creditAmount);
@@ -234,7 +209,7 @@ class AiModelLogicProvider extends ChangeNotifier {
             backgroundColor: Colors.red,
           ),
         );
-        showMaintenanceDialog(context, 'Try Again',
+        showAuthDialog(context,type: "error", "Error",
             "It seems there’s no internet connection. Please try again or choose another model.");
       }
     });
@@ -243,19 +218,16 @@ class AiModelLogicProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> showFlashcardDialog(
-      BuildContext context,
+  Future<void> showFlashcardDialog(BuildContext context,
       QuizProvider quizProvider,
       ColorScheme colorScheme,
       FetchDataFromJsonProvider fetchDataFromJsonProvider,
-      AiCreditProvider aiCreditProvider
-      ) async {
+      AiCreditProvider aiCreditProvider) async {
     showDialog(
       barrierDismissible: true,
       context: context,
       builder: (BuildContext context) {
-
-        void _fetchDataFromJson(){
+        void _fetchDataFromJson() {
           fetchLatestVersion();
           fetchDataFromJsonProvider.fetchLatestVersion();
         }
@@ -332,60 +304,56 @@ class AiModelLogicProvider extends ChangeNotifier {
                     _buildDialogButton(
                       icon: Icons.auto_awesome,
                       context,
-                      label: "Custom AI-Generated ",
+                      label: "AI-Generated Flashcard ",
                       gradientColors: [
                         colorScheme.secondary,
                         colorScheme.secondary.withOpacity(0.5)
                       ],
                       onPressed: () async {
-
                         bool isConnected =
                         await InternetConnection().hasInternetAccess;
                         if (!isConnected && !isFetchData) {
-                          showMaintenanceDialog(
-                            context,
-                            'No Internet',
-                            "Please connect to the internet to generate a flashcard.",
-                          );
+                          showAuthDialog(context,type: "error", "Error",
+                              "Please connect to the internet to generate a flashcard.");
+
                           return;
-                        }else{
+                        } else {
                           _fetchDataFromJson();
                         }
                         if (!isUnderMaintenance) {
                           ModelSelectionDialog.show(
                             context,
                             true,
-                            onTap: () => showTopicDialog(context, onTap: () {
-                              GenerateFlashCardFromCustomTopic(
-                                  context, quizProvider, fetchDataFromJsonProvider,aiCreditProvider);
-                            }),
+                            onTap: () =>
+                                showTopicDialog(context, onTap: () {
+                                  GenerateFlashCardFromCustomTopic(
+                                      context, quizProvider,
+                                      fetchDataFromJsonProvider,
+                                      aiCreditProvider);
+                                }),
                           );
                         } else {
-                          showMaintenanceDialog(context, 'Under Maintenance',
-                              reasonMaintenance);
+                          showAuthDialog(context,type: "error", "Error",
+                              "Under Maintenance \n  reasonMaintenance");
                         }
                       },
                     ),
                     _buildDialogButton(
                       icon: Icons.file_copy_rounded,
                       context,
-                      label: "AI-Generated From Pdf/Docs",
+                      label: "Flashcard From Pdf/Docs",
                       gradientColors: [
                         colorScheme.tertiary,
                         colorScheme.tertiary.withOpacity(0.5)
                       ],
                       onPressed: () async {
-
                         bool isConnected =
                         await InternetConnection().hasInternetAccess;
                         if (!isConnected && !isFetchData) {
-                          showMaintenanceDialog(
-                            context,
-                            'No Internet',
-                            "Please connect to the internet to generate a flashcard.",
-                          );
+                          showAuthDialog(context,type: "error", "Error",
+                              "Please connect to the internet to generate a flashcard.");
                           return;
-                        }else{
+                        } else {
                           _fetchDataFromJson();
                         }
                         if (!isUnderMaintenance) {
@@ -399,15 +367,15 @@ class AiModelLogicProvider extends ChangeNotifier {
                                 fetchDataFromJsonProvider,
                                 aiCreditProvider,
                                     () async {
-                                  return await FileTextExtractor.pickAndExtractText();
+                                  return await FileTextExtractor
+                                      .pickAndExtractText();
                                 },
                               );
                             },
 
                           );
                         } else {
-                          showMaintenanceDialog(context, 'Under Maintenance',
-                              reasonMaintenance);
+                          showAuthDialog(context, type: "error","Error", "Under Maintenance");
                         }
                       },
                     ),
@@ -415,7 +383,7 @@ class AiModelLogicProvider extends ChangeNotifier {
                     _buildDialogButton(
                       icon: Icons.picture_in_picture,
                       context,
-                      label: "AI-Generated From Image",
+                      label: "Flashcard From Image",
                       gradientColors: [
                         colorScheme.tertiary,
                         colorScheme.tertiary.withOpacity(0.5)
@@ -424,13 +392,11 @@ class AiModelLogicProvider extends ChangeNotifier {
                         bool isConnected =
                         await InternetConnection().hasInternetAccess;
                         if (!isConnected && !isFetchData) {
-                          showMaintenanceDialog(
-                            context,
-                            'No Internet',
-                            "Please connect to the internet to generate a flashcard.",
-                          );
+                          showAuthDialog(context,type: "error", "Error",
+                              "Please connect to the internet to generate a flashcard.");
+
                           return;
-                        }else{
+                        } else {
                           _fetchDataFromJson();
                         }
                         if (!isUnderMaintenance) {
@@ -444,15 +410,16 @@ class AiModelLogicProvider extends ChangeNotifier {
                                 fetchDataFromJsonProvider,
                                 aiCreditProvider,
                                     () async {
-                                  return await AIQuestionGenerator.analyzeImage( FileTextExtractor.pickOrCaptureImage(context), "Get the text in image");
+                                  return await AIQuestionGenerator.analyzeImage(
+                                      FileTextExtractor.pickOrCaptureImage(
+                                          context), "Get the text in image");
                                 },
                               );
                             },
 
                           );
                         } else {
-                          showMaintenanceDialog(context, 'Under Maintenance',
-                              reasonMaintenance);
+                          showAuthDialog(context,type: "error", "Error", "Under Maintenance");
                         }
                       },
                     ),
@@ -466,52 +433,60 @@ class AiModelLogicProvider extends ChangeNotifier {
     );
   }
 
-
   Widget _buildDialogButton(BuildContext context, {
     required String label,
     required List<Color> gradientColors,
     required VoidCallback onPressed,
-    IconData? icon, // Optional icon parameter
+    IconData? icon,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5),
+      padding: const EdgeInsets.symmetric(vertical: 6),
       child: SizedBox(
         width: double.infinity,
-        child: Container(
+        child: DecoratedBox(
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: gradientColors,
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                blurRadius: 6,
+                offset: const Offset(0, 3),
+              ),
+            ],
           ),
           child: Material(
             color: Colors.transparent,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(16),
             child: InkWell(
               onTap: onPressed,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(16),
+              splashColor: Colors.white.withOpacity(0.2),
+              highlightColor: Colors.white.withOpacity(0.1),
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 15),
-                child: Center(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (icon != null) ...[
-                        Icon(icon, color: Colors.white, size: 20),
-                        const SizedBox(width: 10), // Space between icon and text
-                      ],
-                      Text(
-                        label,
-                        style: const TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (icon != null) ...[
+                      Icon(icon, color: Colors.white, size: 22),
+                      const SizedBox(width: 12),
                     ],
-                  ),
+                    Text(
+                      label,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -557,11 +532,7 @@ bool handleExtractedTextError(BuildContext context, String extractedText) {
 
   if (errorMessages.containsKey(extractedText)) {
     Navigator.pop(context);
-    showMaintenanceDialog(
-      context,
-      errorMessages[extractedText]!["title"]!,
-      errorMessages[extractedText]!["message"]!,
-    );
+    showAuthDialog(type: "warning",context, "warning", errorMessages[extractedText]!["snackbar"]!);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(errorMessages[extractedText]!["snackbar"]!),
