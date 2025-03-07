@@ -45,10 +45,10 @@ class ReusableCardCore extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         onTap: () {},
         child: Container(
-          padding: const EdgeInsets.all(15),
+          padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [colorScheme.tertiaryContainer, colorScheme.secondaryContainer.withOpacity(0.2)],
+              colors: [colorScheme.primaryContainer, colorScheme.secondaryContainer.withOpacity(0.2)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -75,7 +75,7 @@ class ReusableCardCore extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   answer,
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: colorScheme.secondary),
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colorScheme.secondary),
                 ),
               //  const SizedBox(height: 10),
                 // Text(
