@@ -6,9 +6,11 @@ class ChatBotProvider extends ChangeNotifier {
   // Box for storing chat messages
   final Box _chatBox = Hive.box('chatMessages');
 
-  final List<Map<String, String>> _messages = [
+  // Default messages
+  List<Map<String, String>> _messages = [
     {'text': 'Hello! How can I assist you today?', 'sender': 'bot'}
   ];
+
   bool _isTyping = false;
 
   List<Map<String, String>> get messages => List.unmodifiable(_messages);
@@ -23,18 +25,30 @@ class ChatBotProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void updateMessages(List<Map<String, String>> newMessages) {
+    _messages = newMessages;
+    notifyListeners();
+    save();
+  }
+
   void save() {
     _chatBox.put('messages', _messages.map((msg) => Map<String, String>.from(msg)).toList());
   }
 
   void load() {
-    final savedMessages = _chatBox.get('messages', defaultValue: []) as List<dynamic>;
+    final savedMessages = _chatBox.get('messages') as List<dynamic>? ?? [];
 
-    if (savedMessages.isNotEmpty) {
-      _messages.clear();
-      _messages.addAll(savedMessages.map((msg) => Map<String, String>.from(msg)));
-      notifyListeners();
+    if (savedMessages.isEmpty) {
+      // Ensure the default message is stored
+      _messages = [
+        {'text': 'Hello! How can I assist you today?', 'sender': 'bot'}
+      ];
+      save();
+    } else {
+      _messages = savedMessages.map((msg) => Map<String, String>.from(msg)).toList();
     }
+
+    notifyListeners();
   }
 
   Future<void> sendMessage(String text) async {
@@ -42,8 +56,8 @@ class ChatBotProvider extends ChangeNotifier {
 
     _messages.add({'text': text, 'sender': 'user'});
 
-    // Check if messages exceed 20 and remove the oldest 5
-    if (_messages.length >= 20) {
+    // Keep the chat limited to 20 messages, removing the oldest 5 if needed
+    if (_messages.length > 20) {
       _messages.removeRange(0, 5);
     }
 
@@ -58,9 +72,8 @@ class ChatBotProvider extends ChangeNotifier {
 
       _messages.add({'text': aiResponse, 'sender': 'bot'});
 
-      // Again, check if messages exceed 20 after adding bot response
-      if (_messages.length >= 20) {
-        _messages.removeRange(0, 5);
+      if (_messages.length > 100) {
+        _messages.removeRange(0, 20);
       }
 
       save(); // Save chat after adding bot response
@@ -68,13 +81,12 @@ class ChatBotProvider extends ChangeNotifier {
       print("Error: $e");
       _messages.add({'text': 'Sorry, something went wrong. Please try again.', 'sender': 'bot'});
 
-      if (_messages.length >= 20) {
-        _messages.removeRange(0, 5);
+      if (_messages.length > 100) {
+        _messages.removeRange(0, 20);
       }
 
       save();
     }
-
     notifyListeners();
   }
 }

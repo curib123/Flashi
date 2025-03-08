@@ -1,6 +1,7 @@
 
 import 'package:flashi/presentation/screen/authentication/sign_in_screen.dart';
 import 'package:flashi/provider/ai_credits_provider.dart';
+import 'package:flashi/provider/chatbot_provider.dart';
 import 'package:flashi/provider/notes_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/auth_dialog.dart';
@@ -65,7 +66,7 @@ class AuthProvider extends ChangeNotifier {
     return await InternetConnection().hasInternetAccess;
   }
 
-  Future<void> signIn(BuildContext context,QuizProvider quizProvider, AiCreditProvider aiCreditProvider,NotesProvider notesProvider) async {
+  Future<void> signIn(BuildContext context,QuizProvider quizProvider, AiCreditProvider aiCreditProvider,NotesProvider notesProvider,ChatBotProvider chatBotProvider) async {
     if (!await hasInternet()) {
       showAuthDialog(context,type: "error", "Error", "No internet connection. Please try again.");
       return;
@@ -98,12 +99,13 @@ class AuthProvider extends ChangeNotifier {
         updateUserId(fetchedUserId);
         updateEmail(response.user!.email ?? "AI-Powered Flashcard Generator");
 
+
         // Securely store email and username
         await secureStorage.write(key: "email", value: email);
         await secureStorage.write(key: "username", value: fetchedUsername);
         await secureStorage.write(key: "user_id", value: fetchedUserId);
-        int FetchCredits = await fetchUserCredits(user_id) ?? 0;
 
+        int FetchCredits = await fetchUserCredits(user_id) ?? 0;
 
         showMergeFlashcardDialog(
           context,
@@ -112,9 +114,9 @@ class AuthProvider extends ChangeNotifier {
               aiCreditProvider.updateCredits(FetchCredits);
               await quizProvider.updateQuizSets(fetchFlashcards(user_id), merge: true);
               notesProvider.updateNotes(await fetchNotes(user_id),merge: true);
-             await saveFlashcards(user_id, quizProvider.quizSets);
-              showLoadingDialog(context, text: "Merge successful");
-             Future.delayed(Duration(seconds: 5),(){
+              chatBotProvider.updateMessages(await fetchChatBotMessages(user_id));
+              showLoadingDialog(context, text: "processing...");
+             Future.delayed(Duration(seconds: 3),(){
                Navigator.pop(context);
                Navigator.pop(context);
                Navigator.pop(context);
@@ -130,10 +132,15 @@ class AuthProvider extends ChangeNotifier {
            await aiCreditProvider.updateCredits(FetchCredits);
            await quizProvider.updateQuizSets(fetchFlashcards(user_id), merge: false);
            notesProvider.updateNotes(await fetchNotes(user_id),merge: false);
-           await   saveFlashcards(user_id, quizProvider.quizSets);
+           chatBotProvider.updateMessages(await fetchChatBotMessages(user_id));
+           showLoadingDialog(context, text: "processing...");
+           Future.delayed(Duration(seconds: 3),(){
              Navigator.pop(context);
-              Navigator.pop(context);
-              Navigator.pop(context);
+             Navigator.pop(context);
+             Navigator.pop(context);
+             Navigator.pop(context);
+
+           });
             }
           },
         );
@@ -212,7 +219,7 @@ class AuthProvider extends ChangeNotifier {
       if (response.user != null) {
 
         showAuthDialog(context,type: "success", "Success", "Account created for ${response.user!.email}");
-        Future.delayed(Duration(seconds: 2), () {
+        Future.delayed(Duration(seconds: 1), () {
           Navigator.pop(context);
           Navigator.pushReplacement(
             context,
@@ -237,7 +244,7 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> signOut(BuildContext context,QuizProvider quizProvider) async {
+  Future<void> signOut(BuildContext context,QuizProvider quizProvider,AiCreditProvider aiCreditProvider,NotesProvider notesProvider,ChatBotProvider chatBotProvider) async {
     if (!await hasInternet()) {
       showAuthDialog(context,type: "error", "Error", "No internet connection. Please try again.");
       return;
@@ -252,7 +259,21 @@ class AuthProvider extends ChangeNotifier {
       updateUsername(DefaultUsername);
       updateEmail(DefaultEmail);
       updateUserId("");
+      aiCreditProvider.updateCredits(0);
+      notesProvider.updateNotes([], merge: false);
+      chatBotProvider.updateMessages([]);
+      quizProvider.updateSetToEmpty();
       showAuthDialog(context,type: "success", "Success", "Signed out successfully");
+      Future.delayed(Duration(seconds: 1), () {
+        Navigator.pop(context);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SignInScreen(),
+          ),
+        );
+      });
+
     } catch (e) {
       showAuthDialog(context,type: "error", "Error", "Sign out failed: ${e.toString()}");
     }
@@ -390,6 +411,69 @@ class AuthProvider extends ChangeNotifier {
       print("Notes saved successfully!");
     } catch (e) {
       throw Exception("Failed to save notes: $e");
+    }
+  }
+
+  // Function to save messages to Supabase
+  Future<void> saveChatBotMessages(String userId, List<Map<String, String>> _messages) async {
+    try {
+      if (userId.isEmpty) {
+        throw Exception("User ID is required.");
+      }
+
+      // Check if the user already has messages saved
+      final existingData = await supabase
+          .from('chatbotmessages')
+          .select('data')
+          .eq('user_id', userId)
+          .maybeSingle();
+
+      if (existingData != null) {
+        // Update existing messages
+        await supabase.from('chatbotmessages').update({
+          'data': _messages,
+        }).eq('user_id', userId);
+      } else {
+        // Insert new messages entry
+        await supabase.from('chatbotmessages').insert({
+          'user_id': userId,
+          'data': _messages,
+        });
+      }
+
+      print("Messages saved successfully!");
+    } catch (e) {
+      throw Exception("Failed to save messages: $e");
+    }
+  }
+
+  // Function to fetch messages from Supabase
+  Future<List<Map<String, String>>> fetchChatBotMessages(String userId) async {
+    try {
+      if (userId.isEmpty) {
+        throw Exception("User ID is required.");
+      }
+
+      // Fetch messages from Supabase
+      final response = await supabase
+          .from('chatbotmessages')
+          .select('data')
+          .eq('user_id', userId)
+          .maybeSingle();
+
+      if (response != null && response['data'] is List) {
+        // Convert fetched JSON data to List<Map<String, String>>
+        List<Map<String, String>> messages = List<Map<String, String>>.from(
+          (response['data'] as List).map((item) =>
+          Map<String, String>.from(item as Map<String, dynamic>)),
+        );
+
+        return messages;
+      } else {
+        return []; // Return an empty list if no messages found
+      }
+    } catch (e) {
+      throw Exception("Failed to fetch messages: $e");
     }
   }
 

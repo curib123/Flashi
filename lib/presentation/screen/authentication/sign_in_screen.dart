@@ -1,10 +1,10 @@
 import 'package:flashi/presentation/screen/authentication/sign_up_screen.dart';
 import 'package:flashi/provider/ai_credits_provider.dart';
 import 'package:flashi/provider/auth_provider.dart';
+import 'package:flashi/provider/chatbot_provider.dart';
 import 'package:flashi/provider/notes_provider.dart';
 import 'package:flashi/provider/onboarding_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
-import 'package:flashi/util/helpers/widget/alert_dialog/show_email_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -32,7 +32,7 @@ class SignInScreen extends StatelessWidget {
               GestureDetector(
                 onTap: () => _navigateHome(),
                 child: Text(
-                  "Skip",
+                  "Sign in later",
                   style: TextStyle(
                     color: colorScheme.primary,
                     fontSize: 15, // Slightly adjusted for better fit
@@ -46,8 +46,8 @@ class SignInScreen extends StatelessWidget {
         ),
 
       backgroundColor: colorScheme.background,
-      body: Consumer4<AuthProvider,QuizProvider,AiCreditProvider,NotesProvider>(
-        builder: (context, authProvider,quizProvider,aiCreditProvider, notesProvider,child) {
+      body: Consumer5<AuthProvider,QuizProvider,AiCreditProvider,NotesProvider,ChatBotProvider>(
+        builder: (context, authProvider,quizProvider,aiCreditProvider, notesProvider,chatBotProvider,child) {
           return ListView(
             padding: const EdgeInsets.symmetric(horizontal: 32.0),
             children: [
@@ -99,7 +99,7 @@ class SignInScreen extends StatelessWidget {
                       minimumSize: Size(double.infinity, 50),
                     ),
                     onPressed: () async {
-                      await authProvider.signIn(context, quizProvider,aiCreditProvider,notesProvider);
+                      await authProvider.signIn(context, quizProvider,aiCreditProvider,notesProvider,chatBotProvider);
                     },
                     child: Text("Sign In", style: GoogleFonts.poppins(fontSize: 18, color: colorScheme.onPrimary)),
                   ),

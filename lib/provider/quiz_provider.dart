@@ -53,6 +53,12 @@ class QuizProvider with ChangeNotifier {
     notifyListeners();
 
   }
+void updateSetToEmpty(){
+    _quizSets = [];
+    saveQuizSets();
+    notifyListeners();
+
+}
   Future<void> updateQuizSets(Future<List<Map<String, dynamic>>> newQuizSetsFuture, {bool merge = true}) async {
     List<Map<String, dynamic>> newQuizSets = await newQuizSetsFuture; // Await the future result
 

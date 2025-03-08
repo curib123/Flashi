@@ -14,6 +14,7 @@ import 'package:flashi/provider/DailyQuestionProvider.dart';
 import 'package:flashi/provider/ai_credits_provider.dart';
 import 'package:flashi/provider/ai_model_logic_provider.dart';
 import 'package:flashi/provider/auth_provider.dart';
+import 'package:flashi/provider/chatbot_provider.dart';
 import 'package:flashi/provider/fetch_data_from_json_provider.dart';
 import 'package:flashi/provider/check_version_provider.dart';
 import 'package:flashi/provider/notes_provider.dart';
@@ -59,6 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final authProvider = Provider.of<AuthProvider>(context,listen: false);
     final quizProvider = Provider.of<QuizProvider>(context,listen: false);
     final notesProvider = Provider.of<NotesProvider>(context,listen: false);
+    final chatBotProvider = Provider.of<ChatBotProvider>(context,listen: false);
 
     fetchDataFromJsonProvider.fetchLatestVersion();
     aiModelLogicProvider.fetchLatestVersion();
@@ -70,6 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
      await authProvider.saveFlashcards(authProvider.user_id,quizProvider.quizSets);
      await authProvider.saveUserCredits(authProvider.user_id, aiCreditProvider.credits);
      await authProvider.saveNotes(authProvider.user_id, notesProvider.notes);
+     await authProvider.saveChatBotMessages(authProvider.user_id, chatBotProvider.messages);
 
     });
 
@@ -108,7 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
           if (aiCreditProvider.lastUpdated == null || now.difference(aiCreditProvider.lastUpdated!).inDays > 0) {
             showFreeCreditsDialog(
               context: context,
-              rewardText: "You have free ${aiCreditProvider.addedCredits} credits",
+              rewardText: "You have free ${aiCreditProvider.addedCredits} energy",
               onClaim: () async {
                 await aiCreditProvider.handleDataChange(now: now);
               },

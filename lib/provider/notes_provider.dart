@@ -43,6 +43,7 @@ class NotesProvider with ChangeNotifier {
     }
 
     notifyListeners();
+    saveNotesHive();
   }
 
 

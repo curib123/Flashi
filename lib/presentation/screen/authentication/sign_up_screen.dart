@@ -32,7 +32,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         title:   GestureDetector(
           onTap: () => _navigateHome(),
           child: Text(
-            "Skip",
+            "Sign up later",
             style: TextStyle(
               color: colorScheme.primary,
               fontSize: 15, // Slightly adjusted for better fit

@@ -1,3 +1,6 @@
+import 'package:flashi/provider/ai_credits_provider.dart';
+import 'package:flashi/provider/chatbot_provider.dart';
+import 'package:flashi/provider/notes_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -34,8 +37,8 @@ class CustomDrawer extends StatelessWidget {
       );
     }
 
-    return Consumer3<BottomNavigationProvider, AuthProvider,QuizProvider>(
-      builder: (context, bottomNavProvider, authProvider,quizProvider, child) {
+    return Consumer6<BottomNavigationProvider, AuthProvider,QuizProvider,AiCreditProvider,NotesProvider,ChatBotProvider>(
+      builder: (context, bottomNavProvider, authProvider,quizProvider, aiCreditProvider,notesProvider,chatBotProvider ,child) {
         return Drawer(
           backgroundColor: colorScheme.onPrimary,
           shape: const RoundedRectangleBorder(
@@ -101,7 +104,7 @@ class CustomDrawer extends StatelessWidget {
                         showLogoutConfirmationDialog(
                             context: context,
                             onLogout: () {
-                              authProvider.signOut(context,quizProvider);
+                              authProvider.signOut(context,quizProvider,aiCreditProvider,notesProvider,chatBotProvider);
                             });
                       },
                     ),

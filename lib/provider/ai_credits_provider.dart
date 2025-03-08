@@ -84,6 +84,7 @@ class AiCreditProvider with ChangeNotifier {
 
   Future<void>  updateCredits(int value) async {
     _credits = value;
+    _saveCredits();
     notifyListeners();
   }
 

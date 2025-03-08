@@ -1,5 +1,6 @@
 import 'package:flashi/provider/ai_credits_provider.dart';
 import 'package:flashi/provider/auth_provider.dart';
+import 'package:flashi/provider/chatbot_provider.dart';
 import 'package:flashi/provider/notes_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
@@ -35,8 +36,8 @@ class _ReusableTitleContentState extends State<ReusableTitleContent> {
   }
   @override
   Widget build(BuildContext context) {
-    return Consumer4<QuizProvider, AiCreditProvider,AuthProvider,NotesProvider>(
-      builder: (context, quizProvider, aiCreditProvider,authProvider,notesProvider, child) {
+    return Consumer5<QuizProvider, AiCreditProvider,AuthProvider,NotesProvider,ChatBotProvider>(
+      builder: (context, quizProvider, aiCreditProvider,authProvider,notesProvider,chatBotProvider, child) {
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -64,15 +65,15 @@ class _ReusableTitleContentState extends State<ReusableTitleContent> {
                    Navigator.of(context).pop();
                    showWatchAdDialog(
                        context: context,
-                       title: "Earn Free Credits!",
-                       message: "Watch a short ad and instantly earn 5 free credits!",
+                       title: "Earn Free energy!",
+                       message: "Watch a short ad and instantly earn 5 free energy!",
                        cancelText: "Maybe Later",
                        confirmText: "Watch Ads",
                      onWatchAd: () {
                        showLoadingDialog(context, text: "Loading ads... Please wait.\nIf it doesn’t appear, try again.");
                        Future.delayed(const Duration(seconds: 10), () {
                          Navigator.of(context).pop();
-                         adManager.showRewarded(context, 'credits');
+                         adManager.showRewarded(context, 'energy');
                        });
                      },
                    );
@@ -94,15 +95,15 @@ class _ReusableTitleContentState extends State<ReusableTitleContent> {
                           style: TextStyle(fontSize: 15, color: widget.colorScheme.primary,fontWeight: FontWeight.w600),
                         ),
                         SizedBox(width: 5),
-                        Icon(Icons.token_rounded, size: 20, color: widget.colorScheme.secondary),
-                        SizedBox(width: 5),
+                        Icon(Icons.offline_bolt_rounded, size: 20, color: widget.colorScheme.secondary),
+                        SizedBox(width: 2),
                         Icon(Icons.add_circle_rounded,size: 30,color: widget.colorScheme.primary,)
                       ],
                     ),
 
                   ),
                 ),
-                IconButton(
+               IconButton(
                     onPressed: () async {
                       bool isConnected = await InternetConnection().hasInternetAccess;
 
@@ -112,12 +113,14 @@ class _ReusableTitleContentState extends State<ReusableTitleContent> {
                           await authProvider.saveFlashcards(authProvider.user_id,quizProvider.quizSets);
                           await authProvider.saveUserCredits(authProvider.user_id, aiCreditProvider.credits);
                           await authProvider.saveNotes(authProvider.user_id, notesProvider.notes);
+                          await authProvider.saveChatBotMessages(authProvider.user_id, chatBotProvider.messages);
 
-                          Future.delayed(Duration(seconds: 5),()  {
-                            showAuthDialog(context, type: "success","Success", "Your data has been successfully saved!");
-
-
+                          showLoadingDialog(context, text: "Saving data... Please wait..");
+                          Future.delayed(Duration(seconds: 3),()  {
+                            Navigator.of(context).pop();
                           });
+
+
                         }else{
                           showAuthDialog(context,type: "warning", "Warning", "Please sign in to sync your data.");
 
@@ -130,9 +133,9 @@ class _ReusableTitleContentState extends State<ReusableTitleContent> {
                      ;
                     },
                     icon: Icon(Icons.save,color: widget.colorScheme.onPrimary,)
-                ),
+                ) ,
 
-                GestureDetector(
+               authProvider.user_id.isEmpty ? GestureDetector(
                   onTap: widget.onSettings,
                   child: CircleAvatar(
                     backgroundColor: Colors.transparent,
@@ -142,7 +145,18 @@ class _ReusableTitleContentState extends State<ReusableTitleContent> {
                       color: widget.colorScheme.onPrimary,
                     ),
                   ),
-                ),
+                ) : GestureDetector(
+                 onTap: () {
+                  authProvider.user_id.isNotEmpty ?   showAuthDialog(context, type: "info", "Info", "You are logged in!")
+                      : showAuthDialog(context, type: "warning", "Warning", "You are not logged in!");
+                 },
+                 child: Icon(
+                     Icons.person_rounded,
+                     size: 35, // Increased icon size for better proportion
+                     color: widget.colorScheme.onPrimary,
+                   ),
+                 ),
+
               ],
             ),
           ],

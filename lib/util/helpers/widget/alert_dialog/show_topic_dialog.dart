@@ -135,15 +135,15 @@ void showTopicDialog(BuildContext context, {required Function()? onTap}) {
                                         if(aiCreditProvider.watchAd()){
                                           showWatchAdDialog(
                                             context: context,
-                                            title: "Earn Free Credits!",
-                                            message: "Watch a short ad and instantly earn 5 free credits!",
+                                            title: "Earn Free energy!",
+                                            message: "Watch a short ad and instantly earn 5 free energy!",
                                             cancelText: "Maybe Later",
                                             confirmText: "Watch Ad",
                                             onWatchAd: () {
                                               showLoadingDialog(context, text: "Loading ads... Please wait.\nIf it doesn’t appear, try again.");
                                               Future.delayed(const Duration(seconds: 10), () {
                                                 Navigator.of(context).pop();
-                                                adManager.showRewarded(context, 'credits');
+                                                adManager.showRewarded(context, 'energy');
                                               });
                                             },
                                           );

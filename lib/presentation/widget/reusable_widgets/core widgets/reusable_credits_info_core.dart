@@ -17,7 +17,7 @@ class ReusableCreditsInfoCore extends StatelessWidget {
       child: Column(
         children: [
           Text(
-            "Use credits to create AI-generated flashcards.",
+            "Use energy to create AI-generated flashcards.",
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 8,
@@ -26,7 +26,7 @@ class ReusableCreditsInfoCore extends StatelessWidget {
             ),
           ),
           Text(
-            "Don’t forget to claim your daily free credits!",
+            "Don’t forget to claim your daily free energy!",
             style: TextStyle(
               fontSize: 8,
               fontWeight: FontWeight.w500,
@@ -54,7 +54,7 @@ class ReusableCreditsInfoCore extends StatelessWidget {
                         color: colorScheme.secondary,
                       ),
                     ),
-                    TextSpan(text: " free credits left"),
+                    TextSpan(text: " free energy left"),
                   ],
                 ),
               ),

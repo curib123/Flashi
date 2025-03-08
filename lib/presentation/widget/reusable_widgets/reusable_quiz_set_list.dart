@@ -81,7 +81,7 @@ class ReusableQuizSetList extends StatelessWidget {
 
                                 } else {
                                   _navigateToSeeAllQuizCard(context, name, set, index, set['cards']);
-                                  showAuthDialog(context,type: "warning", "warning", "You have run out of slots. Watch an ad to gain 5 additional slots and continue studying.");
+                                  showAuthDialog(context,type: "warning", "warning", "You have run out of slots. Use Energy Free 2 slots");
                                 }
                                 quizProvider.updateCurrentQuizSetNameToSetLimit(name);
                               },

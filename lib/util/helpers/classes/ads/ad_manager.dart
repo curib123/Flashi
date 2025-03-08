@@ -371,7 +371,7 @@ _bannerAd6 = BannerAd(
 
     _rewardedAd?.show(onUserEarnedReward: (AdWithoutView ad, RewardItem rewardItem) {
 
-      if(whatRewards == "credits"){
+      if(whatRewards == "energy"){
         aiCreditProvider.addCredits(5);
         aiCreditProvider.addAdsWatched();
       }

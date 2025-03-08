@@ -40,7 +40,7 @@ class ImportExportHelperClass {
         await rootDirectory.create(recursive: true);
       }
 
-      String fileName = '${sets['name'] ?? 'empty'}.json';
+      String fileName = '${sets['name'] ?? 'empty'} (Flashi).json';
       final filePath = "${rootDirectory.path}/$fileName";
       final file = File(filePath);
 

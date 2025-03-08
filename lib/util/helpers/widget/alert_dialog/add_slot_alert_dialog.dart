@@ -26,7 +26,7 @@ void showAddSlotAlertDialog({
         content: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0),
           child: Text(
-            "Unlock 2 slots for just 1 credit.\nWould you like to proceed?",
+            "Unlock 2 slots for just 1 energy.\nWould you like to proceed?",
             style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
             textAlign: TextAlign.center,
           ),
