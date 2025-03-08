@@ -74,17 +74,10 @@ class _MultipleChoiceCoreState extends State<MultipleChoiceCore> {
               decoration: BoxDecoration(
                 borderRadius: const BorderRadius.all(Radius.circular(20)),
                 gradient: LinearGradient(
-                  colors: [colorScheme.tertiary.withOpacity(0.6), colorScheme.secondary.withOpacity(0.7)],
+                  colors: [colorScheme.primary.withOpacity(0.8), colorScheme.tertiary.withOpacity(0.5)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: colorScheme.onSurface.withOpacity(0.3),
-                    blurRadius: 8,
-                    offset: Offset(0, 5),
-                  ),
-                ],
               ),
               child: widget.question
             ),
@@ -134,9 +127,9 @@ class _MultipleChoiceCoreState extends State<MultipleChoiceCore> {
       }
     } else {
       if (isCorrect && !isSelected && hasAnswered) {
-        tileColor = colorScheme.primary;
+        tileColor = colorScheme.primary.withOpacity(0.8);
       } else {
-        tileColor = colorScheme.secondary;
+        tileColor = colorScheme.tertiary.withOpacity(0.8);
       }
     }
 

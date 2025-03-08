@@ -33,7 +33,7 @@ class ReusableQuizCardList extends StatelessWidget {
         [];
 
     final quizProvider = Provider.of<QuizProvider>(context, listen: false);
-    final quizSets = quizProvider.sortQuizCard(quizSet: quizSet).reversed.toList();
+    final quizSets = quizProvider.sortQuizCard(quizSet: quizSet);
 
     if (quizSets.isEmpty) {
       return Center(

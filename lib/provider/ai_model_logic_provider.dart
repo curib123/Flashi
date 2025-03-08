@@ -74,12 +74,14 @@ class AiModelLogicProvider extends ChangeNotifier {
 
       Future.delayed(Duration(seconds: 10), () {
         if (questions.isNotEmpty && !isTimeOut) {
-          final quizSetName = 'AI Generated From File ${quizProvider.quizSets
-              .length + 1}';
+
+          final quizSetName = "New Created Flashcard ${quizProvider.quizSets.length}";
+
+
           quizProvider.addQuizSet({
             'name': quizSetName,
             'timestamp': DateTime.now(),
-            'description': 'AI Generated Flashcard content using PDF/docs file',
+            'description': 'Generated Flashcard content',
             'cards': [],
             'numberOfQuiz': 0,
             'limitNumberOfQuiz': fetchDataFromJsonProvider.ListOfMaxLength,
@@ -115,7 +117,7 @@ class AiModelLogicProvider extends ChangeNotifier {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                  "Successfully Created AI Generated Flashcard using pdf/docs"),
+                  "Successfully Created Generated Flashcard "),
               backgroundColor: Colors.green,
             ),
           );

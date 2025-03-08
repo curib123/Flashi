@@ -34,7 +34,6 @@ class ReusableCardCore extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    String formattedTimestamp = "${timestamp.day}/${timestamp.month}/${timestamp.year} ${timestamp.hour}:${timestamp.minute}";
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),

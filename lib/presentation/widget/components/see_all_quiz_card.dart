@@ -36,7 +36,6 @@ class SeeAllQuizCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final quizProvider = Provider.of<QuizProvider>(context);
 
-
     return Scaffold(
       resizeToAvoidBottomInset: true, // Prevents bottom overflow
       appBar: AppBar(

@@ -75,19 +75,14 @@ class _FlipCardCoreState extends State<FlipCardCore> {
             borderRadius: BorderRadius.circular(20),
             gradient: LinearGradient(
               colors: isFront
-                  ? [colorScheme.primary.withOpacity(.7), colorScheme.tertiary.withOpacity(.7)]
-                  : [colorScheme.tertiary.withOpacity(.7), colorScheme.primary.withOpacity(.7)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+                  ? [ colorScheme.primary.withOpacity(0.8),
+                colorScheme.primary.withOpacity(0.5),]
+                  : [ colorScheme.primary.withOpacity(0.5),
+                colorScheme.primary.withOpacity(0.8),],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
             ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.2),
-                offset: Offset(4, 8),
-                blurRadius: 12,
-              ),
-            ],
-            border: Border.all(color: Colors.white.withOpacity(0.3), width: 1),
+
           ),
           padding: const EdgeInsets.all(20),
           child: Center(child: content),
