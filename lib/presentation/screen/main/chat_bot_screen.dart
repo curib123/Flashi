@@ -129,21 +129,27 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
                                 margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
                                 padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                                 decoration: BoxDecoration(
-                                  color: isUser ? colorScheme.primaryContainer : colorScheme.secondaryContainer,
+                                  gradient: LinearGradient(
+                                    colors: isUser ? [
+                                      colorScheme.primaryContainer.withOpacity(0.9),
+                                      colorScheme.secondaryContainer.withOpacity(0.2),
+                                    ] :
+                                    [
+                                      colorScheme.primaryContainer.withOpacity(0.3),
+                                      colorScheme.secondaryContainer.withOpacity(0.8),
+                                    ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
                                   borderRadius: BorderRadius.only(
                                     topLeft: const Radius.circular(18),
                                     topRight: const Radius.circular(18),
                                     bottomLeft: isUser ? const Radius.circular(18) : const Radius.circular(4),
                                     bottomRight: isUser ? const Radius.circular(4) : const Radius.circular(18),
                                   ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.1),
-                                      blurRadius: 3,
-                                      offset: const Offset(0, 1),
-                                    ),
-                                  ],
+
                                 ),
+
                                 child: Padding(
                                   padding: const EdgeInsets.only(right: 30), // Space for the copy icon
                                   child: SelectableText(
