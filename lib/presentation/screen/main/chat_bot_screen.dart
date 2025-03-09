@@ -65,8 +65,7 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
         ),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(20),
-            bottomRight: Radius.circular(20),
+
           ),
         ),
         backgroundColor: colorScheme.primary,

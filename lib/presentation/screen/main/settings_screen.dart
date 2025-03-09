@@ -20,8 +20,7 @@ class SettingsScreen extends StatelessWidget {
         ),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(20),
-            bottomRight: Radius.circular(20),
+
           ),
         ),
         backgroundColor: colorScheme.primary,

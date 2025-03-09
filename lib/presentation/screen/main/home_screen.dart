@@ -184,7 +184,7 @@ class _HomeScreenState extends State<HomeScreen> {
               slivers: [
                 // SliverAppBar for a custom collapsing header
                 SliverAppBar(
-                  backgroundColor: colorScheme.primary,
+                  backgroundColor: colorScheme.primary.withOpacity(0.9),
                   leading: GestureDetector(
                     onTap: () => Scaffold.of(context).openDrawer(),
                     child: Icon(

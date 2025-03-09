@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class TokenService {
@@ -12,10 +13,9 @@ class TokenService {
           .eq('user_id', userId)
           .maybeSingle();
 
-      if (response == null) return 0;
-      return response['token_balance'] ?? 0;
+      return response?['token_balance'] ?? 0;
     } catch (e) {
-      print('Error fetching token balance: $e');
+      debugPrint('Error fetching token balance: $e');
       return 0;
     }
   }
@@ -30,21 +30,25 @@ class TokenService {
 
       final response = await _supabase
           .from('users_tokens')
-          .update({'token_balance': newBalance, 'last_updated': DateTime.now()})
+          .update({
+        'token_balance': newBalance,
+        'last_updated': DateTime.now().toIso8601String()
+      })
           .eq('user_id', userId);
 
-      if (response.error == null) {
+      if (response != null) {
         await _supabase.from('token_transactions').insert({
           'user_id': userId,
           'amount': amount,
           'transaction_type': type,
           'status': 'completed',
+          'created_at': DateTime.now().toIso8601String(),
         });
         return true;
       }
       return false;
     } catch (e) {
-      print('Error updating tokens: $e');
+      debugPrint('Error updating tokens: $e');
       return false;
     }
   }
@@ -52,15 +56,15 @@ class TokenService {
   /// ✅ Get Token Transaction History
   Future<List<Map<String, dynamic>>> getUserTransactions(String userId) async {
     try {
-      final response = await _supabase
+      final List response = await _supabase
           .from('token_transactions')
           .select('*')
           .eq('user_id', userId)
           .order('created_at', ascending: false);
 
-      return response.isNotEmpty ? response as List<Map<String, dynamic>> : [];
+      return response.cast<Map<String, dynamic>>();
     } catch (e) {
-      print('Error fetching transactions: $e');
+      debugPrint('Error fetching transactions: $e');
       return [];
     }
   }
@@ -75,16 +79,16 @@ class TokenService {
         'user_id': userId,
         'amount': amount,
         'status': 'reviewing',
-        'requested_at': DateTime.now(),
+        'requested_at': DateTime.now().toIso8601String(),
       });
 
-      if (response.error == null) {
+      if (response != null) {
         await updateTokens(userId, -amount, 'withdraw'); // Deduct tokens
         return true;
       }
       return false;
     } catch (e) {
-      print('Error requesting withdrawal: $e');
+      debugPrint('Error requesting withdrawal: $e');
       return false;
     }
   }
@@ -92,15 +96,15 @@ class TokenService {
   /// ✅ Get Withdrawal Requests
   Future<List<Map<String, dynamic>>> getWithdrawRequests(String userId) async {
     try {
-      final response = await _supabase
+      final List response = await _supabase
           .from('withdraw_requests')
           .select('*')
           .eq('user_id', userId)
           .order('requested_at', ascending: false);
 
-      return response.isNotEmpty ? response as List<Map<String, dynamic>> : [];
+      return response.cast<Map<String, dynamic>>();
     } catch (e) {
-      print('Error fetching withdrawal requests: $e');
+      debugPrint('Error fetching withdrawal requests: $e');
       return [];
     }
   }
@@ -113,10 +117,13 @@ class TokenService {
           .update({'status': status})
           .eq('id', requestId);
 
-      return response.error == null;
+      return response != null;
     } catch (e) {
-      print('Error updating withdrawal status: $e');
+      debugPrint('Error updating withdrawal status: $e');
       return false;
     }
   }
+
+
+
 }

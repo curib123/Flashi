@@ -38,8 +38,7 @@ class _ExportImportScreenState extends State<ExportImportScreen> {
         backgroundColor: colorScheme.primary,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(20),
-            bottomRight: Radius.circular(20),
+
           ),
         ),
       ),
