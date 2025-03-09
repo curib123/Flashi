@@ -114,7 +114,7 @@ class CustomDrawer extends StatelessWidget {
                       title: 'Home',
                       onTap: () {
                         Navigator.pop(context);
-                        bottomNavProvider.toogleNavigation(1);
+                        bottomNavProvider.toogleNavigation(2);
                       },
                     ),
                     buildListTile(

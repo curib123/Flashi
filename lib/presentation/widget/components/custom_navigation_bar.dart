@@ -17,20 +17,23 @@ class CustomNavigationBar extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Container(
-      height: 85,
+      height: 80,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(50),
       ),
       child: CurvedNavigationBar(
         height: 60.0, // Height of the navigation bar
         backgroundColor: colorScheme.onPrimary, // Navbar background color
-        color: colorScheme.primary, // Navbar color
+        color: colorScheme.primary.withOpacity(0.8), // Navbar color
         buttonBackgroundColor: colorScheme.primary, // Active button color
         index: currentIndex, // Current active index
         items: <Widget>[
-          Icon(Icons.smart_toy_rounded, size: 35, color: colorScheme.onPrimary),
+          Icon(Icons.smart_toy_rounded, size: 30, color: colorScheme.onPrimary),
+          Icon(Icons.text_snippet_rounded, size: 30, color: colorScheme.onPrimary),
           Icon(Icons.home_rounded, size: 40, color: colorScheme.onPrimary),
-          Icon(Icons.text_snippet_rounded, size: 35, color: colorScheme.onPrimary),
+          Icon(Icons.workspace_premium , size: 30, color: colorScheme.onPrimary),
+          Icon(Icons.wallet_rounded, size: 30, color: colorScheme.onPrimary),
+
         ],
         onTap: (index) {
           if (onTap != null) {
