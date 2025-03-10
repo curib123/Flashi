@@ -21,9 +21,9 @@ class TokenService {
   }
 
   /// ✅ Update Token Balance (Increment or Decrement)
-  Future<bool> updateTokens(String userId, int amount, String type, int currentBalance) async {
+  Future<bool> updateTokens(String userId, int amount, String type) async {
     try {
-
+      final int currentBalance = await getUserTokenBalance(userId);
       final int newBalance = currentBalance + amount;
 
       if (newBalance < 0) return false; // Prevents negative balance
@@ -32,12 +32,11 @@ class TokenService {
           .from('users_tokens')
           .update({
         'token_balance': newBalance,
-        'last_updated': DateTime.now().toIso8601String(),
+        'last_updated': DateTime.now().toIso8601String()
       })
-          .eq('user_id', userId)
-          .select(); // Ensure the update was applied
+          .eq('user_id', userId);
 
-      if (response.isNotEmpty) {
+      if (response != null) {
         await _supabase.from('token_transactions').insert({
           'user_id': userId,
           'amount': amount,
@@ -54,7 +53,6 @@ class TokenService {
     }
   }
 
-
   /// fetch payout
   Future<String?> fetchPayoutDate() async {
 
@@ -66,7 +64,7 @@ class TokenService {
           .select('payout_date')
           .single(); // Fetches only one row
 
-      if (response == null) return null; // No data found
+      if (response.isEmpty) return null; // No data found
 
       return DateTime.parse(response['payout_date']).toIso8601String(); // Convert to DateTime
     } catch (e) {
@@ -159,6 +157,23 @@ class TokenService {
       return [];
     }
   }
+  Future<int?> getLatestWithdrawAmount(String userId) async {
+    try {
+      final response = await _supabase
+          .from('withdraw_requests')
+          .select('amount')
+          .eq('user_id', userId)
+          .order('requested_at', ascending: false)
+          .limit(1)
+          .maybeSingle(); // Safer than `.single()`, returns null if no data
+
+      return response?['amount'] as int?;
+    } catch (e) {
+      debugPrint('Error fetching latest withdrawal amount: $e');
+      return null; // Return null if there's an error or no data
+    }
+  }
+
 
   /// ✅ Admin: Approve or Reject a Withdrawal Request
   Future<bool> updateWithdrawStatus(String requestId, String status) async {

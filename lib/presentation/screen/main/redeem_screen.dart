@@ -174,7 +174,7 @@ class RedeemScreenContent extends StatelessWidget {
           onTap: () async {
             if (isUnlocked) {
               if (tokenProvider.isRedeemAvailable) {
-                await tokenProvider.redeemTokens(authProvider.user_id, amount, context);
+                await tokenProvider.redeemTokens(authProvider.user_id, requiredTokens, context);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text('Token Redeemed! $requiredTokens'),

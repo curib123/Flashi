@@ -70,11 +70,10 @@ class TokenProvider extends ChangeNotifier {
     try {
        fetchPayoutDate();
       _currentTokens = await _tokenService.getUserTokenBalance(userId);
-      if(await hasUserSuccessfulFirstPayout(userId)){
-        updateIsSuccessFullFirstPayout(true);
-      }
+        updateIsSuccessFullFirstPayout(await hasUserSuccessfulFirstPayout(userId));
       if ( await getWithdrawalStatus(userId) == "approved" ) {
         await updateUserFirstPayout(userId);
+        await updateTokens(userId,await getLatestWithdrawAmount(userId) as int, "withdraw");
       }
        await updateIsRedeemAvailable();
       notifyListeners();
@@ -86,7 +85,7 @@ class TokenProvider extends ChangeNotifier {
 
   Future<bool> updateTokens(String userId, int amount, String type) async {
     try {
-      bool success = await _tokenService.updateTokens(userId, amount, type, _currentTokens);
+      bool success = await _tokenService.updateTokens(userId, amount, type);
       if (success) {
         _currentTokens += amount;
         notifyListeners();
@@ -97,6 +96,17 @@ class TokenProvider extends ChangeNotifier {
       return false;
     }
   }
+
+  Future<int?> getLatestWithdrawAmount(String userId) async {
+    try {
+      return await _tokenService.getLatestWithdrawAmount(userId);
+    } catch (e) {
+      debugPrint('Error fetching latest withdrawal amount: $e');
+      return null; // Return null if there's an error or no data
+    }
+  }
+
+
 
   /// ✅ Check if User Has a Successful First Payout
   Future<bool> hasUserSuccessfulFirstPayout(String userId) async {
@@ -178,11 +188,6 @@ class TokenProvider extends ChangeNotifier {
     }
     try {
       bool success = await _tokenService.requestWithdrawal(userId, amount);
-      if (success) {
-        await updateTokens(userId, amount, "withdraw");
-        _currentTokens -= amount;
-        notifyListeners();
-      }
       return success;
     } catch (e) {
       debugPrint("Error redeeming tokens: $e");
