@@ -63,7 +63,9 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => AiCreditProvider()), // Add CheckVersionProvider
         ChangeNotifierProvider(create: (_) => DailyQuestionProvider()), // Add CheckVersionProvider
         ChangeNotifierProvider(create: (_) => AuthProvider()), // Add CheckVersionProvider
-        ChangeNotifierProvider(create: (_) => TokenProvider()), // Add CheckVersionProvider
+        ChangeNotifierProvider(create: (context) => TokenProvider(
+            authProvider: Provider.of<AuthProvider>(context,listen: false)),
+        ), // Add CheckVersionProvider
 
         ChangeNotifierProvider(
             create: (context) => QuizProvider(

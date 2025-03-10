@@ -20,6 +20,7 @@ import 'package:flashi/provider/check_version_provider.dart';
 import 'package:flashi/provider/notes_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flashi/provider/sort_provider.dart';
+import 'package:flashi/provider/token_provider.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_unit_id.dart';
 import 'package:flashi/util/helpers/classes/ads/app_lifecycle_reactor.dart';
@@ -61,14 +62,17 @@ class _HomeScreenState extends State<HomeScreen> {
     final quizProvider = Provider.of<QuizProvider>(context,listen: false);
     final notesProvider = Provider.of<NotesProvider>(context,listen: false);
     final chatBotProvider = Provider.of<ChatBotProvider>(context,listen: false);
+    final tokenProvider = Provider.of<TokenProvider>(context,listen: false);
 
     fetchDataFromJsonProvider.fetchLatestVersion();
     aiModelLogicProvider.fetchLatestVersion();
     checkVersionProvider.checkAppVersion(context);
     dailyQuestionProvider.updateFunFacts(fetchDataFromJsonProvider);
-
+    tokenProvider.fetchTokens(authProvider.user_id);
     Future.delayed(Duration(seconds: 3),() async {
 
+
+     await  tokenProvider.fetchPayoutDate();
      await authProvider.saveFlashcards(authProvider.user_id,quizProvider.quizSets);
      await authProvider.saveUserCredits(authProvider.user_id, aiCreditProvider.credits);
      await authProvider.saveNotes(authProvider.user_id, notesProvider.notes);
