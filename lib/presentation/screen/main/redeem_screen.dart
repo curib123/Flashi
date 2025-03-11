@@ -232,7 +232,7 @@ class RedeemScreenContent extends StatelessWidget {
                 gradient: LinearGradient(
                   colors: isUnlocked || isMinimumToken
                       ? [colorScheme.tertiary.withOpacity(1), colorScheme.tertiary.withOpacity(0.5)]
-                      : [Colors.grey.shade500, Colors.grey.shade100],
+                      : [Colors.grey.shade500, Colors.grey.shade300],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                 ),
