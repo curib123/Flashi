@@ -44,8 +44,6 @@ class SeeAllQuizCard extends StatelessWidget {
         title: Text(name),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(20),
-            bottomRight: Radius.circular(20),
           ),
         ),
         leading: IconButton(

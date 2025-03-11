@@ -20,38 +20,78 @@ class TokenService {
     }
   }
 
-  /// ✅ Update Token Balance (Increment or Decrement)
-  Future<bool> updateTokens(String userId, int amount, String type) async {
+  /// ✅ Get User's GCash Number
+  Future<String?> getUserGcashNumber(String userId) async {
     try {
-      final int currentBalance = await getUserTokenBalance(userId);
-      final int newBalance = currentBalance + amount;
+      final response = await _supabase
+          .from('users')
+          .select('gcash_number')
+          .eq('user_id', userId)
+          .maybeSingle();
 
-      if (newBalance < 0) return false; // Prevents negative balance
+      return response?['gcash_number'] as String?;
+    } catch (e) {
+      debugPrint('Error fetching GCash number: $e');
+      return null;
+    }
+  }
 
+  /// ✅ Update User's GCash Number
+  Future<bool> updateUserGcashNumber(String userId, String newGcashNumber) async {
+    try {
+      final response = await _supabase
+          .from('users')
+          .update({'gcash_number': newGcashNumber})
+          .eq('user_id', userId);
+
+      return response != null; // Returns true if the update is successful
+    } catch (e) {
+      debugPrint('Error updating GCash number: $e');
+      return false; // Returns false if there's an error
+    }
+  }
+
+
+
+  Future<bool> updateUserTokenBalance(String userId, int tokenBalance) async {
+    try {
       final response = await _supabase
           .from('users_tokens')
           .update({
-        'token_balance': newBalance,
+        'token_balance': tokenBalance,
         'last_updated': DateTime.now().toIso8601String()
       })
-          .eq('user_id', userId);
+          .eq('user_id', userId)
+          .select(); // Ensure update worked
 
-      if (response != null) {
-        await _supabase.from('token_transactions').insert({
-          'user_id': userId,
-          'amount': amount,
-          'transaction_type': type,
-          'status': 'completed',
-          'created_at': DateTime.now().toIso8601String(),
-        });
-        return true;
-      }
-      return false;
+      return response.isNotEmpty; // Returns true if update was successful
     } catch (e) {
-      debugPrint('Error updating tokens: $e');
+      debugPrint('Error updating token balance: $e');
       return false;
     }
   }
+
+  Future<bool> insertTokenTransaction(
+      String userId, int amount, String type, String status,bool success_first_payout) async {
+    try {
+      final response = await _supabase.from('token_transactions').insert({
+        'user_id': userId,
+        'amount': amount,
+        'transaction_type': type,
+        'success_first_payout' : success_first_payout,
+        'status': status,
+        'created_at': DateTime.now().toIso8601String(),
+      });
+
+      return response != null; // Returns true if the insert was successful
+    } catch (e) {
+      debugPrint('Error inserting token transaction: $e');
+      return false;
+    }
+  }
+
+
+
 
   /// fetch payout
   Future<String?> fetchPayoutDate() async {
@@ -73,37 +113,45 @@ class TokenService {
     }
   }
 
-  /// ✅ Check if User Has a Successful First Payout
-  Future<bool> hasUserSuccessfulFirstPayout(String userId) async {
-    try {
-      final List response = await _supabase
-          .from('token_transactions')
-          .select('success_first_payout')
-          .eq('user_id', userId)
-          .eq('success_first_payout', true)
-          .limit(1); // Only check if at least one exists
 
-      return response.isNotEmpty;
-    } catch (e) {
-      debugPrint('Error checking first payout: $e');
-      return false;
-    }
-  }
-
-  /// ✅ Update User's Successful First Payout
-  Future<bool> updateUserFirstPayout(String userId) async {
+  Future<bool?> hasUserSuccessfulFirstPayout(String userId) async {
     try {
       final response = await _supabase
           .from('token_transactions')
-          .update({'success_first_payout': true})
-          .eq('user_id', userId);
+          .select('success_first_payout')
+          .eq('user_id', userId)
+          .order('created_at', ascending: true) // Ensure getting the oldest first
+          .limit(1)
+          .maybeSingle(); // Fetch a single record, returns null if not found
 
-      return response != null; // Returns true if the update is successful
+      print("successfully first payouts");
+
+      return response?['success_first_payout'] as bool?;
     } catch (e) {
-      debugPrint('Error updating first payout: $e');
-      return false;
+      debugPrint('Error checking first payout: $e');
+      return null; // Returning null to indicate an error or no data
     }
   }
+
+  Future<bool> updateUserSuccessfulFirstPayout(String userId, bool success) async {
+    try {
+      final response = await _supabase
+          .from('token_transactions')
+          .update({'success_first_payout': success})
+          .eq('user_id', userId)
+          .order('created_at', ascending: true) // Ensure updating the oldest record
+          .limit(1)
+          .select(); // Ensure a response is returned
+
+      return response.isNotEmpty; // Check if update was successful
+    } catch (e) {
+      debugPrint('Error updating first payout: $e');
+      return false; // Return false in case of error
+    }
+  }
+
+
+
 
 
   /// ✅ Get Token Transaction History
@@ -174,42 +222,49 @@ class TokenService {
     }
   }
 
-
-  /// ✅ Admin: Approve or Reject a Withdrawal Request
-  Future<bool> updateWithdrawStatus(String requestId, String status) async {
+  Future<String?> getFirstReviewingWithdrawStatus(String userId) async {
     try {
       final response = await _supabase
           .from('withdraw_requests')
-          .update({'status': status})
-          .eq('id', requestId);
+          .select('status') // Only select the 'status' column
+          .eq('user_id', userId) // Filter by user ID
+          .eq('status', 'reviewing') // Ensure the status is 'reviewing'
+          .order('requested_at', ascending: true) // Get the oldest first
+          .limit(1)
+          .maybeSingle(); // Fetch only the first matching row
 
-      return response != null;
+      return response?['status'] as String?;
     } catch (e) {
-      debugPrint('Error updating withdrawal status: $e');
-      return false;
+      debugPrint('Error fetching first reviewing withdrawal status: $e');
+      return null; // Return null if there's an error
     }
   }
 
-  /// ✅ Get Withdrawal Status for User
-  Future<String?> getWithdrawalStatus(String userId) async {
+
+
+  Future<String?> getFirstWithdrawStatus(String userId) async {
     try {
-      final List response = await _supabase
+      final response = await _supabase
           .from('withdraw_requests')
-          .select('status')
-          .eq('user_id', userId)
-          .order('created_at', ascending: false) // Get the latest request
-          .limit(1);
+          .select('status') // Only select the 'status' column
+          .eq('user_id', userId) // Filter by user ID
+          .order('requested_at', ascending: true) // Get the oldest first
+          .limit(1)
+          .maybeSingle(); // Fetch only the first row
 
-      if (response.isNotEmpty) {
-        return response.first['status'] as String?;
-      }
-
-      return null; // No withdrawal requests found
+      return response?['status'] as String?;
     } catch (e) {
-      debugPrint('Error fetching withdrawal status: $e');
-      return null;
+      debugPrint('Error fetching first withdrawal status: $e');
+      return null; // Return null if there's an error
     }
+
+
   }
+
+
+
+
+
 
 
 

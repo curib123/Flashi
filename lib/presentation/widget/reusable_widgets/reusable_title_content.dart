@@ -47,7 +47,7 @@ class _ReusableTitleContentState extends State<ReusableTitleContent> {
                 style: TextStyle(
                   color: widget.colorScheme.onPrimary,
                   fontWeight: FontWeight.bold,
-                  fontSize: widget.title.length >= 12 ? 14 : 18,
+                  fontSize: widget.title.length >= 10 ? 15 : 18,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -92,7 +92,7 @@ class _ReusableTitleContentState extends State<ReusableTitleContent> {
                       children: [
                         Text(
                           aiCreditProvider.credits.toString(),
-                          style: TextStyle(fontSize: 15, color: widget.colorScheme.primary,fontWeight: FontWeight.w600),
+                          style: TextStyle(fontSize:  aiCreditProvider.credits.toString().length >= 5 ? 12 :  15, color: widget.colorScheme.primary,fontWeight: FontWeight.w600),
                         ),
                         SizedBox(width: 5),
                         Icon(Icons.offline_bolt_rounded, size: 20, color: widget.colorScheme.secondary),

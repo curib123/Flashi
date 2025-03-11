@@ -5,6 +5,7 @@ import 'package:flashi/provider/chatbot_provider.dart';
 import 'package:flashi/provider/notes_provider.dart';
 import 'package:flashi/provider/onboarding_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
+import 'package:flashi/provider/token_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -46,8 +47,8 @@ class SignInScreen extends StatelessWidget {
         ),
 
       backgroundColor: colorScheme.background,
-      body: Consumer5<AuthProvider,QuizProvider,AiCreditProvider,NotesProvider,ChatBotProvider>(
-        builder: (context, authProvider,quizProvider,aiCreditProvider, notesProvider,chatBotProvider,child) {
+      body: Consumer6<AuthProvider,QuizProvider,AiCreditProvider,NotesProvider,ChatBotProvider,TokenProvider>(
+        builder: (context, authProvider,quizProvider,aiCreditProvider, notesProvider,chatBotProvider,tokenProvider,child) {
           return ListView(
             padding: const EdgeInsets.symmetric(horizontal: 32.0),
             children: [
@@ -99,7 +100,7 @@ class SignInScreen extends StatelessWidget {
                       minimumSize: Size(double.infinity, 50),
                     ),
                     onPressed: () async {
-                      await authProvider.signIn(context, quizProvider,aiCreditProvider,notesProvider,chatBotProvider);
+                      await authProvider.signIn(context, quizProvider,aiCreditProvider,notesProvider,chatBotProvider,tokenProvider);
                     },
                     child: Text("Sign In", style: GoogleFonts.poppins(fontSize: 18, color: colorScheme.onPrimary)),
                   ),

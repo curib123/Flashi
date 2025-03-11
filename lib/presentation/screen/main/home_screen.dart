@@ -70,8 +70,8 @@ class _HomeScreenState extends State<HomeScreen> {
     dailyQuestionProvider.updateFunFacts(fetchDataFromJsonProvider);
     tokenProvider.fetchTokens(authProvider.user_id);
     Future.delayed(Duration(seconds: 3),() async {
-
-
+      await tokenProvider.updateGcashNumber(tokenProvider.getUserGcashNumber(authProvider.user_id));
+    await tokenProvider.updateIsReviewing(authProvider.user_id);
      await  tokenProvider.fetchPayoutDate();
      await authProvider.saveFlashcards(authProvider.user_id,quizProvider.quizSets);
      await authProvider.saveUserCredits(authProvider.user_id, aiCreditProvider.credits);

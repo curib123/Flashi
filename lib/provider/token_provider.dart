@@ -7,11 +7,12 @@ import 'package:ntp/ntp.dart';
 class TokenProvider extends ChangeNotifier {
   int _currentTokens = 50000;
   int _minimumTokens = 50000;
-  bool _isUnlockedLowerPayouts = false;
   bool _isSuccessFullFirstPayout = false;
   final double _conversionRate = 0.01;
   String _payoutDate = '';
   bool _isRedeemAvailable = false;
+  bool _isReviewing = false;
+  String _gCashNumber = '';
 
   final List<Map<String, int>> payoutOptions = [
     {"tokens": 50000, "amount": 500},
@@ -22,8 +23,6 @@ class TokenProvider extends ChangeNotifier {
 
   TokenProvider( {required AuthProvider authProvider} ) {
     fetchTokens(authProvider.user_id);
-    updateIsSuccessFullFirstPayout(false);
-     updateIsUnlockedLowerPayouts();
     updateIsRedeemAvailable();
   }
 
@@ -34,9 +33,10 @@ class TokenProvider extends ChangeNotifier {
   double get convertedValue => _currentTokens * _conversionRate;
   String get payoutDate => _payoutDate;
   bool get isRedeemAvailable => _isRedeemAvailable;
-  bool get isUnlockedLowerPayouts => _isUnlockedLowerPayouts;
   bool get isSuccessFullFirstPayout => _isSuccessFullFirstPayout;
   int get minimumTokens => _minimumTokens;
+  bool get isReviewing => _isReviewing;
+  String get gCashNumber => _gCashNumber;
 
   /// Fetch payout date from Supabase and update state
   Future<void> fetchPayoutDate() async {
@@ -49,54 +49,95 @@ class TokenProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> updateGcashNumber(Future<String?> number) async {
+    _gCashNumber = number as String;
+    notifyListeners();
+  }
+
   Future<void> updateIsRedeemAvailable() async {
     _isRedeemAvailable = await isPayoutDateReached();
     notifyListeners();
   }
 
-  void updateIsUnlockedLowerPayouts() {
-    if (_currentTokens >= _minimumTokens && _isSuccessFullFirstPayout) {
-      _isUnlockedLowerPayouts = true;
-    }
+  Future<void> updateIsReviewing(String userId) async {
+    _isReviewing = await getIsReviewing(userId);
     notifyListeners();
   }
+
+  Future<bool> getIsReviewing(String userId) async {
+    return await getFirstReviewingWithdrawStatus(userId) == "reviewing";
+  }
+
 
   void updateIsSuccessFullFirstPayout(bool isTrue) {
     _isSuccessFullFirstPayout = isTrue;
+    print("is success full first payout $isTrue");
     notifyListeners();
   }
 
-  Future<void> fetchTokens(String userId) async {
+  Future<bool> fetchTokens(String userId) async {
     try {
-       fetchPayoutDate();
+      fetchPayoutDate();
       _currentTokens = await _tokenService.getUserTokenBalance(userId);
-        updateIsSuccessFullFirstPayout(await hasUserSuccessfulFirstPayout(userId));
-      if ( await getWithdrawalStatus(userId) == "approved" ) {
-        await updateUserFirstPayout(userId);
-        await updateTokens(userId,await getLatestWithdrawAmount(userId) as int, "withdraw");
+      bool? isUnlock = await hasUserSuccessfulFirstPayout(userId);
+      updateIsSuccessFullFirstPayout(isUnlock!);
+      if (await getFirstWithdrawStatus(userId) == "approved") {
+       if ( await updateUserSuccessfulFirstPayout(userId, true)) {
+          print("successfully first payout");
+       };
+      }else{
+        print("error in approval");
       }
-       await updateIsRedeemAvailable();
+      await updateIsRedeemAvailable();
       notifyListeners();
+
+      return true; // Success
     } catch (e) {
       _currentTokens = 0;
       debugPrint("Error fetching tokens: $e");
+      return false; // Failure
     }
   }
 
-  Future<bool> updateTokens(String userId, int amount, String type) async {
+  /// ✅ Get User's GCash Number
+  Future<String?> getUserGcashNumber(String userId) async {
     try {
-      bool success = await _tokenService.updateTokens(userId, amount, type);
-      if (success) {
-        _currentTokens += amount;
-        notifyListeners();
-      }
-      return success;
+      return await _tokenService.getUserGcashNumber(userId);
     } catch (e) {
-      debugPrint("Error updating tokens: $e");
+      debugPrint('Error fetching GCash number: $e');
+      return null;
+    }
+  }
+
+  /// ✅ Update User's GCash Number
+  Future<bool> updateUserGcashNumber(String userId, String newGcashNumber) async {
+    try {
+     return await _tokenService.updateUserGcashNumber(userId, newGcashNumber);
+    } catch (e) {
+      debugPrint('Error updating GCash number: $e');
+      return false; // Returns false if there's an error
+    }
+  }
+
+
+  Future<bool> updateUserTokenBalance(String userId, int tokenBalance) async {
+    try {
+        return await _tokenService.updateUserTokenBalance(userId, tokenBalance);
+    } catch (e) {
+      debugPrint('Error updating token balance: $e');
       return false;
     }
   }
 
+  Future<bool> insertTokenTransaction(
+      String userId, int amount, String type, String status, bool success_first_payout) async {
+    try {
+     return await _tokenService.insertTokenTransaction(userId, amount, type, status, success_first_payout);
+    } catch (e) {
+      debugPrint('Error inserting token transaction: $e');
+      return false;
+    }
+  }
   Future<int?> getLatestWithdrawAmount(String userId) async {
     try {
       return await _tokenService.getLatestWithdrawAmount(userId);
@@ -109,12 +150,20 @@ class TokenProvider extends ChangeNotifier {
 
 
   /// ✅ Check if User Has a Successful First Payout
-  Future<bool> hasUserSuccessfulFirstPayout(String userId) async {
+  Future<bool?> hasUserSuccessfulFirstPayout(String userId) async {
     try {
        return await _tokenService.hasUserSuccessfulFirstPayout(userId);
     } catch (e) {
       debugPrint('Error checking first payout: $e');
       return false;
+    }
+  }
+  Future<bool> updateUserSuccessfulFirstPayout(String userId, bool success) async {
+    try {
+  return await _tokenService.updateUserSuccessfulFirstPayout(userId, success);
+    } catch (e) {
+      debugPrint('Error updating first payout: $e');
+      return false; // Returns false if an error occurred
     }
   }
 
@@ -155,26 +204,34 @@ class TokenProvider extends ChangeNotifier {
     }
   }
 
-  /// ✅ Get Withdrawal Status for User
-  Future<String?> getWithdrawalStatus(String userId) async {
+  Future<String?> getFirstWithdrawStatus(String userId) async {
     try {
-         return await _tokenService.getWithdrawalStatus(userId);
+     return await _tokenService.getFirstWithdrawStatus(userId);
     } catch (e) {
-      debugPrint('Error fetching withdrawal status: $e');
-      return null;
+      debugPrint('Error fetching first withdrawal status: $e');
+      return null; // Return null if there's an error
     }
   }
 
-  /// ✅ Update User's Successful First Payout
-  Future<bool> updateUserFirstPayout(String userId) async {
+  Future<String?> getFirstReviewingWithdrawStatus(String userId) async {
     try {
-      return await _tokenService.updateUserFirstPayout(userId);
+      return await _tokenService.getFirstReviewingWithdrawStatus(userId);
     } catch (e) {
-      debugPrint('Error updating first payout: $e');
-      return false;
+      debugPrint('Error fetching first reviewing withdrawal status: $e');
+      return null; // Return null if there's an error
     }
   }
 
+
+  /// ✅ Get User's Token Balance
+  Future<int> getUserTokenBalance(String userId) async {
+    try {
+     return await getUserTokenBalance(userId);
+    } catch (e) {
+      debugPrint('Error fetching token balance: $e');
+      return 0;
+    }
+  }
   Future<bool> redeemTokens(String userId, int amount,BuildContext context) async {
     if (!await isPayoutDateReached()) {
       debugPrint("Payout date not reached.");
@@ -187,11 +244,21 @@ class TokenProvider extends ChangeNotifier {
       return false;
     }
     try {
-      bool success = await _tokenService.requestWithdrawal(userId, amount);
-      return success;
+       await _tokenService.requestWithdrawal(userId, amount);
+
+      if (await fetchTokens(userId)) {
+        _currentTokens -= amount; // Ensure _currentTokens is properly initialized
+        await updateUserTokenBalance(userId, _currentTokens);
+        await insertTokenTransaction(userId, amount, "spend", "completed", _isSuccessFullFirstPayout);
+        return true;
+      }
+
+      return false; // Explicitly return false if withdrawal fails
     } catch (e) {
       debugPrint("Error redeeming tokens: $e");
+      await insertTokenTransaction(userId, amount, "spend", "failed",_isSuccessFullFirstPayout);
       return false;
     }
+
   }
 }

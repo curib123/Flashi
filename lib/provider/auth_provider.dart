@@ -4,6 +4,7 @@ import 'package:flashi/provider/ai_credits_provider.dart';
 import 'package:flashi/provider/chatbot_provider.dart';
 import 'package:flashi/provider/notes_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
+import 'package:flashi/provider/token_provider.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/auth_dialog.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/loading_dialog.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/show_merge_flashcard_dialog.dart';
@@ -66,7 +67,7 @@ class AuthProvider extends ChangeNotifier {
     return await InternetConnection().hasInternetAccess;
   }
 
-  Future<void> signIn(BuildContext context,QuizProvider quizProvider, AiCreditProvider aiCreditProvider,NotesProvider notesProvider,ChatBotProvider chatBotProvider) async {
+  Future<void> signIn(BuildContext context,QuizProvider quizProvider, AiCreditProvider aiCreditProvider,NotesProvider notesProvider,ChatBotProvider chatBotProvider, TokenProvider tokenProvider) async {
     if (!await hasInternet()) {
       showAuthDialog(context,type: "error", "Error", "No internet connection. Please try again.");
       return;
@@ -115,6 +116,7 @@ class AuthProvider extends ChangeNotifier {
               await quizProvider.updateQuizSets(fetchFlashcards(user_id), merge: true);
               notesProvider.updateNotes(await fetchNotes(user_id),merge: true);
               chatBotProvider.updateMessages(await fetchChatBotMessages(user_id));
+              tokenProvider.fetchTokens(user_id);
               showLoadingDialog(context, text: "processing...");
              Future.delayed(Duration(seconds: 3),(){
                Navigator.pop(context);
@@ -133,6 +135,7 @@ class AuthProvider extends ChangeNotifier {
            await quizProvider.updateQuizSets(fetchFlashcards(user_id), merge: false);
            notesProvider.updateNotes(await fetchNotes(user_id),merge: false);
            chatBotProvider.updateMessages(await fetchChatBotMessages(user_id));
+           tokenProvider.fetchTokens(user_id);
            showLoadingDialog(context, text: "processing...");
            Future.delayed(Duration(seconds: 3),(){
              Navigator.pop(context);
