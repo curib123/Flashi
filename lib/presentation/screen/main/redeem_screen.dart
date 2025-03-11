@@ -4,6 +4,7 @@ import 'package:flashi/provider/auth_provider.dart';
 import 'package:flashi/provider/token_provider.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/auth_dialog.dart';
 import 'package:flashi/util/helpers/widget/modals/show_gcash_number_dialog.dart';
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:provider/provider.dart';
@@ -22,13 +23,17 @@ class _RedeemScreenState extends State<RedeemScreen> {
   void initState() {
     super.initState();
 
+    checkInternet();
+
     final tokenProvider = Provider.of<TokenProvider>(context,listen: false);
     final authProvider = Provider.of<AuthProvider>(context,listen: false);
-    Future.delayed(Duration.zero,() async {
+    Future.delayed(Duration.zero, () async {
+      await   tokenProvider.fetchTokens(authProvider.user_id);
+      await tokenProvider.updateGcashNumber(tokenProvider.getUserGcashNumber(authProvider.user_id));
       await tokenProvider.updateIsReviewing(authProvider.user_id);
-      await tokenProvider.getUserGcashNumber(authProvider.user_id);
+      await  tokenProvider.fetchPayoutDate();
     });
-    checkInternet();
+
   }
 
   Future<void> checkInternet() async {
@@ -89,16 +94,18 @@ class RedeemScreenContent extends StatelessWidget {
       body: Consumer2<TokenProvider,AuthProvider>(
         builder: (context, tokenProvider,authProvider, child) {
           return SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _DefaultPaymentMethod(colorScheme,tokenProvider,authProvider,context),
-                SizedBox(height: 20),
                 _BalanceToken(colorScheme, tokenProvider,context),
-                SizedBox(height: 20),
+                SizedBox(height: 10),
+
+                _DefaultPaymentMethod(colorScheme,tokenProvider,authProvider,context),
+                SizedBox(height: 10),
+
                 _PayoutList(colorScheme, tokenProvider, context,authProvider),
-                SizedBox(height: 20),
+                SizedBox(height: 10),
                 _DateOfPayout(colorScheme, tokenProvider),
               ],
             ),
@@ -167,15 +174,23 @@ class RedeemScreenContent extends StatelessWidget {
     );
   }
 
-  Widget _PayoutList(ColorScheme colorScheme, TokenProvider tokenProvider, BuildContext context,AuthProvider authProvider) {
+  Widget _PayoutList(ColorScheme colorScheme, TokenProvider tokenProvider, BuildContext context, AuthProvider authProvider) {
     int userTokens = tokenProvider.currentTokens;
+    List payoutOptions = tokenProvider.payoutOptions;
 
     return Center(
-      child: Wrap(
-        alignment: WrapAlignment.center,
-        spacing: 12.0,
-        runSpacing: 12.0,
-        children: tokenProvider.payoutOptions.map((payout) {
+      child: GridView.builder(
+        shrinkWrap: true,
+        physics: NeverScrollableScrollPhysics(),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2, // 2 columns
+          crossAxisSpacing: 10.0,
+          mainAxisSpacing: 10.0,
+          childAspectRatio: 1.3, // Adjust for better card proportions
+        ),
+        itemCount: payoutOptions.length,
+        itemBuilder: (context, index) {
+          var payout = payoutOptions[index];
           int requiredTokens = payout["tokens"] ?? 0;
           int amount = payout["amount"] ?? 0;
           bool isMinimumToken = tokenProvider.minimumTokens == requiredTokens;
@@ -183,123 +198,113 @@ class RedeemScreenContent extends StatelessWidget {
 
           return GestureDetector(
             onTap: () async {
-              Future.delayed(Duration.zero,() async {
-                await tokenProvider.updateIsReviewing(authProvider.user_id);
-              });
+              await tokenProvider.updateIsReviewing(authProvider.user_id);
               if (isUnlocked) {
-                if (tokenProvider.isRedeemAvailable ) {
-
-                  if(tokenProvider.gCashNumber.isNotEmpty){
-                    if(!tokenProvider.isReviewing){
-                      if(  await tokenProvider.redeemTokens(authProvider.user_id, amount, context) ){
-                        showAuthDialog(context,type: "info" ,"Reviewing", "Under Review Process");
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Token Redeemed! $requiredTokens'),
-                            backgroundColor: Colors.green,
-                          ),
-                        );
+                if (tokenProvider.isRedeemAvailable) {
+                  if (tokenProvider.gCashNumber.isNotEmpty) {
+                    if (!tokenProvider.isReviewing) {
+                      if (await tokenProvider.redeemTokens(authProvider.user_id, amount, context)) {
+                        showAuthDialog(context, type: "info", "Reviewing", "Under Review Process");
+                        _showSnackBar(context, 'Token Redeemed! $requiredTokens', Colors.green);
                       }
-                    }else{
-                      showAuthDialog(context,type: "Warning" ,"Reviewing", "You Have Reviewing Transaction Under Review");
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Under Reviewing Process.'),
-                            backgroundColor: Colors.orange,
-                          )
-                      );
+                    } else {
+                      showAuthDialog(context, type: "Warning", "Reviewing", "You Have Reviewing Transaction Under Review");
+                      _showSnackBar(context, 'Under Reviewing Process.', Colors.orange);
                     }
-                  }else{
-                   showGcashNumberModal(context, (number) async {
-                    await tokenProvider.updateGcashNumber(number as Future<String?>);
-                   });
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Add GCash Number.'),
-                        backgroundColor: Colors.orange,
-                      ),
-                    );
+                  } else {
+                    showGcashNumberModal(context, (number) async {
+                      await tokenProvider.updateGcashNumber(number as Future<String?>);
+                    });
+                    _showSnackBar(context, 'Add GCash Number.', Colors.orange);
                   }
-
                 } else {
-                  showAuthDialog(context,type: "Info" ,"Unavailable", "Withdrawal is currently unavailable.");
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Withdrawal is currently unavailable.'),
-                      backgroundColor: Colors.orange,
-                    ),
-                  );
+                  showAuthDialog(context, type: "Info", "Unavailable", "Withdrawal is currently unavailable.");
+                  _showSnackBar(context, 'Withdrawal is currently unavailable.', Colors.orange);
                 }
               } else {
-                showAuthDialog(context,type: "Warning" ,"Warning", "Unlock requirements to redeem tokens!");
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Unlock requirements to redeem tokens!'),
-                    backgroundColor: Colors.red,
-                  ),
-                );
+                showAuthDialog(context, type: "Warning", "Warning", "Unlock requirements to redeem tokens!");
+                _showSnackBar(context, 'Unlock requirements to redeem tokens!', Colors.red);
               }
             },
             child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 10,horizontal: 20),
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: isUnlocked || isMinimumToken
-                      ? [colorScheme.primaryContainer.withOpacity(0.9), colorScheme.secondaryContainer.withOpacity(0.1)]
-                      : [Colors.grey.shade500, Colors.grey.shade400],
+                      ? [colorScheme.tertiary.withOpacity(1), colorScheme.tertiary.withOpacity(0.5)]
+                      : [Colors.grey.shade500, Colors.grey.shade100],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                 ),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  bottomRight: Radius.circular(20),
+                ),
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    '$requiredTokens Tokens',
-                    style: TextStyle(
-                      color: colorScheme.primary,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '$requiredTokens',
+                        style: TextStyle(
+                          color: colorScheme.onPrimary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(width: 5),
+                      Icon(Icons.diamond_rounded, size: 25,color: FlexColor.goldDarkPrimary,),
+                    ],
                   ),
                   SizedBox(height: 4),
                   Text(
                     '= $amount Pesos',
                     style: TextStyle(
-                      color: colorScheme.primary,
+                      color: colorScheme.onPrimary,
                       fontSize: 14,
                     ),
                   ),
                   SizedBox(height: 8),
                   Icon(
                     isUnlocked ? Icons.lock_open_rounded : Icons.lock,
-                    color: colorScheme.primary,
+                    color: colorScheme.onPrimary,
                     size: 24,
                   ),
                 ],
               ),
             ),
           );
-        }).toList(),
+        },
       ),
+    );
+  }
+
+  void _showSnackBar(BuildContext context, String message, Color bgColor) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: bgColor),
     );
   }
 
   Widget _BalanceToken(ColorScheme colorScheme, TokenProvider tokenProvider,BuildContext context){
     return  Container(
       width: MediaQuery.of(context).size.width,
-      padding: EdgeInsets.symmetric(vertical: 40,horizontal: 20),
+      padding: EdgeInsets.symmetric(vertical: 10,horizontal: 20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            colorScheme.primaryContainer.withOpacity(0.9),
-            colorScheme.secondaryContainer.withOpacity(0.1),
+            colorScheme.secondary.withOpacity(1),
+            colorScheme.secondary.withOpacity(0.5),
           ],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          bottomRight: Radius.circular(20),
+        ),
 
       ),
       child: Column(
@@ -309,17 +314,191 @@ class RedeemScreenContent extends StatelessWidget {
             "Tokens Available", // Show current tokens for withdrawal
             style: TextStyle(
                 fontSize: 18,
-                color: colorScheme.primary,
+                color: colorScheme.onPrimary,
                 fontWeight: FontWeight.bold
             ),
           ),
           SizedBox(height: 10),
+          Row(
+            children: [
+              Row(
+                children: [
+                  Text(
+                    "${tokenProvider.currentTokens}", // Show current tokens for withdrawal
+                    style: TextStyle(
+                        fontSize: 15,
+                        color: colorScheme.onPrimary,
+                        fontWeight: FontWeight.bold
+                    ),
+                  ),
+                  SizedBox(width: 5),
+                  Icon(Icons.diamond_rounded, size: 25,color: FlexColor.goldDarkPrimary,),
+                ],
+              ),
+              SizedBox(width: 10),
+              Text(
+                "=  ${tokenProvider.convertedValue} Pesos", // Show current tokens for withdrawal
+                style: TextStyle(
+                    fontSize: 15,
+                    color: colorScheme.onPrimary,
+                    fontWeight: FontWeight.bold
+                ),
+              )
+            ],
+          ),
+
+
+        ],
+      ),
+    );
+  }
+  Widget _DefaultPaymentMethod(
+      ColorScheme colorScheme, TokenProvider tokenProvider, AuthProvider authProvider, BuildContext context) {
+
+    String selectedMethod = tokenProvider.payoutMethod;
+
+    return Container(
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        gradient: LinearGradient(
+          colors: [
+            colorScheme.primary.withOpacity(0.9),
+            colorScheme.secondary.withOpacity(0.7),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 10,
+            offset: Offset(2, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.wallet_rounded, color: colorScheme.onSecondary, size: 30),
+              SizedBox(width: 10),
+              Text(
+                "Default Payment Method",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme.onPrimary,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 12),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            decoration: BoxDecoration(
+              color: colorScheme.surface.withOpacity(0.2),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20),
+                bottomRight: Radius.circular(20),
+              ),
+            ),
+            child: DropdownButtonFormField<String>(
+              value: selectedMethod,
+              dropdownColor: colorScheme.primary.withOpacity(0.8),
+              icon: Icon(Icons.arrow_drop_down, color: colorScheme.onPrimary),
+              decoration: InputDecoration(
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.zero,
+              ),
+              style: TextStyle(
+                color: colorScheme.onPrimary,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+              onChanged: (String? newValue) {
+                if (newValue != null) {
+                  tokenProvider.updatePayoutMethod(newValue);
+                }
+              },
+              items: tokenProvider.paymentMethods.map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Row(
+                    children: [
+                      Icon(
+                        value == "GCash"
+                            ? Icons.phone_android
+                            : value == "PayPal"
+                            ? Icons.account_balance_wallet
+                            : Icons.account_balance, // Default for bank
+                        size: 24,
+                        color: colorScheme.onSecondary,
+                      ),
+                      SizedBox(width: 10),
+                      Text(value, style: TextStyle(color: colorScheme.onPrimary, fontSize: 16)),
+                    ],
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+          SizedBox(height: 16),
+
+          // Payment Details Section
+          if (selectedMethod == "GCash")
+            GestureDetector(
+              onTap: () {
+                showGcashNumberModal(context, (number) async {
+                  await tokenProvider.updateUserGcashNumber(authProvider.user_id, number);
+                  await tokenProvider.updateGcashNumber(
+                      (await tokenProvider.getUserGcashNumber(authProvider.user_id)) as Future<String?>);
+                });
+              },
+              child: _buildPaymentField("GCash Number", tokenProvider.gCashNumber, colorScheme),
+            )
+          else if (selectedMethod == "PayPal")
+            GestureDetector(
+              onTap: () {
+               showGcashNumberModal(context, (number){});
+              },
+              child: _buildPaymentField("PayPal Email ","", colorScheme),
+            ),
+        ],
+      ),
+    );
+  }
+
+
+
+// Payment Field UI
+  Widget _buildPaymentField(String label, String value, ColorScheme colorScheme) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        border: Border.all(color: colorScheme.onPrimary.withOpacity(0.5)),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          bottomRight: Radius.circular(20),
+        ),
+        color: colorScheme.surface.withOpacity(0.2),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
           Text(
-            "${tokenProvider.currentTokens} tokens =  ${tokenProvider.convertedValue} Pesos", // Show current tokens for withdrawal
+            label,
             style: TextStyle(
-                fontSize: 15,
-                color: colorScheme.primary,
-                fontWeight: FontWeight.bold
+              color: colorScheme.onPrimary.withOpacity(0.7),
+              fontSize: 14,
+            ),
+          ),
+          Text(
+            value,
+            style: TextStyle(
+              color: colorScheme.onPrimary,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],
@@ -327,82 +506,4 @@ class RedeemScreenContent extends StatelessWidget {
     );
   }
 
-
-  Widget _DefaultPaymentMethod(ColorScheme colorScheme,TokenProvider tokenProvider,AuthProvider authProvider,BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 10,horizontal: 20),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        gradient: LinearGradient(
-          colors: [
-            colorScheme.primaryContainer.withOpacity(0.9),
-            colorScheme.secondaryContainer.withOpacity(0.1),
-          ],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
-
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center, // Align items properly
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start, // Align text to the left
-            children: [
-              Row(
-                children: [
-                  Icon(
-                    Icons.account_balance_wallet, // Wallet icon
-                    color: colorScheme.secondary,
-                    size: 30,
-                  ),
-                  SizedBox(width: 10), // Adjusted spacing for better alignment
-                  Text(
-                    "Default Payment Method:",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: colorScheme.primary,
-                    ),
-                  ),
-                ],
-              ),
-              Column(
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.g_mobiledata_rounded,
-                        size: 35, // Adjusted icon size for better balance
-                        color: Colors.blue, // Optional: Add GCash theme color
-                      ),
-                      Text(
-                        "Cash",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w900,
-                          color: colorScheme.primary,
-                        ),
-                      ),
-                    ],
-                  ),
-                  GestureDetector(
-                    onTap: (){
-                      showGcashNumberModal(context, (number) async {
-                        await tokenProvider.updateUserGcashNumber(authProvider.user_id, number);
-                        await tokenProvider.updateGcashNumber( (await tokenProvider.getUserGcashNumber(authProvider.user_id)) as Future<String?>);
-                      });
-                    },
-                      child: Text(tokenProvider.gCashNumber,style: TextStyle(color:colorScheme.primary.withOpacity(0.8)),)
-                  )
-                ],
-              ),
-            ],
-          ),
-        ],
-      )
-
-    );
-  }
 }

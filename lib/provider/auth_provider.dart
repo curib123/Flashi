@@ -112,11 +112,15 @@ class AuthProvider extends ChangeNotifier {
           context,
           onMerge: ()  async {
             if (context.mounted) {
+
               aiCreditProvider.updateCredits(FetchCredits);
               await quizProvider.updateQuizSets(fetchFlashcards(user_id), merge: true);
               notesProvider.updateNotes(await fetchNotes(user_id),merge: true);
               chatBotProvider.updateMessages(await fetchChatBotMessages(user_id));
-              tokenProvider.fetchTokens(user_id);
+              await   tokenProvider.fetchTokens(user_id);
+              await tokenProvider.updateGcashNumber(tokenProvider.getUserGcashNumber(user_id));
+              await tokenProvider.updateIsReviewing(user_id);
+              await  tokenProvider.fetchPayoutDate();
               showLoadingDialog(context, text: "processing...");
              Future.delayed(Duration(seconds: 3),(){
                Navigator.pop(context);
@@ -135,7 +139,10 @@ class AuthProvider extends ChangeNotifier {
            await quizProvider.updateQuizSets(fetchFlashcards(user_id), merge: false);
            notesProvider.updateNotes(await fetchNotes(user_id),merge: false);
            chatBotProvider.updateMessages(await fetchChatBotMessages(user_id));
-           tokenProvider.fetchTokens(user_id);
+           await   tokenProvider.fetchTokens(user_id);
+           await tokenProvider.updateGcashNumber(tokenProvider.getUserGcashNumber(user_id));
+           await tokenProvider.updateIsReviewing(user_id);
+           await  tokenProvider.fetchPayoutDate();
            showLoadingDialog(context, text: "processing...");
            Future.delayed(Duration(seconds: 3),(){
              Navigator.pop(context);

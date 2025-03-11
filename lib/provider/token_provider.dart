@@ -5,20 +5,22 @@ import 'package:flutter/material.dart';
 import 'package:ntp/ntp.dart';
 
 class TokenProvider extends ChangeNotifier {
-  int _currentTokens = 50000;
-  int _minimumTokens = 50000;
+  int _currentTokens = 0;
+  int _minimumTokens = 100000;
   bool _isSuccessFullFirstPayout = false;
   final double _conversionRate = 0.01;
   String _payoutDate = '';
   bool _isRedeemAvailable = false;
   bool _isReviewing = false;
   String _gCashNumber = '';
+  String _payoutMethod = 'GCash';
 
+  List<String> paymentMethods = ["GCash", "PayPal"];
   final List<Map<String, int>> payoutOptions = [
-    {"tokens": 50000, "amount": 500},
-    {"tokens": 25000, "amount": 250},
-    {"tokens": 10000, "amount": 100},
-    {"tokens": 5000, "amount": 50},
+    {"tokens": 100000, "amount": 100},
+    {"tokens": 50000, "amount": 50},
+    {"tokens": 20000, "amount": 20},
+    {"tokens": 10000, "amount": 10},
   ];
 
   TokenProvider( {required AuthProvider authProvider} ) {
@@ -37,6 +39,12 @@ class TokenProvider extends ChangeNotifier {
   int get minimumTokens => _minimumTokens;
   bool get isReviewing => _isReviewing;
   String get gCashNumber => _gCashNumber;
+  String get payoutMethod => _payoutMethod;
+
+  void updatePayoutMethod(String method) {
+    _payoutMethod = method;
+    notifyListeners();
+  }
 
   /// Fetch payout date from Supabase and update state
   Future<void> fetchPayoutDate() async {
