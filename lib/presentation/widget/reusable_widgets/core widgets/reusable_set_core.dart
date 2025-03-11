@@ -34,7 +34,10 @@ class ReusableSetCore extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(18.0),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          bottomRight: Radius.circular(20),
+        ),
         gradient: LinearGradient(
           colors: [
             colorScheme.primaryContainer.withOpacity(0.9),
