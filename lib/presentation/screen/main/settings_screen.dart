@@ -15,7 +15,7 @@ class SettingsScreen extends StatelessWidget {
           onTap: () => Navigator.pop(context),
           child: Icon(
             Icons.arrow_back_ios_new_rounded,
-            color: colorScheme.onPrimary,
+            color: colorScheme.primary,
           ),
         ),
         shape: const RoundedRectangleBorder(
@@ -23,14 +23,9 @@ class SettingsScreen extends StatelessWidget {
 
           ),
         ),
-        backgroundColor: colorScheme.primary,
-        foregroundColor: colorScheme.onPrimary,
-        title: const Text(
-          'Settings',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        backgroundColor: colorScheme.onPrimary,
+        foregroundColor: colorScheme.primary,
+        title: Text("Settings",style: TextStyle(color: colorScheme.primary),),
         centerTitle: true,
       ),
       body: Padding(

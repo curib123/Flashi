@@ -11,6 +11,7 @@ import 'package:flashi/util/helpers/widget/other/reward_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:provider/provider.dart';
+import 'package:email_validator/email_validator.dart';
 
 class RedeemScreen extends StatefulWidget {
   const RedeemScreen({super.key});
@@ -112,7 +113,7 @@ class RedeemScreenContent extends StatelessWidget {
                 BalanceToken(colorScheme, tokenProvider,context),
                 SizedBox(height: 10),
 
-                _DefaultPaymentMethod(colorScheme,tokenProvider,authProvider,context),
+                _DefaultPaymentMethod(colorScheme,context),
                 SizedBox(height: 10),
 
                 _PayoutList(colorScheme, tokenProvider, context,authProvider),
@@ -170,7 +171,6 @@ class RedeemScreenContent extends StatelessWidget {
       decoration: BoxDecoration(
         color: borderColor.withOpacity(0.1),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: borderColor, width: 1.5),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -215,8 +215,9 @@ class RedeemScreenContent extends StatelessWidget {
 
               if (isUnlocked) {
                 if (tokenProvider.isRedeemAvailable) {
-                  if ((tokenProvider.payoutMethod == "GCash" && tokenProvider.gCashNumber.isNotEmpty) ||
-                      (tokenProvider.payoutMethod == "PayPal" && tokenProvider.paypalEmail.isNotEmpty)) {
+                  if((tokenProvider.payoutMethod == "GCash" && tokenProvider.gCashNumber.isNotEmpty && tokenProvider.gCashNumber.length >= 11) ||
+                      (tokenProvider.payoutMethod == "PayPal" && tokenProvider.paypalEmail.isNotEmpty && EmailValidator.validate(tokenProvider.paypalEmail)))
+                  {
                     if (!tokenProvider.isReviewing) {
                             showWithdrawConfirmationDialog(
                               context,
@@ -256,8 +257,8 @@ class RedeemScreenContent extends StatelessWidget {
             },
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(color:colorScheme.primary, width: 1),
+                color: isUnlocked ? colorScheme.primary.withOpacity(0.2) : Colors.grey.shade300,
+                // border: Border.all(color:colorScheme.primary, width: 1),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Column(
@@ -319,20 +320,20 @@ class RedeemScreenContent extends StatelessWidget {
 
 
   Widget _DefaultPaymentMethod(
-      ColorScheme colorScheme, TokenProvider tokenProvider, AuthProvider authProvider, BuildContext context) {
-    return Consumer<TokenProvider>(
-      builder: (context, provider, child) {
+      ColorScheme colorScheme,BuildContext context) {
+    return Consumer2<TokenProvider,AuthProvider>(
+      builder: (context, tokenProvider,authProvider, child) {
         return Container(
           padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(10)),
             gradient: LinearGradient(
               colors: [
-                colorScheme.primary.withOpacity(0.9),
-                colorScheme.primaryContainer.withOpacity(0.7),
+                colorScheme.primaryContainer.withOpacity(1),
+                colorScheme.primaryContainer.withOpacity(0.8),
               ],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
           ),
           child: Column(
@@ -341,14 +342,14 @@ class RedeemScreenContent extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.wallet_rounded, color: colorScheme.onSecondary, size: 25),
+                  Icon(Icons.wallet_rounded, color: colorScheme.primary, size: 25),
                   SizedBox(width: 10),
                   Text(
                     "Default Payment Method",
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
-                      color: colorScheme.onPrimary,
+                      color: colorScheme.primary,
                     ),
                   ),
                 ],
@@ -364,7 +365,7 @@ class RedeemScreenContent extends StatelessWidget {
                   ),
                 ),
                 child: DropdownButtonFormField<String>(
-                  value: provider.payoutMethod,
+                  value: tokenProvider.payoutMethod,
                   dropdownColor: colorScheme.onPrimary,
                   icon: Icon(Icons.arrow_drop_down, color: colorScheme.primary),
                   decoration: InputDecoration(
@@ -378,10 +379,10 @@ class RedeemScreenContent extends StatelessWidget {
                   ),
                   onChanged: (String? newValue) {
                     if (newValue != null) {
-                      provider.updatePayoutMethod(newValue);
+                      tokenProvider.updatePayoutMethod(newValue);
                     }
                   },
-                  items: provider.paymentMethods.map<DropdownMenuItem<String>>((String value) {
+                  items: tokenProvider.paymentMethods.map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
                       child: Row(
@@ -406,31 +407,31 @@ class RedeemScreenContent extends StatelessWidget {
               SizedBox(height: 16),
 
               // Payment Details Section
-              if (provider.payoutMethod == "GCash")
+              if (tokenProvider.payoutMethod == "GCash")
                 GestureDetector(
                   onTap: () {
                     showPaymentMethodModal(context, "GCash", (value) {
                       if(value.isEmpty){
-                        provider.updateGcashNumber("");
+                        tokenProvider.updateGcashNumber("");
                       }else{
-                        provider.updateGcashNumber(value);
+                        tokenProvider.updateGcashNumber(value);
                       }
                     });
                   },
-                  child: _buildPaymentField("GCash Number", provider.gCashNumber, colorScheme),
+                  child: _buildPaymentField("GCash Number", tokenProvider.gCashNumber, colorScheme),
                 )
-              else if (provider.payoutMethod == "PayPal")
+              else if (tokenProvider.payoutMethod == "PayPal")
                 GestureDetector(
                   onTap: () {
                     showPaymentMethodModal(context, "PayPal", (value) {
                       if(value.isEmpty){
-                        provider.updatePaypalEmail("");
+                        tokenProvider.updatePaypalEmail("");
                       }else{
-                        provider.updatePaypalEmail(value);
+                        tokenProvider.updatePaypalEmail(value);
                       }
                     });
                   },
-                  child: _buildPaymentField("PayPal Email", provider.paypalEmail, colorScheme),
+                  child: _buildPaymentField("PayPal Email", tokenProvider.paypalEmail, colorScheme),
                 ),
             ],
           ),
@@ -447,6 +448,10 @@ class RedeemScreenContent extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
         color: colorScheme.primary.withOpacity(0.2),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          bottomRight: Radius.circular(20),
+        ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -454,14 +459,14 @@ class RedeemScreenContent extends StatelessWidget {
           Text(
             label,
             style: TextStyle(
-              color: colorScheme.onPrimary.withOpacity(0.7),
+              color: colorScheme.primary.withOpacity(0.7),
               fontSize: 14,
             ),
           ),
           Text(
             value,
             style: TextStyle(
-              color: colorScheme.onPrimary,
+              color: colorScheme.primary.withOpacity(0.7),
               fontWeight: FontWeight.w600,
               fontSize: value.length >= 16 ? 12 : 16,
             ),

@@ -28,30 +28,24 @@ class FavoriteScreen extends StatelessWidget {
     AdManager adManager = AdManager();
 
     return Scaffold(
-      appBar: AppBar(
-        leading: GestureDetector(
-          onTap: () => Navigator.pop(context),
-          child: Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: colorScheme.onPrimary,
+        appBar: AppBar(
+          leading: GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: Icon(
+              Icons.arrow_back_ios_new_rounded,
+              color: colorScheme.primary,
+            ),
           ),
-        ),
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
 
+            ),
           ),
+          backgroundColor: colorScheme.onPrimary,
+          foregroundColor: colorScheme.primary,
+          title: Text("Favorates",style: TextStyle(color: colorScheme.primary),),
+          centerTitle: true,
         ),
-        backgroundColor: colorScheme.primary,
-        foregroundColor: colorScheme.onPrimary,
-        title:  ReusableTitleContent(colorScheme: colorScheme, title: "Favorites", onUpgradePro: () {}, onSettings: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const SettingsScreen()),
-          );
-
-        }),
-        centerTitle: false,
-      ),
       body:  Stack(
         children: [
 

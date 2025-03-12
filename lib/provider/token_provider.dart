@@ -6,8 +6,8 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:ntp/ntp.dart';
 
 class TokenProvider extends ChangeNotifier {
-  double _currentTokens = 0.0;
-  double _minimumTokens = 100000.0;
+  double _currentTokens = 0;
+  double _minimumTokens = 100000;
   bool _isSuccessFullFirstPayout = false;
   final double _conversionRate = 50000;
   String _payoutDate = '';
@@ -19,8 +19,8 @@ class TokenProvider extends ChangeNotifier {
 
   List<String> paymentMethods = ["GCash", "PayPal"];
   final List<Map<String, double>> payoutOptions = [
-    {"tokens": 100000, "amount": 2.0},
-    {"tokens": 50000, "amount": 1.0},
+    {"tokens": 100000, "amount": 2},
+    {"tokens": 50000, "amount": 1},
     {"tokens": 20000, "amount": 0.3},
     {"tokens": 10000, "amount": 0.1},
   ];
@@ -177,6 +177,25 @@ class TokenProvider extends ChangeNotifier {
     }
   }
 
+  /// ✅ Get Token Withdrawal History
+  Future<List<Map<String, dynamic>>> getUserWithdrawalRequest(String userId) async {
+    try {
+      return await _tokenService.getUserWithdrawalRequest(userId);
+    } catch (e) {
+      debugPrint('Error fetching transactions: $e');
+      return [];
+    }
+  }
+
+  /// ✅ Get Token Transaction History
+  Future<List<Map<String, dynamic>>> getUserTransactions(String userId) async {
+    try {
+     return await _tokenService.getUserTransactions(userId);
+    } catch (e) {
+      debugPrint('Error fetching transactions: $e');
+      return [];
+    }
+  }
 
 
   /// ✅ Check if User Has a Successful First Payout
@@ -277,7 +296,7 @@ class TokenProvider extends ChangeNotifier {
     try {
         modifyUserTokens(isIncrement: false, requiredTokens: requiredTokens); // Ensure _currentTokens is properly initialized
         await updateUserTokenBalance(userId, _currentTokens);
-        await insertTokenTransaction(userId, amount, "spend", "completed", _isSuccessFullFirstPayout);
+        await insertTokenTransaction(userId, requiredTokens, "spend", "completed", _isSuccessFullFirstPayout);
         await _tokenService.requestWithdrawal(userId, amount, payoutMethod == "GCash" ? gCashNumber : paypalEmail);
         showAuthDialog(context, type: "info", "Processing", "Your redemption request is under review.");
 

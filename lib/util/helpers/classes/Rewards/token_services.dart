@@ -119,9 +119,6 @@ class TokenService {
   }
 
 
-
-
-
   /// ✅ Get Token Transaction History
   Future<List<Map<String, dynamic>>> getUserTransactions(String userId) async {
     try {
@@ -138,6 +135,23 @@ class TokenService {
     }
   }
 
+  /// ✅ Get Token Transaction History
+  Future<List<Map<String, dynamic>>> getUserWithdrawalRequest(String userId) async {
+    try {
+      final List response = await _supabase
+          .from('withdraw_requests')
+          .select('*')
+          .eq('user_id', userId)
+          .order('requested_at', ascending: false);
+
+      return response.cast<Map<String, dynamic>>();
+    } catch (e) {
+      debugPrint('Error fetching transactions: $e');
+      return [];
+    }
+  }
+
+
   /// ✅ Request a Withdrawal
   Future<bool> requestWithdrawal(String userId, double amount,String payment_receiver) async {
     try {
@@ -152,28 +166,13 @@ class TokenService {
         'requested_at': DateTime.now().toIso8601String(),
       });
 
-      return false;
+      return true;
     } catch (e) {
       debugPrint('Error requesting withdrawal: $e');
       return false;
     }
   }
 
-  /// ✅ Get Withdrawal Requests
-  Future<List<Map<String, dynamic>>> getWithdrawRequests(String userId) async {
-    try {
-      final List response = await _supabase
-          .from('withdraw_requests')
-          .select('*')
-          .eq('user_id', userId)
-          .order('requested_at', ascending: false);
-
-      return response.cast<Map<String, dynamic>>();
-    } catch (e) {
-      debugPrint('Error fetching withdrawal requests: $e');
-      return [];
-    }
-  }
   Future<double?> getLatestWithdrawAmount(String userId) async {
     try {
       final response = await _supabase
