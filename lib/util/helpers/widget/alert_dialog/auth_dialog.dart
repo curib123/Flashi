@@ -5,8 +5,8 @@ void showAuthDialog(BuildContext context, String title, String message, {String 
   final Map<String, dynamic> dialogTypes = {
     "success": {"icon": Icons.check_circle, "color": colorScheme.primary},
     "error": {"icon": Icons.error, "color": colorScheme.error},
-    "warning": {"icon": Icons.warning, "color": Colors.orange},
-    "info": {"icon": Icons.info, "color": colorScheme.secondary},
+    "warning": {"icon": Icons.warning, "color": colorScheme.secondary},
+    "info": {"icon": Icons.info, "color": colorScheme.tertiary},
   };
 
   final iconData = dialogTypes[type]?["icon"] ?? Icons.info;

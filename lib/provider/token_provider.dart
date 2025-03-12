@@ -2,49 +2,51 @@ import 'package:flashi/provider/auth_provider.dart';
 import 'package:flashi/util/helpers/classes/Rewards/token_services.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/auth_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:ntp/ntp.dart';
 
 class TokenProvider extends ChangeNotifier {
-  int _currentTokens = 0;
-  int _minimumTokens = 100000;
+  double _currentTokens = 0.0;
+  double _minimumTokens = 100000.0;
   bool _isSuccessFullFirstPayout = false;
-  final double _conversionRate = 0.01;
+  final double _conversionRate = 50000;
   String _payoutDate = '';
   bool _isRedeemAvailable = false;
   bool _isReviewing = false;
   String _gCashNumber = '';
+  String _paypalEmail = '';
   String _payoutMethod = 'GCash';
 
   List<String> paymentMethods = ["GCash", "PayPal"];
-  final List<Map<String, int>> payoutOptions = [
-    {"tokens": 100000, "amount": 100},
-    {"tokens": 50000, "amount": 50},
-    {"tokens": 20000, "amount": 20},
-    {"tokens": 10000, "amount": 10},
+  final List<Map<String, double>> payoutOptions = [
+    {"tokens": 100000, "amount": 2.0},
+    {"tokens": 50000, "amount": 1.0},
+    {"tokens": 20000, "amount": 0.3},
+    {"tokens": 10000, "amount": 0.1},
   ];
 
   TokenProvider( {required AuthProvider authProvider} ) {
     fetchTokens(authProvider.user_id);
     updateIsRedeemAvailable();
+    loadDataPaymentMethod();
   }
 
   final TokenService _tokenService = TokenService();
+  final Box _storage = Hive.box('payment_method'); // Hive box for settings
 
   // Getters
-  int get currentTokens => _currentTokens;
-  double get convertedValue => _currentTokens * _conversionRate;
+  double get currentTokens => _currentTokens;
+  double get convertedValue => double.parse((_currentTokens / _conversionRate).toStringAsFixed(2));
   String get payoutDate => _payoutDate;
   bool get isRedeemAvailable => _isRedeemAvailable;
   bool get isSuccessFullFirstPayout => _isSuccessFullFirstPayout;
-  int get minimumTokens => _minimumTokens;
+  double get minimumTokens => _minimumTokens;
   bool get isReviewing => _isReviewing;
   String get gCashNumber => _gCashNumber;
+  String get paypalEmail => _paypalEmail;
   String get payoutMethod => _payoutMethod;
 
-  void updatePayoutMethod(String method) {
-    _payoutMethod = method;
-    notifyListeners();
-  }
+
 
   /// Fetch payout date from Supabase and update state
   Future<void> fetchPayoutDate() async {
@@ -57,10 +59,50 @@ class TokenProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> updateGcashNumber(Future<String?> number) async {
-    _gCashNumber = number as String;
+  void updateGcashNumber(String number)  {
+    _gCashNumber = number;
+    saveDataPaymentMethod();
     notifyListeners();
   }
+
+  void updatePaypalEmail(String email)  {
+    _paypalEmail = email;
+    saveDataPaymentMethod();
+    notifyListeners();
+  }
+
+  void updatePayoutMethod(String method) {
+    _payoutMethod = method;
+    saveDataPaymentMethod();
+    notifyListeners();
+  }
+  void saveDataPaymentMethod() {
+    _storage.put('gcashNumber', _gCashNumber);
+    _storage.put('paypalEmail', _paypalEmail);
+    _storage.put('paypalMethod', _payoutMethod);
+    notifyListeners();
+  }
+
+  void loadDataPaymentMethod() {
+    _gCashNumber = _storage.get('gcashNumber', defaultValue: "");
+    _paypalEmail = _storage.get('paypalEmail', defaultValue: "");
+    _paypalEmail = _storage.get('paypalMethod', defaultValue: "");
+    notifyListeners();
+  }
+ void updateUserToken(double newValue) {
+    _currentTokens = newValue;
+    notifyListeners();
+  }
+
+  void modifyUserTokens({required isIncrement, required double requiredTokens}) {
+    if (isIncrement) {
+      _currentTokens += requiredTokens;
+    } else {
+      _currentTokens -= requiredTokens;
+    }
+    notifyListeners();
+  }
+
 
   Future<void> updateIsRedeemAvailable() async {
     _isRedeemAvailable = await isPayoutDateReached();
@@ -86,7 +128,8 @@ class TokenProvider extends ChangeNotifier {
   Future<bool> fetchTokens(String userId) async {
     try {
       fetchPayoutDate();
-      _currentTokens = await _tokenService.getUserTokenBalance(userId);
+      updateUserToken(await getUserTokenBalance(userId));
+      print("Current Token : ${await getUserTokenBalance(userId)}");
       bool? isUnlock = await hasUserSuccessfulFirstPayout(userId);
       updateIsSuccessFullFirstPayout(isUnlock!);
       if (await getFirstWithdrawStatus(userId) == "approved") {
@@ -101,34 +144,13 @@ class TokenProvider extends ChangeNotifier {
 
       return true; // Success
     } catch (e) {
-      _currentTokens = 0;
       debugPrint("Error fetching tokens: $e");
       return false; // Failure
     }
   }
 
-  /// ✅ Get User's GCash Number
-  Future<String?> getUserGcashNumber(String userId) async {
-    try {
-      return await _tokenService.getUserGcashNumber(userId);
-    } catch (e) {
-      debugPrint('Error fetching GCash number: $e');
-      return null;
-    }
-  }
 
-  /// ✅ Update User's GCash Number
-  Future<bool> updateUserGcashNumber(String userId, String newGcashNumber) async {
-    try {
-     return await _tokenService.updateUserGcashNumber(userId, newGcashNumber);
-    } catch (e) {
-      debugPrint('Error updating GCash number: $e');
-      return false; // Returns false if there's an error
-    }
-  }
-
-
-  Future<bool> updateUserTokenBalance(String userId, int tokenBalance) async {
+  Future<bool> updateUserTokenBalance(String userId, double tokenBalance) async {
     try {
         return await _tokenService.updateUserTokenBalance(userId, tokenBalance);
     } catch (e) {
@@ -138,7 +160,7 @@ class TokenProvider extends ChangeNotifier {
   }
 
   Future<bool> insertTokenTransaction(
-      String userId, int amount, String type, String status, bool success_first_payout) async {
+      String userId, double amount, String type, String status, bool success_first_payout) async {
     try {
      return await _tokenService.insertTokenTransaction(userId, amount, type, status, success_first_payout);
     } catch (e) {
@@ -146,7 +168,7 @@ class TokenProvider extends ChangeNotifier {
       return false;
     }
   }
-  Future<int?> getLatestWithdrawAmount(String userId) async {
+  Future<double?> getLatestWithdrawAmount(String userId) async {
     try {
       return await _tokenService.getLatestWithdrawAmount(userId);
     } catch (e) {
@@ -231,35 +253,35 @@ class TokenProvider extends ChangeNotifier {
   }
 
 
+
   /// ✅ Get User's Token Balance
-  Future<int> getUserTokenBalance(String userId) async {
+  Future<double> getUserTokenBalance(String userId) async {
     try {
-     return await getUserTokenBalance(userId);
+     return await _tokenService.getUserTokenBalance(userId);
     } catch (e) {
       debugPrint('Error fetching token balance: $e');
       return 0;
     }
   }
-  Future<bool> redeemTokens(String userId, int amount,BuildContext context) async {
+  Future<bool> redeemTokens(String userId, double amount,double requiredTokens,AuthProvider authProvider,BuildContext context) async {
     if (!await isPayoutDateReached()) {
       debugPrint("Payout date not reached.");
       showAuthDialog(context, type: "warning", "Warning",  "Payout date not reached.");
       return false;
     }
-    if (_currentTokens < amount) {
+    if (_currentTokens < requiredTokens) {
       debugPrint("Insufficient tokens.");
       showAuthDialog(context, type: "warning", "Warning",  "Insufficient tokens.");
       return false;
     }
     try {
-       await _tokenService.requestWithdrawal(userId, amount);
-
-      if (await fetchTokens(userId)) {
-        _currentTokens -= amount; // Ensure _currentTokens is properly initialized
+        modifyUserTokens(isIncrement: false, requiredTokens: requiredTokens); // Ensure _currentTokens is properly initialized
         await updateUserTokenBalance(userId, _currentTokens);
         await insertTokenTransaction(userId, amount, "spend", "completed", _isSuccessFullFirstPayout);
-        return true;
-      }
+        await _tokenService.requestWithdrawal(userId, amount, payoutMethod == "GCash" ? gCashNumber : paypalEmail);
+        showAuthDialog(context, type: "info", "Processing", "Your redemption request is under review.");
+
+
 
       return false; // Explicitly return false if withdrawal fails
     } catch (e) {

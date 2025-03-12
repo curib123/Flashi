@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
-void showGcashNumberModal(BuildContext context, Function(String) onSave) {
-  TextEditingController gcashController = TextEditingController();
+void showPaymentMethodModal(
+    BuildContext context, String method, Function(String) onSave) {
+  TextEditingController controller = TextEditingController();
+  bool isGcash = method == "GCash";
 
   showModalBottomSheet(
     context: context,
@@ -21,7 +23,7 @@ void showGcashNumberModal(BuildContext context, Function(String) onSave) {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              "Enter GCash Number",
+              isGcash ? "Enter GCash Number" : "Enter PayPal Email",
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -30,36 +32,36 @@ void showGcashNumberModal(BuildContext context, Function(String) onSave) {
             ),
             SizedBox(height: 12),
             TextField(
-              controller: gcashController,
-              keyboardType: TextInputType.phone,
+              controller: controller,
+              keyboardType: isGcash ? TextInputType.phone : TextInputType.emailAddress,
               decoration: InputDecoration(
                 filled: true,
                 fillColor: Theme.of(context).colorScheme.primary.withOpacity(0.2),
-                hintText: "Enter your GCash number",
+                hintText: isGcash ? "Enter your GCash number" : "Enter your PayPal email",
                 contentPadding: EdgeInsets.symmetric(vertical: 14, horizontal: 16),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12), // ✅ Rounded corners
-                  borderSide: BorderSide.none, // ✅ No border
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
                 ),
               ),
             ),
             SizedBox(height: 16),
             SizedBox(
-              width: double.infinity, // ✅ Full-width button
+              width: double.infinity,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 14), // ✅ Comfortable height
-                  backgroundColor: Theme.of(context).colorScheme.primary, // ✅ Primary color
+                  padding: EdgeInsets.symmetric(vertical: 14),
+                  backgroundColor: Theme.of(context).colorScheme.primary,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12), // ✅ Rounded button
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  elevation: 3, // ✅ Slight elevation for depth
+                  elevation: 3,
                 ),
                 onPressed: () {
-                  String gcashNumber = gcashController.text.trim();
-                  if (gcashNumber.isNotEmpty) {
-                    onSave(gcashNumber);
-                    Navigator.pop(context); // Close the modal
+                  String inputValue = controller.text.trim();
+                  if (inputValue.isNotEmpty) {
+                    onSave(inputValue);
+                    Navigator.pop(context);
                   }
                 },
                 child: Text(
@@ -67,7 +69,7 @@ void showGcashNumberModal(BuildContext context, Function(String) onSave) {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white, // ✅ Ensures visibility
+                    color: Colors.white,
                   ),
                 ),
               ),

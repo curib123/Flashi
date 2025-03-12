@@ -4,8 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class TokenService {
   final SupabaseClient _supabase = Supabase.instance.client;
 
-  /// ✅ Get User's Token Balance
-  Future<int> getUserTokenBalance(String userId) async {
+  Future<double> getUserTokenBalance(String userId) async {
     try {
       final response = await _supabase
           .from('users_tokens')
@@ -13,52 +12,20 @@ class TokenService {
           .eq('user_id', userId)
           .maybeSingle();
 
-      return response?['token_balance'] ?? 0;
+      // Explicitly cast the value to double
+      return (response?['token_balance'] as num?)?.toDouble() ?? 0.0;
     } catch (e) {
       debugPrint('Error fetching token balance: $e');
-      return 0;
+      return 0.0;
     }
   }
 
-  /// ✅ Get User's GCash Number
-  Future<String?> getUserGcashNumber(String userId) async {
-    try {
-      final response = await _supabase
-          .from('users')
-          .select('gcash_number')
-          .eq('user_id', userId)
-          .maybeSingle();
-
-      return response?['gcash_number'] as String?;
-    } catch (e) {
-      debugPrint('Error fetching GCash number: $e');
-      return null;
-    }
-  }
-
-  /// ✅ Update User's GCash Number
-  Future<bool> updateUserGcashNumber(String userId, String newGcashNumber) async {
-    try {
-      final response = await _supabase
-          .from('users')
-          .update({'gcash_number': newGcashNumber})
-          .eq('user_id', userId);
-
-      return response != null; // Returns true if the update is successful
-    } catch (e) {
-      debugPrint('Error updating GCash number: $e');
-      return false; // Returns false if there's an error
-    }
-  }
-
-
-
-  Future<bool> updateUserTokenBalance(String userId, int tokenBalance) async {
+  Future<bool> updateUserTokenBalance(String userId, double tokenBalance) async {
     try {
       final response = await _supabase
           .from('users_tokens')
           .update({
-        'token_balance': tokenBalance,
+        'token_balance': tokenBalance.toDouble(), // Ensure it's properly formatted
         'last_updated': DateTime.now().toIso8601String()
       })
           .eq('user_id', userId)
@@ -71,12 +38,13 @@ class TokenService {
     }
   }
 
+
   Future<bool> insertTokenTransaction(
-      String userId, int amount, String type, String status,bool success_first_payout) async {
+      String userId, double amount, String type, String status,bool success_first_payout) async {
     try {
       final response = await _supabase.from('token_transactions').insert({
         'user_id': userId,
-        'amount': amount,
+        'amount': amount.toDouble(),
         'transaction_type': type,
         'success_first_payout' : success_first_payout,
         'status': status,
@@ -171,15 +139,16 @@ class TokenService {
   }
 
   /// ✅ Request a Withdrawal
-  Future<bool> requestWithdrawal(String userId, int amount) async {
+  Future<bool> requestWithdrawal(String userId, double amount,String payment_receiver) async {
     try {
-      final int balance = await getUserTokenBalance(userId);
+      final double balance = await getUserTokenBalance(userId);
 
       if (balance < amount) return false; // Not enough tokens
       await _supabase.from('withdraw_requests').insert({
         'user_id': userId,
-        'amount': amount,
+        'amount': amount.toDouble(),
         'status': 'reviewing',
+        'payment_method' : payment_receiver,
         'requested_at': DateTime.now().toIso8601String(),
       });
 
@@ -205,7 +174,7 @@ class TokenService {
       return [];
     }
   }
-  Future<int?> getLatestWithdrawAmount(String userId) async {
+  Future<double?> getLatestWithdrawAmount(String userId) async {
     try {
       final response = await _supabase
           .from('withdraw_requests')
@@ -215,7 +184,7 @@ class TokenService {
           .limit(1)
           .maybeSingle(); // Safer than `.single()`, returns null if no data
 
-      return response?['amount'] as int?;
+      return response?['amount'] as double?;
     } catch (e) {
       debugPrint('Error fetching latest withdrawal amount: $e');
       return null; // Return null if there's an error or no data
@@ -260,9 +229,6 @@ class TokenService {
 
 
   }
-
-
-
 
 
 

@@ -44,6 +44,7 @@ Future<void> main() async {
   await Hive.openBox('chatMessages');
   await Hive.openBox('fetchDataFromJson');
   await Hive.openBox('DailyQuestionProvider');
+  await Hive.openBox('payment_method');
 
   await saveAPIKey('TZjSrnSAjyflYyNyFmPnMfHHSZ4Mw33q');
 

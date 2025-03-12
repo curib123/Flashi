@@ -6,7 +6,7 @@ import 'package:internet_connection_checker_plus/internet_connection_checker_plu
 
 class ThemeProvider extends ChangeNotifier {
   // Default theme settings
-  FlexScheme _currentScheme = FlexScheme.cyanM3; // Default to purpleM3
+  FlexScheme _currentScheme = FlexScheme.tealM3; // Default to purpleM3
   ThemeMode _themeMode = ThemeMode.light;
   String _currentFont = 'Montserrat'; // Default font
   double _fontScale = 0.8; // Default system font scale
@@ -21,7 +21,7 @@ class ThemeProvider extends ChangeNotifier {
   ThemeProvider() {
     // Load saved theme values from Hive or use defaults
     _currentScheme = FlexScheme.values[
-    _settingsBox.get('currentScheme', defaultValue: FlexScheme.cyanM3.index)
+    _settingsBox.get('currentScheme', defaultValue: FlexScheme.tealM3.index)
     ];
     _themeMode = ThemeMode.values[
     _settingsBox.get('themeMode', defaultValue: ThemeMode.light.index)

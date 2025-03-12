@@ -216,11 +216,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           Align(
                             alignment: Alignment.center,
                             child: Text(
-                              "Learn Smarter Retain Faster",
+                              "Learn More  Earn More",
+                              textAlign: TextAlign.center,
                               style: TextStyle(
                                 color: colorScheme.onPrimary,
                                 fontWeight: FontWeight.w700,
-                                fontSize: 16,
+                                fontSize: 18,
                               ),
                             ),
                           ),
