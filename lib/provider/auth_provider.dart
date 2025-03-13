@@ -67,7 +67,7 @@ class AuthProvider extends ChangeNotifier {
     return await InternetConnection().hasInternetAccess;
   }
 
-  Future<void> signIn(BuildContext context,QuizProvider quizProvider, AiCreditProvider aiCreditProvider,NotesProvider notesProvider,ChatBotProvider chatBotProvider, TokenProvider tokenProvider) async {
+  Future<void> signIn(BuildContext context,QuizProvider quizProvider, AiCreditProvider aiCreditProvider,NotesProvider notesProvider,ChatBotProvider chatBotProvider, TokenProvider tokenProvider,AuthProvider authProvider) async {
     if (!await hasInternet()) {
       showAuthDialog(context,type: "error", "Error", "No internet connection. Please try again.");
       return;
@@ -113,13 +113,14 @@ class AuthProvider extends ChangeNotifier {
           onMerge: ()  async {
             if (context.mounted) {
               aiCreditProvider.updateCredits(FetchCredits);
+              await tokenProvider.insertUserTokenBalanceIfEmpty(user_id);
               await quizProvider.updateQuizSets(fetchFlashcards(user_id), merge: true);
-              await tokenProvider.SaveGenerateReferralCode(user_id, tokenProvider.generateReferralCode());
+              await tokenProvider.fetchTokens(user_id);
+              await  tokenProvider.fetchPayoutDate();
+              await tokenProvider.updateIsReviewing(user_id);
               notesProvider.updateNotes(await fetchNotes(user_id),merge: true);
               chatBotProvider.updateMessages(await fetchChatBotMessages(user_id));
-                 tokenProvider.fetchTokens(user_id);
-               tokenProvider.updateIsReviewing(user_id);
-                tokenProvider.fetchPayoutDate();
+
               showLoadingDialog(context, text: "processing...");
              Future.delayed(Duration(seconds: 3),(){
                Navigator.pop(context);
@@ -129,19 +130,20 @@ class AuthProvider extends ChangeNotifier {
 
              });
 
-
             }
           },
           onDiscard: ()  async {
             if (context.mounted) {
            await aiCreditProvider.updateCredits(FetchCredits);
-           await tokenProvider.SaveGenerateReferralCode(user_id, tokenProvider.generateReferralCode());
+           await tokenProvider.insertUserTokenBalanceIfEmpty(user_id);
            await quizProvider.updateQuizSets(fetchFlashcards(user_id), merge: false);
+           await tokenProvider.fetchTokens(user_id);
+           await  tokenProvider.fetchPayoutDate();
+           await tokenProvider.updateIsReviewing(user_id);
            notesProvider.updateNotes(await fetchNotes(user_id),merge: false);
            chatBotProvider.updateMessages(await fetchChatBotMessages(user_id));
-              tokenProvider.fetchTokens(user_id);
-            tokenProvider.updateIsReviewing(user_id);
-             tokenProvider.fetchPayoutDate();
+
+
            showLoadingDialog(context, text: "processing...");
            Future.delayed(Duration(seconds: 3),(){
              Navigator.pop(context);

@@ -100,7 +100,7 @@ class SignInScreen extends StatelessWidget {
                       minimumSize: Size(double.infinity, 50),
                     ),
                     onPressed: () async {
-                      await authProvider.signIn(context, quizProvider,aiCreditProvider,notesProvider,chatBotProvider,tokenProvider);
+                      await authProvider.signIn(context, quizProvider,aiCreditProvider,notesProvider,chatBotProvider,tokenProvider,authProvider);
                     },
                     child: Text("Sign In", style: GoogleFonts.poppins(fontSize: 18, color: colorScheme.onPrimary)),
                   ),

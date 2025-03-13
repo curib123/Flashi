@@ -33,6 +33,9 @@ class _RedeemScreenState extends State<RedeemScreen> {
     checkInternet(authProvider);
     Future.delayed(Duration.zero, () async {
       await   tokenProvider.fetchTokens(authProvider.user_id);
+      await tokenProvider.fetchUpdateTotalInvite(authProvider.user_id);
+      await tokenProvider.fetchUpdateTotalInviteToken(authProvider.user_id);
+      await tokenProvider.insertUserTokenBalanceIfEmpty(authProvider.user_id);
       await tokenProvider.updateIsReviewing(authProvider.user_id);
       await  tokenProvider.fetchPayoutDate();
       await tokenProvider.updateIsRedeemAvailable();

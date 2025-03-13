@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flashi/presentation/screen/main/wallet_history.dart';
 import 'package:flashi/provider/auth_provider.dart';
 import 'package:flashi/util/helpers/classes/Rewards/token_services.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/auth_dialog.dart';
@@ -19,7 +20,9 @@ class TokenProvider extends ChangeNotifier {
   String _paypalEmail = '';
   String _payoutMethod = 'GCash';
   String _referralCode = '';
-  double _invite_reward = 200;
+  double _invite_reward = 2000;
+  double _totalInviteToken= 0;
+  double _totalInvite= 0;
 
   List<String> paymentMethods = ["GCash", "PayPal"];
   final List<Map<String, double>> payoutOptions = [
@@ -89,6 +92,10 @@ class TokenProvider extends ChangeNotifier {
 
   double get invite_reward => _invite_reward;
 
+  double get totalInviteToken => _totalInviteToken;
+
+  double get totalInvite => _totalInvite;
+
 
 
 
@@ -111,6 +118,35 @@ class TokenProvider extends ChangeNotifier {
       print('Error fetching payout date: $e');
       notifyListeners();
     }
+  }
+  Future<void> fetchUpdateTotalInvite(String user_id) async {
+    try {
+      updateTotalInvite(await getTotalInvites(user_id));
+      notifyListeners(); // Notify UI to update
+    } catch (e) {
+      print('Error fetching payout date: $e');
+      notifyListeners();
+    }
+  }
+
+ Future<void> fetchUpdateTotalInviteToken(String user_id) async {
+    try {
+      updateTotalInviteToken(await getInviteTokens(user_id));
+      notifyListeners(); // Notify UI to update
+    } catch (e) {
+      print('Error fetching payout date: $e');
+      notifyListeners();
+    }
+  }
+
+  void updateTotalInvite(double totalInvites) {
+      _totalInvite = totalInvites;
+    notifyListeners();
+  }
+
+  void updateTotalInviteToken(double totalInviteTokens) {
+      _totalInviteToken = totalInviteTokens;
+    notifyListeners();
   }
 
   void updateReferralCode(String generatedCode) {
@@ -211,13 +247,39 @@ class TokenProvider extends ChangeNotifier {
     }
   }
 
+  Future<double> getTotalInvites(String userId) async {
+    try {
+   return await _tokenService.getTotalInvites(userId);
+    } catch (e) {
+      debugPrint('Error fetching total invites: $e');
+      return 0.0; // Return 0.0 in case of an error
+    }
+  }
+
+  Future<double> getInviteTokens(String userId) async {
+    try {
+   return await _tokenService.getInviteTokens(userId);
+    } catch (e) {
+      debugPrint('Error fetching total invites Tokens: $e');
+      return 0.0; // Return 0.0 in case of an error
+    }
+  }
 
   Future<bool> updateUserTokenBalance(String userId,
       double tokenBalance) async {
     try {
       return await _tokenService.updateUserTokenBalance(userId, tokenBalance);
     } catch (e) {
-      debugPrint('Error updating token balance: $e');
+      debugPrint('Error updating/inserting token balance: $e');
+      return false;
+    }
+  }
+
+  Future<bool> insertUserTokenBalanceIfEmpty(String userId) async {
+    try {
+      return await _tokenService.insertUserTokenBalanceIfEmpty(userId,generateReferralCode());
+    } catch (e) {
+      debugPrint('Error inserting user token balance: $e');
       return false;
     }
   }
@@ -374,8 +436,15 @@ class TokenProvider extends ChangeNotifier {
           _isSuccessFullFirstPayout);
       await _tokenService.requestWithdrawal(
           userId, amount, payoutMethod == "GCash" ? gCashNumber : paypalEmail);
-      showAuthDialog(context, type: "info", "Processing",
-          "Your redemption request is under review.");
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => WalletHistory()));
+
+      Future.delayed(Duration.zero,(){
+        showAuthDialog(context, type: "info", "Processing",
+            "Your redemption request is under review.");
+      });
 
 
       return false; // Explicitly return false if withdrawal fails
@@ -396,15 +465,43 @@ class TokenProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> SaveGenerateReferralCode(String userId,String code) async {
+  Future<bool> SaveReferredBy(String userId,String code) async {
     try {
-     return await _tokenService.SaveGenerateReferralCode(userId, code);
+     return await _tokenService.SaveReferredBy(userId, code);
     } catch (e) {
       debugPrint('Error in generating code: $e');
       return false;
     }
   }
 
+  Future<bool> isReferredByEmpty(String userId) async {
+    try {
+     return await _tokenService.isReferredByEmpty(userId);
+    } catch (e) {
+      debugPrint('Error checking referred_by: $e');
+      return true; // Assume empty on error
+    }
+  }
+
+
+  Future<List<String>> getAllReferralCodes() async {
+    try {
+    return await _tokenService.getAllReferralCodes();
+    } catch (e) {
+      debugPrint('Error fetching referral codes: $e');
+      return []; // Return an empty list in case of an error
+    }
+  }
+
+  Future<bool> isReferralCodeValid(String enteredCode) async {
+    try {
+      List<String> referralCodes = await getAllReferralCodes();
+      return referralCodes.contains(enteredCode);
+    } catch (e) {
+      debugPrint('Error checking referral code: $e');
+      return false; // Return false in case of an error
+    }
+  }
 
   String generateReferralCode() {
     const String chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';

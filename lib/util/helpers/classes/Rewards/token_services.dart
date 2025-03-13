@@ -38,6 +38,55 @@ class TokenService {
     }
   }
 
+  Future<bool> insertUserTokenBalanceIfEmpty(String userId,String referral_code) async {
+    try {
+      final supabase = _supabase; // Ensure _supabase is initialized
+
+      // Check if user record exists
+      final existingUser = await supabase
+          .from('users_tokens')
+          .select()
+          .eq('user_id', userId)
+          .maybeSingle(); // Returns null if no record exists
+
+      if (existingUser == null) {
+        // Insert new user record if not found
+        final insertResponse = await supabase.from('users_tokens').insert({
+          'user_id': userId,
+          'token_balance': 0, // Ensure proper format
+          'referral_code': referral_code,
+          'last_updated': DateTime.now().toIso8601String(),
+        });
+
+        return insertResponse != null; // Returns true if insert was successful
+      }
+
+      // If user already exists, return false (no insert performed)
+      return false;
+    } catch (e) {
+      debugPrint('Error inserting user token balance: $e');
+      return false;
+    }
+  }
+
+  Future<List<String>> getAllReferralCodes() async {
+    try {
+      final response = await _supabase
+          .from('users_tokens')
+          .select('referral_code'); // Select all referral codes
+
+      if (response.isEmpty) {
+        return []; // Return an empty list if no data is found
+      }
+
+      return response.map<String>((item) => item['referral_code'] as String).toList();
+    } catch (e) {
+      debugPrint('Error fetching referral codes: $e');
+      return []; // Return an empty list in case of an error
+    }
+  }
+
+
   Future<String> getSaveGenerateReferralCode(String userId) async {
     try {
       final response = await _supabase
@@ -57,18 +106,73 @@ class TokenService {
     }
   }
 
+  Future<double> getTotalInvites(String userId) async {
+    try {
+      final response = await _supabase
+          .from('users_tokens')
+          .select('total_invites')
+          .eq('user_id', userId)
+          .maybeSingle();
 
-  Future<bool> SaveGenerateReferralCode(String userId, String code) async {
+      if (response == null || response['total_invites'] == null) {
+        return 0.0; // Return 0.0 instead of an empty string for consistency
+      }
+
+      return (response['total_invites'] as num).toDouble(); // Ensure it's a double
+    } catch (e) {
+      debugPrint('Error fetching total invites: $e');
+      return 0.0; // Return 0.0 in case of an error
+    }
+  }
+
+  Future<double> getInviteTokens(String userId) async {
+    try {
+      final response = await _supabase
+          .from('users_tokens')
+          .select('invite_tokens')
+          .eq('user_id', userId)
+          .maybeSingle();
+
+      if (response == null || response['invite_tokens'] == null) {
+        return 0.0; // Return 0.0 instead of an empty string for consistency
+      }
+
+      return (response['invite_tokens'] as num).toDouble(); // Ensure it's a double
+    } catch (e) {
+      debugPrint('Error fetching total invites Tokens: $e');
+      return 0.0; // Return 0.0 in case of an error
+    }
+  }
+
+
+
+  Future<bool> isReferredByEmpty(String userId) async {
+    try {
+      final response = await _supabase
+          .from('users_tokens')
+          .select('referred_by')
+          .eq('user_id', userId)
+          .maybeSingle();
+
+      // Return true if `referred_by` is empty or null, false otherwise
+      return response == null || response['referred_by'] == null;
+    } catch (e) {
+      debugPrint('Error checking referred_by: $e');
+      return true; // Assume empty on error
+    }
+  }
+
+  Future<bool> SaveReferredBy(String userId, String code) async {
     try {
       // Fetch the current referral code for the user
       final response = await _supabase
           .from('users_tokens')
-          .select('referral_code')
+          .select('referred_by')
           .eq('user_id', userId)
           .single();
 
       // Check if the referral_code already exists
-      if (response.isNotEmpty && response['referral_code'] != null && response['referral_code'].isNotEmpty) {
+      if (response.isNotEmpty && response['referred_by'] != null && response['referred_by'].isNotEmpty) {
         return false; // Do not update if referral code already exists
       }
 
@@ -76,7 +180,7 @@ class TokenService {
       final updateResponse = await _supabase
           .from('users_tokens')
           .update({
-        'referral_code': code,
+        'referred_by': code,
         'last_updated': DateTime.now().toIso8601String(),
       })
           .eq('user_id', userId);

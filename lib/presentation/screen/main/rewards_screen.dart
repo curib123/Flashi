@@ -1,4 +1,3 @@
-import 'dart:ffi';
 
 import 'package:flashi/presentation/screen/main/referral_code_screen.dart';
 import 'package:flashi/presentation/screen/main/settings_screen.dart';
@@ -33,6 +32,9 @@ class _RewardsScreenState extends State<RewardsScreen> {
     checkInternet(authProvider);
     Future.delayed(Duration.zero, () async {
       await tokenProvider.fetchReferralCode(authProvider.user_id);
+      await tokenProvider.fetchUpdateTotalInvite(authProvider.user_id);
+      await tokenProvider.fetchUpdateTotalInviteToken(authProvider.user_id);
+      await tokenProvider.insertUserTokenBalanceIfEmpty(authProvider.user_id);
       await   tokenProvider.fetchTokens(authProvider.user_id);
       await tokenProvider.updateIsReviewing(authProvider.user_id);
       await  tokenProvider.fetchPayoutDate();

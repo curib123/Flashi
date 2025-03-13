@@ -107,7 +107,7 @@ class _WalletHistoryState extends State<WalletHistory> with SingleTickerProvider
         var transaction = data[index];
         return ListTile(
           leading: Icon(Icons.account_balance_wallet, color: colorScheme.primary),
-          title: Text("Amount: \$${transaction['amount']}"),
+          title: Text("Amount: ${transaction['amount']} tokens"),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
