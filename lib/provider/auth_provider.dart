@@ -112,9 +112,9 @@ class AuthProvider extends ChangeNotifier {
           context,
           onMerge: ()  async {
             if (context.mounted) {
-
               aiCreditProvider.updateCredits(FetchCredits);
               await quizProvider.updateQuizSets(fetchFlashcards(user_id), merge: true);
+              await tokenProvider.SaveGenerateReferralCode(user_id, tokenProvider.generateReferralCode());
               notesProvider.updateNotes(await fetchNotes(user_id),merge: true);
               chatBotProvider.updateMessages(await fetchChatBotMessages(user_id));
                  tokenProvider.fetchTokens(user_id);
@@ -135,6 +135,7 @@ class AuthProvider extends ChangeNotifier {
           onDiscard: ()  async {
             if (context.mounted) {
            await aiCreditProvider.updateCredits(FetchCredits);
+           await tokenProvider.SaveGenerateReferralCode(user_id, tokenProvider.generateReferralCode());
            await quizProvider.updateQuizSets(fetchFlashcards(user_id), merge: false);
            notesProvider.updateNotes(await fetchNotes(user_id),merge: false);
            chatBotProvider.updateMessages(await fetchChatBotMessages(user_id));

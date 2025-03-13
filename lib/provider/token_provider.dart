@@ -18,6 +18,8 @@ class TokenProvider extends ChangeNotifier {
   String _gCashNumber = '';
   String _paypalEmail = '';
   String _payoutMethod = 'GCash';
+  String _referralCode = '';
+  double _invite_reward = 200;
 
   List<String> paymentMethods = ["GCash", "PayPal"];
   final List<Map<String, double>> payoutOptions = [
@@ -28,18 +30,34 @@ class TokenProvider extends ChangeNotifier {
   ];
 
   final List<Map<String, dynamic>> activities = [
-    {'icon': Icons.star, 'title': "Complete 3 Missions", 'rewards': 50.0, 'isClaim' : true},
-    {'icon': Icons.directions_run, 'title': "Walk 10,000 Steps", 'rewards': 30.0, 'isClaim' : true},
-    {'icon': Icons.book, 'title': "Read 5 Pages", 'rewards': 20.0, 'isClaim' : false},
-    {'icon': Icons.fitness_center, 'title': "Workout for 30 Mins", 'rewards': 40.0, 'isClaim' : false},
-    {'icon': Icons.fastfood, 'title': "Eat a Healthy Meal", 'rewards': 10.0, 'isClaim' : false},
-
+    {'icon': Icons.book, 'title': "Review 10 Flashcards", 'rewards': 30.0, 'isClaim': false},
+    {'icon': Icons.check, 'title': "Complete 3 Flashcard Sets", 'rewards': 50.0, 'isClaim': false},
+    {'icon': Icons.timer, 'title': "Study for 15 Minutes", 'rewards': 20.0, 'isClaim': false},
+    {'icon': Icons.lightbulb, 'title': "Learn 5 New Words", 'rewards': 25.0, 'isClaim': false},
+    {'icon': Icons.edit, 'title': "Create a Custom Flashcard", 'rewards': 15.0, 'isClaim': false},
+    {'icon': Icons.school, 'title': "Ace a Quiz (80%+)", 'rewards': 40.0, 'isClaim': false},
+    {'icon': Icons.video_library, 'title': "Watch an Ad to Get 50", 'rewards': 50.0, 'isClaim': false},
+    {'icon': Icons.calendar_today, 'title': "Use the App for 3 Consecutive Days", 'rewards': 60.0, 'isClaim': false},
+    {'icon': Icons.people, 'title': "Invite a Friend", 'rewards': 100.0, 'isClaim': false},
+    {'icon': Icons.play_arrow, 'title': "Use Flashcards in Challenge Mode", 'rewards': 35.0, 'isClaim': false},
+    {'icon': Icons.timer_off, 'title': "Finish a Flashcard Set Without Skipping", 'rewards': 30.0, 'isClaim': false},
+    {'icon': Icons.thumb_up, 'title': "Give Feedback on a Flashcard", 'rewards': 15.0, 'isClaim': false},
+    {'icon': Icons.repeat, 'title': "Repeat a Flashcard 5 Times", 'rewards': 20.0, 'isClaim': false},
+    {'icon': Icons.stars, 'title': "Reach 200 Total Points", 'rewards': 50.0, 'isClaim': false},
+    {'icon': Icons.wb_sunny, 'title': "Use the App in the Morning", 'rewards': 10.0, 'isClaim': false},
+    {'icon': Icons.nightlight_round, 'title': "Use the App at Night", 'rewards': 10.0, 'isClaim': false},
+    {'icon': Icons.hearing, 'title': "Listen to Flashcards with Text-to-Speech", 'rewards': 25.0, 'isClaim': false},
+    {'icon': Icons.translate, 'title': "Translate 3 Flashcards", 'rewards': 15.0, 'isClaim': false},
+    {'icon': Icons.star_border, 'title': "Favorite 5 Flashcards", 'rewards': 20.0, 'isClaim': false},
+    {'icon': Icons.share, 'title': "Share a Flashcard Set", 'rewards': 30.0, 'isClaim': false},
   ];
 
   TokenProvider({required AuthProvider authProvider}) {
     fetchTokens(authProvider.user_id);
+    fetchReferralCode(authProvider.user_id);
     updateIsRedeemAvailable();
     loadDataPaymentMethod();
+
   }
 
   final TokenService _tokenService = TokenService();
@@ -67,6 +85,12 @@ class TokenProvider extends ChangeNotifier {
 
   String get payoutMethod => _payoutMethod;
 
+  String get referralCode => _referralCode;
+
+  double get invite_reward => _invite_reward;
+
+
+
 
   /// Fetch payout date from Supabase and update state
   Future<void> fetchPayoutDate() async {
@@ -77,6 +101,21 @@ class TokenProvider extends ChangeNotifier {
       print('Error fetching payout date: $e');
       notifyListeners();
     }
+  }
+
+  Future<void> fetchReferralCode(String user_id) async {
+    try {
+      updateReferralCode(await getSaveGenerateReferralCode(user_id));
+      notifyListeners(); // Notify UI to update
+    } catch (e) {
+      print('Error fetching payout date: $e');
+      notifyListeners();
+    }
+  }
+
+  void updateReferralCode(String generatedCode) {
+    _referralCode = generatedCode;
+    notifyListeners();
   }
 
   void updateGcashNumber(String number) {
@@ -348,11 +387,32 @@ class TokenProvider extends ChangeNotifier {
     }
   }
 
+  Future<String> getSaveGenerateReferralCode(String userId) async {
+    try {
+      return await _tokenService.getSaveGenerateReferralCode(userId);
+    } catch (e) {
+      debugPrint('Error fetching referral code: $e');
+      return ''; // Return empty string in case of an error
+    }
+  }
+
+  Future<bool> SaveGenerateReferralCode(String userId,String code) async {
+    try {
+     return await _tokenService.SaveGenerateReferralCode(userId, code);
+    } catch (e) {
+      debugPrint('Error in generating code: $e');
+      return false;
+    }
+  }
+
+
   String generateReferralCode() {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    final random = Random();
-    return List.generate(6, (index) => chars[random.nextInt(chars.length)])
-        .join();
+    const String chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    final Random random = Random();
+
+    String randomPart = List.generate(6, (index) => chars[random.nextInt(chars.length)]).join();
+
+    return 'FLASHI-$randomPart'; // Always starts with FLASHI
   }
 
   String generateReferralLink(String referralCode) {

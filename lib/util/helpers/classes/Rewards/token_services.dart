@@ -38,6 +38,56 @@ class TokenService {
     }
   }
 
+  Future<String> getSaveGenerateReferralCode(String userId) async {
+    try {
+      final response = await _supabase
+          .from('users_tokens')
+          .select('referral_code')
+          .eq('user_id', userId)
+          .maybeSingle();
+
+      if (response == null || response['referral_code'] == null) {
+        return ''; // Return an empty string if no referral code is found
+      }
+
+      return response['referral_code']; // Return the referral code if found
+    } catch (e) {
+      debugPrint('Error fetching referral code: $e');
+      return ''; // Return empty string in case of an error
+    }
+  }
+
+
+  Future<bool> SaveGenerateReferralCode(String userId, String code) async {
+    try {
+      // Fetch the current referral code for the user
+      final response = await _supabase
+          .from('users_tokens')
+          .select('referral_code')
+          .eq('user_id', userId)
+          .single();
+
+      // Check if the referral_code already exists
+      if (response.isNotEmpty && response['referral_code'] != null && response['referral_code'].isNotEmpty) {
+        return false; // Do not update if referral code already exists
+      }
+
+      // If empty, update the referral_code
+      final updateResponse = await _supabase
+          .from('users_tokens')
+          .update({
+        'referral_code': code,
+        'last_updated': DateTime.now().toIso8601String(),
+      })
+          .eq('user_id', userId);
+
+      return updateResponse.isNotEmpty; // Return true if update was successful
+    } catch (e) {
+      debugPrint('Error in generating code: $e');
+      return false;
+    }
+  }
+
 
   Future<bool> insertTokenTransaction(
       String userId, double amount, String type, String status,bool success_first_payout) async {

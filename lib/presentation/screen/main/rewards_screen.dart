@@ -1,5 +1,6 @@
 import 'dart:ffi';
 
+import 'package:flashi/presentation/screen/main/referral_code_screen.dart';
 import 'package:flashi/presentation/screen/main/settings_screen.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_title_content.dart';
 import 'package:flashi/provider/auth_provider.dart';
@@ -26,12 +27,12 @@ class _RewardsScreenState extends State<RewardsScreen> {
   @override
   void initState() {
     super.initState();
-
     final tokenProvider = Provider.of<TokenProvider>(context,listen: false);
     final authProvider = Provider.of<AuthProvider>(context,listen: false);
 
     checkInternet(authProvider);
     Future.delayed(Duration.zero, () async {
+      await tokenProvider.fetchReferralCode(authProvider.user_id);
       await   tokenProvider.fetchTokens(authProvider.user_id);
       await tokenProvider.updateIsReviewing(authProvider.user_id);
       await  tokenProvider.fetchPayoutDate();
@@ -111,7 +112,7 @@ class _RewardsScreenState extends State<RewardsScreen> {
               children: [
                 BalanceToken(colorScheme, tokenProvider,context),
                 SizedBox(height: 5),
-                _inviteBtnContainer(colorScheme),
+                _inviteBtnContainer(colorScheme,context),
                 SizedBox(height: 10,),
                 _DailyActivitiesContainer(
                      colorScheme,
@@ -130,10 +131,14 @@ class _RewardsScreenState extends State<RewardsScreen> {
     );
   }
 }
-Widget _inviteBtnContainer(ColorScheme colorScheme) {
+Widget _inviteBtnContainer(ColorScheme colorScheme,BuildContext context) {
   return GestureDetector(
     onTap: () {
       // TODO: Implement invite friend functionality
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => ReferralCodeScreen()));
     },
     child: Container(
       margin: EdgeInsets.symmetric(vertical: 10),
