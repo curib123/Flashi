@@ -3,7 +3,6 @@ import 'package:flashi/presentation/widget/components/custom_drawer.dart';
 import 'package:flashi/presentation/widget/components/custom_navigation_bar.dart';
 import 'package:flashi/provider/bottom_navigation_provider.dart';
 import 'package:flashi/provider/onboarding_provider.dart';
-import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flashi/provider/theme_provider.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_unit_id.dart';
@@ -21,6 +20,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
 
   final supabase = Supabase.instance.client;
+
   @override
   void initState() {
     super.initState();
@@ -29,6 +29,7 @@ class _HomeState extends State<Home> {
     AdManager adManager = AdManager();
     adManager.loadBannerAd(AdUnitId.bannerAdUnitId);
   }
+
 
 
   void listenToAuthChanges(BuildContext context) {

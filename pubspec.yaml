@@ -65,7 +65,6 @@ dependencies:
   shimmer: ^3.0.0
   email_validator: ^3.0.0
 
-
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -1,6 +1,7 @@
 import 'package:flashi/presentation/screen/main/wallet_history.dart';
 import 'package:flashi/provider/token_provider.dart';
 import 'package:flutter/material.dart';
+
 Widget BalanceToken(ColorScheme colorScheme, TokenProvider tokenProvider, BuildContext context) {
   return Material(
     color: Colors.transparent, // Keep the gradient background visible
@@ -29,6 +30,13 @@ Widget BalanceToken(ColorScheme colorScheme, TokenProvider tokenProvider, BuildC
             end: Alignment.topLeft,
           ),
           borderRadius: BorderRadius.all(Radius.circular(10)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2), // Shadow color
+              blurRadius: 8, // Spread of the shadow
+              offset: Offset(0, 4), // Position of the shadow
+            ),
+          ],
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -58,7 +66,7 @@ Widget BalanceToken(ColorScheme colorScheme, TokenProvider tokenProvider, BuildC
                           ),
                         ),
                         SizedBox(width: 5),
-                        Icon(Icons.diamond_rounded, size: 25, color: colorScheme.onPrimary),
+                        Icon(Icons.diamond_rounded, size: 20, color: colorScheme.onPrimary),
                       ],
                     ),
                     SizedBox(width: 5),
@@ -73,7 +81,7 @@ Widget BalanceToken(ColorScheme colorScheme, TokenProvider tokenProvider, BuildC
                           ),
                         ),
                         SizedBox(width: 1),
-                        Icon(Icons.attach_money_rounded, size: 25, color: colorScheme.onPrimary),
+                        Icon(Icons.attach_money_rounded, size: 20, color: colorScheme.onPrimary),
                       ],
                     ),
                   ],

@@ -150,11 +150,15 @@ class _ReusableTitleContentState extends State<ReusableTitleContent> {
                   authProvider.user_id.isNotEmpty ?   showAuthDialog(context, type: "info", "Info", "You are logged in!")
                       : showAuthDialog(context, type: "warning", "Warning", "You are not logged in!");
                  },
-                 child: Icon(
+                 child: CircleAvatar(
+                   radius: 15,
+                   backgroundColor: widget.colorScheme.onPrimary,
+                   child: Icon(
                      Icons.person_rounded,
-                     size: 35, // Increased icon size for better proportion
-                     color: widget.colorScheme.onPrimary,
+                     size: 25,
+                     color: widget.colorScheme.primary,
                    ),
+                 )
                  ),
 
               ],

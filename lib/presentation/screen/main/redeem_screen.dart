@@ -114,10 +114,10 @@ class RedeemScreenContent extends StatelessWidget {
                 SizedBox(height: 10),
 
                 _DefaultPaymentMethod(colorScheme,context),
-                SizedBox(height: 10),
+                SizedBox(height: 20),
 
                 _PayoutList(colorScheme, tokenProvider, context,authProvider),
-                SizedBox(height: 10),
+                SizedBox(height: 20),
                 _DateOfPayout(colorScheme, tokenProvider),
               ],
             ),
@@ -169,6 +169,7 @@ class RedeemScreenContent extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(15),
       decoration: BoxDecoration(
+
         color: borderColor.withOpacity(0.1),
         borderRadius: BorderRadius.circular(10),
       ),
@@ -257,7 +258,14 @@ class RedeemScreenContent extends StatelessWidget {
             },
             child: Container(
               decoration: BoxDecoration(
-                color: isUnlocked ? colorScheme.primary.withOpacity(0.2) : Colors.grey.shade300,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2), // Shadow color
+                    blurRadius: 8, // Spread of the shadow
+                    offset: Offset(0, 4), // Position of the shadow
+                  ),
+                ],
+                color: isUnlocked ? colorScheme.primary.withOpacity(0.8): Colors.grey.shade300,
                 // border: Border.all(color:colorScheme.primary, width: 1),
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -270,13 +278,13 @@ class RedeemScreenContent extends StatelessWidget {
                       Text(
                         '$requiredTokens',
                         style: TextStyle(
-                          color:colorScheme.primary,
+                          color:  isUnlocked ? colorScheme.onPrimary : colorScheme.primary,
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       SizedBox(width: 5),
-                      Icon(Icons.diamond_rounded, size: 20, color:colorScheme.primary),
+                      Icon(Icons.diamond_rounded, size: 20, color : isUnlocked ? colorScheme.onPrimary : colorScheme.primary),
                     ],
                   ),
                   SizedBox(height: 4),
@@ -286,18 +294,18 @@ class RedeemScreenContent extends StatelessWidget {
                       Text(
                         '= $amount',
                         style: TextStyle(
-                          color:colorScheme.primary,
+                          color:isUnlocked ? colorScheme.onPrimary : colorScheme.primary,
                           fontSize: 14,
                         ),
                       ),
                       SizedBox(width: 4),
-                      Icon(Icons.attach_money_rounded, size: 20, color: colorScheme.primary),
+                      Icon(Icons.attach_money_rounded, size: 20, color: isUnlocked ? colorScheme.onPrimary : colorScheme.primary),
                     ],
                   ),
                   SizedBox(height: 5),
                   Icon(
                     isUnlocked ? Icons.lock_open_rounded : Icons.lock,
-                    color: colorScheme.primary,
+                    color: isUnlocked ? colorScheme.onPrimary : colorScheme.primary,
                     size: 24,
                   ),
                 ],
@@ -329,12 +337,19 @@ class RedeemScreenContent extends StatelessWidget {
             borderRadius: BorderRadius.all(Radius.circular(10)),
             gradient: LinearGradient(
               colors: [
-                colorScheme.primaryContainer.withOpacity(1),
-                colorScheme.primaryContainer.withOpacity(0.8),
+                colorScheme.primary.withOpacity(1),
+                colorScheme.primary.withOpacity(0.3),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2), // Shadow color
+                blurRadius: 8, // Spread of the shadow
+                offset: Offset(0, 4), // Position of the shadow
+              ),
+            ],
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -342,14 +357,14 @@ class RedeemScreenContent extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.wallet_rounded, color: colorScheme.primary, size: 25),
+                  Icon(Icons.wallet_rounded, color: colorScheme.onPrimary, size: 25),
                   SizedBox(width: 10),
                   Text(
                     "Default Payment Method",
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
-                      color: colorScheme.primary,
+                      color: colorScheme.onPrimary,
                     ),
                   ),
                 ],
@@ -358,7 +373,7 @@ class RedeemScreenContent extends StatelessWidget {
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 12, vertical: 0),
                 decoration: BoxDecoration(
-                  color: colorScheme.surface.withOpacity(0.2),
+                  color: colorScheme.surface.withOpacity(0.1),
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
                     bottomRight: Radius.circular(20),
@@ -366,14 +381,14 @@ class RedeemScreenContent extends StatelessWidget {
                 ),
                 child: DropdownButtonFormField<String>(
                   value: tokenProvider.payoutMethod,
-                  dropdownColor: colorScheme.onPrimary,
-                  icon: Icon(Icons.arrow_drop_down, color: colorScheme.primary),
+                  dropdownColor: colorScheme.primary.withOpacity(0.6),
+                  icon: Icon(Icons.arrow_drop_down, color: colorScheme.onPrimary),
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.zero,
                   ),
                   style: TextStyle(
-                    color: colorScheme.primary,
+                    color: colorScheme.onPrimary,
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
@@ -394,10 +409,10 @@ class RedeemScreenContent extends StatelessWidget {
                                 ? Icons.account_balance_wallet
                                 : Icons.account_balance, // Default for bank
                             size: 24,
-                            color: colorScheme.primary,
+                            color: colorScheme.onPrimary,
                           ),
                           SizedBox(width: 10),
-                          Text(value, style: TextStyle(color: colorScheme.primary, fontSize: 16)),
+                          Text(value, style: TextStyle(color: colorScheme.onPrimary, fontSize: 16)),
                         ],
                       ),
                     );
@@ -459,14 +474,14 @@ class RedeemScreenContent extends StatelessWidget {
           Text(
             label,
             style: TextStyle(
-              color: colorScheme.primary.withOpacity(0.7),
+              color: colorScheme.onPrimary.withOpacity(0.7),
               fontSize: 14,
             ),
           ),
           Text(
             value,
             style: TextStyle(
-              color: colorScheme.primary.withOpacity(0.7),
+              color: colorScheme.onPrimary.withOpacity(0.7),
               fontWeight: FontWeight.w600,
               fontSize: value.length >= 16 ? 12 : 16,
             ),
