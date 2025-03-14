@@ -221,7 +221,7 @@ Widget _enterReferralCode(ColorScheme colorScheme, TokenProvider tokenProvider,A
                 showAuthDialog(
                     context,
                     type: "warning",
-                    "Referral Code Invalid",
+                    "Already Reffered",
                      "You've already been referred by someone."
                 );
               }

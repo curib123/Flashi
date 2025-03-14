@@ -26,8 +26,6 @@ class ReviewerPage extends StatelessWidget {
       appBar: AppBar(
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
-            bottomRight: Radius.circular(20),
-            bottomLeft: Radius.circular(20),
           ),
         ),
         backgroundColor: Theme.of(context).colorScheme.primary,
@@ -38,7 +36,7 @@ class ReviewerPage extends StatelessWidget {
             Flexible(
               child: Text(
                 reviewer,
-                style:const TextStyle(fontSize: 20),
+                style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),
                 overflow: TextOverflow.ellipsis, // Adds ellipsis for text overflow
               ),
             ),

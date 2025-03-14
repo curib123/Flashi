@@ -32,35 +32,11 @@ class TokenProvider extends ChangeNotifier {
     {"tokens": 10000, "amount": 0.1},
   ];
 
-  final List<Map<String, dynamic>> activities = [
-    {'icon': Icons.book, 'title': "Review 10 Flashcards", 'rewards': 30.0, 'isClaim': false},
-    {'icon': Icons.check, 'title': "Complete 3 Flashcard Sets", 'rewards': 50.0, 'isClaim': false},
-    {'icon': Icons.timer, 'title': "Study for 15 Minutes", 'rewards': 20.0, 'isClaim': false},
-    {'icon': Icons.lightbulb, 'title': "Learn 5 New Words", 'rewards': 25.0, 'isClaim': false},
-    {'icon': Icons.edit, 'title': "Create a Custom Flashcard", 'rewards': 15.0, 'isClaim': false},
-    {'icon': Icons.school, 'title': "Ace a Quiz (80%+)", 'rewards': 40.0, 'isClaim': false},
-    {'icon': Icons.video_library, 'title': "Watch an Ad to Get 50", 'rewards': 50.0, 'isClaim': false},
-    {'icon': Icons.calendar_today, 'title': "Use the App for 3 Consecutive Days", 'rewards': 60.0, 'isClaim': false},
-    {'icon': Icons.people, 'title': "Invite a Friend", 'rewards': 100.0, 'isClaim': false},
-    {'icon': Icons.play_arrow, 'title': "Use Flashcards in Challenge Mode", 'rewards': 35.0, 'isClaim': false},
-    {'icon': Icons.timer_off, 'title': "Finish a Flashcard Set Without Skipping", 'rewards': 30.0, 'isClaim': false},
-    {'icon': Icons.thumb_up, 'title': "Give Feedback on a Flashcard", 'rewards': 15.0, 'isClaim': false},
-    {'icon': Icons.repeat, 'title': "Repeat a Flashcard 5 Times", 'rewards': 20.0, 'isClaim': false},
-    {'icon': Icons.stars, 'title': "Reach 200 Total Points", 'rewards': 50.0, 'isClaim': false},
-    {'icon': Icons.wb_sunny, 'title': "Use the App in the Morning", 'rewards': 10.0, 'isClaim': false},
-    {'icon': Icons.nightlight_round, 'title': "Use the App at Night", 'rewards': 10.0, 'isClaim': false},
-    {'icon': Icons.hearing, 'title': "Listen to Flashcards with Text-to-Speech", 'rewards': 25.0, 'isClaim': false},
-    {'icon': Icons.translate, 'title': "Translate 3 Flashcards", 'rewards': 15.0, 'isClaim': false},
-    {'icon': Icons.star_border, 'title': "Favorite 5 Flashcards", 'rewards': 20.0, 'isClaim': false},
-    {'icon': Icons.share, 'title': "Share a Flashcard Set", 'rewards': 30.0, 'isClaim': false},
-  ];
-
   TokenProvider({required AuthProvider authProvider}) {
     fetchTokens(authProvider.user_id);
     fetchReferralCode(authProvider.user_id);
     updateIsRedeemAvailable();
     loadDataPaymentMethod();
-
   }
 
   final TokenService _tokenService = TokenService();
@@ -132,10 +108,35 @@ class TokenProvider extends ChangeNotifier {
  Future<void> fetchUpdateTotalInviteToken(String user_id) async {
     try {
       updateTotalInviteToken(await getInviteTokens(user_id));
+      fetchUpdateTotalInvite(user_id);
       notifyListeners(); // Notify UI to update
     } catch (e) {
       print('Error fetching payout date: $e');
       notifyListeners();
+    }
+  }
+
+  Future<bool> fetchTokens(String userId) async {
+    try {
+      fetchPayoutDate();
+      updateUserToken(await getUserTokenBalance(userId));
+      print("Current Token : ${await getUserTokenBalance(userId)}");
+      bool? isUnlock = await hasUserSuccessfulFirstPayout(userId);
+      updateIsSuccessFullFirstPayout(isUnlock!);
+      if (await getFirstWithdrawStatus(userId) == "approved") {
+        if (await updateUserSuccessfulFirstPayout(userId, true)) {
+          print("successfully first payout");
+        };
+      } else {
+        print("error in approval");
+      }
+      await updateIsRedeemAvailable();
+      notifyListeners();
+
+      return true; // Success
+    } catch (e) {
+      debugPrint("Error fetching tokens: $e");
+      return false; // Failure
     }
   }
 
@@ -223,29 +224,7 @@ class TokenProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> fetchTokens(String userId) async {
-    try {
-      fetchPayoutDate();
-      updateUserToken(await getUserTokenBalance(userId));
-      print("Current Token : ${await getUserTokenBalance(userId)}");
-      bool? isUnlock = await hasUserSuccessfulFirstPayout(userId);
-      updateIsSuccessFullFirstPayout(isUnlock!);
-      if (await getFirstWithdrawStatus(userId) == "approved") {
-        if (await updateUserSuccessfulFirstPayout(userId, true)) {
-          print("successfully first payout");
-        };
-      } else {
-        print("error in approval");
-      }
-      await updateIsRedeemAvailable();
-      notifyListeners();
 
-      return true; // Success
-    } catch (e) {
-      debugPrint("Error fetching tokens: $e");
-      return false; // Failure
-    }
-  }
 
   Future<double> getTotalInvites(String userId) async {
     try {
@@ -441,9 +420,10 @@ class TokenProvider extends ChangeNotifier {
           MaterialPageRoute(
               builder: (context) => WalletHistory()));
 
-      Future.delayed(Duration.zero,(){
+      Future.delayed(Duration.zero,() async {
         showAuthDialog(context, type: "info", "Processing",
             "Your redemption request is under review.");
+       await fetchTokens(userId);
       });
 
 
@@ -510,10 +490,6 @@ class TokenProvider extends ChangeNotifier {
     String randomPart = List.generate(6, (index) => chars[random.nextInt(chars.length)]).join();
 
     return 'FLASHI-$randomPart'; // Always starts with FLASHI
-  }
-
-  String generateReferralLink(String referralCode) {
-    return "https://flashi.com/referral?code=$referralCode";
   }
 
 }

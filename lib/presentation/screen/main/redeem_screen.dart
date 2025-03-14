@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flashi/presentation/screen/main/settings_screen.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_title_content.dart';
 import 'package:flashi/provider/auth_provider.dart';
@@ -6,10 +8,11 @@ import 'package:flashi/util/helpers/widget/alert_dialog/auth_dialog.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/loading_dialog.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/show_withdrawal_confirmation_alert.dart';
 import 'package:flashi/util/helpers/widget/modals/show_payment_method_modal.dart';
+import 'package:flashi/util/helpers/widget/other/check_internet.dart';
 import 'package:flashi/util/helpers/widget/other/empty_widgets.dart';
 import 'package:flashi/util/helpers/widget/other/reward_ui.dart';
+import 'package:flashi/util/helpers/widget/other/token_initialization.dart';
 import 'package:flutter/material.dart';
-import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:email_validator/email_validator.dart';
 
@@ -21,30 +24,17 @@ class RedeemScreen extends StatefulWidget {
 }
 
 class _RedeemScreenState extends State<RedeemScreen> {
+
   bool isConnected = false;
 
   @override
   void initState() {
     super.initState();
-
-    final tokenProvider = Provider.of<TokenProvider>(context,listen: false);
-    final authProvider = Provider.of<AuthProvider>(context,listen: false);
-
-    checkInternet(authProvider);
-    Future.delayed(Duration.zero, () async {
-      await   tokenProvider.fetchTokens(authProvider.user_id);
-      await tokenProvider.fetchUpdateTotalInvite(authProvider.user_id);
-      await tokenProvider.fetchUpdateTotalInviteToken(authProvider.user_id);
-      await tokenProvider.insertUserTokenBalanceIfEmpty(authProvider.user_id);
-      await tokenProvider.updateIsReviewing(authProvider.user_id);
-      await  tokenProvider.fetchPayoutDate();
-      await tokenProvider.updateIsRedeemAvailable();
-    });
-
+    fetchDataTokens(context, checkInternet);
   }
 
   Future<void> checkInternet(AuthProvider authProvider) async {
-    bool result =   await InternetConnection().hasInternetAccess;
+    bool result =    await isHaveInternet();
 
     setState(() {
       isConnected = result;
@@ -77,7 +67,7 @@ class _RedeemScreenState extends State<RedeemScreen> {
 }
 
 class RedeemScreenContent extends StatelessWidget {
-  const RedeemScreenContent({super.key});
+  const RedeemScreenContent({super.key,required });
 
   @override
   Widget build(BuildContext context) {
@@ -108,7 +98,7 @@ class RedeemScreenContent extends StatelessWidget {
       ),
       body: Consumer2<TokenProvider,AuthProvider>(
         builder: (context, tokenProvider,authProvider, child) {
-          return authProvider.user_id.isNotEmpty ?  SingleChildScrollView(
+          return authProvider.user_id.isNotEmpty  ?  SingleChildScrollView(
             padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -261,15 +251,7 @@ class RedeemScreenContent extends StatelessWidget {
             },
             child: Container(
               decoration: BoxDecoration(
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2), // Shadow color
-                    blurRadius: 8, // Spread of the shadow
-                    offset: Offset(0, 4), // Position of the shadow
-                  ),
-                ],
-                color: isUnlocked ? colorScheme.primary.withOpacity(0.8): Colors.grey.shade300,
-                // border: Border.all(color:colorScheme.primary, width: 1),
+                color: colorScheme.secondaryContainer.withOpacity(0.9),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Column(
@@ -281,13 +263,13 @@ class RedeemScreenContent extends StatelessWidget {
                       Text(
                         '$requiredTokens',
                         style: TextStyle(
-                          color:  isUnlocked ? colorScheme.onPrimary : colorScheme.primary,
+                          color: colorScheme.primary,
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       SizedBox(width: 5),
-                      Icon(Icons.diamond_rounded, size: 20, color : isUnlocked ? colorScheme.onPrimary : colorScheme.primary),
+                      Icon(Icons.diamond_rounded, size: 20, color : colorScheme.primary),
                     ],
                   ),
                   SizedBox(height: 4),
@@ -297,18 +279,18 @@ class RedeemScreenContent extends StatelessWidget {
                       Text(
                         '= $amount',
                         style: TextStyle(
-                          color:isUnlocked ? colorScheme.onPrimary : colorScheme.primary,
+                          color: colorScheme.primary,
                           fontSize: 14,
                         ),
                       ),
                       SizedBox(width: 4),
-                      Icon(Icons.attach_money_rounded, size: 20, color: isUnlocked ? colorScheme.onPrimary : colorScheme.primary),
+                      Icon(Icons.attach_money_rounded, size: 20, color: colorScheme.primary),
                     ],
                   ),
                   SizedBox(height: 5),
                   Icon(
                     isUnlocked ? Icons.lock_open_rounded : Icons.lock,
-                    color: isUnlocked ? colorScheme.onPrimary : colorScheme.primary,
+                    color:colorScheme.primary,
                     size: 24,
                   ),
                 ],
@@ -328,130 +310,92 @@ class RedeemScreenContent extends StatelessWidget {
     );
   }
 
-
-
-  Widget _DefaultPaymentMethod(
-      ColorScheme colorScheme,BuildContext context) {
-    return Consumer2<TokenProvider,AuthProvider>(
-      builder: (context, tokenProvider,authProvider, child) {
-        return Container(
-          padding: EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(10)),
-            gradient: LinearGradient(
-              colors: [
-                colorScheme.primary.withOpacity(1),
-                colorScheme.primary.withOpacity(0.3),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.2), // Shadow color
-                blurRadius: 8, // Spread of the shadow
-                offset: Offset(0, 4), // Position of the shadow
+  Widget _DefaultPaymentMethod(ColorScheme colorScheme, BuildContext context) {
+    return Consumer2<TokenProvider, AuthProvider>(
+      builder: (context, tokenProvider, authProvider, child) {
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: Container(
+              padding: EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: colorScheme.primaryContainer.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
               ),
-            ],
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Row(
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.wallet_rounded, color: colorScheme.onPrimary, size: 25),
-                  SizedBox(width: 10),
-                  Text(
-                    "Default Payment Method",
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: colorScheme.onPrimary,
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: colorScheme.secondaryContainer.withOpacity(0.5),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: DropdownButtonFormField<String>(
+                      value: tokenProvider.payoutMethod,
+                      dropdownColor: colorScheme.onPrimary,
+                      icon: Icon(Icons.arrow_drop_down, color: colorScheme.primary),
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                      style: TextStyle(
+                        color: colorScheme.primary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      onChanged: (String? newValue) {
+                        if (newValue != null) {
+                          tokenProvider.updatePayoutMethod(newValue);
+                        }
+                      },
+                      items: tokenProvider.paymentMethods.map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Row(
+                            children: [
+                              Icon(
+                                value == "GCash"
+                                    ? Icons.phone_android
+                                    : value == "PayPal"
+                                    ? Icons.account_balance_wallet
+                                    : Icons.account_balance,
+                                size: 20,
+                                color: colorScheme.primary,
+                              ),
+                              SizedBox(width: 8),
+                              Text(value, style: TextStyle(color: colorScheme.primary, fontSize: 14)),
+                            ],
+                          ),
+                        );
+                      }).toList(),
                     ),
                   ),
+                  SizedBox(height: 12),
+
+                  // Payment Details Section
+                  if (tokenProvider.payoutMethod == "GCash")
+                    GestureDetector(
+                      onTap: () {
+                        showPaymentMethodModal(context, "GCash", (value) {
+                          tokenProvider.updateGcashNumber(value.isEmpty ? "" : value);
+                        });
+                      },
+                      child: _buildPaymentField("GCash Number", tokenProvider.gCashNumber, colorScheme),
+                    )
+                  else if (tokenProvider.payoutMethod == "PayPal")
+                    GestureDetector(
+                      onTap: () {
+                        showPaymentMethodModal(context, "PayPal", (value) {
+                          tokenProvider.updatePaypalEmail(value.isEmpty ? "" : value);
+                        });
+                      },
+                      child: _buildPaymentField("PayPal Email", tokenProvider.paypalEmail, colorScheme),
+                    ),
                 ],
               ),
-              SizedBox(height: 10),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-                decoration: BoxDecoration(
-                  color: colorScheme.surface.withOpacity(0.1),
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    bottomRight: Radius.circular(20),
-                  ),
-                ),
-                child: DropdownButtonFormField<String>(
-                  value: tokenProvider.payoutMethod,
-                  dropdownColor: colorScheme.primary.withOpacity(0.6),
-                  icon: Icon(Icons.arrow_drop_down, color: colorScheme.onPrimary),
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                  style: TextStyle(
-                    color: colorScheme.onPrimary,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  onChanged: (String? newValue) {
-                    if (newValue != null) {
-                      tokenProvider.updatePayoutMethod(newValue);
-                    }
-                  },
-                  items: tokenProvider.paymentMethods.map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Row(
-                        children: [
-                          Icon(
-                            value == "GCash"
-                                ? Icons.phone_android
-                                : value == "PayPal"
-                                ? Icons.account_balance_wallet
-                                : Icons.account_balance, // Default for bank
-                            size: 24,
-                            color: colorScheme.onPrimary,
-                          ),
-                          SizedBox(width: 10),
-                          Text(value, style: TextStyle(color: colorScheme.onPrimary, fontSize: 16)),
-                        ],
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ),
-              SizedBox(height: 16),
-
-              // Payment Details Section
-              if (tokenProvider.payoutMethod == "GCash")
-                GestureDetector(
-                  onTap: () {
-                    showPaymentMethodModal(context, "GCash", (value) {
-                      if(value.isEmpty){
-                        tokenProvider.updateGcashNumber("");
-                      }else{
-                        tokenProvider.updateGcashNumber(value);
-                      }
-                    });
-                  },
-                  child: _buildPaymentField("GCash Number", tokenProvider.gCashNumber, colorScheme),
-                )
-              else if (tokenProvider.payoutMethod == "PayPal")
-                GestureDetector(
-                  onTap: () {
-                    showPaymentMethodModal(context, "PayPal", (value) {
-                      if(value.isEmpty){
-                        tokenProvider.updatePaypalEmail("");
-                      }else{
-                        tokenProvider.updatePaypalEmail(value);
-                      }
-                    });
-                  },
-                  child: _buildPaymentField("PayPal Email", tokenProvider.paypalEmail, colorScheme),
-                ),
-            ],
+            ),
           ),
         );
       },
@@ -465,7 +409,7 @@ class RedeemScreenContent extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: colorScheme.primary.withOpacity(0.2),
+        color: colorScheme.secondaryContainer.withOpacity(0.5),
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(20),
           bottomRight: Radius.circular(20),
@@ -477,14 +421,14 @@ class RedeemScreenContent extends StatelessWidget {
           Text(
             label,
             style: TextStyle(
-              color: colorScheme.onPrimary.withOpacity(0.7),
+              color: colorScheme.primary.withOpacity(0.7),
               fontSize: 14,
             ),
           ),
           Text(
             value,
             style: TextStyle(
-              color: colorScheme.onPrimary.withOpacity(0.7),
+              color: colorScheme.primary.withOpacity(0.7),
               fontWeight: FontWeight.w600,
               fontSize: value.length >= 16 ? 12 : 16,
             ),

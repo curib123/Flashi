@@ -5,6 +5,7 @@ import 'package:flashi/provider/ai_credits_provider.dart';
 import 'package:flashi/provider/ai_model_logic_provider.dart';
 import 'package:flashi/provider/auth_provider.dart';
 import 'package:flashi/provider/chatbot_provider.dart';
+import 'package:flashi/provider/daily_activities_provider.dart';
 import 'package:flashi/provider/fetch_data_from_json_provider.dart';
 import 'package:flashi/provider/bottom_navigation_provider.dart';
 import 'package:flashi/provider/check_version_provider.dart';
@@ -64,6 +65,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => AiCreditProvider()), // Add CheckVersionProvider
         ChangeNotifierProvider(create: (_) => DailyQuestionProvider()), // Add CheckVersionProvider
         ChangeNotifierProvider(create: (_) => AuthProvider()), // Add CheckVersionProvider
+        ChangeNotifierProvider(create: (_) => DailyActivitiesProvider()), // Add CheckVersionProvider
         ChangeNotifierProvider(create: (context) => TokenProvider(
             authProvider: Provider.of<AuthProvider>(context,listen: false)),
         ), // Add CheckVersionProvider
