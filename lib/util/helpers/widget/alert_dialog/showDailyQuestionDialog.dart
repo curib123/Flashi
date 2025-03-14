@@ -1,14 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'dart:async';
 import 'dart:math';
 
-void showDailyQuestionDialog(BuildContext context, {required List<Map<String, String>> questions}) {
-  final theme = Theme.of(context);
-  final FlutterTts flutterTts = FlutterTts();
+class DailyQuestionDialog extends StatefulWidget {
+  final List<Map<String, String>> questions;
 
-  if (questions.isEmpty) {
-    questions = [
+  const DailyQuestionDialog({Key? key, required this.questions}) : super(key: key);
+
+  @override
+  _DailyQuestionDialogState createState() => _DailyQuestionDialogState();
+}
+
+class _DailyQuestionDialogState extends State<DailyQuestionDialog> {
+  final FlutterTts flutterTts = FlutterTts();
+  late List<Map<String, String>> questions;
+  int currentIndex = 0;
+  bool isAnswered = false;
+  String? selectedAnswer;
+  Timer? _timer;
+  int timeLeft = 20;
+  List<String> choices = [];
+
+  @override
+  void initState() {
+    super.initState();
+    questions = widget.questions.isNotEmpty ? widget.questions : [
       {
         "question": "No daily question available.",
         "correct_answer": "",
@@ -17,159 +35,182 @@ void showDailyQuestionDialog(BuildContext context, {required List<Map<String, St
         "fake_choice_3": ""
       }
     ];
+    questions.shuffle(Random());
+    _loadQuestion();
   }
 
-  questions.shuffle(Random()); // Shuffle questions
-  int currentIndex = 0;
-  bool isAnswered = false;
-  String? selectedAnswer;
+  void _loadQuestion() {
+    setState(() {
+      isAnswered = false;
+      selectedAnswer = null;
+      timeLeft = 20;
+      _shuffleChoices();
+    });
+    _startTimer();
+    _speakText(questions[currentIndex]["question"] ?? "");
+  }
 
-  void speakText(String text) async {
+  void _startTimer() {
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (timeLeft > 0) {
+        setState(() => timeLeft--);
+      } else {
+        _nextQuestion();
+      }
+    });
+  }
+
+  void _speakText(String text) async {
     await flutterTts.stop();
     await flutterTts.speak(text);
   }
 
-  speakText(questions[currentIndex]["question"] ?? "");
+  void _selectAnswer(String choice) {
+    if (isAnswered) return;
 
-  showDialog(
-    context: context,
-    barrierDismissible: false,
-    builder: (context) {
-      return StatefulBuilder(
-        builder: (context, setState) {
-          final questionData = questions[currentIndex];
-          List<String> choices = [
-            questionData["correct_answer"] ?? "",
-            questionData["fake_choice_1"] ?? "",
-            questionData["fake_choice_2"] ?? "",
-            questionData["fake_choice_3"] ?? ""
-          ];
-          choices.shuffle(Random());
+    setState(() {
+      isAnswered = true;
+      selectedAnswer = choice;
+    });
 
-          void selectAnswer(String choice) {
-            if (isAnswered) return;
+    if (choice == questions[currentIndex]["correct_answer"]) {
+      _speakText("Correct!");
 
-            setState(() {
-              isAnswered = true;
-              selectedAnswer = choice;
-            });
+    } else {
+      _speakText("Wrong answer.");
+      Future.delayed(const Duration(seconds: 2), () {
+        _speakText("The correct answer is ${questions[currentIndex]["correct_answer"]}");
+      });
+    }
 
-            if (choice == questionData["correct_answer"]) {
-              speakText("Correct!");
-            } else {
-              speakText("Wrong answer.");
-              Future.delayed(Duration(seconds: 2), () {
-                speakText("The correct answer is ${questionData["correct_answer"]}");
-              });
-            }
+    Future.delayed(const Duration(seconds: 5), _nextQuestion);
+  }
 
-            Future.delayed(Duration(seconds: 5), () {
-              setState(() {
-                if (currentIndex < questions.length - 1) {
-                  currentIndex++;
-                  isAnswered = false;
-                  selectedAnswer = null;
-                  speakText(questions[currentIndex]["question"] ?? "");
-                } else {
-                  Navigator.pop(context);
-                  flutterTts.stop();
-                }
-              });
-            });
-          }
+  void _nextQuestion() {
+    if (currentIndex < questions.length - 1) {
+      setState(() {
+        currentIndex++;
+      });
+      _loadQuestion();
+    } else {
+      Navigator.pop(context);
+      flutterTts.stop();
+    }
+  }
 
-          return Dialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            backgroundColor: theme.colorScheme.surface,
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    "Daily Quiz",
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: theme.colorScheme.primary),
-                  ).animate().fadeIn(duration: 300.ms),
-                  SizedBox(height: 16),
+  void _shuffleChoices() {
+    choices = [
+      questions[currentIndex]["correct_answer"] ?? "",
+      questions[currentIndex]["fake_choice_1"] ?? "",
+      questions[currentIndex]["fake_choice_2"] ?? "",
+      questions[currentIndex]["fake_choice_3"] ?? ""
+    ];
+    choices.shuffle(Random());
+  }
 
-                  AnimatedSwitcher(
-                    duration: 400.ms,
-                    transitionBuilder: (widget, animation) => FadeTransition(
-                      opacity: animation,
-                      child: SlideTransition(
-                        position: Tween<Offset>(begin: Offset(0, 0.5), end: Offset.zero).animate(animation),
-                        child: widget,
-                      ),
-                    ),
-                    child: Text(
-                      questionData["question"] ?? "No question available.",
-                      key: ValueKey(currentIndex),
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500, color: theme.colorScheme.onSurface),
-                    ),
-                  ),
-                  SizedBox(height: 20),
+  @override
+  void dispose() {
+    _timer?.cancel();
+    flutterTts.stop();
+    super.dispose();
+  }
 
-                  Wrap(
-                    spacing: 10,
-                    runSpacing: 10,
-                    alignment: WrapAlignment.center,
-                    children: choices.map((choice) {
-                      Color buttonColor = theme.colorScheme.primary;
-                      if (isAnswered) {
-                        if (choice == questionData["correct_answer"]) {
-                          buttonColor = Colors.green;
-                        } else if (choice == selectedAnswer) {
-                          buttonColor = Colors.red;
-                        }
-                      }
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final questionData = questions[currentIndex];
 
-                      return SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.3,
-                        child: ElevatedButton(
-                          style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
-                              if (isAnswered) {
-                                return buttonColor; // Keep color when disabled
-                              }
-                              return theme.colorScheme.primary;
-                            }),
-                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                            ),
-                            padding: MaterialStateProperty.all(const EdgeInsets.symmetric(vertical: 14)),
-                          ),
-                          onPressed: isAnswered ? null : () => selectAnswer(choice),
-                          child: Text(
-                            choice,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: choice.length > 20 ? 12 : (choice.length > 10 ? 14 : 16),
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      backgroundColor: theme.colorScheme.surface,
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "Daily Quiz",
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: theme.colorScheme.primary),
+            ).animate().fadeIn(duration: 300.ms),
+            const SizedBox(height: 16),
 
-                        ),
-                      );
-                    }).toList(),
-                  ),
-
-                  SizedBox(height: 20),
-
-                  TextButton.icon(
-                    onPressed: () {
-                      flutterTts.stop();
-                      Navigator.pop(context);
-                    },
-                    icon: Icon(Icons.close, color: theme.colorScheme.primary),
-                    label: Text("Close", style: TextStyle(color: theme.colorScheme.primary)),
-                  ),
-                ],
+            AnimatedSwitcher(
+              duration: 400.ms,
+              transitionBuilder: (widget, animation) => FadeTransition(
+                opacity: animation,
+                child: SlideTransition(
+                  position: Tween<Offset>(begin: const Offset(0, 0.5), end: Offset.zero).animate(animation),
+                  child: widget,
+                ),
+              ),
+              child: Text(
+                questionData["question"] ?? "No question available.",
+                key: ValueKey(currentIndex),
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500, color: theme.colorScheme.onSurface),
               ),
             ),
-          );
-        },
-      );
-    },
-  );
+            const SizedBox(height: 10),
+            Text("Time Left: $timeLeft s", style: const TextStyle(color: Colors.red, fontSize: 16)),
+            const SizedBox(height: 20),
+
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              alignment: WrapAlignment.center,
+              children: choices.map((choice) {
+                Color buttonColor = theme.colorScheme.primary;
+                if (isAnswered) {
+                  if (choice == questionData["correct_answer"]) {
+                    buttonColor = Colors.green;
+                  } else if (choice == selectedAnswer) {
+                    buttonColor = Colors.red;
+                  }
+                }
+
+                return SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.3,
+                  child: ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+                        if (isAnswered) {
+                          return buttonColor;
+                        }
+                        return theme.colorScheme.primary;
+                      }),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      padding: MaterialStateProperty.all(const EdgeInsets.symmetric(vertical: 14)),
+                    ),
+                    onPressed: isAnswered ? null : () => _selectAnswer(choice),
+                    child: Text(
+                      choice,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: choice.length > 20 ? 12 : (choice.length > 10 ? 14 : 16),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+
+            const SizedBox(height: 20),
+
+            TextButton.icon(
+              onPressed: () {
+                flutterTts.stop();
+                Navigator.pop(context);
+              },
+              icon: Icon(Icons.close, color: theme.colorScheme.primary),
+              label: Text("Close", style: TextStyle(color: theme.colorScheme.primary)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

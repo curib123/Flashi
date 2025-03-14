@@ -18,7 +18,11 @@ class ReusableDailyQuestPosition extends StatelessWidget {
       right: 5, // Adjusted for balance (optional)
       child: GestureDetector(
         onTap: () {
-          showDailyQuestionDialog(context, questions: dailyQuestionProvider.funFacts) ;
+          showDialog(
+            context: context,
+            builder: (context) => DailyQuestionDialog(questions: dailyQuestionProvider.funFacts)
+          );
+
         },
         child: Container(
           padding: const EdgeInsets.all(5),

@@ -102,7 +102,7 @@ class _RewardsScreenState extends State<RewardsScreen> with SingleTickerProvider
                       indicatorColor: colorScheme.primary,
                       tabs: const [
                         Tab(text: "Daily Rewards"),
-                        Tab(text: "Active Rewards"),
+                        Tab(text: "Quiz Rewards"),
                       ],
                     ),
                   ],
@@ -118,7 +118,7 @@ class _RewardsScreenState extends State<RewardsScreen> with SingleTickerProvider
                       dailyActivitiesProvider.activities,
                       context,
                     ),
-                    ActiveDailyActivity(),
+                    QuizRewards(),
                   ],
                 ),
               ),
@@ -131,8 +131,8 @@ class _RewardsScreenState extends State<RewardsScreen> with SingleTickerProvider
   }
 }
 
-Widget ActiveDailyActivity() {
-  return Center(child: Text("Active Daily Activity"));
+Widget QuizRewards() {
+  return Center(child: Text("No Quiz Right now"));
 }
 
 Widget _DailyActivitiesContainer(

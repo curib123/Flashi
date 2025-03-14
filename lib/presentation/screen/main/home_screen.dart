@@ -81,7 +81,11 @@ class _HomeScreenState extends State<HomeScreen> {
       print(dailyQuestionProvider.funFacts);
       handleFreeCreditsDialog(aiCreditProvider, context);
       if (dailyQuestionProvider.funFacts.isNotEmpty && !dailyQuestionProvider.isAlreadyShow) {
-        showDailyQuestionDialog(context, questions: dailyQuestionProvider.funFacts) ;
+          showDialog(
+              context: context,
+              builder: (context) => DailyQuestionDialog(questions: dailyQuestionProvider.funFacts));
+
+
         dailyQuestionProvider.toggleFunFacts();
       }
     });
