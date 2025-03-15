@@ -9,7 +9,7 @@ class ChatScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     return DefaultTabController(
-      length: 3,
+      length: 2,
       child: Scaffold(
         appBar: AppBar(
           leading: GestureDetector(
@@ -47,7 +47,6 @@ class ChatScreen extends StatelessWidget {
           children: [
             Center(child: Text("Chat Session Content")),
             Center(child: Text("Study Session Content")),
-            Center(child: Text("Study Group Content")),
           ],
         ),
       ),
