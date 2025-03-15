@@ -17,8 +17,9 @@ class ReusableTitleContent extends StatefulWidget {
   final String title;
   final VoidCallback onUpgradePro;
   final VoidCallback onSettings;
+  final bool isEnergyShow ;
 
-  const ReusableTitleContent({super.key, required this.colorScheme, required this.title, required this.onUpgradePro, required this.onSettings});
+  const ReusableTitleContent({super.key, required this.colorScheme, required this.title, required this.onUpgradePro, required this.onSettings, required this.isEnergyShow});
 
   @override
   State<ReusableTitleContent> createState() => _ReusableTitleContentState();
@@ -56,7 +57,7 @@ class _ReusableTitleContentState extends State<ReusableTitleContent> {
             // SizedBox(width: 20,),
             Row(
               children: [
-                GestureDetector(
+                widget.isEnergyShow ? GestureDetector(
                   onTap: () async {
                    adManager.loadRewardedAd(AdUnitId.rewardedAdUnitId);
                     bool isConnected = await InternetConnection().hasInternetAccess;
@@ -102,39 +103,8 @@ class _ReusableTitleContentState extends State<ReusableTitleContent> {
                     ),
 
                   ),
-                ),
-               IconButton(
-                    onPressed: () async {
-                      bool isConnected = await InternetConnection().hasInternetAccess;
-
-                      if(isConnected ){
-
-                        if(authProvider.user_id.isNotEmpty){
-                          await authProvider.saveFlashcards(authProvider.user_id,quizProvider.quizSets);
-                          await authProvider.saveUserCredits(authProvider.user_id, aiCreditProvider.credits);
-                          await authProvider.saveNotes(authProvider.user_id, notesProvider.notes);
-                          await authProvider.saveChatBotMessages(authProvider.user_id, chatBotProvider.messages);
-
-                          showLoadingDialog(context, text: "Saving data... Please wait..");
-                          Future.delayed(Duration(seconds: 3),()  {
-                            Navigator.of(context).pop();
-                          });
-
-
-                        }else{
-                          showAuthDialog(context,type: "warning", "Warning", "Please sign in to sync your data.");
-
-                        }
-
-                      }else{
-                        showAuthDialog(context,type: "error", "Error", "No Internet Connection");
-                      }
-
-                     ;
-                    },
-                    icon: Icon(Icons.save,color: widget.colorScheme.onPrimary,)
-                ) ,
-
+                ) : Text(""),
+              SizedBox(width: 20,),
                authProvider.user_id.isEmpty ? GestureDetector(
                   onTap: widget.onSettings,
                   child: CircleAvatar(

@@ -31,8 +31,9 @@ class CustomNavigationBar extends StatelessWidget {
           Icon(Icons.smart_toy_rounded, size: 30, color: colorScheme.onPrimary),
           Icon(Icons.text_snippet_rounded, size: 30, color: colorScheme.onPrimary),
           Icon(Icons.home_rounded, size: 40, color: colorScheme.onPrimary),
+          Icon(Icons.chat_outlined, size: 30, color: colorScheme.onPrimary),
           Icon(Icons.workspace_premium , size: 30, color: colorScheme.onPrimary),
-          Icon(Icons.wallet_rounded, size: 30, color: colorScheme.onPrimary),
+
 
         ],
         onTap: (index) {

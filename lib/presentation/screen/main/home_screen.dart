@@ -201,7 +201,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   pinned: true, // Keeps the header visible when scrolling
                   floating: true, // Header doesn't float when scrolling
                   expandedHeight: 190, // Height of the expanded header
-                  title:  ReusableTitleContent(colorScheme: colorScheme, title: "FLASHI", onUpgradePro: () {},
+                  title:  ReusableTitleContent(
+                      isEnergyShow: true,
+                      colorScheme: colorScheme, title: "FLASHI", onUpgradePro: () {},
                       onSettings: () {
             
                         Navigator.push(
@@ -220,12 +222,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           Align(
                             alignment: Alignment.center,
                             child: Text(
-                              "Learn More  Earn More",
+                              "Learn Faster with Flashcards",
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 color: colorScheme.onPrimary,
                                 fontWeight: FontWeight.w700,
-                                fontSize: 18,
+                                fontSize: 16,
                               ),
                             ),
                           ),

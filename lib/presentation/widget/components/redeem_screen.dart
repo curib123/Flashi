@@ -1,5 +1,4 @@
 import 'dart:ui';
-
 import 'package:flashi/presentation/screen/main/settings_screen.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_title_content.dart';
 import 'package:flashi/provider/auth_provider.dart';
@@ -10,7 +9,6 @@ import 'package:flashi/util/helpers/widget/alert_dialog/show_withdrawal_confirma
 import 'package:flashi/util/helpers/widget/modals/show_payment_method_modal.dart';
 import 'package:flashi/util/helpers/widget/other/check_internet.dart';
 import 'package:flashi/util/helpers/widget/other/empty_widgets.dart';
-import 'package:flashi/util/helpers/widget/other/reward_ui.dart';
 import 'package:flashi/util/helpers/widget/other/token_initialization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -72,52 +70,24 @@ class RedeemScreenContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    return Scaffold(
-      appBar: AppBar(
-          leading: GestureDetector(
-            onTap: () => Scaffold.of(context).openDrawer(),
-            child: Icon(
-              Icons.notes_rounded,
-              size: 30,
-              color: colorScheme.onPrimary,
-            ),
-          ),
-        backgroundColor: colorScheme.primary,
-        foregroundColor: colorScheme.onPrimary,
-        title: ReusableTitleContent(
-          colorScheme: colorScheme,
-          title: "Redeem",
-          onUpgradePro: () {},
-          onSettings: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const SettingsScreen()),
-            );
-          },
-        ),
-      ),
-      body: Consumer2<TokenProvider,AuthProvider>(
+    return  Consumer2<TokenProvider,AuthProvider>(
         builder: (context, tokenProvider,authProvider, child) {
           return authProvider.user_id.isNotEmpty  ?  SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+            padding: EdgeInsets.symmetric(horizontal: 10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                BalanceToken(colorScheme, tokenProvider,context),
-                SizedBox(height: 10),
-
                 _DefaultPaymentMethod(colorScheme,context),
-                SizedBox(height: 20),
-
+                SizedBox(height: 10),
+            _DateOfPayout(colorScheme, tokenProvider),
+                SizedBox(height: 10),
                 _PayoutList(colorScheme, tokenProvider, context,authProvider),
-                SizedBox(height: 20),
-                _DateOfPayout(colorScheme, tokenProvider),
+
               ],
             ),
           ) :isOfflineOrNotSignIn(colorScheme,context);
         },
-      ),
-    );
+      );
   }
 
 
@@ -160,7 +130,7 @@ class RedeemScreenContent extends StatelessWidget {
   Widget _buildPayoutContainer(
       ColorScheme colorScheme, String message, IconData icon, Color borderColor) {
     return Container(
-      padding: EdgeInsets.all(15),
+      padding: EdgeInsets.all(10),
       decoration: BoxDecoration(
 
         color: borderColor.withOpacity(0.1),
@@ -193,7 +163,7 @@ class RedeemScreenContent extends StatelessWidget {
           crossAxisCount: 2,
           crossAxisSpacing: 8.0,
           mainAxisSpacing: 8.0,
-          childAspectRatio: 1.6,
+          childAspectRatio: 1.8,
         ),
         itemCount: payoutOptions.length,
         itemBuilder: (context, index) {
@@ -318,7 +288,7 @@ class RedeemScreenContent extends StatelessWidget {
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
             child: Container(
-              padding: EdgeInsets.all(14),
+              padding: EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: colorScheme.primaryContainer.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
@@ -327,7 +297,7 @@ class RedeemScreenContent extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: EdgeInsets.symmetric(horizontal: 12),
                     decoration: BoxDecoration(
                       color: colorScheme.secondaryContainer.withOpacity(0.5),
                       borderRadius: BorderRadius.circular(12),

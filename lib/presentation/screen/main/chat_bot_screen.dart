@@ -80,6 +80,7 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
               MaterialPageRoute(builder: (context) => const SettingsScreen()),
             );
           },
+          isEnergyShow: false,
         ),
         centerTitle: false,
       ),

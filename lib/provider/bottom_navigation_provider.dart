@@ -1,8 +1,8 @@
 
 import 'package:flashi/presentation/screen/main/chat_bot_screen.dart';
+import 'package:flashi/presentation/screen/main/chat_screen.dart';
 import 'package:flashi/presentation/screen/main/note_screen.dart';
 import 'package:flashi/presentation/screen/main/home_screen.dart';
-import 'package:flashi/presentation/screen/main/redeem_screen.dart';
 import 'package:flashi/presentation/screen/main/rewards_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -12,9 +12,8 @@ class BottomNavigationProvider with ChangeNotifier{
     ChatBotScreen(),
     NoteScreen(),
     HomeScreen(),
+    ChatScreen(),
     RewardsScreen(),
-    RedeemScreen(),
-
   ];
 
   int _currentIndex = 2;

@@ -1,3 +1,4 @@
+import 'package:flashi/presentation/widget/components/redeem_screen.dart';
 import 'package:flashi/provider/daily_activities_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flashi/presentation/screen/main/settings_screen.dart';
@@ -70,6 +71,7 @@ class _RewardsScreenState extends State<RewardsScreen> with SingleTickerProvider
         ),
         backgroundColor: colorScheme.primary,
         title: ReusableTitleContent(
+          isEnergyShow: false,
           colorScheme: colorScheme,
           title: "Earn",
           onUpgradePro: () {},
@@ -102,7 +104,7 @@ class _RewardsScreenState extends State<RewardsScreen> with SingleTickerProvider
                       indicatorColor: colorScheme.primary,
                       tabs: const [
                         Tab(text: "Daily Rewards"),
-                        Tab(text: "Quiz Rewards"),
+                        Tab(text: "Redeem Reward"),
                       ],
                     ),
                   ],
@@ -118,7 +120,7 @@ class _RewardsScreenState extends State<RewardsScreen> with SingleTickerProvider
                       dailyActivitiesProvider.activities,
                       context,
                     ),
-                    QuizRewards(),
+                   RedeemScreen(),
                   ],
                 ),
               ),
@@ -129,10 +131,6 @@ class _RewardsScreenState extends State<RewardsScreen> with SingleTickerProvider
       ),
     );
   }
-}
-
-Widget QuizRewards() {
-  return Center(child: Text("No Quiz Right now"));
 }
 
 Widget _DailyActivitiesContainer(

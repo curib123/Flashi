@@ -66,7 +66,9 @@ class _NoteScreenState extends State<NoteScreen> {
         ),
         backgroundColor: colorScheme.primary,
         foregroundColor: colorScheme.onPrimary,
-        title:  ReusableTitleContent(colorScheme: colorScheme, title: "Notes", onUpgradePro: () {},
+        title:  ReusableTitleContent(
+            isEnergyShow: false,
+            colorScheme: colorScheme, title: "Notes", onUpgradePro: () {},
             onSettings: () {
 
               Navigator.push(
