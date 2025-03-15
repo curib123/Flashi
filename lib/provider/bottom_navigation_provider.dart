@@ -1,10 +1,11 @@
 
 import 'package:flashi/presentation/screen/main/chat_bot_screen.dart';
-import 'package:flashi/presentation/screen/main/chat_screen.dart';
 import 'package:flashi/presentation/screen/main/note_screen.dart';
 import 'package:flashi/presentation/screen/main/home_screen.dart';
 import 'package:flashi/presentation/screen/main/rewards_screen.dart';
 import 'package:flutter/material.dart';
+
+import '../presentation/screen/main/online_screen.dart';
 
 class BottomNavigationProvider with ChangeNotifier{
 
@@ -12,7 +13,7 @@ class BottomNavigationProvider with ChangeNotifier{
     ChatBotScreen(),
     NoteScreen(),
     HomeScreen(),
-    ChatScreen(),
+    OnlineScreen(),
     RewardsScreen(),
   ];
 

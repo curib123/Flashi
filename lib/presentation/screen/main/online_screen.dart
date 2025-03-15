@@ -2,8 +2,8 @@ import 'package:flashi/presentation/screen/main/settings_screen.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_title_content.dart';
 import 'package:flutter/material.dart';
 
-class ChatScreen extends StatelessWidget {
-  const ChatScreen({super.key});
+class OnlineScreen extends StatelessWidget {
+  const OnlineScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +24,7 @@ class ChatScreen extends StatelessWidget {
           title: ReusableTitleContent(
             isEnergyShow: false,
             colorScheme: colorScheme,
-            title: "Study Session",
+            title: "Community ",
             onUpgradePro: () {},
             onSettings: () {
               Navigator.push(
@@ -38,15 +38,15 @@ class ChatScreen extends StatelessWidget {
             unselectedLabelColor: Colors.white70,
             indicatorColor: colorScheme.onPrimary,
             tabs: const [
-              Tab(text: "Chat Session"),
-              Tab(text: "Study Session"),
+              Tab(text: "What's New"),
+              Tab(text: "Leaderboards"),
             ],
           ),
         ),
         body: const TabBarView(
           children: [
-            Center(child: Text("Chat Session Content")),
-            Center(child: Text("Study Session Content")),
+            Center(child: Text("Recent Post ")),
+            Center(child: Text("Leaderboards")),
           ],
         ),
       ),
