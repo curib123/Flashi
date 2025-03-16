@@ -20,11 +20,9 @@ import 'package:flashi/provider/check_version_provider.dart';
 import 'package:flashi/provider/notes_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flashi/provider/sort_provider.dart';
-import 'package:flashi/provider/token_provider.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_unit_id.dart';
 import 'package:flashi/util/helpers/classes/ads/app_lifecycle_reactor.dart';
-import 'package:flashi/util/helpers/widget/alert_dialog/loading_dialog.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/showDailyQuestionDialog.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/show_free_credits_dialog.dart';
 import 'package:flashi/util/helpers/widget/other/empty_widgets.dart';
@@ -104,13 +102,13 @@ class _HomeScreenState extends State<HomeScreen> {
           print(aiCreditProvider.lastUpdated);
 
           if (aiCreditProvider.credits <= 10) {
-            aiCreditProvider.updateAddedCredits(random.nextInt(6) + 10);
-          } else if (aiCreditProvider.credits > 10 && aiCreditProvider.credits <= 15) {
-           aiCreditProvider.updateAddedCredits( random.nextInt(6) + 7);
-          } else if (aiCreditProvider.credits > 15 && aiCreditProvider.credits <= 20) {
-           aiCreditProvider.updateAddedCredits(random.nextInt(5) + 5);
+            aiCreditProvider.updateAddedCredits(random.nextInt(3) + 5);
+          } else if (aiCreditProvider.credits > 10 && aiCreditProvider.credits <= 10) {
+           aiCreditProvider.updateAddedCredits( random.nextInt(3) + 4);
+          } else if (aiCreditProvider.credits > 15 && aiCreditProvider.credits <= 15) {
+           aiCreditProvider.updateAddedCredits(random.nextInt(2) + 3);
           } else {
-           aiCreditProvider.updateAddedCredits(random.nextInt(5) + 3);
+           aiCreditProvider.updateAddedCredits(random.nextInt(2) + 2);
           }
 
           if (aiCreditProvider.lastUpdated == null || now.difference(aiCreditProvider.lastUpdated!).inDays > 0) {
@@ -222,7 +220,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           Align(
                             alignment: Alignment.center,
                             child: Text(
-                              "Learn Faster with Flashcards",
+                              "Retain Faster with Flashcards",
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 color: colorScheme.onPrimary,

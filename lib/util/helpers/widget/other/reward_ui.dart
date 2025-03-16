@@ -125,7 +125,7 @@ Widget inviteBtnContainer(ColorScheme colorScheme, BuildContext context, TokenPr
                     ),
                     SizedBox(height: 4),
                     Text(
-                      "Earn 1000 tokens per friend! Your friend gets ${tokenProvider.invite_reward} tokens too!",
+                      "Earn ${tokenProvider.invite_reward} tokens per friend! Your friend gets ${tokenProvider.invite_reward} tokens too!",
                       style: TextStyle(
                         color: colorScheme.primary.withOpacity(0.8),
                         fontSize: 12,
@@ -151,7 +151,7 @@ class DailyActivitiesTile extends StatefulWidget {
   final IconData icon;
   final String title;
   final ColorScheme colorScheme;
-  final void Function(double) onClaim;
+  final void Function(String ,double) onClaim;
   final double tokenRewards;
 
   const DailyActivitiesTile({
@@ -180,7 +180,10 @@ class _DailyActivitiesTileState extends State<DailyActivitiesTile> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: handleTap,
+      onTap: () {
+        handleTap();
+        widget.onClaim(widget.title,widget.tokenRewards);
+      } ,
       child: AnimatedContainer(
         duration: Duration(milliseconds: 150),
         padding: EdgeInsets.symmetric(vertical: 5),
@@ -209,7 +212,7 @@ class _DailyActivitiesTileState extends State<DailyActivitiesTile> {
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10),
           ),
           trailing: GestureDetector(
-            onTap: () => widget.onClaim(widget.tokenRewards),
+            onTap: () => widget.onClaim(widget.title,widget.tokenRewards),
             child: AnimatedContainer(
               duration: Duration(milliseconds: 150),
               padding: EdgeInsets.symmetric(vertical: 7, horizontal: 16),

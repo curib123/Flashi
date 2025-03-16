@@ -110,11 +110,11 @@ class CustomDrawer extends StatelessWidget {
                     ),
 
                     buildListTile(
-                      icon: Icons.home_rounded,
-                      title: 'Home',
+                      icon: Icons.layers_rounded,
+                      title: 'Flashcards',
                       onTap: () {
                         Navigator.pop(context);
-                        bottomNavProvider.toogleNavigation(2);
+                        bottomNavProvider.toogleNavigation(0);
                       },
                     ),
                     buildListTile(

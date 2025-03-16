@@ -24,29 +24,12 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    listenToAuthChanges(context);
     // Load Google ads here
     AdManager adManager = AdManager();
     adManager.loadBannerAd(AdUnitId.bannerAdUnitId);
   }
 
 
-
-  void listenToAuthChanges(BuildContext context) {
-
-    supabase.auth.onAuthStateChange.listen((data) {
-      final Session? session = data.session;
-
-      if (session == null) {
-
-      } else {
-        // User is signed in
-        print("User signed in: ${session.user.id}");
-        // Navigate to home screen (optional)
-       // quizProvider.updateQuizSets(quizProvider.quizSets,merge: false);
-      }
-    });
-  }
 
   @override
   Widget build(BuildContext context) {

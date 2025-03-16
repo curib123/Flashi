@@ -41,7 +41,8 @@ class SeeAllQuizCard extends StatelessWidget {
       appBar: AppBar(
         foregroundColor: colorScheme.onPrimary,
         backgroundColor: colorScheme.primary,
-        title: Text(name),
+        title: Text(name,style: TextStyle(fontSize: 16),),
+        centerTitle: true,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
           ),

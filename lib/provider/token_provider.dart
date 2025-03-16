@@ -1,10 +1,13 @@
+import 'dart:io';
 import 'dart:math';
 
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flashi/presentation/screen/main/wallet_history.dart';
 import 'package:flashi/provider/auth_provider.dart';
 import 'package:flashi/util/helpers/classes/Rewards/token_services.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/auth_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:ntp/ntp.dart';
 
@@ -42,6 +45,8 @@ class TokenProvider extends ChangeNotifier {
   final TokenService _tokenService = TokenService();
   final Box _storage = Hive.box('payment_method'); // Hive box for settings
 
+  FlutterSecureStorage storage = FlutterSecureStorage();
+
   // Getters
   double get currentTokens => _currentTokens;
 
@@ -72,6 +77,32 @@ class TokenProvider extends ChangeNotifier {
 
   double get totalInvite => _totalInvite;
 
+
+  Future<void> processUserTokens({
+    required String userId,
+    required double requiredTokens,
+    required bool isIncrement,
+    required double amount,
+    required String payoutMethod,
+    String? gCashNumber,
+    String? paypalEmail,
+  }) async {
+    // Modify user tokens (increase or decrease)
+    modifyUserTokens(isIncrement: isIncrement, requiredTokens: requiredTokens);
+
+    // Ensure _currentTokens is properly updated before proceeding
+    await updateUserTokenBalance(userId, _currentTokens);
+
+    // Insert transaction record for spending or earning tokens
+    await insertTokenTransaction(userId, requiredTokens,
+        isIncrement ? "earn" : "spend", "completed", _isSuccessFullFirstPayout);
+
+    // If it's a withdrawal request, proceed with payout
+    if (!isIncrement) {
+      await _tokenService.requestWithdrawal(
+          userId, amount, payoutMethod == "GCash" ? gCashNumber! : paypalEmail!);
+    }
+  }
 
 
 
@@ -256,7 +287,9 @@ class TokenProvider extends ChangeNotifier {
 
   Future<bool> insertUserTokenBalanceIfEmpty(String userId) async {
     try {
-      return await _tokenService.insertUserTokenBalanceIfEmpty(userId,generateReferralCode());
+
+      String code = generateReferralCode(getDeviceId());
+      return await _tokenService.insertUserTokenBalanceIfEmpty(userId,code);
     } catch (e) {
       debugPrint('Error inserting user token balance: $e');
       return false;
@@ -408,13 +441,8 @@ class TokenProvider extends ChangeNotifier {
       return false;
     }
     try {
-      modifyUserTokens(isIncrement: false,
-          requiredTokens: requiredTokens); // Ensure _currentTokens is properly initialized
-      await updateUserTokenBalance(userId, _currentTokens);
-      await insertTokenTransaction(userId, requiredTokens, "spend", "completed",
-          _isSuccessFullFirstPayout);
-      await _tokenService.requestWithdrawal(
-          userId, amount, payoutMethod == "GCash" ? gCashNumber : paypalEmail);
+
+     await processUserTokens(userId:authProvider.user_id , requiredTokens: requiredTokens, isIncrement: false, amount: amount, payoutMethod: payoutMethod);
       Navigator.push(
           context,
           MaterialPageRoute(
@@ -483,13 +511,35 @@ class TokenProvider extends ChangeNotifier {
     }
   }
 
-  String generateReferralCode() {
+  // Get or Generate Referral Code
+   Future<String> getDevicesReferralCode() async {
+    final String deviceId = await getDeviceId();
+    String? storedCode = await storage.read(key: deviceId); // Use device ID as the storage key
+
+    if (storedCode != null) return storedCode; // Return if already exists
+    return "Error";
+  }
+
+  // Generate referral code using device ID
+   String generateReferralCode(Future<String> deviceId) {
     const String chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    final Random random = Random();
+    final Random random = Random(deviceId.hashCode); // Use device ID as seed
 
     String randomPart = List.generate(6, (index) => chars[random.nextInt(chars.length)]).join();
+    return 'FLASHI-$randomPart';
+  }
 
-    return 'FLASHI-$randomPart'; // Always starts with FLASHI
+  // Get Device ID
+   Future<String> getDeviceId() async {
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    if (Platform.isAndroid) {
+      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+      return androidInfo.id; // Returns unique Android ID
+    } else if (Platform.isIOS) {
+      IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+      return iosInfo.identifierForVendor ?? 'UNKNOWN'; // Unique per vendor
+    }
+    return 'UNKNOWN_DEVICE';
   }
 
 }

@@ -1,8 +1,11 @@
+import 'dart:ui';
+
 import 'package:flashi/provider/auth_provider.dart';
 import 'package:flashi/provider/token_provider.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/auth_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
 
 class ReferralCodeScreen extends StatefulWidget {
@@ -52,11 +55,14 @@ class _ReferralCodeScreenState extends State<ReferralCodeScreen> {
                 children: [
                  _rules(colorScheme,tokenProvider),
                   SizedBox(height: 20),
+                  downloadLink('https://flashi.en.uptodown.com/android/download', context,colorScheme),
+                  SizedBox(height: 20),
                   _referralCode(colorScheme, tokenProvider,context),
                   SizedBox(height: 20),
                   _enterReferralCode(colorScheme, tokenProvider,authProvider,tokenProvider.getAllReferralCodes(), context),
                   SizedBox(height: 20,),
                   _statisticsRow(colorScheme),
+
 
                 ],
               ),
@@ -80,7 +86,7 @@ Widget _rules(ColorScheme colorScheme, TokenProvider tokenProvider,) {
       children: [
         _ruleItem(
             colorScheme,
-            "Share your unique referral code with your friends and get 1,000 tokens for every friend who enters your code. Your friend will also receive ${tokenProvider.invite_reward} tokens."
+            "Share your unique referral code with your friends and get  ${tokenProvider.invite_reward} tokens for every friend who enters your code. Your friend will also receive ${tokenProvider.invite_reward} tokens."
         ),
         _ruleItem(
             colorScheme,
@@ -161,6 +167,7 @@ Widget _referralCode(ColorScheme colorScheme, TokenProvider tokenProvider, Build
 
 Widget _enterReferralCode(ColorScheme colorScheme, TokenProvider tokenProvider,AuthProvider authProvider,getAllReferralCodes, BuildContext context)  {
   TextEditingController _controller = TextEditingController();
+  FlutterSecureStorage storage = FlutterSecureStorage();
 
   return Container(
     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -174,7 +181,8 @@ Widget _enterReferralCode(ColorScheme colorScheme, TokenProvider tokenProvider,A
           child: TextField(
             controller: _controller,
             decoration: InputDecoration(
-              hintText: "Referral Code",
+              hintText: "Enter your Friends Code",
+              hintStyle: TextStyle(fontSize: 12),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
                 borderSide: BorderSide.none,
@@ -195,14 +203,17 @@ Widget _enterReferralCode(ColorScheme colorScheme, TokenProvider tokenProvider,A
               borderRadius: BorderRadius.circular(8),
             ),
           ),
-          child: Text("Use Code"),
+          child: Text("Enter Code"),
           onPressed: () async {
             String enteredCode = _controller.text.trim();
+
             if (enteredCode.isNotEmpty && tokenProvider.referralCode != enteredCode) {
               // Handle referral code submission (replace this with your logic)
-              if (await tokenProvider.isReferredByEmpty(authProvider.user_id)) {
+              if (await tokenProvider.isReferredByEmpty(authProvider.user_id) && tokenProvider.getDevicesReferralCode().toString().isEmpty) {
                 if (await tokenProvider.isReferralCodeValid(enteredCode)) {
                   await tokenProvider.SaveReferredBy(authProvider.user_id, enteredCode);
+                  final String deviceId = await tokenProvider.getDeviceId();
+                  await storage.write(key: deviceId, value: enteredCode);
                   showAuthDialog(
                       context,
                       type: "success",
@@ -222,7 +233,7 @@ Widget _enterReferralCode(ColorScheme colorScheme, TokenProvider tokenProvider,A
                     context,
                     type: "warning",
                     "Already Reffered",
-                     "You've already been referred by someone."
+                     "This Device has already been referred by someone ."
                 );
               }
 
@@ -329,4 +340,81 @@ Widget _statisticsRow(ColorScheme colorScheme) {
       );
     },
   );
+
+}
+
+Widget downloadLink(String downloadLink, BuildContext context, ColorScheme colorScheme) {
+  return Container(
+    padding: const EdgeInsets.symmetric(vertical: 10,horizontal: 15),
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(20),
+      color: Colors.white.withOpacity(0.1),
+    ),
+    child: ClipRRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "Share this link with your friends!",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white.withOpacity(0.9),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    "Tell your friends to download and install the app. Once they open it, they can enter your referral code to receive bonus tokens. The more friends who use your code, the more rewards you earn!",
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: Colors.white.withOpacity(0.7),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            downloadLink,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(fontSize: 14, color: colorScheme.primary),
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.copy, color: colorScheme.primary),
+                          onPressed: () {
+                            Clipboard.setData(ClipboardData(text: downloadLink));
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text("Link copied to clipboard!"),
+                                behavior: SnackBarBehavior.floating,
+                                backgroundColor: colorScheme.secondary,
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+
 }
