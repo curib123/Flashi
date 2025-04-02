@@ -26,7 +26,7 @@ class ReusableImportPosition extends StatelessWidget {
             borderRadius: BorderRadius.circular(50),
           ),
           child: Icon(
-            Icons.add_card_sharp,
+            Icons.import_export_rounded,
             size: 23,
             color: colorScheme.onPrimary,
           ),

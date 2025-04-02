@@ -515,9 +515,8 @@ class TokenProvider extends ChangeNotifier {
    Future<String> getDevicesReferralCode() async {
     final String deviceId = await getDeviceId();
     String? storedCode = await storage.read(key: deviceId); // Use device ID as the storage key
-
     if (storedCode != null) return storedCode; // Return if already exists
-    return "Error";
+    return "";
   }
 
   // Generate referral code using device ID

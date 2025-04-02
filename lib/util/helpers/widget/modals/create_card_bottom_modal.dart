@@ -56,12 +56,14 @@ void CreateCardBottomModal({
                   const SizedBox(height: 30),
                   // TextField for Set Name
                   ReusableTextfieldCore(
+                    isHideName: false,
                     name: "Question",
                     controller: quizProvider.questionController,
                   ),
                   const SizedBox(height: 20),
                   // TextField for Description
                   ReusableTextfieldCore(
+                    isHideName: false,
                     name: "Answer",
                     controller: quizProvider.answerController,
                   ),

@@ -206,10 +206,14 @@ Widget _enterReferralCode(ColorScheme colorScheme, TokenProvider tokenProvider,A
           child: Text("Enter Code"),
           onPressed: () async {
             String enteredCode = _controller.text.trim();
+            final String deviceId = await tokenProvider.getDeviceId();
+            await storage.read(key: deviceId,);
+            bool isCodeExistInDevice = (await tokenProvider.getDevicesReferralCode()).isEmpty;
+            print(isCodeExistInDevice);
 
             if (enteredCode.isNotEmpty && tokenProvider.referralCode != enteredCode) {
               // Handle referral code submission (replace this with your logic)
-              if (await tokenProvider.isReferredByEmpty(authProvider.user_id) && tokenProvider.getDevicesReferralCode().toString().isEmpty) {
+              if (await tokenProvider.isReferredByEmpty(authProvider.user_id) && isCodeExistInDevice) {
                 if (await tokenProvider.isReferralCodeValid(enteredCode)) {
                   await tokenProvider.SaveReferredBy(authProvider.user_id, enteredCode);
                   final String deviceId = await tokenProvider.getDeviceId();

@@ -67,7 +67,7 @@ class SignInScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 10),
                   Text(
-                    "Sign in to sync your flashcard across devices.",
+                    "Sign in to sync your data across devices.",
                     textAlign: TextAlign.center,
                     style: GoogleFonts.poppins(fontSize: 14, color: colorScheme.onSurfaceVariant),
                   ),

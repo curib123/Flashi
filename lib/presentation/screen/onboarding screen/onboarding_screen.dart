@@ -34,8 +34,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
 
   List<PageViewModel> get pages => [
     PageViewModel(
-      title: "AI-Powered Flashcards",
-      body: "Generate smart flashcards instantly using AI! Create custom prompts or extract key points from PDFs and Docs to supercharge your learning.",
+      title: "Instant Question And Answer Maker",
+      body: "Generate Accurate Questions And Answer ! Extract key points from PDFs,Docs ,Images or just captured it to supercharge your learning.",
       image: Center(
         child: SlideTransition(
           position: _offsetAnimation,
@@ -57,7 +57,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
     ),
     PageViewModel(
       title: "Create & Customize",
-      body: "Create your own flashcards tailored to your learning style. Add questions and answer for personalized use.",
+      body: "Create your own Q&A tailored to your learning style. Add questions and answer for personalized use.",
       image: Center(
         child: SlideTransition(
           position: _offsetAnimation,

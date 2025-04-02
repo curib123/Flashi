@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:email_validator/email_validator.dart';
-import 'package:flashi/presentation/widget/components/redeem_screen.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/loading_dialog.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/show_withdrawal_confirmation_alert.dart';
 import 'package:flashi/util/helpers/widget/modals/show_payment_method_modal.dart';

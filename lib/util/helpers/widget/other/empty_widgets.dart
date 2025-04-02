@@ -14,14 +14,14 @@ Widget noSetWidget(BuildContext context) {
           const Icon(Icons.inbox, size: 100, color: Colors.grey),
           const SizedBox(height: 20),
           Text(
-            "No Flashcards Set Available",
+            "No Quiz Set Available",
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
               color: Colors.grey,
             ),
           ),
           const SizedBox(height: 10),
           Text(
-            "Create Some Flashcards Set to See Them Here.",
+            "Create Some Quiz Set to See Them Here.",
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: Colors.grey.shade600,
             ),
@@ -110,6 +110,36 @@ Widget noNotesWidget(BuildContext context) {
           const SizedBox(height: 10),
           Text(
             "Add some Notes to see them here.",
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Colors.grey.shade600,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+Widget noHistoryWidget(BuildContext context) {
+  return SizedBox(
+    height: MediaQuery.of(context).size.height,
+    width: MediaQuery.of(context).size.width,
+    child:   Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.inbox, size: 100, color: Colors.grey),
+          const SizedBox(height: 20),
+          Text(
+            "No History",
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              color: Colors.grey,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            "Generate Quiz Now",
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: Colors.grey.shade600,
             ),

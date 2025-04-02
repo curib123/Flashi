@@ -15,7 +15,7 @@ void showMergeFlashcardDialog(BuildContext context, {required VoidCallback onMer
             Icon(Icons.info, color: colorScheme.primary, size: 50),
             SizedBox(height: 8),
             Text(
-              "Merge/Sync Flashcards?",
+              "Merge/Sync Quiz Set?",
               textAlign: TextAlign.center,
               style: GoogleFonts.poppins(
                 fontSize: 15,
@@ -26,7 +26,7 @@ void showMergeFlashcardDialog(BuildContext context, {required VoidCallback onMer
           ],
         ),
         content: Text(
-          "Do you want to merge your locally created flashcards with your account? If not, they will be removed.",
+          "Do you want to merge your locally created quiz set with your account? If not, they will be removed.",
           textAlign: TextAlign.center,
           style: GoogleFonts.poppins(
             fontSize: 12,

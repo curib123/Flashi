@@ -41,7 +41,7 @@ class ReusableCreateSetButtonPosition extends StatelessWidget {
                     style: TextStyle(
                         color: colorScheme.onPrimary,
                         fontSize: 20,
-                        fontWeight: FontWeight.bold
+                        fontWeight: FontWeight.w500
                     ),
                   ),
                 ],

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:flashi/provider/ai_credits_provider.dart';
 import 'package:flashi/provider/fetch_data_from_json_provider.dart';
+import 'package:flashi/provider/history_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flashi/util/helpers/classes/api/ai/core/ai_question_generator.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/auth_dialog.dart';
@@ -13,6 +14,7 @@ import 'package:flashi/util/helpers/widget/modals/create_set_bottom_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
+import 'package:provider/provider.dart';
 
 class AiModelLogicProvider extends ChangeNotifier {
   String extractedText = "";
@@ -52,7 +54,7 @@ class AiModelLogicProvider extends ChangeNotifier {
       FetchDataFromJsonProvider fetchDataFromJsonProvider,
       AiCreditProvider aiCreditProvider,
       Future<String> pickAndExtractText(),) async {
-    showLoadingDialog(context, text: "AI is processing... Please wait...");
+    showLoadingDialog(context, text: "Please wait...");
     extractedText = await pickAndExtractText();
 
     if (handleExtractedTextError(context, extractedText)) {
@@ -73,15 +75,15 @@ class AiModelLogicProvider extends ChangeNotifier {
       });
 
       Future.delayed(Duration(seconds: 10), () {
-        if (questions.isNotEmpty && !isTimeOut) {
+        if (questions.isNotEmpty && !isTimeOut ) {
 
-          final quizSetName = "New Created Flashcard ${quizProvider.quizSets.length}";
+          final quizSetName = quizProvider.nameController.text.isEmpty ? "Newly Created ${quizProvider.quizSets.length}" : quizProvider.nameController.text;
 
 
           quizProvider.addQuizSet({
             'name': quizSetName,
             'timestamp': DateTime.now(),
-            'description': 'Generated Flashcard content',
+            'description': 'Generated Quiz content From File',
             'cards': [],
             'numberOfQuiz': 0,
             'limitNumberOfQuiz': fetchDataFromJsonProvider.ListOfMaxLength,
@@ -100,6 +102,22 @@ class AiModelLogicProvider extends ChangeNotifier {
               },
             );
           }
+
+          String formatQuestions(questions) {
+            return questions.map((q) => 'Q: ${q['question']}\nA: ${q['answer']}').join('\n\n');
+          }
+
+          String formattedText = formatQuestions(questions);
+
+          Provider.of<HistoryProvider>(context,listen: false).addHistory(
+            {
+              'title': quizSetName,
+              'content': formattedText,
+              'created_at': DateTime.now(),
+              'favorite': false,
+            }
+
+          );
           Navigator.pop(context);
           Navigator.pop(context);
           Navigator.pop(context);
@@ -117,7 +135,7 @@ class AiModelLogicProvider extends ChangeNotifier {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                  "Successfully Created Generated Flashcard "),
+                  "Successfully Created Generated Quiz "),
               backgroundColor: Colors.green,
             ),
           );
@@ -168,8 +186,8 @@ class AiModelLogicProvider extends ChangeNotifier {
 
     print(questions);
     var random = Random();
-    int randomNumber = 60 +
-        random.nextInt(31); // Generates a number between 30 and 60
+    int randomNumber = 30 +
+        random.nextInt(15); // Generates a number between 30 and 60
 
     Future.delayed(Duration(seconds: randomNumber), () {
       isTimeOut = true;
@@ -197,7 +215,7 @@ class AiModelLogicProvider extends ChangeNotifier {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-                "Successfully Created AI Generated Flashcard"),
+                "Successfully Created AI Generated Quiz "),
             backgroundColor: Colors.green,
           ),
         );
@@ -256,11 +274,11 @@ class AiModelLogicProvider extends ChangeNotifier {
                 padding: const EdgeInsets.symmetric(vertical: 15.0),
                 child: Center(
                   child: Text(
-                    "Choose Flashcard",
+                    "Choose Generation Method ",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 20,
+                      fontSize: 16,
                       color: colorScheme.onPrimary,
                     ),
                   ),
@@ -271,7 +289,7 @@ class AiModelLogicProvider extends ChangeNotifier {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      "Create your own flashcard, let AI generate one for you, or extract from a PDF/Docs file!",
+                      "Create your own Quiz, let AI generate one for you, or extract from a PDF/Docs file!",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 10,
@@ -288,7 +306,7 @@ class AiModelLogicProvider extends ChangeNotifier {
                     _buildDialogButton(
                       icon: Icons.style_rounded,
                       context,
-                      label: "Create Own Flashcard",
+                      label: "Create Own Quiz",
                       gradientColors: [
                         colorScheme.primary,
                         colorScheme.primary.withOpacity(0.5)
@@ -306,7 +324,7 @@ class AiModelLogicProvider extends ChangeNotifier {
                     _buildDialogButton(
                       icon: Icons.auto_awesome,
                       context,
-                      label: "AI-Generated Flashcard ",
+                      label: "Ai-Generated Quiz ",
                       gradientColors: [
                         colorScheme.secondary,
                         colorScheme.secondary.withOpacity(0.5)
@@ -316,7 +334,7 @@ class AiModelLogicProvider extends ChangeNotifier {
                         await InternetConnection().hasInternetAccess;
                         if (!isConnected && !isFetchData) {
                           showAuthDialog(context,type: "error", "Error",
-                              "Please connect to the internet to generate a flashcard.");
+                              "Please connect to the internet to generate a Quiz.");
 
                           return;
                         } else {
@@ -343,7 +361,7 @@ class AiModelLogicProvider extends ChangeNotifier {
                     _buildDialogButton(
                       icon: Icons.file_copy_rounded,
                       context,
-                      label: "Flashcard From Pdf/Docs",
+                      label: "Quiz From PDF/Word Docx",
                       gradientColors: [
                         colorScheme.tertiary,
                         colorScheme.tertiary.withOpacity(0.5)
@@ -353,7 +371,7 @@ class AiModelLogicProvider extends ChangeNotifier {
                         await InternetConnection().hasInternetAccess;
                         if (!isConnected && !isFetchData) {
                           showAuthDialog(context,type: "error", "Error",
-                              "Please connect to the internet to generate a flashcard.");
+                              "Please connect to the internet to generate a Quiz.");
                           return;
                         } else {
                           _fetchDataFromJson();
@@ -385,7 +403,7 @@ class AiModelLogicProvider extends ChangeNotifier {
                     _buildDialogButton(
                       icon: Icons.picture_in_picture,
                       context,
-                      label: "Flashcard From Image",
+                      label: "Quiz From Picture",
                       gradientColors: [
                         colorScheme.tertiary,
                         colorScheme.tertiary.withOpacity(0.5)
@@ -395,7 +413,7 @@ class AiModelLogicProvider extends ChangeNotifier {
                         await InternetConnection().hasInternetAccess;
                         if (!isConnected && !isFetchData) {
                           showAuthDialog(context,type: "error", "Error",
-                              "Please connect to the internet to generate a flashcard.");
+                              "Please connect to the internet to generate a Quiz.");
 
                           return;
                         } else {
@@ -482,8 +500,8 @@ class AiModelLogicProvider extends ChangeNotifier {
                     Text(
                       label,
                       style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
                         color: Colors.white,
                         letterSpacing: 0.5,
                       ),

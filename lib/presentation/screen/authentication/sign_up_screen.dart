@@ -74,7 +74,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                     SizedBox(height: 10),
                     Text(
-                      "Join us and sync your flashcard across devices.",
+                      "Join us and sync your data across devices.",
                       textAlign: TextAlign.center,
                       style: GoogleFonts.poppins(
                         fontSize: 14,

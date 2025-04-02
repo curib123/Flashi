@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class ReusableTextfieldCore extends StatelessWidget {
   final String name;
+  final bool isHideName;
   final String? hintText;
   final TextEditingController? controller;
 
@@ -10,6 +11,7 @@ class ReusableTextfieldCore extends StatelessWidget {
     required this.name,
     this.hintText,
     this.controller,
+     required this.isHideName,
   });
 
   @override
@@ -19,14 +21,14 @@ class ReusableTextfieldCore extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          name,
+          isHideName ? "" : name,
           style: TextStyle(
             color: colorScheme.secondary.withOpacity(.8),
             fontSize: 16,
             fontWeight: FontWeight.w600,
           ),
         ),
-        const SizedBox(height: 8), // Add spacing between label and text field
+        SizedBox(height: isHideName ? 0 : 8), // Add spacing between label and text field
         Material(
           elevation: 10,
           shadowColor: colorScheme.shadow.withOpacity(0.1),

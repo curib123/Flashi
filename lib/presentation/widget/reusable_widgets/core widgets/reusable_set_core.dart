@@ -135,7 +135,7 @@ class ReusableSetCore extends StatelessWidget {
                     itemBuilder: (context) => [
                       _buildPopupMenuItem('Favorate', isFavorate ? Icons.favorite : Icons.favorite_border, 'favorate', colorScheme.error),
                       _buildPopupMenuItem('Edit', Icons.edit, 'edit', colorScheme.primary),
-                      _buildPopupMenuItem('View All Cards', Icons.view_agenda, 'view_all', colorScheme.primary),
+                      _buildPopupMenuItem('View All Pairs', Icons.view_agenda, 'view_all', colorScheme.primary),
                       _buildPopupMenuItem('Save in Folder', Icons.save, 'export', colorScheme.primary),
                       _buildPopupMenuItem('Delete', Icons.delete, 'delete', colorScheme.error),
                     ],
@@ -146,7 +146,7 @@ class ReusableSetCore extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _buildActionButton('Add Cards', Icons.add_circle, onAddCard, colorScheme.primary),
+                  _buildActionButton('Add Pairs', Icons.add_circle, onAddCard, colorScheme.primary),
                   _buildActionButton('Quiz Mode', Icons.rate_review, onReview, colorScheme.secondary),
                 ],
               ),
@@ -174,7 +174,7 @@ class ReusableSetCore extends StatelessWidget {
     return TextButton.icon(
       onPressed: onPressed,
       icon: Icon(icon, color: color),
-      label: Text(label, style: TextStyle(color: color)),
+      label: Text(label, style: TextStyle(color: color,fontSize: 15)),
       style: TextButton.styleFrom(
         backgroundColor: color.withOpacity(0.1),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),

@@ -7,6 +7,8 @@ void fetchDataTokens(BuildContext context, Function(AuthProvider)? checkInternet
   final tokenProvider = Provider.of<TokenProvider>(context, listen: false);
   final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
+  print(tokenProvider.generateReferralCode(tokenProvider.getDeviceId()));
+
   // Ensure checkInternet is not null before calling it
   if (checkInternet != null) {
     checkInternet(authProvider);

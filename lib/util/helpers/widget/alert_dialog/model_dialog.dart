@@ -1,6 +1,8 @@
 import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_credits_info_core.dart';
+import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_textfield_core.dart';
 import 'package:flashi/provider/ai_credits_provider.dart';
 import 'package:flashi/provider/fetch_data_from_json_provider.dart';
+import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_unit_id.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/auth_dialog.dart';
@@ -52,8 +54,8 @@ class ModelSelectionDialog {
           content: Padding(
             padding: const EdgeInsets.all(10.0),
             child: SingleChildScrollView(
-              child: Consumer<FetchDataFromJsonProvider>(
-                builder: (context, fetchDataProvider, _) {
+              child: Consumer2<FetchDataFromJsonProvider,QuizProvider>(
+                builder: (context, fetchDataProvider,quizProvider, _) {
                   String selectedModel = fetchDataProvider.model;
                   int selectedMaxLength = fetchDataProvider.ListOfMaxLength;
                   String selectedQuizType = fetchDataProvider.quiz_question_type;
@@ -119,7 +121,13 @@ class ModelSelectionDialog {
                         },
                         getCredits: null,
                       ),
+                      ReusableTextfieldCore(
+                        isHideName: true,
+                        name: "Quiz Set Name",
+                        controller: quizProvider.nameController,
+                      ),
                       const SizedBox(height: 10),
+
 
                       Consumer<AiCreditProvider>(
                         builder: (context, aiCreditProvider, _) {
@@ -236,10 +244,10 @@ class ModelSelectionDialog {
         // Check if item is an integer and get credits dynamically
         if (item is int && getCredits != null) {
           int credits = getCredits(item);
-          itemText = "$item - $credits energy to use";
+          itemText = "$item Pairs - Spend $credits Energy";
         }
 
-        return DropdownMenuItem(value: item, child: Text(itemText));
+        return DropdownMenuItem(value: item, child: Text(itemText,style: TextStyle(fontSize: 13),));
       }).toList(),
       onChanged: onChanged,
     );

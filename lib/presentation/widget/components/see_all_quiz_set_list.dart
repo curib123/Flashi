@@ -72,7 +72,7 @@ class SeeAllQuizSetList extends StatelessWidget {
               children: [
                 ReusableSearchBarCore(
                   colorScheme: colorScheme,
-                  hintText: 'search Flashcard name ',
+                  hintText: 'Search Quiz Set ',
                   onChanged: (value) {
                     quizProvider.updateSearchQuery(value);
                   }, controller: quizProvider.searchController,
@@ -115,7 +115,7 @@ class SeeAllQuizSetList extends StatelessWidget {
             ReusableCreateSetButtonPosition(
               icon: Icons.add_circle,
               colorScheme: colorScheme,
-              name: 'Create Flashcard',
+              name: 'Generate Quiz Set',
               onTap: () {
               aiModelLogicProvider.showFlashcardDialog(context, quizProvider, colorScheme,fetchDataFromJsonProvider,aiCreditProvider);
               },

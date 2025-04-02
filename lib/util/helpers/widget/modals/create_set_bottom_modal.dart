@@ -40,7 +40,7 @@ void CreateSetBottomModal({
                   Align(
                     alignment: Alignment.topLeft,
                     child: Text(
-                      isCreate ? "Create a Flashcard" : 'Edit the Flashcard: $setName',
+                      isCreate ? "Generate Quiz Set" : 'Edit the Quiz Set: $setName',
                       style: TextStyle(
                         color: colorScheme.primary,
                         fontSize: 25,
@@ -53,12 +53,14 @@ void CreateSetBottomModal({
                   const SizedBox(height: 30),
                   // TextField for Set Name
                   ReusableTextfieldCore(
-                    name: "Flashcard Name",
+                    name: "Quiz Set Name",
                     controller: quizProvider.nameController,
+                    isHideName: false,
                   ),
                   const SizedBox(height: 20),
                   // TextField for Description
                   ReusableTextfieldCore(
+                    isHideName: false,
                     name: "Description - Optional",
                     controller: quizProvider.descriptionController,
                   ),
@@ -83,7 +85,7 @@ void CreateSetBottomModal({
                           });
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('The Flashcard $name is Created'),
+                              content: Text('The Quiz Set $name is Generated'),
                               backgroundColor: Colors.green,
                             ),
                           );
@@ -93,7 +95,7 @@ void CreateSetBottomModal({
                           quizProvider.editQuizSet(setName, newName: name, newDescription: description);
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('The Flashcard $name is Updated '),
+                              content: Text('The Quiz Set $name is Updated '),
                               backgroundColor: Colors.green,
                             ),
                           );

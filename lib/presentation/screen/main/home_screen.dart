@@ -67,6 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
     checkVersionProvider.checkAppVersion(context);
     dailyQuestionProvider.updateFunFacts(fetchDataFromJsonProvider);
 
+
     Future.delayed(Duration(seconds: 3),() async {
      await authProvider.saveFlashcards(authProvider.user_id,quizProvider.quizSets);
      await authProvider.saveUserCredits(authProvider.user_id, aiCreditProvider.credits);
@@ -167,7 +168,7 @@ class _HomeScreenState extends State<HomeScreen> {
         context,
         MaterialPageRoute(
           builder: (context) => SeeAllQuizSetList(
-            name: 'All Flashcard',
+            name: 'All Quiz Set',
             colorScheme: colorScheme,
           ),
         ),
@@ -220,12 +221,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           Align(
                             alignment: Alignment.center,
                             child: Text(
-                              "Retain Faster with Flashcards",
+                              "Instant Quiz Generator",
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 color: colorScheme.onPrimary,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                fontSize: 18,
                               ),
                             ),
                           ),
@@ -235,7 +236,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             height: 80,
                             child: ReusableSearchBarCore(
                               colorScheme: colorScheme,
-                              hintText: 'Search Flashcards',
+                              hintText: 'Search Quiz Set',
                               onChanged: (value) =>
                                   quizProvider.updateSearchQuery(value),
                               controller: quizProvider.searchController,
@@ -308,7 +309,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ReusableCreateSetButtonPosition(
             icon: Icons.add_circle,
             colorScheme: colorScheme,
-            name: 'Create Flashcard',
+            name: 'Generate Quiz Set',
             onTap: ()  {
               aiModelLogicProvider.showFlashcardDialog(context, quizProvider, colorScheme,fetchDataFromJsonProvider,aiCreditProvider);
             },

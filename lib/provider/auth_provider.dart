@@ -26,11 +26,11 @@ class AuthProvider extends ChangeNotifier {
   bool isPasswordVisible = false;
   bool isAgree = false;
   String username = "Guest Account";
-  String email = "AI-Powered Flashcard Generator";
+  String email = "Instant Quiz Maker";
   String user_id = "";
 
   String DefaultUsername = "Guest Account";
-  String DefaultEmail = "AI-Powered Flashcard Generator";
+  String DefaultEmail = "Instant Quiz Maker";
 
   AuthProvider(){
    loadUserData(); // Load user data from secure storage
@@ -98,7 +98,7 @@ class AuthProvider extends ChangeNotifier {
         final fetchedUserId = response.user!.id ?? "";;
         updateUsername(fetchedUsername);
         updateUserId(fetchedUserId);
-        updateEmail(response.user!.email ?? "AI-Powered Flashcard Generator");
+        updateEmail(response.user!.email ?? "Instant Quiz Maker");
 
 
         // Securely store email and username
@@ -294,7 +294,7 @@ class AuthProvider extends ChangeNotifier {
   /// Load user data from secure storage
   Future<void> loadUserData() async {
 
-    email = await secureStorage.read(key: "email") ?? "AI-Powered Flashcard Generator";
+    email = await secureStorage.read(key: "email") ?? "Instant Quiz Maker";
     username = await secureStorage.read(key: "username") ?? "Guest Account";
     user_id = await secureStorage.read(key: "user_id") ?? "";
     notifyListeners();

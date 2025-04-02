@@ -14,7 +14,7 @@ class AiCreditProvider with ChangeNotifier {
   int _maxAdsPerDay = 10;
   int _adsWatchedToday = 0;
   int adCooldown = 0;
-  int maxCooldown = 120;
+  int maxCooldown = 60;
   int _addedCredits = 0;
   DateTime? _lastUpdated;
   Timer? _countdownTimer;

@@ -1,4 +1,5 @@
 
+import 'package:flashi/presentation/widget/reusable_widgets/reusable_create_set_button_position.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_quiz_set_list.dart';
 import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flashi/util/helpers/classes/other/import_export_helper_class.dart';
@@ -43,11 +44,11 @@ class _ExportImportScreenState extends State<ExportImportScreen> {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.only(),
         child: Column(
           children: [
             _buildSetTile(quizProvider),
-            SizedBox(height: 10),
+            SizedBox(height: 5),
             _buildHeader(colorScheme, quizProvider),
 
 
@@ -58,34 +59,13 @@ class _ExportImportScreenState extends State<ExportImportScreen> {
   }
 
   Widget _buildHeader(ColorScheme colorScheme, QuizProvider quizProvider) {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(width: 10),
-            Expanded(
-              child: ElevatedButton.icon(
-                onPressed: () => _helper.importList(context, quizProvider),
-                icon: Icon(Icons.archive_rounded, color: Colors.white,),
-                label: Text("Import Subject",
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),),
-                style: ButtonStyle(
-                  foregroundColor: WidgetStatePropertyAll(
-                      colorScheme.onTertiary),
-                  backgroundColor: WidgetStatePropertyAll(colorScheme.primary),
-                  shape: WidgetStatePropertyAll(RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50),
-                  )),
-                  padding: WidgetStatePropertyAll(
-                      EdgeInsets.symmetric(vertical: 15)),
-                ),
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 20),
-      ],
+    return  ReusableCreateSetButtonPosition(
+      icon: Icons.import_export_rounded,
+      colorScheme: colorScheme,
+      name: 'Import Quiz Set',
+      onTap: ()  {
+        _helper.importList(context, quizProvider);
+      },
     );
   }
 
@@ -95,7 +75,7 @@ class _ExportImportScreenState extends State<ExportImportScreen> {
         .size;
 
     return Container(
-      height: size.height * 0.75,
+      height: size.height * 0.78,
       child: quizProvider.quizSets.isEmpty
           ? Center(
         child: Column(

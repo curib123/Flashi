@@ -54,12 +54,21 @@ class NotesProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // Method to filter note list by title
-  List<Map<String, dynamic>> filterNotesByTitle() {
-    return _notes
-        .where((note) => note['title'].toLowerCase().contains(_searchQuery.toLowerCase()))
-        .toList();
+  List<Map<String, dynamic>> filterNotes() {
+    if (_searchQuery.isEmpty) {
+      // Filter by timestamp when search query is empty
+      return _notes
+          .where((note) => note['created_at'] != null) // Ensure the timestamp is not null
+          .toList()
+        ..sort((a, b) => b['created_at'].compareTo(a['created_at'])); // Sort by timestamp in descending order
+    } else {
+      // Filter by title when search query is not empty
+      return _notes
+          .where((note) => note['title'].toLowerCase().contains(_searchQuery.toLowerCase()))
+          .toList();
+    }
   }
+
 
 
   List<Map<String, dynamic>> filterFavorate() {

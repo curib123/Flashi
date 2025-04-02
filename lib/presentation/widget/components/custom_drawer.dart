@@ -1,3 +1,4 @@
+import 'package:flashi/presentation/widget/components/see_all_quiz_set_list.dart';
 import 'package:flashi/provider/ai_credits_provider.dart';
 import 'package:flashi/provider/chatbot_provider.dart';
 import 'package:flashi/provider/notes_provider.dart';
@@ -111,10 +112,19 @@ class CustomDrawer extends StatelessWidget {
 
                     buildListTile(
                       icon: Icons.layers_rounded,
-                      title: 'Flashcards',
+                      title: 'Quiz Set',
                       onTap: () {
                         Navigator.pop(context);
-                        bottomNavProvider.toogleNavigation(0);
+                        quizProvider.searchController.text = quizProvider.searchQuery;
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SeeAllQuizSetList(
+                              name: 'All Quiz Set',
+                              colorScheme: colorScheme,
+                            ),
+                          ),
+                        );
                       },
                     ),
                     buildListTile(
@@ -141,8 +151,8 @@ class CustomDrawer extends StatelessWidget {
                     ),
 
                     buildListTile(
-                      icon: Icons.add_card_sharp,
-                      title: 'Import Flashcard',
+                      icon: Icons.import_export_rounded,
+                      title: 'Import Quiz Set',
                       onTap: () {
                         Navigator.pop(context);
                         Navigator.push(
@@ -151,24 +161,23 @@ class CustomDrawer extends StatelessWidget {
                                 builder: (context) => ExportImportScreen()));
                       },
                     ),
-                    buildListTile(
-                      icon: Icons.bug_report_rounded,
-                      title: 'Bug/Issues Report',
-                      onTap: () {
-                        Navigator.pop(context);
-                        WebPageLauncher(
-                            'https://docs.google.com/forms/...').launch();
-                      },
-                    ),
-                    buildListTile(
-                      icon: Icons.facebook_rounded,
-                      title: 'Official FB Page',
-                      onTap: () {
-                        Navigator.pop(context);
-                        WebPageLauncher('https://www.facebook.com/...').launch();
-                      },
-                    ),
 
+                    buildListTile(
+                      icon: Icons.contact_mail,
+                      title: 'Contact Us',
+                      onTap: () {
+                        Navigator.pop(context);
+                        WebPageLauncher('').launchEmail();
+                      },
+                    ),
+                    buildListTile(
+                      icon: Icons.info_rounded,
+                      title: 'About Us',
+                      onTap: () {
+                        Navigator.pop(context);
+                        showAnimatedAboutDialog(context);
+                      },
+                    ),
                     buildListTile(
                       icon: Icons.privacy_tip_rounded,
                       title: 'Privacy Policy',
@@ -187,22 +196,6 @@ class CustomDrawer extends StatelessWidget {
                         WebPageLauncher(
                             'https://curib123.github.io/flashi_/terms%26condition.html')
                             .launch();
-                      },
-                    ),
-                    buildListTile(
-                      icon: Icons.contact_mail,
-                      title: 'Contact Us',
-                      onTap: () {
-                        Navigator.pop(context);
-                        WebPageLauncher('').launchEmail();
-                      },
-                    ),
-                    buildListTile(
-                      icon: Icons.info_rounded,
-                      title: 'About Us',
-                      onTap: () {
-                        Navigator.pop(context);
-                        showAnimatedAboutDialog(context);
                       },
                     ),
                   ],
