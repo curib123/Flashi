@@ -35,7 +35,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
   List<PageViewModel> get pages => [
     PageViewModel(
       title: "Instant Question And Answer Maker",
-      body: "Generate Accurate Questions And Answer ! Extract key points from PDFs,Docs ,Images or just captured it to supercharge your learning.",
+      body: "Turn any content into powerful questions and answers—PDFs, Docs, Images, or snaps. Your learning, elevated instantly!",
       image: Center(
         child: SlideTransition(
           position: _offsetAnimation,
@@ -46,7 +46,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
     ),
     PageViewModel(
       title: "AI Assistant Chatbot",
-      body: "Study with ease—let the AI assistant chatbot guide you through your learning journey, offering accurate, correct, and tailored support to match your unique style!",
+      body: "Study smarter, not harder—with an AI assistant built just for you. Get accurate, adaptive support anytime you need it.",
       image: Center(
         child: SlideTransition(
           position: _offsetAnimation,
@@ -57,7 +57,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
     ),
     PageViewModel(
       title: "Create & Customize",
-      body: "Create your own Q&A tailored to your learning style. Add questions and answer for personalized use.",
+      body: "Shape your learning—craft personalized Q&As that match your pace and style. Build, edit, and master your own material.",
       image: Center(
         child: SlideTransition(
           position: _offsetAnimation,
@@ -68,7 +68,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
     ),
     PageViewModel(
       title: "Learn Anytime, Anywhere",
-      body: "Access your flashcards and study on-the-go, wherever you are, just dive into your learning!",
+      body: "Wherever life takes you, your knowledge goes too. Study on the move with your flashcards always at hand.",
       image: Center(
         child: SlideTransition(
           position: _offsetAnimation,
@@ -78,6 +78,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
       decoration: _pageDecoration(),
     ),
   ];
+
 
   PageDecoration _pageDecoration() {
     return PageDecoration(

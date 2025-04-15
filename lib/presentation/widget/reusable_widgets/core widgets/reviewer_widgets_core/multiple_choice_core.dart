@@ -36,66 +36,99 @@ class _MultipleChoiceCoreState extends State<MultipleChoiceCore> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     final colorScheme = Theme.of(context).colorScheme;
 
-    return ListView(
+    return Container(
       padding: const EdgeInsets.all(16),
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Score: ${widget.score} / ${widget.totalScore}",
-                  style: TextStyle(
-                    color: colorScheme.primary,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                Text(
-                  "Timer: ${widget.timer}",
-                  style: TextStyle(
-                    color: colorScheme.primary,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Container(
-              width: size.width,
-              height: size.height * 0.4,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.all(Radius.circular(20)),
-                gradient: LinearGradient(
-                  colors: [colorScheme.primary.withOpacity(0.8), colorScheme.tertiary.withOpacity(0.5)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-              child: widget.question
-            ),
-            const SizedBox(height: 30),
-            Column(
-              children: [
-                buildOptionTile(widget.optionA, colorScheme),
-                const SizedBox(height: 15),
-                buildOptionTile(widget.optionB, colorScheme),
-                const SizedBox(height: 15),
-                buildOptionTile(widget.optionC, colorScheme),
-                const SizedBox(height: 15),
-                buildOptionTile(widget.optionD, colorScheme),
-              ],
-            ),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            colorScheme.background,
+            colorScheme.surface.withOpacity(0.9),
           ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
-      ],
+      ),
+      child: ListView(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _buildInfoCard("Score", "${widget.score}/${widget.totalScore}", Icons.star, colorScheme.primary),
+              _buildInfoCard("Timer", widget.timer, Icons.timer, colorScheme.secondary),
+            ],
+          ),
+          const SizedBox(height: 24),
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: colorScheme.shadow.withOpacity(0.1),
+                  blurRadius: 20,
+                  offset: const Offset(0, 8),
+                )
+              ],
+              gradient: LinearGradient(
+                colors: [
+                  colorScheme.primary.withOpacity(0.8),
+                  colorScheme.primary.withOpacity(0.4)
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: widget.question,
+          ),
+          const SizedBox(height: 30),
+          Column(
+            children: [
+              buildOptionTile(widget.optionA, colorScheme),
+              const SizedBox(height: 15),
+              buildOptionTile(widget.optionB, colorScheme),
+              const SizedBox(height: 15),
+              buildOptionTile(widget.optionC, colorScheme),
+              const SizedBox(height: 15),
+              buildOptionTile(widget.optionD, colorScheme),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoCard(String label, String value, IconData icon, Color bgColor) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 30 , vertical: 10),
+      decoration: BoxDecoration(
+        color: bgColor.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: bgColor),
+          const SizedBox(width: 8),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(label,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: bgColor.withOpacity(0.8),
+                    fontWeight: FontWeight.w500,
+                  )),
+              Text(value,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: bgColor,
+                    fontWeight: FontWeight.bold,
+                  )),
+            ],
+          )
+        ],
+      ),
     );
   }
 
@@ -105,57 +138,59 @@ class _MultipleChoiceCoreState extends State<MultipleChoiceCore> {
 
     Icon leadingIcon;
     if (isSelected) {
-      if (isCorrect) {
-        leadingIcon = Icon(Icons.check, color: colorScheme.onPrimary);
-      } else {
-        leadingIcon = Icon(Icons.close, color: colorScheme.onPrimary);
-      }
+      leadingIcon = Icon(
+        isCorrect ? Icons.check_circle_rounded : Icons.cancel_rounded,
+        color: colorScheme.onPrimary,
+      );
+    } else if (hasAnswered && isCorrect) {
+      leadingIcon = Icon(Icons.check_circle_outline, color: colorScheme.onPrimary,);
     } else {
-      if (isCorrect && !isSelected && hasAnswered) {
-        leadingIcon = Icon(Icons.check, color: colorScheme.onPrimary);
-      } else {
-        leadingIcon = Icon(Icons.radio_button_unchecked, color: colorScheme.onPrimary);
-      }
+      leadingIcon = Icon(Icons.circle_outlined,  color: colorScheme.onPrimary,);
     }
 
     Color tileColor;
     if (isSelected) {
-      if (isCorrect) {
-        tileColor = colorScheme.primary;
-      } else {
-        tileColor = colorScheme.error;
-      }
+      tileColor = isCorrect ? Colors.green : Colors.red;
+    } else if (hasAnswered && isCorrect) {
+      tileColor = Colors.green.withOpacity(0.8);
     } else {
-      if (isCorrect && !isSelected && hasAnswered) {
-        tileColor = colorScheme.primary.withOpacity(0.8);
-      } else {
-        tileColor = colorScheme.tertiary.withOpacity(0.8);
-      }
+      tileColor = colorScheme.primary.withOpacity(0.5);
     }
 
-    return ListTile(
-      onTap: hasAnswered
-          ? null
-          : () {
-        setState(() {
-          selectedOption = option;
-          hasAnswered = true;
-        });
-        widget.onAnswerSelected(option); // Notify parent widget
-      },
-      leading: leadingIcon,
-      tileColor: tileColor,
-      title: Text(
-        option,
-        style: TextStyle(
-          color: isSelected || isCorrect
-              ? colorScheme.onPrimary
-              : colorScheme.onPrimary,
-          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-          fontSize: 18,
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      decoration: BoxDecoration(
+        color: tileColor,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          if (isSelected)
+            BoxShadow(
+              color: tileColor.withOpacity(0.4),
+              blurRadius: 12,
+              offset: const Offset(0, 6),
+            )
+        ],
+      ),
+      child: ListTile(
+        onTap: hasAnswered
+            ? null
+            : () {
+          setState(() {
+            selectedOption = option;
+            hasAnswered = true;
+          });
+          widget.onAnswerSelected(option);
+        },
+        leading: leadingIcon,
+        title: Text(
+          option,
+          style:  TextStyle(
+            color: colorScheme.onPrimary,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
     );
   }
 }

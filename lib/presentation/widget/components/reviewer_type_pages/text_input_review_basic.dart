@@ -80,7 +80,6 @@ class _TextInputReviewState extends State<TextInputReviewBasic> {
     }
   }
 
-
   void showCongratulationDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -153,6 +152,7 @@ class _TextInputReviewState extends State<TextInputReviewBasic> {
                       label: const Text('OK'),
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
                       ),
                     ).animate().fadeIn(duration: 700.ms, delay: 300.ms),
 
@@ -170,6 +170,7 @@ class _TextInputReviewState extends State<TextInputReviewBasic> {
                         foregroundColor: Theme.of(context).colorScheme.onSecondary,
                         backgroundColor: Theme.of(context).colorScheme.secondary,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
                       ),
                     ).animate().fadeIn(duration: 700.ms, delay: 400.ms),
                   ],

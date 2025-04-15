@@ -105,7 +105,7 @@ class _ReusableTitleContentState extends State<ReusableTitleContent> {
                   ),
                 ) : Text(""),
               SizedBox(width: 20,),
-               authProvider.user_id.isEmpty ? GestureDetector(
+               GestureDetector(
                   onTap: widget.onSettings,
                   child: CircleAvatar(
                     backgroundColor: Colors.transparent,
@@ -115,21 +115,7 @@ class _ReusableTitleContentState extends State<ReusableTitleContent> {
                       color: widget.colorScheme.onPrimary,
                     ),
                   ),
-                ) : GestureDetector(
-                 onTap: () {
-                  authProvider.user_id.isNotEmpty ?   showAuthDialog(context, type: "info", "Info", "You are logged in!")
-                      : showAuthDialog(context, type: "warning", "Warning", "You are not logged in!");
-                 },
-                 child: CircleAvatar(
-                   radius: 15,
-                   backgroundColor: widget.colorScheme.onPrimary,
-                   child: Icon(
-                     Icons.person_rounded,
-                     size: 25,
-                     color: widget.colorScheme.primary,
-                   ),
-                 )
-                 ),
+                )
 
               ],
             ),

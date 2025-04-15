@@ -103,13 +103,13 @@ class _HomeScreenState extends State<HomeScreen> {
           print(aiCreditProvider.lastUpdated);
 
           if (aiCreditProvider.credits <= 10) {
-            aiCreditProvider.updateAddedCredits(random.nextInt(3) + 5);
+            aiCreditProvider.updateAddedCredits(random.nextInt(4) + 4);
           } else if (aiCreditProvider.credits > 10 && aiCreditProvider.credits <= 10) {
-           aiCreditProvider.updateAddedCredits( random.nextInt(3) + 4);
+           aiCreditProvider.updateAddedCredits( random.nextInt(3) + 3);
           } else if (aiCreditProvider.credits > 15 && aiCreditProvider.credits <= 15) {
-           aiCreditProvider.updateAddedCredits(random.nextInt(2) + 3);
-          } else {
            aiCreditProvider.updateAddedCredits(random.nextInt(2) + 2);
+          } else {
+           aiCreditProvider.updateAddedCredits(random.nextInt(1) + 1);
           }
 
           if (aiCreditProvider.lastUpdated == null || now.difference(aiCreditProvider.lastUpdated!).inDays > 0) {

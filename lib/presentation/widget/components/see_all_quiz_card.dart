@@ -39,16 +39,16 @@ class SeeAllQuizCard extends StatelessWidget {
     return Scaffold(
       resizeToAvoidBottomInset: true, // Prevents bottom overflow
       appBar: AppBar(
-        foregroundColor: colorScheme.onPrimary,
-        backgroundColor: colorScheme.primary,
-        title: Text(name,style: TextStyle(fontSize: 16),),
-        centerTitle: true,
+        foregroundColor: colorScheme.primary,
+        backgroundColor: colorScheme.onPrimary,
+        title: Text(name,style: TextStyle(fontSize: 16,color: colorScheme.primary,fontWeight: FontWeight.bold),),
+        centerTitle: false,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
           ),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: colorScheme.onPrimary),
+          icon: Icon(Icons.arrow_back_ios_new, color: colorScheme.primary),
           onPressed: () {
             Navigator.pop(context);
             quizProvider.searchController.text = quizProvider.searchQuery;

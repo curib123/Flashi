@@ -253,7 +253,7 @@ Widget _buildNoteLayout(Map<String, dynamic> note, int index, ColorScheme colorS
             },
             onDelete: () {
               notesProvider.deleteNoteByTitle(note['title']);
-            },
+            }, isHistoryScreen: false,
           )
               : ReusableNotesSummaryBlockCore(
             isNote: true,

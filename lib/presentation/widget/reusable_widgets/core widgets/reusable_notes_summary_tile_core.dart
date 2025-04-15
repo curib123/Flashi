@@ -11,6 +11,7 @@ class ReusableNotesSummaryTileCore extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
+  final isHistoryScreen ;
 
   ReusableNotesSummaryTileCore({
     required this.title,
@@ -22,6 +23,7 @@ class ReusableNotesSummaryTileCore extends StatelessWidget {
     required this.onEdit,
     required this.onDelete,
     required this.isNote,
+    required this.isHistoryScreen,
   });
 
   @override
@@ -36,8 +38,8 @@ class ReusableNotesSummaryTileCore extends StatelessWidget {
         margin: EdgeInsets.symmetric(vertical: 5),
         decoration: _buildContainerDecoration(colorScheme),
         child: ListTile(
-          contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-          leading: _buildFavoriteButton(colorScheme),
+          contentPadding: EdgeInsets.symmetric(vertical: 5, horizontal: isHistoryScreen ? 30 : 15),
+          leading: isHistoryScreen ? null : _buildFavoriteButton(colorScheme),
           title: _buildTitle(colorScheme),
           subtitle: _buildSubtitle(colorScheme),
           trailing: _buildPopupMenuButton(colorScheme),

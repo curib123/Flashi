@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 
 class TextToSpeechCardCore extends StatelessWidget {
-  // Declaring final variables to hold question and answer text
   final Widget question;
   final String answer;
 
-  // Constructor with required named parameters
   const TextToSpeechCardCore({
     super.key,
     required this.question,
@@ -14,46 +12,54 @@ class TextToSpeechCardCore extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Get screen size and theme color scheme
     final size = MediaQuery.of(context).size;
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Container(
-      // Apply consistent margin and responsive size
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 60),
-      width: size.width,
-      // Add a gradient background, shadow, and rounded corners
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [colorScheme.primary.withOpacity(0.7), colorScheme.tertiary.withOpacity(0.7)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: colorScheme.primary.withOpacity(0.5),
-            offset: const Offset(4, 4),
-            blurRadius: 10,
+    return Center(
+      child: Container(
+        width: size.width * 0.9,
+        margin: const EdgeInsets.symmetric(vertical: 40),
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          gradient: LinearGradient(
+            colors: [
+              colorScheme.primary.withOpacity(0.9),
+              colorScheme.secondary.withOpacity(0.7),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
+          boxShadow: [
+            BoxShadow(
+              color: colorScheme.shadow.withOpacity(0.2),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
+          ],
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-           question,
-            const SizedBox(height: 20),
-            // Display the answer with styled appearance and automatic wrapping
-            Text(
-              answer,
-              textAlign: TextAlign.center, // Keep alignment consistent
-              style: TextStyle(
-                color: colorScheme.onPrimary,
-                fontWeight: FontWeight.normal,
-                fontSize: 16,
+            question,
+            const SizedBox(height: 30),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              decoration: BoxDecoration(
+                color: colorScheme.surface.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: colorScheme.outline.withOpacity(0.3)),
+              ),
+              child: Text(
+                answer,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: colorScheme.onPrimary,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                  height: 1.5,
+                ),
               ),
             ),
           ],

@@ -26,6 +26,7 @@ class AdManager {
   BannerAd? _bannerAd4;
   BannerAd? _bannerAd5;
   BannerAd? _bannerAd6;
+  BannerAd? _bannerAd7;
   double _bannerHeight = 150;
   bool _isBannerAd1Loaded = false;
   bool _isBannerAd2Loaded= false;
@@ -33,6 +34,7 @@ class AdManager {
   bool _isBannerAd4Loaded= false;
   bool _isBannerAd5Loaded= false;
   bool _isBannerAd6Loaded= false;
+  bool _isBannerAd7Loaded= false;
 
   InterstitialAd? _interstitialAd;
 
@@ -160,7 +162,9 @@ class AdManager {
         },
       ),
 
-    ); _bannerAd4 = BannerAd(
+    );
+
+    _bannerAd4 = BannerAd(
       adUnitId: id,
       size: AdSize.banner,
       request: AdRequest(),
@@ -212,6 +216,23 @@ _bannerAd6 = BannerAd(
         },
       ),
     );
+_bannerAd7 = BannerAd(
+      adUnitId: id,
+      size: AdSize.banner,
+      request: AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (Ad ad) {
+          _bannerHeight = 180;
+          _isBannerAd7Loaded = true;
+
+        },
+        onAdFailedToLoad: (Ad ad, LoadAdError error) {
+          _bannerHeight = 150;
+          _isBannerAd7Loaded = false;
+
+        },
+      ),
+    );
 
     _bannerAd1?.load();
     _bannerAd2?.load();
@@ -219,6 +240,7 @@ _bannerAd6 = BannerAd(
     _bannerAd4?.load();
     _bannerAd5?.load();
     _bannerAd6?.load();
+    _bannerAd7?.load();
   }
 
   Widget getFirstBannerAdWidget() {
@@ -291,6 +313,18 @@ _bannerAd6 = BannerAd(
         width: _bannerAd6!.size.width.toDouble(),
         height: _bannerAd6!.size.height.toDouble(),
         child: AdWidget(ad: _bannerAd6!),
+      );
+    } else {
+      return SizedBox.shrink();
+    }
+  }
+
+  Widget getSevenBannerAdWidget() {
+    if (_bannerAd7 != null && _isBannerAd7Loaded) {
+      return Container(
+        width: _bannerAd7!.size.width.toDouble(),
+        height: _bannerAd7!.size.height.toDouble(),
+        child: AdWidget(ad: _bannerAd7!),
       );
     } else {
       return SizedBox.shrink();

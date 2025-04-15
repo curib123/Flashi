@@ -149,6 +149,23 @@ class CustomDrawer extends StatelessWidget {
                                 builder: (context) => const SettingsScreen()));
                       },
                     ),
+                    Divider(color: colorScheme.primary.withOpacity(0.2), thickness: 1, indent: 20, endIndent: 20),
+                    buildListTile(
+                      icon: Icons.smart_toy_rounded,
+                      title: 'Chatbot',
+                      onTap: () {
+                        Navigator.pop(context);
+                        bottomNavProvider.toogleNavigation(0);
+                      },
+                    ),
+                    buildListTile(
+                      icon: Icons.workspace_premium,
+                      title: 'Invite To Earn',
+                      onTap: () {
+                        Navigator.pop(context);
+                        bottomNavProvider.toogleNavigation(4);
+                      },
+                    ),
 
                     buildListTile(
                       icon: Icons.import_export_rounded,
@@ -161,7 +178,7 @@ class CustomDrawer extends StatelessWidget {
                                 builder: (context) => ExportImportScreen()));
                       },
                     ),
-
+                    Divider(color: colorScheme.primary.withOpacity(0.2), thickness: 1, indent: 20, endIndent: 20),
                     buildListTile(
                       icon: Icons.contact_mail,
                       title: 'Contact Us',

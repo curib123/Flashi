@@ -28,15 +28,15 @@ class ReviewerPage extends StatelessWidget {
           borderRadius: BorderRadius.only(
           ),
         ),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        foregroundColor: Theme.of(context).colorScheme.onPrimary,
+        backgroundColor: Theme.of(context).colorScheme.onPrimary,
+        foregroundColor: Theme.of(context).colorScheme.primary,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Flexible(
               child: Text(
                 reviewer,
-                style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),
                 overflow: TextOverflow.ellipsis, // Adds ellipsis for text overflow
               ),
             ),
@@ -44,7 +44,7 @@ class ReviewerPage extends StatelessWidget {
               onTap: () => reviewerSettingsAlertBox(context: context),
               child: Icon(
                 Icons.settings,
-                color: Theme.of(context).colorScheme.onPrimary,
+                color: Theme.of(context).colorScheme.primary,
               ),
             ),
           ],
@@ -53,7 +53,7 @@ class ReviewerPage extends StatelessWidget {
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios_new, // Custom icon (back arrow)
-            color: Theme.of(context).colorScheme.onPrimary, // Custom color for the icon
+            color: Theme.of(context).colorScheme.primary, // Custom color for the icon
           ),
           onPressed: () {
             Navigator.pop(context); // Navigate back when pressed

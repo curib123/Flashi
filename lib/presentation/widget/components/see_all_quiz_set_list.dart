@@ -34,8 +34,8 @@ class SeeAllQuizSetList extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        foregroundColor: colorScheme.onPrimary, // For text and icons color
-        backgroundColor: colorScheme.primary, // Background color of the app bar
+        foregroundColor: colorScheme.primary, // For text and icons color
+        backgroundColor: colorScheme.onPrimary, // Background color of the app bar
         title: Text(name),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
@@ -45,7 +45,7 @@ class SeeAllQuizSetList extends StatelessWidget {
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios_new, // Custom Icon (back arrow)
-            color: colorScheme.onPrimary, // Custom color for the icon
+            color: colorScheme.primary, // Custom color for the icon
           ),
           onPressed: () {
 
@@ -70,13 +70,7 @@ class SeeAllQuizSetList extends StatelessWidget {
           children: [
             ListView(
               children: [
-                ReusableSearchBarCore(
-                  colorScheme: colorScheme,
-                  hintText: 'Search Quiz Set ',
-                  onChanged: (value) {
-                    quizProvider.updateSearchQuery(value);
-                  }, controller: quizProvider.searchController,
-                ),
+
                 ReusableSortAndSeeAll(
                   dropdownValue: sortProvider.dropdownValueSet,
                   sortOptions: sortProvider.sortOptionsSet,
@@ -94,6 +88,14 @@ class SeeAllQuizSetList extends StatelessWidget {
                   onShowReviewLink: () {  },
                 ),
                 adManager.getFifthBannerAdWidget(),
+                ReusableSearchBarCore(
+                  colorScheme: colorScheme,
+                  hintText: 'Search Quiz Set ',
+                  onChanged: (value) {
+                    quizProvider.updateSearchQuery(value);
+                  }, controller: quizProvider.searchController,
+                ),
+
 
         filteredQuizSets.isEmpty
                     ? noSetWidget(context)
