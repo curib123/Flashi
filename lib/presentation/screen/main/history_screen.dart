@@ -35,30 +35,16 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        leading: Builder(
-          builder: (context) => GestureDetector(
-            onTap: () => Scaffold.of(context).openDrawer(),
-            child: Icon(
-              Icons.notes_rounded,
-              size: 30,
-              color: colorScheme.onPrimary,
-            ),
+        leading: GestureDetector(
+          onTap: () => Navigator.pop(context),
+          child: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: colorScheme.primary,
           ),
         ),
-        backgroundColor: colorScheme.primary,
-        foregroundColor: colorScheme.onPrimary,
-        title: ReusableTitleContent(
-          isEnergyShow: false,
-          colorScheme: colorScheme,
-          title: "Generated Quiz History",
-          onUpgradePro: () {},
-          onSettings: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const SettingsScreen()),
-            );
-          },
-        ),
+        backgroundColor: colorScheme.onPrimary,
+        foregroundColor: colorScheme.primary,
+        title: Text("History",style: TextStyle(color: colorScheme.primary),),
         centerTitle: false,
       ),
       body: SafeArea(
@@ -110,7 +96,7 @@ Widget _NoteBodyTile(ColorScheme colorScheme, List filteredNotes, double bannerH
 
 Widget _buildNoteListView(List filteredNotes, ColorScheme colorScheme, HistoryProvider historyProvider, String layout, BuildContext context, double bannerHeight) {
   return filteredNotes.isEmpty
-      ? noNotesWidget(context)
+      ? noHistoryWidget(context)
       : AnimationLimiter(
     child: ListView.builder(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),

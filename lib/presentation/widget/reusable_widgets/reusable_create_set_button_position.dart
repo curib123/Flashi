@@ -18,28 +18,23 @@ class ReusableCreateSetButtonPosition extends StatelessWidget {
           onTap:onTap,
           child: Container(
               padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 25),
-              margin: const EdgeInsets.symmetric(horizontal: 10),
+              margin: const EdgeInsets.symmetric(horizontal: 10,vertical: 10),
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    colorScheme.primary.withOpacity(0.9),
-                    colorScheme.secondaryContainer.withOpacity(0.8),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+                color:  colorScheme.primary.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(15),
+
+
               ),
 
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(icon,color: colorScheme.onPrimary,size: 30,),
+                  Icon(icon,color: colorScheme.primary,size: 30,),
                   const SizedBox(width: 10,),
                   Text(
                     name,
                     style: TextStyle(
-                        color: colorScheme.onPrimary,
+                        color: colorScheme.primary,
                         fontSize: 20,
                         fontWeight: FontWeight.w500
                     ),

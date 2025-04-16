@@ -94,7 +94,7 @@ class SeeAllQuizCard extends StatelessWidget {
                     ? noCardWidget(context)
                     : SizedBox(
                   width: MediaQuery.sizeOf(context).width,
-                  height: MediaQuery.sizeOf(context).height * 0.70,
+                  height: MediaQuery.sizeOf(context).height * 0.60,
                   child:ReusableQuizCardList(
                       name: name,
                       card: card,
@@ -149,7 +149,7 @@ class SeeAllQuizCard extends StatelessWidget {
               ],
             ),
             Positioned(
-              bottom: 70,
+              bottom: 80,
               left: 0,
               right: 0,
               child: Center(

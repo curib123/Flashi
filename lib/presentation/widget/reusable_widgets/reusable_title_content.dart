@@ -1,5 +1,4 @@
 import 'package:flashi/provider/ai_credits_provider.dart';
-import 'package:flashi/provider/auth_provider.dart';
 import 'package:flashi/provider/chatbot_provider.dart';
 import 'package:flashi/provider/notes_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
@@ -37,8 +36,8 @@ class _ReusableTitleContentState extends State<ReusableTitleContent> {
   }
   @override
   Widget build(BuildContext context) {
-    return Consumer5<QuizProvider, AiCreditProvider,AuthProvider,NotesProvider,ChatBotProvider>(
-      builder: (context, quizProvider, aiCreditProvider,authProvider,notesProvider,chatBotProvider, child) {
+    return Consumer4<QuizProvider, AiCreditProvider,NotesProvider,ChatBotProvider>(
+      builder: (context, quizProvider, aiCreditProvider,notesProvider,chatBotProvider, child) {
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [

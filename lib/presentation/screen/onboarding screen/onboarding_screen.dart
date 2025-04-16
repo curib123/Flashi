@@ -1,4 +1,3 @@
-import 'package:flashi/presentation/screen/authentication/sign_in_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:provider/provider.dart';
@@ -34,50 +33,51 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
 
   List<PageViewModel> get pages => [
     PageViewModel(
-      title: "Instant Question And Answer Maker",
-      body: "Turn any content into powerful questions and answers—PDFs, Docs, Images, or snaps. Your learning, elevated instantly!",
+      title: "Instant Q&A Maker",
+      body: "Quickly turn PDFs, Docs, and images into questions and answers. Just snap or upload—learn fast.",
       image: Center(
         child: SlideTransition(
           position: _offsetAnimation,
-          child: Image.asset("asset/images/onboarding_1.png", height: 350),
+          child: Image.asset("asset/images/onboarding_1.png", height: 300),
         ),
       ),
       decoration: _pageDecoration(),
     ),
     PageViewModel(
-      title: "AI Assistant Chatbot",
-      body: "Study smarter, not harder—with an AI assistant built just for you. Get accurate, adaptive support anytime you need it.",
+      title: "Smart AI Chatbot",
+      body: "Get instant help from your AI assistant. Accurate answers, anytime you need them.",
       image: Center(
         child: SlideTransition(
           position: _offsetAnimation,
-          child: Image.asset("asset/images/onboarding_2.png", height: 350),
+          child: Image.asset("asset/images/onboarding_2.png", height: 300),
         ),
       ),
       decoration: _pageDecoration(),
     ),
     PageViewModel(
-      title: "Create & Customize",
-      body: "Shape your learning—craft personalized Q&As that match your pace and style. Build, edit, and master your own material.",
+      title: "Custom Q&A",
+      body: "Make your own Q&As. Edit, organize, and study at your own pace.",
       image: Center(
         child: SlideTransition(
           position: _offsetAnimation,
-          child: Image.asset("asset/images/onboarding_3.jpg", height: 350),
+          child: Image.asset("asset/images/onboarding_3.jpg", height: 300),
         ),
       ),
       decoration: _pageDecoration(),
     ),
     PageViewModel(
-      title: "Learn Anytime, Anywhere",
-      body: "Wherever life takes you, your knowledge goes too. Study on the move with your flashcards always at hand.",
+      title: "Learn Anywhere",
+      body: "Study anytime, anywhere. Your Q&As are always with you.",
       image: Center(
         child: SlideTransition(
           position: _offsetAnimation,
-          child: Image.asset("asset/images/onboarding_4.jpg", height: 350),
+          child: Image.asset("asset/images/onboarding_4.jpg", height: 300),
         ),
       ),
       decoration: _pageDecoration(),
     ),
   ];
+
 
 
   PageDecoration _pageDecoration() {
@@ -112,12 +112,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
   }
 
   void _navigateAuth(BuildContext context) {
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => SignInScreen()),
-    );
-
     final onboardingProvider = Provider.of<OnboardingProvider>(context,listen: false);
     onboardingProvider.completeOnboarding();
 

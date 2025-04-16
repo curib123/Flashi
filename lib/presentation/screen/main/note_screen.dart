@@ -54,7 +54,7 @@ class _NoteScreenState extends State<NoteScreen> {
           child: Icon(
             Icons.notes_rounded,
             size: 30,
-            color: colorScheme.onPrimary,
+            color: colorScheme.primary,
           ),
         ),
 
@@ -63,19 +63,9 @@ class _NoteScreenState extends State<NoteScreen> {
 
           ),
         ),
-        backgroundColor: colorScheme.primary,
-        foregroundColor: colorScheme.onPrimary,
-        title:  ReusableTitleContent(
-            isEnergyShow: false,
-            colorScheme: colorScheme, title: "Notes", onUpgradePro: () {},
-            onSettings: () {
-
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const SettingsScreen()),
-              );
-
-            }),
+        backgroundColor: colorScheme.onPrimary,
+        foregroundColor: colorScheme.primary,
+        title: Text("Notes",style: TextStyle(color: colorScheme.primary,fontWeight: FontWeight.bold),),
         centerTitle: false,
       ),
       body: Stack(

@@ -74,19 +74,6 @@ class ModelSelectionDialog {
                       ),
                       const SizedBox(height: 20),
 
-                      _buildDropdown<String>(
-                        context,
-                        label: "Select AI Model",
-                        value: selectedModel,
-                        items: fetchDataProvider.listOfModels,
-                        onChanged: (newValue) {
-                          if (newValue != null) selectedModel = newValue;
-                        },
-                        getCredits: null,
-
-                      ),
-                      const SizedBox(height: 20),
-
                       _buildDropdown<int>(
                         context,
                         label: "How Many Question and Answer?",

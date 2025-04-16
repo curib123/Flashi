@@ -1,5 +1,4 @@
 
-import 'package:flashi/util/helpers/widget/other/default_templates_quizset.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:hive/hive.dart';
 
@@ -33,7 +32,7 @@ class QuizProvider with ChangeNotifier {
   void loadQuizSets() {
 
 
-    var quizSetsFromStorage = _settingsBox.get('quizSets', defaultValue: default_templates);
+    var quizSetsFromStorage = _settingsBox.get('quizSets', defaultValue: []);
 
     if (quizSetsFromStorage is List) {
       _quizSets = List<Map<String, dynamic>>.from(

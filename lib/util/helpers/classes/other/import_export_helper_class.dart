@@ -17,25 +17,24 @@ class ImportExportHelperClass {
       if (androidInfo.version.sdkInt >= 33) {
         // Android 13+ (Scoped Storage) - No need for extra permissions
         return true;
-      } else if (androidInfo.version.sdkInt >= 30) {
-        // Android 11 & 12 (Needs Manage External Storage)
-        PermissionStatus manageStorageStatus =
-        await Permission.manageExternalStorage.request();
-        return manageStorageStatus.isGranted;
       } else {
-        // Android 10 and below
+        // Android 12 and below
         PermissionStatus storageStatus = await Permission.storage.request();
         return storageStatus.isGranted;
       }
     }
-    return true; // For iOS or other platforms, no special permissions needed
+    return true;
   }
 
   Future<void> exportList(BuildContext context, Map<String, dynamic> sets) async {
     try {
-      await requestPermissions();
-      final rootDirectory = Directory(directory);
+      bool permissionGranted = await requestPermissions();
+      if (!permissionGranted) {
+        showSnack(context, "Permission Denied: Storage permission required.", Colors.red);
+        return;
+      }
 
+      final rootDirectory = Directory(directory);
       if (!rootDirectory.existsSync()) {
         await rootDirectory.create(recursive: true);
       }
@@ -46,168 +45,98 @@ class ImportExportHelperClass {
 
       await file.writeAsString(jsonEncode(convertTimestampsToString(sets)));
 
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Save Successful: The list has been save to $filePath"),
-          backgroundColor: Colors.green,
-        ),
-      );
-
-      convertStringsToTimestamps(sets);
-
-
+      showSnack(context, "Save Successful: The list has been saved to $filePath", Colors.green);
+      convertStringsToTimestamps(sets); // restore original format if needed
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Export Failed: Error during export: $e"),
-          backgroundColor: Colors.red,
-        ),
-      );
-      print("Error during export: $e");
+      showSnack(context, "Export Failed: $e", Colors.red);
+      print("Export Error: $e");
     }
   }
 
-
-
   Future<void> importList(BuildContext context, QuizProvider quizProvider) async {
-
     final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
 
     try {
-
-      FilePickerResult? result;
-     if( androidInfo.version.sdkInt < 30){
-       result = await FilePicker.platform.pickFiles(
-         type: FileType.any,
-         initialDirectory: directory,
-       );
-     }else{
-       result = await FilePicker.platform.pickFiles(
-         type: FileType.custom,
-         allowedExtensions: ['json'],
-         initialDirectory: directory,
-       );
-     }
-
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['json'],
+        initialDirectory: androidInfo.version.sdkInt < 30 ? directory : null,
+      );
 
       if (result != null && result.files.single.path != null) {
         final file = File(result.files.single.path!);
         final contents = await file.readAsString();
-
-        // Parse JSON and convert timestamps
         Map<String, dynamic> importedData = jsonDecode(contents);
 
-        // Check if the map already exists in the quiz sets
         bool isDuplicate = quizProvider.quizSets.any((set) => set['name'] == importedData['name']);
 
         if (isDuplicate) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text("Oops! This set already exists! Delete the existing set to continue."),
-              backgroundColor: Colors.orange,
-            ),
-          );
+          showSnack(context, "Oops! This set already exists!", Colors.orange);
         } else {
-          // If not a duplicate, convert timestamps and add the set
           Map<String, dynamic> sets = _convertTimestamps(importedData);
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text("Import Successful: The list has been imported successfully."),
-              backgroundColor: Colors.green,
-            ),
-          );
-
           quizProvider.addQuizSet(sets);
+          showSnack(context, "Import Successful!", Colors.green);
         }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Import Canceled: No file selected or import was canceled."),
-            backgroundColor: Colors.red,
-          ),
-        );
-        print("File selection canceled or no file selected.");
+        showSnack(context, "Import Canceled: No file selected.", Colors.red);
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Import Failed: Error during import: $e"),
-          backgroundColor: Colors.red,
-        ),
-      );
-      print("Error during import: $e");
+      showSnack(context, "Import Failed: $e", Colors.red);
+      print("Import Error: $e");
     }
   }
 
   static Map<String, dynamic> convertTimestampsToString(Map<String, dynamic> data) {
-    Map<String, dynamic> convertedData = Map<String, dynamic>.from(data);
-
-    // Convert top-level timestamp to String
-    if (convertedData.containsKey('timestamp') &&
-        convertedData['timestamp'] is DateTime) {
-      convertedData['timestamp'] =
-          (convertedData['timestamp'] as DateTime).toIso8601String();
+    Map<String, dynamic> converted = Map<String, dynamic>.from(data);
+    if (converted.containsKey('timestamp') && converted['timestamp'] is DateTime) {
+      converted['timestamp'] = (converted['timestamp'] as DateTime).toIso8601String();
     }
-
-    // Convert timestamps inside cards to String
-    if (convertedData.containsKey('cards')) {
-      List<dynamic> cards = convertedData['cards'];
-      for (var card in cards) {
+    if (converted.containsKey('cards')) {
+      for (var card in converted['cards']) {
         if (card.containsKey('timestamp') && card['timestamp'] is DateTime) {
           card['timestamp'] = (card['timestamp'] as DateTime).toIso8601String();
         }
       }
     }
-
-    return convertedData;
+    return converted;
   }
 
- static Map<String, dynamic> convertStringsToTimestamps(Map<String, dynamic> data) {
-    Map<String, dynamic> convertedData = Map<String, dynamic>.from(data);
-
-    // Convert top-level timestamp from String to DateTime
-    if (convertedData.containsKey('timestamp') &&
-        convertedData['timestamp'] is String) {
-      convertedData['timestamp'] = DateTime.parse(convertedData['timestamp']);
+  static Map<String, dynamic> convertStringsToTimestamps(Map<String, dynamic> data) {
+    Map<String, dynamic> converted = Map<String, dynamic>.from(data);
+    if (converted.containsKey('timestamp') && converted['timestamp'] is String) {
+      converted['timestamp'] = DateTime.parse(converted['timestamp']);
     }
-
-    // Convert timestamps inside cards from String to DateTime
-    if (convertedData.containsKey('cards')) {
-      List<dynamic> cards = convertedData['cards'];
-      for (var card in cards) {
+    if (converted.containsKey('cards')) {
+      for (var card in converted['cards']) {
         if (card.containsKey('timestamp') && card['timestamp'] is String) {
           card['timestamp'] = DateTime.parse(card['timestamp']);
         }
       }
     }
-
-    return convertedData;
+    return converted;
   }
 
-
   Map<String, dynamic> _convertTimestamps(Map<String, dynamic> data) {
-    // Parse the top-level timestamp if it exists
     if (data.containsKey('timestamp')) {
       data['timestamp'] = DateTime.parse(data['timestamp']);
     }
-
-    // Parse timestamps inside cards
     if (data.containsKey('cards')) {
-      List<dynamic> cards = data['cards'];
-      for (var card in cards) {
+      for (var card in data['cards']) {
         if (card.containsKey('timestamp')) {
           card['timestamp'] = DateTime.parse(card['timestamp']);
         }
       }
     }
-
     return data;
   }
 
-
-
+  void showSnack(BuildContext context, String message, Color color) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: color,
+      ),
+    );
+  }
 }
-

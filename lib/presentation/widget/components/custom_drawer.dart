@@ -1,3 +1,4 @@
+import 'package:flashi/presentation/screen/main/history_screen.dart';
 import 'package:flashi/presentation/widget/components/see_all_quiz_set_list.dart';
 import 'package:flashi/provider/ai_credits_provider.dart';
 import 'package:flashi/provider/chatbot_provider.dart';
@@ -5,15 +6,12 @@ import 'package:flashi/provider/notes_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flashi/presentation/screen/authentication/sign_in_screen.dart';
 import 'package:flashi/presentation/screen/main/export_import_screen.dart';
 import 'package:flashi/presentation/screen/main/favorate_screen.dart';
 import 'package:flashi/presentation/screen/main/settings_screen.dart';
-import 'package:flashi/provider/auth_provider.dart';
 import 'package:flashi/provider/bottom_navigation_provider.dart';
 import 'package:flashi/util/helpers/classes/other/wepage_launcher.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/about_alert_dialog.dart';
-import 'package:flashi/util/helpers/widget/alert_dialog/show_logout_dialog.dart';
 
 class CustomDrawer extends StatelessWidget {
   const CustomDrawer({super.key});
@@ -38,8 +36,8 @@ class CustomDrawer extends StatelessWidget {
       );
     }
 
-    return Consumer6<BottomNavigationProvider, AuthProvider,QuizProvider,AiCreditProvider,NotesProvider,ChatBotProvider>(
-      builder: (context, bottomNavProvider, authProvider,quizProvider, aiCreditProvider,notesProvider,chatBotProvider ,child) {
+    return Consumer5<BottomNavigationProvider,QuizProvider,AiCreditProvider,NotesProvider,ChatBotProvider>(
+      builder: (context, bottomNavProvider,quizProvider, aiCreditProvider,notesProvider,chatBotProvider ,child) {
         return Drawer(
           backgroundColor: colorScheme.onPrimary,
           shape: const RoundedRectangleBorder(
@@ -56,23 +54,17 @@ class CustomDrawer extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    const SizedBox(height: 20),
-                    CircleAvatar(
-                      backgroundColor: colorScheme.primary,
-                      radius: 30, // Bigger for better focus
-                      child: Icon(Icons.person, size: 40, color: colorScheme.onTertiary),
-                    ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 30),
                     Container(
                       padding: const EdgeInsets.all(12),
 
                       child: Column(
                         children: [
-                          Text(authProvider.username,
-                              style:  TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color:colorScheme.primary)),
+                          Text("Flashi",
+                              style:  TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color:colorScheme.primary)),
                           const SizedBox(height: 5),
-                          Text(authProvider.email,
-                              style:  TextStyle(fontSize: 13, color: colorScheme.primary.withOpacity(0.7))),
+                          Text("Quiz Maker & Learner",
+                              style:  TextStyle(fontSize: 16, color: colorScheme.primary.withOpacity(0.7))),
                         ],
                       ),
                     ),
@@ -86,29 +78,6 @@ class CustomDrawer extends StatelessWidget {
                 child: ListView(
                   padding: EdgeInsets.zero,
                   children: [
-                    authProvider.username == "Guest Account"
-                        ? buildListTile(
-                      icon: Icons.login_rounded,
-                      title: 'Sign In',
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => SignInScreen()));
-                      },
-                    )
-                        : buildListTile(
-                      icon: Icons.logout_rounded,
-                      title: 'Logout',
-                      onTap: () {
-                        showLogoutConfirmationDialog(
-                            context: context,
-                            onLogout: () {
-                              authProvider.signOut(context,quizProvider,aiCreditProvider,notesProvider,chatBotProvider);
-                            });
-                      },
-                    ),
 
                     buildListTile(
                       icon: Icons.layers_rounded,
@@ -159,14 +128,16 @@ class CustomDrawer extends StatelessWidget {
                       },
                     ),
                     buildListTile(
-                      icon: Icons.workspace_premium,
-                      title: 'Invite To Earn',
+                      icon: Icons.history_rounded,
+                      title: 'Quiz Generated History',
                       onTap: () {
                         Navigator.pop(context);
-                        bottomNavProvider.toogleNavigation(4);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => HistoryScreen()));
                       },
                     ),
-
                     buildListTile(
                       icon: Icons.import_export_rounded,
                       title: 'Import Quiz Set',
@@ -178,6 +149,7 @@ class CustomDrawer extends StatelessWidget {
                                 builder: (context) => ExportImportScreen()));
                       },
                     ),
+
                     Divider(color: colorScheme.primary.withOpacity(0.2), thickness: 1, indent: 20, endIndent: 20),
                     buildListTile(
                       icon: Icons.contact_mail,

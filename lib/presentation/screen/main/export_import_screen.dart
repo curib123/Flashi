@@ -26,17 +26,17 @@ class _ExportImportScreenState extends State<ExportImportScreen> {
         title: Text(
           'Import / Export Set',
           style: TextStyle(
-            color: colorScheme.onPrimary,
+            color: colorScheme.primary,
             fontWeight: FontWeight.bold,
             fontSize: 20,
           ),
         ),
         leading: IconButton(
           icon: Icon(
-              Icons.arrow_back_ios_new_rounded, color: colorScheme.onPrimary),
+              Icons.arrow_back_ios_new_rounded, color: colorScheme.primary),
           onPressed: () => Navigator.pop(context),
         ),
-        backgroundColor: colorScheme.primary,
+        backgroundColor: colorScheme.onPrimary,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
 
@@ -75,7 +75,7 @@ class _ExportImportScreenState extends State<ExportImportScreen> {
         .size;
 
     return Container(
-      height: size.height * 0.78,
+      height: size.height * 0.75,
       child: quizProvider.quizSets.isEmpty
           ? Center(
         child: Column(
@@ -93,7 +93,6 @@ class _ExportImportScreenState extends State<ExportImportScreen> {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w500,
-                color: Colors.grey[600],
               ),
             ),
           ],

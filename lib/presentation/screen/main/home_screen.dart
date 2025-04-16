@@ -13,11 +13,8 @@ import 'package:flashi/presentation/widget/reusable_widgets/reusable_title_conte
 import 'package:flashi/provider/DailyQuestionProvider.dart';
 import 'package:flashi/provider/ai_credits_provider.dart';
 import 'package:flashi/provider/ai_model_logic_provider.dart';
-import 'package:flashi/provider/auth_provider.dart';
-import 'package:flashi/provider/chatbot_provider.dart';
 import 'package:flashi/provider/fetch_data_from_json_provider.dart';
 import 'package:flashi/provider/check_version_provider.dart';
-import 'package:flashi/provider/notes_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flashi/provider/sort_provider.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
@@ -57,10 +54,6 @@ class _HomeScreenState extends State<HomeScreen> {
     final checkVersionProvider = Provider.of<CheckVersionProvider>(context,listen: false);
     final aiCreditProvider = Provider.of<AiCreditProvider>(context,listen: false);
     final dailyQuestionProvider = Provider.of<DailyQuestionProvider>(context,listen: false);
-    final authProvider = Provider.of<AuthProvider>(context,listen: false);
-    final quizProvider = Provider.of<QuizProvider>(context,listen: false);
-    final notesProvider = Provider.of<NotesProvider>(context,listen: false);
-    final chatBotProvider = Provider.of<ChatBotProvider>(context,listen: false);
 
     fetchDataFromJsonProvider.fetchLatestVersion();
     aiModelLogicProvider.fetchLatestVersion();
@@ -68,13 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
     dailyQuestionProvider.updateFunFacts(fetchDataFromJsonProvider);
 
 
-    Future.delayed(Duration(seconds: 3),() async {
-     await authProvider.saveFlashcards(authProvider.user_id,quizProvider.quizSets);
-     await authProvider.saveUserCredits(authProvider.user_id, aiCreditProvider.credits);
-     await authProvider.saveNotes(authProvider.user_id, notesProvider.notes);
-     await authProvider.saveChatBotMessages(authProvider.user_id, chatBotProvider.messages);
 
-    });
 
     Future.delayed(Duration(seconds: 5),(){
       print(dailyQuestionProvider.funFacts);
@@ -88,8 +75,6 @@ class _HomeScreenState extends State<HomeScreen> {
         dailyQuestionProvider.toggleFunFacts();
       }
     });
-
-
 
   }
 
@@ -221,7 +206,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           Align(
                             alignment: Alignment.center,
                             child: Text(
-                              "Instant Quiz Generator",
+                              "Quiz Maker & Learner",
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 color: colorScheme.onPrimary,
@@ -309,7 +294,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ReusableCreateSetButtonPosition(
             icon: Icons.add_circle,
             colorScheme: colorScheme,
-            name: 'Generate Quiz Set',
+            name: 'Generate Quiz',
             onTap: ()  {
               aiModelLogicProvider.showFlashcardDialog(context, quizProvider, colorScheme,fetchDataFromJsonProvider,aiCreditProvider);
             },

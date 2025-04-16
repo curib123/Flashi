@@ -60,7 +60,7 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
           child: Icon(
             Icons.notes_rounded,
             size: 30,
-            color: colorScheme.onPrimary,
+            color: colorScheme.primary,
           ),
         ),
         shape: const RoundedRectangleBorder(
@@ -68,20 +68,9 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
 
           ),
         ),
-        backgroundColor: colorScheme.primary,
-        foregroundColor: colorScheme.onPrimary,
-        title: ReusableTitleContent(
-          colorScheme: colorScheme,
-          title: "Chatbot ",
-          onUpgradePro: () {},
-          onSettings: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const SettingsScreen()),
-            );
-          },
-          isEnergyShow: false,
-        ),
+        backgroundColor: colorScheme.onPrimary,
+        foregroundColor: colorScheme.primary,
+        title: Text("Chatbot",style: TextStyle(color: colorScheme.primary,fontWeight: FontWeight.bold),),
         centerTitle: false,
       ),
       body: Stack(
@@ -131,12 +120,12 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
                                     colors: isUser ? [
-                                      colorScheme.primaryContainer.withOpacity(0.9),
-                                      colorScheme.secondaryContainer.withOpacity(0.2),
+                                      colorScheme.primaryContainer.withOpacity(0.5),
+                                      colorScheme.secondaryContainer.withOpacity(0.1),
                                     ] :
                                     [
-                                      colorScheme.primaryContainer.withOpacity(0.3),
-                                      colorScheme.secondaryContainer.withOpacity(0.8),
+                                      colorScheme.primaryContainer.withOpacity(0.2),
+                                      colorScheme.secondaryContainer.withOpacity(0.5),
                                     ],
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
@@ -255,10 +244,10 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
               ),
             ],
           ),
-          ReusableThemeSettingPosition(colorScheme: colorScheme),
+
         ],
       ),
-      backgroundColor: colorScheme.background,
+      backgroundColor: colorScheme.onPrimary,
     );
   }
 }

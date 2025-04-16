@@ -30,7 +30,7 @@ class CreateNoteScreen extends StatelessWidget {
 
     return Scaffold(
       // Use background from the theme instead of a hard-coded white.
-      backgroundColor: colorScheme.background,
+      backgroundColor: colorScheme.onPrimary,
       appBar: _buildAppBar(colorScheme, context, title),
       body: Stack(
         children: [
@@ -63,7 +63,6 @@ class CreateNoteScreen extends StatelessWidget {
             )
           else
             const SizedBox.shrink(),
-          ReusableThemeSettingPosition(colorScheme: colorScheme),
         ],
       ),
     );
@@ -72,7 +71,7 @@ class CreateNoteScreen extends StatelessWidget {
   AppBar _buildAppBar(ColorScheme colorScheme, BuildContext context, String title) {
     return AppBar(
       leading: IconButton(
-        icon: Icon(Icons.arrow_back_ios_new_rounded, color: colorScheme.onPrimary),
+        icon: Icon(Icons.arrow_back_ios_new_rounded, color: colorScheme.primary),
         onPressed: () => Navigator.of(context).pop(),
       ),
       title: !isRead
@@ -81,7 +80,7 @@ class CreateNoteScreen extends StatelessWidget {
         style: TextStyle(
           fontWeight: FontWeight.bold,
           fontSize: 20,
-          color: colorScheme.onPrimary,
+          color: colorScheme.primary,
         ),
       )
           : Row(
@@ -92,12 +91,12 @@ class CreateNoteScreen extends StatelessWidget {
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 20,
-              color: colorScheme.onPrimary,
+              color: colorScheme.primary,
             ),
           ),
           const SizedBox(width: 10),
           IconButton(
-            icon: Icon(Icons.edit, color: colorScheme.onPrimary),
+            icon: Icon(Icons.edit, color: colorScheme.primary),
             onPressed: () {
               Navigator.pop(context);
               Navigator.of(context).push(MaterialPageRoute(
@@ -112,11 +111,7 @@ class CreateNoteScreen extends StatelessWidget {
           ),
         ],
       ),
-      backgroundColor: colorScheme.primary,
-      elevation: 2,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
-      ),
+
     );
   }
 
@@ -129,24 +124,26 @@ class CreateNoteScreen extends StatelessWidget {
         // Instead of a fixed Colors.grey, use onSurface with some opacity.
         Text(
           'Content',
-          style: TextStyle(color: colorScheme.onSurface.withOpacity(0.6)),
+          style: TextStyle(color: colorScheme.primary),
         ),
         _buildContentInputField(size, noteProvider, colorScheme),
-        Center(child: Text(formattedDate, style: TextStyle(color: colorScheme.onSurface))),
+        Center(child: Text(formattedDate, style: TextStyle(color: colorScheme.primary))),
       ],
     );
   }
 
   Widget _buildTitleInputField(NotesProvider noteProvider, ColorScheme colorScheme) {
     return Container(
-      // Use the surface color for a card-like background.
-      color: colorScheme.surface,
+      // Use the surface color for a card-
+      color: colorScheme.onPrimary,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
       child: TextField(
+
         readOnly: isRead,
         controller: noteProvider.titleController,
-        decoration: const InputDecoration(
+        decoration:  InputDecoration(
           hintText: 'Title Here',
+          hintStyle: TextStyle(color:colorScheme.primary),
           border: InputBorder.none,
         ),
         // Use onSurface so the text contrasts with the surface color.
@@ -157,18 +154,19 @@ class CreateNoteScreen extends StatelessWidget {
 
   Widget _buildContentInputField(Size size, NotesProvider noteProvider, ColorScheme colorScheme) {
     return Container(
+      color: colorScheme.onPrimary,
       width: size.width,
       child: TextField(
         readOnly: isRead,
         controller: noteProvider.contentController,
-        maxLines: 21,
+        maxLines: !isRead ? 18 : 21,
         keyboardType: TextInputType.multiline,
         decoration: InputDecoration(
           hintText: 'Type your content here...',
           border: InputBorder.none,
           // Fill with the surface color.
           filled: true,
-          fillColor: colorScheme.surface,
+          fillColor: colorScheme.onPrimary,
         ),
         style: TextStyle(fontSize: 16, color: colorScheme.onSurface),
       ),

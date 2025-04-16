@@ -61,7 +61,6 @@ dependencies:
   flutter_animate: ^4.5.2
   dart_levenshtein: ^1.0.1
   image_picker: ^1.1.2
-  supabase_flutter: ^2.8.4
   shimmer: ^3.0.0
   email_validator: ^3.0.0
 

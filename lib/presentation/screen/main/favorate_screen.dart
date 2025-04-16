@@ -44,7 +44,7 @@ class FavoriteScreen extends StatelessWidget {
           backgroundColor: colorScheme.onPrimary,
           foregroundColor: colorScheme.primary,
           title: Text("Favorates",style: TextStyle(color: colorScheme.primary),),
-          centerTitle: true,
+          centerTitle: false,
         ),
       body:  Stack(
         children: [
