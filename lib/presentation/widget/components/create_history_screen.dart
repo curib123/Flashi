@@ -72,7 +72,7 @@ class CreateHistoryScreen extends StatelessWidget {
   AppBar _buildAppBar(ColorScheme colorScheme, BuildContext context, String title) {
     return AppBar(
       leading: IconButton(
-        icon: Icon(Icons.arrow_back_ios_new_rounded, color: colorScheme.onPrimary),
+        icon: Icon(Icons.arrow_back_ios_new_rounded, color: colorScheme.primary),
         onPressed: () => Navigator.of(context).pop(),
       ),
       title: !isRead
@@ -81,7 +81,7 @@ class CreateHistoryScreen extends StatelessWidget {
         style: TextStyle(
           fontWeight: FontWeight.bold,
           fontSize: 20,
-          color: colorScheme.onPrimary,
+          color: colorScheme.primary,
         ),
       )
           : Row(
@@ -92,12 +92,12 @@ class CreateHistoryScreen extends StatelessWidget {
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 20,
-              color: colorScheme.onPrimary,
+              color: colorScheme.primary,
             ),
           ),
           const SizedBox(width: 10),
           IconButton(
-            icon: Icon(Icons.edit, color: colorScheme.onPrimary),
+            icon: Icon(Icons.edit, color: colorScheme.primary),
             onPressed: () {
               Navigator.pop(context);
               Navigator.of(context).push(MaterialPageRoute(
@@ -112,7 +112,7 @@ class CreateHistoryScreen extends StatelessWidget {
           ),
         ],
       ),
-      backgroundColor: colorScheme.primary,
+      backgroundColor: colorScheme.onPrimary,
       elevation: 2,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),

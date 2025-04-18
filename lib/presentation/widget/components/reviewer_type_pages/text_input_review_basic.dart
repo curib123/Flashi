@@ -1,8 +1,8 @@
+import 'dart:async';
 import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_unit_id.dart';
 import 'package:flashi/util/helpers/widget/other/highlight_keywords.dart';
 import 'package:flutter/material.dart';
-import 'package:dart_levenshtein/dart_levenshtein.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 class TextInputReviewBasic extends StatefulWidget {
@@ -23,8 +23,10 @@ class TextInputReviewBasic extends StatefulWidget {
 
 class _TextInputReviewState extends State<TextInputReviewBasic> {
   late PageController _pageController;
-  int _score = 0;
   final TextEditingController _answerController = TextEditingController();
+  int _score = 0;
+  bool _isWrong = false;
+  String _correctAnswerShown = '';
   AdManager adManager = AdManager();
 
   @override
@@ -42,41 +44,44 @@ class _TextInputReviewState extends State<TextInputReviewBasic> {
     super.dispose();
   }
 
-  void onAnswerSubmitted(String userAnswer, String correctAnswer) async {
-    String normalizedUserAnswer =
-    userAnswer.trim().toLowerCase().replaceAll(RegExp(r'\s+'), '');
-    String normalizedCorrectAnswer =
-    correctAnswer.trim().toLowerCase().replaceAll(RegExp(r'\s+'), '');
+  void onSubmit(String typedAnswer, String correctAnswer) {
+    setState(() {
+      final isCorrect = typedAnswer.trim().toLowerCase() == correctAnswer.trim().toLowerCase();
 
-    if (normalizedUserAnswer == normalizedCorrectAnswer) {
-      setState(() {
-        _score++;
-      });
-    } else {
-      int distance = await normalizedUserAnswer.levenshteinDistance(
-          normalizedCorrectAnswer);
-
-      if (distance <= 2) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Close! Did you mean: $correctAnswer?"),
-            duration: const Duration(seconds: 2),
-          ),
-        );
+      if (isCorrect) {
+        if (!_isWrong) {
+          // First try is correct
+          _score++;
+        }
+        _isWrong = false;
+        _correctAnswerShown = ''; // Clear the correct answer shown
+        _answerController.clear();
+        // Move to next page immediately if correct
+        _goToNextPage();
+      } else {
+        _isWrong = true;
+        _correctAnswerShown = 'Correct answer: $correctAnswer';
+        _answerController.clear();
+        // Wait for 3 seconds then move to the next page if wrong
+        Future.delayed(const Duration(seconds: 3), () {
+          _goToNextPage();
+        });
       }
-    }
+    });
+  }
 
-    _answerController.clear();
+  void _goToNextPage() {
+    setState(() {
+      _correctAnswerShown = ''; // Clear the correct answer shown when transitioning
+    });
 
     if (_pageController.page?.toInt() == widget.cards.length - 1) {
       showCongratulationDialog(context);
     } else {
-      Future.delayed(const Duration(seconds: 1), () {
-        _pageController.nextPage(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeIn,
-        );
-      });
+      _pageController.nextPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeIn,
+      );
     }
   }
 
@@ -104,30 +109,26 @@ class _TextInputReviewState extends State<TextInputReviewBasic> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
-                  Icons.emoji_events, // 🏆 Trophy icon
-                  size: 50,
-                  color: Theme.of(context).colorScheme.primary,
-                ).animate().fadeIn(duration: 500.ms).moveY(begin: -20, end: 0, curve: Curves.easeOutBack),
-
+                Icon(Icons.emoji_events, size: 50, color: Theme.of(context).colorScheme.primary)
+                    .animate()
+                    .fadeIn(duration: 500.ms)
+                    .moveY(begin: -20, end: 0, curve: Curves.easeOutBack),
                 const SizedBox(height: 15),
                 Text(
                   '🎉 Congratulations! 🎉',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     color: Theme.of(context).colorScheme.primary,
-                    fontSize: 20,
+                    fontSize: 22,
                     fontWeight: FontWeight.bold,
                   ),
                   textAlign: TextAlign.center,
                 ).animate().fadeIn(duration: 500.ms),
-
                 const SizedBox(height: 10),
                 Text(
                   'You have completed the quiz!',
                   style: Theme.of(context).textTheme.bodyMedium,
                   textAlign: TextAlign.center,
                 ).animate().fadeIn(duration: 600.ms, delay: 100.ms),
-
                 const SizedBox(height: 8),
                 Text(
                   'Your score is $_score out of ${widget.cards.length}.',
@@ -137,7 +138,6 @@ class _TextInputReviewState extends State<TextInputReviewBasic> {
                   ),
                   textAlign: TextAlign.center,
                 ).animate().fadeIn(duration: 600.ms, delay: 200.ms),
-
                 const SizedBox(height: 15),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -148,29 +148,27 @@ class _TextInputReviewState extends State<TextInputReviewBasic> {
                         Navigator.pop(context);
                         Navigator.pop(context);
                       },
-                      icon: const Icon(Icons.check_circle, size: 18), // ✅ OK icon
+                      icon: const Icon(Icons.check_circle, size: 18),
                       label: const Text('OK'),
                       style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
                     ).animate().fadeIn(duration: 700.ms, delay: 300.ms),
-
                     const SizedBox(width: 10),
-
                     ElevatedButton.icon(
                       onPressed: () {
                         adManager.showInterstitialAd();
                         Navigator.pop(context);
                         restartQuiz();
                       },
-                      icon:  Icon(Icons.replay, size: 18,color:  Theme.of(context).colorScheme.onSecondary,), // 🔄 Restart icon
+                      icon: Icon(Icons.replay, size: 18, color: Theme.of(context).colorScheme.onSecondary),
                       label: const Text('Restart'),
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Theme.of(context).colorScheme.onSecondary,
                         backgroundColor: Theme.of(context).colorScheme.secondary,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
                     ).animate().fadeIn(duration: 700.ms, delay: 400.ms),
                   ],
@@ -186,213 +184,132 @@ class _TextInputReviewState extends State<TextInputReviewBasic> {
   void restartQuiz() {
     setState(() {
       _score = 0;
+      _correctAnswerShown = '';
+      _isWrong = false;
+      _answerController.clear();
       _pageController.jumpToPage(0);
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     if (widget.cards.isEmpty) {
       return Center(
         child: Text(
           "No cards available",
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w500,
-            color: Theme
-                .of(context)
-                .colorScheme
-                .primary,
-          ),
+          style: TextStyle(color: colorScheme.primary),
         ),
       );
     }
 
-    return SafeArea(
-      child: Center(
-        child: Container(
-          width: MediaQuery
-              .of(context)
-              .size
-              .width , // Adjust width for responsiveness
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Stack(
-            alignment: Alignment.center, // Ensure proper centering
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(10),
-                child: SizedBox(
-                  height: 400, // Ensure visible height
-                  child: PageView.builder(
-                    controller: _pageController,
-                    itemCount: widget.cards.length,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemBuilder: (context, index) {
-                      final card = widget.cards[index];
-                      final correctAnswer = card['answer'] as String;
+    return PageView.builder(
+      controller: _pageController,
+      itemCount: widget.cards.length,
+      physics: const NeverScrollableScrollPhysics(),
+      itemBuilder: (context, index) {
+        final card = widget.cards[index];
+        final correctAnswer = card['answer'] as String;
 
-                      return Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 30, horizontal: 10),
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  Theme
-                                      .of(context)
-                                      .colorScheme
-                                      .primary
-                                      .withOpacity(0.7),
-                                  Theme
-                                      .of(context)
-                                      .colorScheme
-                                      .secondary
-                                      .withOpacity(0.7),
-                                ],
-                              ),
-                              borderRadius: BorderRadius.circular(15),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Theme
-                                      .of(context)
-                                      .colorScheme
-                                      .primary
-                                      .withOpacity(0.4),
-                                  blurRadius: 6,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-                            ),
-                            child: highlightKeywords(
-                              context: context,
-                              keyword: card['keyword'],
-                              text: card['question'],
-                              fontSize: 20,
-                              fontColor: Theme
-                                  .of(context)
-                                  .colorScheme
-                                  .onPrimary,
-                              fontSizeKeyword: 17,
-                              isCenter: true,
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Theme
-                                  .of(context)
-                                  .colorScheme
-                                  .primary
-                                  .withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(12),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Theme
-                                      .of(context)
-                                      .colorScheme
-                                      .primary
-                                      .withOpacity(0.15),
-                                  blurRadius: 6,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: TextField(
-                                    controller: _answerController,
-                                    style: const TextStyle(fontSize: 16),
-                                    decoration: InputDecoration(
-                                      hintStyle: TextStyle(
-                                        color: Theme
-                                            .of(context)
-                                            .colorScheme
-                                            .primary
-                                            .withOpacity(0.6),
-                                      ),
-                                      hintText: "Type your answer...",
-                                      contentPadding: const EdgeInsets
-                                          .symmetric(
-                                          horizontal: 16, vertical: 14),
-                                      border: InputBorder.none,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 10),
-                                IconButton(
-                                  onPressed: () {
-                                    onAnswerSubmitted(
-                                        _answerController.text, correctAnswer);
-                                  },
-                                  icon: Icon(Icons.send, color: Theme
-                                      .of(context)
-                                      .colorScheme
-                                      .primary),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      );
-                    },
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                "Score: $_score / ${widget.cards.length}",
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 18,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    gradient: LinearGradient(
+                      colors: [
+                        colorScheme.primary.withOpacity(0.8),
+                        colorScheme.primary.withOpacity(0.5),
+                      ],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
+                  ),
+                  child: Center(
+                    child: SingleChildScrollView(
+                      child: highlightKeywords(
+                        context: context,
+                        keyword: card['keyword'],
+                        text: card['question'],
+                        fontSize: 22,
+                        fontColor: Theme.of(context).colorScheme.onPrimary,
+                        fontSizeKeyword: 17,
+                        isCenter: true,
+                      ),
+                    ),
                   ),
                 ),
               ),
-              Positioned(
-                top: 0,
-                child: Container(
-                  width: 80,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: LinearGradient(
-                      colors: [
-                        Theme
-                            .of(context)
-                            .colorScheme
-                            .secondary,
-                        Theme
-                            .of(context)
-                            .colorScheme
-                            .primary,
-                      ],
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Theme
-                            .of(context)
-                            .colorScheme
-                            .primary
-                            .withOpacity(0.4),
-                        blurRadius: 8,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Center(
-                    child: Text(
-                      "$_score",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Theme
-                            .of(context)
-                            .colorScheme
-                            .onPrimary,
-                      ),
+
+              const SizedBox(height: 28),
+
+              TextField(
+                controller: _answerController,
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 18),
+                decoration: InputDecoration(
+                  hintText: 'Type your answer...',
+                  filled: true,
+                  fillColor: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.1),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(
+                      color: _isWrong ? Colors.red : Theme.of(context).colorScheme.primary,
+                      width: 2,
                     ),
                   ),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                ),
+              ),
+
+              if (_isWrong)
+                Padding(
+                  padding: const EdgeInsets.only(top: 12.0),
+                  child: _correctAnswerShown.isNotEmpty ?  Text(
+                    _correctAnswerShown,
+                    style: TextStyle(
+                      color: colorScheme.primary,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ) : SizedBox(),
+                ),
+
+              const SizedBox(height: 20),
+
+              ElevatedButton.icon(
+                onPressed: () => onSubmit(_answerController.text, correctAnswer),
+                icon: const Icon(Icons.send_rounded),
+                label: const Text(
+                  "Submit",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
               ),
             ],
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

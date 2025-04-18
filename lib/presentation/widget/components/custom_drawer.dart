@@ -6,7 +6,6 @@ import 'package:flashi/provider/notes_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flashi/presentation/screen/main/export_import_screen.dart';
 import 'package:flashi/presentation/screen/main/favorate_screen.dart';
 import 'package:flashi/presentation/screen/main/settings_screen.dart';
 import 'package:flashi/provider/bottom_navigation_provider.dart';
@@ -136,17 +135,6 @@ class CustomDrawer extends StatelessWidget {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => HistoryScreen()));
-                      },
-                    ),
-                    buildListTile(
-                      icon: Icons.import_export_rounded,
-                      title: 'Import Quiz Set',
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ExportImportScreen()));
                       },
                     ),
 

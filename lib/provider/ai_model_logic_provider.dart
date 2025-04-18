@@ -197,6 +197,50 @@ class AiModelLogicProvider extends ChangeNotifier {
 
     Future.delayed(Duration(seconds: 10), () {
       if (questions.isNotEmpty && !isTimeOut) {
+
+
+        final quizSetName = quizProvider.nameController.text.isEmpty ? "Newly Created ${quizProvider.quizSets.length}" : quizProvider.nameController.text;
+
+
+        quizProvider.addQuizSet({
+          'name': quizSetName,
+          'timestamp': DateTime.now(),
+          'description': 'Generated Quiz content From Ai',
+          'cards': [],
+          'numberOfQuiz': 0,
+          'limitNumberOfQuiz': fetchDataFromJsonProvider.ListOfMaxLength,
+        });
+
+        for (var questionData in questions) {
+          quizProvider.addCardToQuizSet(
+            quizSetName: quizSetName,
+            card: {
+              'isUpdating': false,
+              'question': questionData['question'] ?? '',
+              'answer': questionData['answer'] ?? '',
+              'isIgnore': false,
+              'keyword': '',
+              'timestamp': DateTime.now(),
+            },
+          );
+        }
+
+        String formatQuestions(questions) {
+          return questions.map((q) => 'Q: ${q['question']}\nA: ${q['answer']}').join('\n\n');
+        }
+
+        String formattedText = formatQuestions(questions);
+
+        Provider.of<HistoryProvider>(context,listen: false).addHistory(
+            {
+              'title': quizSetName,
+              'content': formattedText,
+              'created_at': DateTime.now(),
+              'favorite': false,
+            }
+
+        );
+
         Navigator.pop(context);
         Navigator.pop(context);
         Navigator.pop(context);

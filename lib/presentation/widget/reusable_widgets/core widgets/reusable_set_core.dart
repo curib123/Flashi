@@ -41,7 +41,7 @@ class ReusableSetCore extends StatelessWidget {
         gradient: LinearGradient(
           colors: [
             colorScheme.primaryContainer.withOpacity(0.9),
-            colorScheme.secondaryContainer.withOpacity(0.3),
+            colorScheme.primaryContainer.withOpacity(0.1),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,

@@ -158,6 +158,7 @@ class CreateNoteScreen extends StatelessWidget {
       width: size.width,
       child: TextField(
         readOnly: isRead,
+        scrollPadding: EdgeInsets.symmetric(vertical: 0),
         controller: noteProvider.contentController,
         maxLines: !isRead ? 18 : 21,
         keyboardType: TextInputType.multiline,

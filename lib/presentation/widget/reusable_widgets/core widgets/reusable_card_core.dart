@@ -47,7 +47,10 @@ class ReusableCardCore extends StatelessWidget {
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [colorScheme.primaryContainer, colorScheme.secondaryContainer.withOpacity(0.2)],
+              colors: [
+                colorScheme.primaryContainer.withOpacity(0.9),
+                colorScheme.primaryContainer.withOpacity(0.1),
+              ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),

@@ -87,21 +87,18 @@ void showAnimatedAboutDialog(BuildContext context) {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.info_rounded, size: 40, color: colorScheme.primary),
-                  SizedBox(height: 10),
                   Text(
-                    "About This App",
+                    "Flashi : Quiz Maker & Learner",
                     style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: colorScheme.onSurface,
+                      fontSize: 15,
+                      fontWeight: FontWeight.normal,
+                      color: colorScheme.primary,
                     ),
                   ),
                   SizedBox(height: 5),
                   Divider(color: colorScheme.outline),
                   _buildInfoTile(context, Icons.rocket_launch, "Version", checkVersionProvider.currentVersion),
                   _buildInfoTile(context, Icons.person, "Developer", "Curib Tech"),
-                  _buildInfoTile(context, Icons.email, "Contact", "curibtech@gmail.com"),
                   SizedBox(height: 10),
                   ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
@@ -130,8 +127,8 @@ Widget _buildInfoTile(
   final colorScheme = Theme.of(context).colorScheme;
   return ListTile(
     leading: Icon(icon, color: colorScheme.primary),
-    title: Text(title, style: TextStyle(fontWeight: FontWeight.bold, color: colorScheme.onSurface)),
-    subtitle: Text(subtitle, style: TextStyle(color: colorScheme.onSurfaceVariant)),
+    title: Text(title, style: TextStyle(fontWeight: FontWeight.bold, color: colorScheme.primary)),
+    subtitle: Text(subtitle, style: TextStyle(color: colorScheme.primary.withOpacity(0.8))),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     tileColor: colorScheme.surfaceVariant.withOpacity(0.2),
     contentPadding: EdgeInsets.symmetric(horizontal: 20),

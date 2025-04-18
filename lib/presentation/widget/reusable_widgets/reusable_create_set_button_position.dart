@@ -17,10 +17,17 @@ class ReusableCreateSetButtonPosition extends StatelessWidget {
         child: GestureDetector(
           onTap:onTap,
           child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 25),
-              margin: const EdgeInsets.symmetric(horizontal: 10,vertical: 10),
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 25),
+              margin: const EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
-                color:  colorScheme.primary.withOpacity(0.1),
+                gradient: LinearGradient(
+                  colors: [
+                    colorScheme.primary.withOpacity(0.9),
+                    colorScheme.primaryContainer.withOpacity(0.8),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
                 borderRadius: BorderRadius.circular(15),
 
 
@@ -29,12 +36,12 @@ class ReusableCreateSetButtonPosition extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(icon,color: colorScheme.primary,size: 30,),
+                  Icon(icon,color: colorScheme.onPrimary,size: 30,),
                   const SizedBox(width: 10,),
                   Text(
                     name,
                     style: TextStyle(
-                        color: colorScheme.primary,
+                        color: colorScheme.onPrimary,
                         fontSize: 20,
                         fontWeight: FontWeight.w500
                     ),

@@ -24,12 +24,12 @@ class CustomNavigationBar extends StatelessWidget {
       child: CurvedNavigationBar(
         height: 60.0, // Height of the navigation bar
         backgroundColor: colorScheme.onPrimary, // Navbar background color
-        color: colorScheme.primary.withOpacity(0.8), // Navbar color
+        color: colorScheme.primary.withOpacity(1), // Navbar color
         buttonBackgroundColor: colorScheme.primary, // Active button color
         index: currentIndex, // Current active index
         items: <Widget>[
           Icon(Icons.smart_toy_rounded, size: 30, color: colorScheme.onPrimary),
-          Icon(Icons.layers_rounded, size: 45, color: colorScheme.onPrimary),
+          Icon(Icons.layers_rounded, size: 40, color: colorScheme.onPrimary),
           Icon(Icons.text_snippet_rounded, size: 30, color: colorScheme.onPrimary),
         ],
         onTap: (index) {

@@ -71,7 +71,6 @@ class _HomeScreenState extends State<HomeScreen> {
               context: context,
               builder: (context) => DailyQuestionDialog(questions: dailyQuestionProvider.funFacts));
 
-
         dailyQuestionProvider.toggleFunFacts();
       }
     });
@@ -173,7 +172,7 @@ class _HomeScreenState extends State<HomeScreen> {
               slivers: [
                 // SliverAppBar for a custom collapsing header
                 SliverAppBar(
-                  backgroundColor: colorScheme.primary.withOpacity(0.9),
+                  backgroundColor: colorScheme.primary,
                   leading: GestureDetector(
                     onTap: () => Scaffold.of(context).openDrawer(),
                     child: Icon(
@@ -218,7 +217,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           SizedBox(height: 10,),
                           // Search bar for filtering quiz sets
                           Container(
-                            height: 80,
+                            height: 75,
                             child: ReusableSearchBarCore(
                               colorScheme: colorScheme,
                               hintText: 'Search Quiz Set',
@@ -243,7 +242,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 // Content section below the header
                 SliverToBoxAdapter(
                   child: Container(
-                    padding: const EdgeInsets.only(top: 10, bottom: 200,right: 2,left: 2),
+                    padding: const EdgeInsets.only(top: 0, bottom: 300,right: 2,left: 2),
                     child: Stack(
                       children: [
                         Column(

@@ -43,7 +43,7 @@ class ReviewerPage extends StatelessWidget {
             GestureDetector(
               onTap: () => reviewerSettingsAlertBox(context: context),
               child: Icon(
-                Icons.settings,
+                Icons.edit_rounded,
                 color: Theme.of(context).colorScheme.primary,
               ),
             ),
