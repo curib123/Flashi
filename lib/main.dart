@@ -38,7 +38,7 @@ Future<void> main() async {
   await Hive.openBox('DailyQuestionProvider');
   await Hive.openBox('history');
 
-  await saveAPIKey('TZjSrnSAjyflYyNyFmPnMfHHSZ4Mw33q');
+  await saveAPIKey('');
 
   runApp(
     MultiProvider(
