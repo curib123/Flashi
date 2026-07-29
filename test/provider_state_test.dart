@@ -93,6 +93,103 @@ void main() {
       expect(provider.quizSets.single['name'], 'New');
       provider.dispose();
     });
+
+    test('supports the complete quiz set and card mutation workflow', () {
+      final provider = QuizProvider(
+        criterionSet: 'Newest',
+        criterionCard: 'Newest',
+        settingsBox: quizBox,
+      );
+      final quizSet = <String, dynamic>{
+        'name': 'Science',
+        'description': 'Initial',
+        'favorite': false,
+        'cards': <Map<String, dynamic>>[],
+        'numberOfQuiz': 0,
+        'limitNumberOfQuiz': 1,
+        'timestamp': DateTime.utc(2026, 7, 29),
+      };
+
+      provider.addQuizSet(quizSet);
+      expect(provider.searchQuizSet(quizSetName: 'Science'), isNotNull);
+
+      expect(
+        provider.addCardToQuizSetNew(
+          quizSetName: 'Science',
+          card: {
+            'question': 'What is matter?',
+            'answer': 'Anything with mass',
+            'keyword': 'matter',
+            'isIgnore': false,
+          },
+        ),
+        isTrue,
+      );
+      expect(
+        provider.addCardToQuizSetNew(
+          quizSetName: 'Science',
+          card: {'question': 'Blocked by limit', 'answer': 'Blocked'},
+        ),
+        isFalse,
+      );
+
+      expect(
+        provider.updateCardInQuizSet(
+          quizSetName: 'Science',
+          oldQuestion: 'What is matter?',
+          newQuestion: 'Define matter',
+          newAnswer: 'Anything that has mass',
+        ),
+        isTrue,
+      );
+      expect(
+        provider.updateKeyWordInQuizSet(
+          quizSetName: 'Science',
+          oldKeyWord: 'matter',
+          newKeyWord: 'mass',
+        ),
+        isTrue,
+      );
+      expect(
+        provider.toggleIgnore(
+          quizSetName: 'Science',
+          question: 'Define matter',
+          isIgnore: false,
+        ),
+        isTrue,
+      );
+
+      final storedSet = provider.searchQuizSet(quizSetName: 'Science')!;
+      provider.toggleFavorite(storedSet);
+      provider.updateSearchQuery('sci');
+
+      expect(provider.filteredQuizSets, hasLength(1));
+      expect(provider.filteredQuizSetsFavorite, hasLength(1));
+      expect(provider.getNumberOfCardsInSet('Science'), 1);
+      expect(provider.showAllCardsInSet('Science')!.single['keyword'], 'mass');
+
+      expect(
+        provider.removeCardFromQuizSet(
+          quizSetName: 'Science',
+          question: 'Define matter',
+        ),
+        isTrue,
+      );
+      expect(
+        provider.editQuizSet(
+          'Science',
+          newName: 'Physical Science',
+          newDescription: 'Updated',
+        ),
+        isTrue,
+      );
+      provider.removeQuizSet(
+        provider.searchQuizSet(quizSetName: 'Physical Science')!,
+      );
+
+      expect(provider.quizSets, isEmpty);
+      provider.dispose();
+    });
   });
 
   group('AiGenerationProvider', () {
