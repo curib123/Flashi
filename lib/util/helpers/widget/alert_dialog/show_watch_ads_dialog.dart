@@ -1,4 +1,4 @@
-import 'package:flashi/provider/ai_credits_provider.dart';
+import 'package:flashi/features/ai/application/ai_credit_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

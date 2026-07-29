@@ -12,11 +12,11 @@ import 'package:flashi/presentation/widget/reusable_widgets/reusable_theme_setti
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_title_content.dart';
 import 'package:flashi/core/state/sort_provider.dart';
 import 'package:flashi/features/dashboard/application/daily_question_provider.dart';
-import 'package:flashi/provider/ai_credits_provider.dart';
+import 'package:flashi/features/ai/application/ai_credit_provider.dart';
 import 'package:flashi/provider/ai_model_logic_provider.dart';
-import 'package:flashi/provider/fetch_data_from_json_provider.dart';
-import 'package:flashi/provider/check_version_provider.dart';
-import 'package:flashi/provider/quiz_provider.dart';
+import 'package:flashi/features/ai/application/generation_config_provider.dart';
+import 'package:flashi/core/updates/application/app_update_provider.dart';
+import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_unit_id.dart';
 import 'package:flashi/util/helpers/classes/ads/app_lifecycle_reactor.dart';
@@ -48,11 +48,11 @@ class _DashboardPageState extends State<DashboardPage> {
     });
 
     final fetchDataFromJsonProvider =
-        Provider.of<FetchDataFromJsonProvider>(context, listen: false);
+        Provider.of<GenerationConfigProvider>(context, listen: false);
     final aiModelLogicProvider =
         Provider.of<AiModelLogicProvider>(context, listen: false);
     final checkVersionProvider =
-        Provider.of<CheckVersionProvider>(context, listen: false);
+        Provider.of<AppUpdateProvider>(context, listen: false);
     final aiCreditProvider =
         Provider.of<AiCreditProvider>(context, listen: false);
     final dailyQuestionProvider =
@@ -137,7 +137,7 @@ class _DashboardPageState extends State<DashboardPage> {
     // Access the QuizProvider and SortProvider from the context
     final quizProvider = Provider.of<QuizProvider>(context);
     final fetchDataFromJsonProvider =
-        Provider.of<FetchDataFromJsonProvider>(context);
+        Provider.of<GenerationConfigProvider>(context);
     final sortProvider = Provider.of<SortProvider>(context);
     final aiModelLogicProvider = Provider.of<AiModelLogicProvider>(context);
     final aiCreditProvider = Provider.of<AiCreditProvider>(context);

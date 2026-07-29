@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:math';
-import 'package:flashi/provider/ai_credits_provider.dart';
-import 'package:flashi/provider/fetch_data_from_json_provider.dart';
+import 'package:flashi/features/ai/application/ai_credit_provider.dart';
+import 'package:flashi/features/ai/application/generation_config_provider.dart';
 import 'package:flashi/features/history/application/history_provider.dart';
-import 'package:flashi/provider/quiz_provider.dart';
+import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flashi/util/helpers/classes/api/ai/core/ai_question_generator.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/auth_dialog.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/loading_dialog.dart';
@@ -50,7 +50,7 @@ class AiModelLogicProvider extends ChangeNotifier {
   Future<void> pickFileAndGenerate(
     BuildContext context,
     QuizProvider quizProvider,
-    FetchDataFromJsonProvider fetchDataFromJsonProvider,
+    GenerationConfigProvider fetchDataFromJsonProvider,
     AiCreditProvider aiCreditProvider,
     Future<String> pickAndExtractText(),
   ) async {
@@ -61,8 +61,8 @@ class AiModelLogicProvider extends ChangeNotifier {
       final questions = await AIQuestionGenerator.generateQuestionsFromFile(
         extractedText,
         fetchDataFromJsonProvider.model,
-        fetchDataFromJsonProvider.quiz_question_type,
-        fetchDataFromJsonProvider.ListOfMaxLength,
+        fetchDataFromJsonProvider.quizQuestionType,
+        fetchDataFromJsonProvider.maxLength,
       );
 
       var random = Random();
@@ -86,7 +86,7 @@ class AiModelLogicProvider extends ChangeNotifier {
             'description': 'Generated Quiz content From File',
             'cards': [],
             'numberOfQuiz': 0,
-            'limitNumberOfQuiz': fetchDataFromJsonProvider.ListOfMaxLength,
+            'limitNumberOfQuiz': fetchDataFromJsonProvider.maxLength,
           });
 
           for (var questionData in questions) {
@@ -126,7 +126,7 @@ class AiModelLogicProvider extends ChangeNotifier {
               i++) {
             if (fetchDataFromJsonProvider.listOfMaxLength[i] ==
                 fetchDataFromJsonProvider
-                    .ListOfMaxLength) // Check if value matches maxLength
+                    .maxLength) // Check if value matches maxLength
             {
               int creditAmount = i + 1; // Use index +1 as credit amount
               aiCreditProvider.useCredit(creditAmount);
@@ -161,7 +161,7 @@ class AiModelLogicProvider extends ChangeNotifier {
   Future<void> GenerateFlashCardFromCustomTopic(
       BuildContext context,
       QuizProvider quizProvider,
-      FetchDataFromJsonProvider fetchDataFromJsonProvider,
+      GenerationConfigProvider fetchDataFromJsonProvider,
       AiCreditProvider aiCreditProvider) async {
     if (topic.isEmpty) {
       notifyListeners();
@@ -179,8 +179,8 @@ class AiModelLogicProvider extends ChangeNotifier {
       topic,
       description,
       fetchDataFromJsonProvider.model,
-      fetchDataFromJsonProvider.quiz_question_type,
-      fetchDataFromJsonProvider.ListOfMaxLength,
+      fetchDataFromJsonProvider.quizQuestionType,
+      fetchDataFromJsonProvider.maxLength,
     );
 
     print(questions);
@@ -205,7 +205,7 @@ class AiModelLogicProvider extends ChangeNotifier {
           'description': 'Generated Quiz content From Ai',
           'cards': [],
           'numberOfQuiz': 0,
-          'limitNumberOfQuiz': fetchDataFromJsonProvider.ListOfMaxLength,
+          'limitNumberOfQuiz': fetchDataFromJsonProvider.maxLength,
         });
 
         for (var questionData in questions) {
@@ -247,7 +247,7 @@ class AiModelLogicProvider extends ChangeNotifier {
             i++) {
           if (fetchDataFromJsonProvider.listOfMaxLength[i] ==
               fetchDataFromJsonProvider
-                  .ListOfMaxLength) // Check if value matches maxLength
+                  .maxLength) // Check if value matches maxLength
           {
             int creditAmount = i + 1; // Use index +1 as credit amount
             aiCreditProvider.useCredit(creditAmount);
@@ -285,7 +285,7 @@ class AiModelLogicProvider extends ChangeNotifier {
       BuildContext context,
       QuizProvider quizProvider,
       ColorScheme colorScheme,
-      FetchDataFromJsonProvider fetchDataFromJsonProvider,
+      GenerationConfigProvider fetchDataFromJsonProvider,
       AiCreditProvider aiCreditProvider) async {
     showDialog(
       barrierDismissible: true,

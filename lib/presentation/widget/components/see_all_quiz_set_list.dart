@@ -5,10 +5,10 @@ import 'package:flashi/presentation/widget/reusable_widgets/reusable_import_posi
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_quiz_set_list.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_sort_and_see_all.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
-import 'package:flashi/provider/ai_credits_provider.dart';
+import 'package:flashi/features/ai/application/ai_credit_provider.dart';
 import 'package:flashi/provider/ai_model_logic_provider.dart';
-import 'package:flashi/provider/fetch_data_from_json_provider.dart';
-import 'package:flashi/provider/quiz_provider.dart';
+import 'package:flashi/features/ai/application/generation_config_provider.dart';
+import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flashi/core/state/sort_provider.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
 import 'package:flashi/util/helpers/widget/other/empty_widgets.dart';
@@ -59,7 +59,7 @@ class SeeAllQuizSetList extends StatelessWidget {
   Widget _body(BuildContext context) {
     AdManager adManager = AdManager();
 
-    return Consumer5<QuizProvider, SortProvider, FetchDataFromJsonProvider,
+    return Consumer5<QuizProvider, SortProvider, GenerationConfigProvider,
         AiModelLogicProvider, AiCreditProvider>(
       builder: (context, quizProvider, sortProvider, fetchDataFromJsonProvider,
           aiModelLogicProvider, aiCreditProvider, child) {

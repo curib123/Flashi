@@ -1,4 +1,4 @@
-import 'package:flashi/provider/check_version_provider.dart';
+import 'package:flashi/core/updates/application/app_update_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -65,7 +65,7 @@ class HomeScreen extends StatelessWidget {
 void showAnimatedAboutDialog(BuildContext context) {
   final colorScheme = Theme.of(context).colorScheme;
   final checkVersionProvider =
-      Provider.of<CheckVersionProvider>(context, listen: false);
+      Provider.of<AppUpdateProvider>(context, listen: false);
 
   showGeneralDialog(
     context: context,

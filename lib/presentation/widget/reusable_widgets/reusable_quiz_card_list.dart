@@ -1,5 +1,5 @@
 import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_card_core.dart';
-import 'package:flashi/provider/quiz_provider.dart';
+import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

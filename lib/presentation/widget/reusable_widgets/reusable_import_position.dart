@@ -1,6 +1,6 @@
 import 'package:flashi/util/helpers/classes/other/import_export_helper_class.dart';
 import 'package:flutter/material.dart';
-import 'package:flashi/provider/quiz_provider.dart';
+import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:provider/provider.dart';
 
 class ReusableImportPosition extends StatelessWidget {

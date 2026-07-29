@@ -1,8 +1,8 @@
 import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_credits_info_core.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_textfield_core.dart';
-import 'package:flashi/provider/ai_credits_provider.dart';
-import 'package:flashi/provider/fetch_data_from_json_provider.dart';
-import 'package:flashi/provider/quiz_provider.dart';
+import 'package:flashi/features/ai/application/ai_credit_provider.dart';
+import 'package:flashi/features/ai/application/generation_config_provider.dart';
+import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_unit_id.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/auth_dialog.dart';
@@ -55,12 +55,11 @@ class ModelSelectionDialog {
           content: Padding(
             padding: const EdgeInsets.all(10.0),
             child: SingleChildScrollView(
-              child: Consumer2<FetchDataFromJsonProvider, QuizProvider>(
+              child: Consumer2<GenerationConfigProvider, QuizProvider>(
                 builder: (context, fetchDataProvider, quizProvider, _) {
                   String selectedModel = fetchDataProvider.model;
-                  int selectedMaxLength = fetchDataProvider.ListOfMaxLength;
-                  String selectedQuizType =
-                      fetchDataProvider.quiz_question_type;
+                  int selectedMaxLength = fetchDataProvider.maxLength;
+                  String selectedQuizType = fetchDataProvider.quizQuestionType;
 
                   return Column(
                     mainAxisSize: MainAxisSize.min,
@@ -90,7 +89,7 @@ class ModelSelectionDialog {
                               i++) {
                             if (fetchDataProvider.listOfMaxLength[i] ==
                                 fetchDataProvider
-                                    .ListOfMaxLength) // Check if value matches maxLength
+                                    .maxLength) // Check if value matches maxLength
                             {
                               int creditAmount =
                                   i + 1; // Use index +1 as credit amount

@@ -1,7 +1,7 @@
 import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_credits_info_core.dart';
-import 'package:flashi/provider/ai_credits_provider.dart';
+import 'package:flashi/features/ai/application/ai_credit_provider.dart';
 import 'package:flashi/provider/ai_model_logic_provider.dart';
-import 'package:flashi/provider/fetch_data_from_json_provider.dart';
+import 'package:flashi/features/ai/application/generation_config_provider.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_unit_id.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/auth_dialog.dart';
@@ -102,7 +102,7 @@ void showTopicDialog(BuildContext context, {required Function()? onTap}) {
                               child: const Text("Cancel"),
                             ),
                             Consumer2<AiModelLogicProvider,
-                                FetchDataFromJsonProvider>(
+                                GenerationConfigProvider>(
                               builder: (context, aiModelLogicProvider,
                                   fetchDataFromJsonProvider, _) {
                                 return ElevatedButton(

@@ -5,7 +5,7 @@ import 'package:flashi/app/widgets/app_mobile_drawer.dart';
 import 'package:flashi/core/design_system/app_breakpoints.dart';
 import 'package:flashi/features/onboarding/presentation/pages/onboarding_page.dart';
 import 'package:flashi/features/onboarding/application/onboarding_provider.dart';
-import 'package:flashi/provider/quiz_provider.dart';
+import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_unit_id.dart';
 import 'package:flutter/material.dart';

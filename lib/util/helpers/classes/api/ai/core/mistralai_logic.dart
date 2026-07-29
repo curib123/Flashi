@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:flashi/provider/quiz_provider.dart';
+import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flashi/util/helpers/classes/api/ai/core/api_key_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';

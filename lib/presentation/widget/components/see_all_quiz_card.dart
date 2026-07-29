@@ -3,8 +3,8 @@ import 'package:flashi/presentation/widget/reusable_widgets/reusable_quiz_card_l
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_rewarded_ads_button_position.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_sort_and_see_all.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
-import 'package:flashi/provider/ai_credits_provider.dart';
-import 'package:flashi/provider/quiz_provider.dart';
+import 'package:flashi/features/ai/application/ai_credit_provider.dart';
+import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flashi/core/state/sort_provider.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/add_slot_alert_dialog.dart';

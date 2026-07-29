@@ -1,4 +1,4 @@
-import 'package:flashi/provider/fetch_data_from_json_provider.dart';
+import 'package:flashi/features/ai/application/generation_config_provider.dart';
 import 'package:flashi/util/helpers/classes/api/Trivia/fun_fact_generator.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -34,7 +34,7 @@ class DailyQuestionProvider with ChangeNotifier {
 
   // ✅ Generate and save fun facts to Hive
   Future<void> updateFunFacts(
-      FetchDataFromJsonProvider fetchDataFromJsonProvider) async {
+      GenerationConfigProvider fetchDataFromJsonProvider) async {
     List<Map<String, String>> facts = await TriviaGenerator.fetchTrivia();
 
     Future.delayed(const Duration(seconds: 5), () {

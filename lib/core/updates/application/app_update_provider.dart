@@ -4,7 +4,7 @@ import 'package:flashi/util/helpers/widget/alert_dialog/show_update_dialog_alert
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-class CheckVersionProvider with ChangeNotifier {
+class AppUpdateProvider extends ChangeNotifier {
   String currentVersion = "";
   String latestVersion = ""; // Will be fetched from API
   String downloadLink = "";
@@ -18,22 +18,22 @@ class CheckVersionProvider with ChangeNotifier {
     // Fetch latest version from API
     await fetchLatestVersion();
 
+    if (!context.mounted) return;
     if (_isLatestVersionLower(currentVersion, latestVersion)) {
-      showUpdateDialog(context, currentVersion, latestVersion, downloadLink, patchNote);
+      showUpdateDialog(
+          context, currentVersion, latestVersion, downloadLink, patchNote);
     }
   }
 
   Future<void> fetchLatestVersion() async {
-    final response = await http.get(Uri.parse('https://curib123.github.io/flashi_/flashi.json'));
+    final response = await http
+        .get(Uri.parse('https://curib123.github.io/flashi_/flashi.json'));
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       latestVersion = data['latest_version'];
       downloadLink = data['download_link'];
       patchNote = data['patch_note'];
-
-      print("Latest Version: $latestVersion");
     } else {
-      print("Failed to load version data");
       latestVersion = currentVersion;
     }
   }
@@ -43,9 +43,15 @@ class CheckVersionProvider with ChangeNotifier {
     List<int> latestParts = latest.split('.').map(int.parse).toList();
 
     for (int i = 0; i < currentParts.length; i++) {
-      if (i >= latestParts.length) return false; // If latest version has fewer parts, it's not newer
-      if (latestParts[i] < currentParts[i]) return false; // Latest version is lower
-      if (latestParts[i] > currentParts[i]) return true; // Latest version is higher
+      if (i >= latestParts.length) {
+        return false;
+      }
+      if (latestParts[i] < currentParts[i]) {
+        return false;
+      }
+      if (latestParts[i] > currentParts[i]) {
+        return true;
+      }
     }
     return false; // Versions are equal
   }

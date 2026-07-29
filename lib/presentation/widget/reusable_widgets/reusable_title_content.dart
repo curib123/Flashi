@@ -1,7 +1,7 @@
-import 'package:flashi/provider/ai_credits_provider.dart';
+import 'package:flashi/features/ai/application/ai_credit_provider.dart';
 import 'package:flashi/features/chat/application/chat_provider.dart';
 import 'package:flashi/features/notes/application/notes_provider.dart';
-import 'package:flashi/provider/quiz_provider.dart';
+import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_unit_id.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/auth_dialog.dart';

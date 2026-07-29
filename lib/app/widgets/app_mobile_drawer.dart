@@ -4,7 +4,7 @@ import 'package:flashi/features/history/presentation/pages/history_page.dart';
 import 'package:flashi/features/settings/presentation/pages/settings_page.dart';
 import 'package:flashi/presentation/widget/components/see_all_quiz_set_list.dart';
 import 'package:flashi/app/state/app_navigation_provider.dart';
-import 'package:flashi/provider/quiz_provider.dart';
+import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flashi/util/helpers/classes/other/wepage_launcher.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/about_alert_dialog.dart';
 import 'package:flutter/material.dart';

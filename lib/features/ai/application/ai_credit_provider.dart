@@ -1,17 +1,17 @@
 import 'dart:io';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:ntp/ntp.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'dart:async';
 
-class AiCreditProvider with ChangeNotifier {
-  final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
+class AiCreditProvider extends ChangeNotifier {
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
   String? _deviceId;
   int _credits = 0;
-  int _defaultCredits = 10;
-  int _maxAdsPerDay = 10;
+  final int _defaultCredits = 10;
+  final int _maxAdsPerDay = 10;
   int _adsWatchedToday = 0;
   int adCooldown = 0;
   int maxCooldown = 60;
@@ -24,6 +24,7 @@ class AiCreditProvider with ChangeNotifier {
   int get defaultCredits => _defaultCredits;
   int get adsWatchedToday => _adsWatchedToday;
   int get maxAdsPerDay => _maxAdsPerDay;
+  int get cooldownSeconds => adCooldown;
   DateTime? get lastUpdated => _lastUpdated;
 
   AiCreditProvider() {
@@ -53,8 +54,11 @@ class AiCreditProvider with ChangeNotifier {
 
     _credits = await _getSecureInt('${_deviceId}_credits') ?? _defaultCredits;
     _adsWatchedToday = await _getSecureInt('${_deviceId}_ads_watched') ?? 0;
-    String? lastUpdatedStr = await _secureStorage.read(key: '${_deviceId}_last_updated');
-    _lastUpdated = lastUpdatedStr != null ? DateTime.tryParse(lastUpdatedStr) : await getNetworkTime();
+    String? lastUpdatedStr =
+        await _secureStorage.read(key: '${_deviceId}_last_updated');
+    _lastUpdated = lastUpdatedStr != null
+        ? DateTime.tryParse(lastUpdatedStr)
+        : await getNetworkTime();
 
     notifyListeners();
   }
@@ -78,23 +82,29 @@ class AiCreditProvider with ChangeNotifier {
   }
 
   void updateAddedCredits(int value) {
+    if (_addedCredits == value) return;
     _addedCredits = value;
     notifyListeners();
   }
 
-  Future<void>  updateCredits(int value) async {
+  Future<void> updateCredits(int value) async {
+    if (_credits == value) return;
     _credits = value;
-    _saveCredits();
+    await _saveCredits();
     notifyListeners();
   }
 
   /// Save credits securely tied to the device ID
   Future<void> _saveCredits() async {
     if (_deviceId == null) return;
-    await _secureStorage.write(key: '${_deviceId}_credits', value: _credits.toString());
-    await _secureStorage.write(key: '${_deviceId}_ads_watched', value: _adsWatchedToday.toString());
+    await _secureStorage.write(
+        key: '${_deviceId}_credits', value: _credits.toString());
+    await _secureStorage.write(
+        key: '${_deviceId}_ads_watched', value: _adsWatchedToday.toString());
     if (_lastUpdated != null) {
-      await _secureStorage.write(key: '${_deviceId}_last_updated', value: _lastUpdated!.toIso8601String());
+      await _secureStorage.write(
+          key: '${_deviceId}_last_updated',
+          value: _lastUpdated!.toIso8601String());
     }
   }
 
@@ -106,8 +116,8 @@ class AiCreditProvider with ChangeNotifier {
 
   /// Check if user is online
   Future<bool> hasInternet() async {
-    var connectivityResult = await Connectivity().checkConnectivity();
-    if (connectivityResult == ConnectivityResult.none) return false;
+    final connectivityResults = await Connectivity().checkConnectivity();
+    if (connectivityResults.contains(ConnectivityResult.none)) return false;
 
     try {
       final result = await InternetAddress.lookup('google.com');
@@ -149,7 +159,7 @@ class AiCreditProvider with ChangeNotifier {
   /// Start ad cooldown timer
   void _startCooldownTimer() {
     _countdownTimer?.cancel();
-    _countdownTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (adCooldown > 0) {
         adCooldown--;
         notifyListeners();
@@ -157,5 +167,11 @@ class AiCreditProvider with ChangeNotifier {
         timer.cancel();
       }
     });
+  }
+
+  @override
+  void dispose() {
+    _countdownTimer?.cancel();
+    super.dispose();
   }
 }
