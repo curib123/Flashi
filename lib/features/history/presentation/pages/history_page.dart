@@ -1,12 +1,12 @@
-import 'package:flashi/presentation/widget/components/create_history_screen.dart';
-import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_notes_summary_block_core.dart';
-import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_notes_summary_tile_core.dart';
-import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_search_bar_core.dart';
+import 'package:flashi/core/design_system/app_breakpoints.dart';
+import 'package:flashi/core/design_system/app_spacing.dart';
+import 'package:flashi/core/design_system/responsive_content.dart';
 import 'package:flashi/features/history/application/history_provider.dart';
+import 'package:flashi/presentation/widget/components/create_history_screen.dart';
+import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_notes_summary_tile_core.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
 import 'package:flashi/util/helpers/widget/other/empty_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 
 class HistoryPage extends StatefulWidget {
@@ -17,63 +17,66 @@ class HistoryPage extends StatefulWidget {
 }
 
 class _HistoryPageState extends State<HistoryPage> {
-  AdManager adManager = AdManager();
+  final AdManager _adManager = AdManager();
 
   @override
   void dispose() {
+    _adManager.showInterstitialAd();
     super.dispose();
-    adManager.showInterstitialAd();
   }
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final historyProvider = Provider.of<HistoryProvider>(context);
-    var filteredHistory = historyProvider.filterHistory().toList();
+    final history = context.watch<HistoryProvider>();
+    final results = history.filterHistory();
 
     return Scaffold(
       appBar: AppBar(
-        leading: GestureDetector(
-          onTap: () => Navigator.pop(context),
-          child: Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: colorScheme.primary,
-          ),
+        title: const Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Generation history'),
+            Text(
+              'Review previously generated content',
+              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
+            ),
+          ],
         ),
-        backgroundColor: colorScheme.onPrimary,
-        foregroundColor: colorScheme.primary,
-        title: Text(
-          "History",
-          style: TextStyle(color: colorScheme.primary),
-        ),
-        centerTitle: false,
       ),
-      body: SafeArea(
+      body: ResponsiveContent(
+        maxWidth: AppBreakpoints.readingMaxWidth,
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.md,
+          AppSpacing.md,
+          AppSpacing.md,
+          0,
+        ),
         child: Column(
           children: [
-            Container(
-              color: colorScheme.onPrimary,
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Column(
-                children: [
-                  ReusableSearchBarCore(
-                    colorScheme: colorScheme,
-                    hintText: 'Search Generated Quiz Set History',
-                    onChanged: (value) =>
-                        historyProvider.onSearchChanged(value),
-                    controller: historyProvider.searchController,
-                  ),
-                  adManager.getSevenBannerAdWidget(),
-                ],
+            TextField(
+              controller: history.searchController,
+              onChanged: history.onSearchChanged,
+              decoration: const InputDecoration(
+                hintText: 'Search generation history',
+                prefixIcon: Icon(Icons.search),
               ),
             ),
+            _adManager.getSevenBannerAdWidget(),
+            const SizedBox(height: AppSpacing.md),
             Expanded(
-              child: _NoteBodyTile(
-                colorScheme,
-                filteredHistory,
-                adManager.bannerHeight,
-              ),
-            )
+              child: results.isEmpty
+                  ? noHistoryWidget(context)
+                  : ListView.separated(
+                      padding: const EdgeInsets.only(bottom: AppSpacing.xxl),
+                      itemCount: results.length,
+                      separatorBuilder: (_, __) =>
+                          const SizedBox(height: AppSpacing.sm),
+                      itemBuilder: (context, index) => _HistoryCard(
+                        item: results[index],
+                        provider: history,
+                      ),
+                    ),
+            ),
           ],
         ),
       ),
@@ -81,143 +84,41 @@ class _HistoryPageState extends State<HistoryPage> {
   }
 }
 
-Widget _NoteBodyTile(
-    ColorScheme colorScheme, List filteredNotes, double bannerHeight) {
-  return Consumer<HistoryProvider>(
-    builder: (context, historyProvider, child) {
-      return _buildNoteListView(
-        filteredNotes,
-        colorScheme,
-        historyProvider,
-        'Tile',
-        context,
-        bannerHeight,
-      );
-    },
-  );
-}
+class _HistoryCard extends StatelessWidget {
+  const _HistoryCard({required this.item, required this.provider});
 
-Widget _buildNoteListView(
-    List filteredNotes,
-    ColorScheme colorScheme,
-    HistoryProvider historyProvider,
-    String layout,
-    BuildContext context,
-    double bannerHeight) {
-  return filteredNotes.isEmpty
-      ? noHistoryWidget(context)
-      : AnimationLimiter(
-          child: ListView.builder(
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-            itemCount: filteredNotes.length,
-            itemBuilder: (context, index) {
-              var note = filteredNotes[index];
-              return _buildNoteLayout(
-                  note, index, colorScheme, historyProvider, context, layout);
-            },
-          ),
-        );
-}
+  final Map<String, dynamic> item;
+  final HistoryProvider provider;
 
-Widget _buildNoteLayout(
-    Map<String, dynamic> note,
-    int index,
-    ColorScheme colorScheme,
-    HistoryProvider historyProvider,
-    BuildContext context,
-    String layout) {
-  return AnimationConfiguration.staggeredList(
-    position: index,
-    duration: const Duration(seconds: 2),
-    child: SlideAnimation(
-      curve: Curves.fastEaseInToSlowEaseOut,
-      verticalOffset: 100.0,
-      child: FadeInAnimation(
-        child: layout == 'Tile'
-            ? ReusableNotesSummaryTileCore(
-                isNote: true,
-                title: note['title'],
-                content: note['content'],
-                timestamp: note['created_at'],
-                isFavorite: note['favorite'],
-                onTap: () {
-                  historyProvider.titleController.text = note['title'];
-                  historyProvider.contentController.text = note['content'];
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => CreateHistoryPage(
-                        isCreate: false,
-                        title: note['title'],
-                        isRead: true,
-                        date: note['created_at'],
-                      ),
-                    ),
-                  );
-                },
-                onFavorite: () =>
-                    historyProvider.toggleFavoriteByTitle(note['title']),
-                onEdit: () {
-                  historyProvider.titleController.text = note['title'];
-                  historyProvider.contentController.text = note['content'];
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => CreateHistoryPage(
-                        isCreate: false,
-                        title: note['title'],
-                        isRead: false,
-                        date: note['created_at'],
-                      ),
-                    ),
-                  );
-                },
-                onDelete: () =>
-                    historyProvider.deleteHistoryByTitle(note['title']),
-                isHistoryPage: true,
-              )
-            : ReusableNotesSummaryBlockCore(
-                isNote: true,
-                title: note['title'],
-                content: note['content'],
-                timestamp: note['created_at'],
-                isFavorite: note['favorite'],
-                onTap: () {
-                  historyProvider.titleController.text = note['title'];
-                  historyProvider.contentController.text = note['content'];
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => CreateHistoryPage(
-                        isCreate: false,
-                        title: note['title'],
-                        isRead: true,
-                        date: note['created_at'],
-                      ),
-                    ),
-                  );
-                },
-                onFavorite: () =>
-                    historyProvider.toggleFavoriteByTitle(note['title']),
-                onEdit: () {
-                  historyProvider.titleController.text = note['title'];
-                  historyProvider.contentController.text = note['content'];
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => CreateHistoryPage(
-                        isCreate: false,
-                        title: note['title'],
-                        isRead: false,
-                        date: note['created_at'],
-                      ),
-                    ),
-                  );
-                },
-                onDelete: () =>
-                    historyProvider.deleteHistoryByTitle(note['title']),
-              ),
+  @override
+  Widget build(BuildContext context) {
+    return ReusableNotesSummaryTileCore(
+      isNote: true,
+      title: item['title'],
+      content: item['content'],
+      timestamp: item['created_at'],
+      isFavorite: item['favorite'],
+      onTap: () => _open(context, isRead: true),
+      onFavorite: () => provider.toggleFavoriteByTitle(item['title']),
+      onEdit: () => _open(context, isRead: false),
+      onDelete: () => provider.deleteHistoryByTitle(item['title']),
+      isHistoryPage: true,
+    );
+  }
+
+  void _open(BuildContext context, {required bool isRead}) {
+    provider.titleController.text = item['title'];
+    provider.contentController.text = item['content'];
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => CreateHistoryPage(
+          isCreate: false,
+          title: item['title'],
+          isRead: isRead,
+          date: item['created_at'],
+        ),
       ),
-    ),
-  );
+    );
+  }
 }
