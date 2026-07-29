@@ -108,7 +108,10 @@ class MistralAiService {
               "content":
                   "You are an expert quiz generator that is correct and accurate."
             },
-            {"role": "user", "content": generatePrompt()}
+            {
+              "role": "user",
+              "content": _withDistractorInstructions(generatePrompt()),
+            }
           ],
           "max_tokens": 3000
         }),
@@ -149,23 +152,48 @@ class MistralAiService {
       String text) async {
     final List<Map<String, String>> parsedQuestions = [];
 
-    final RegExp regExp = RegExp(
-      r'Question:\s*(.+?)\s*\nAnswer:\s*(.+?)\s*(?:\n|$)',
-      multiLine: true,
-      dotAll: true,
-    );
-
     await Future.delayed(Duration.zero); // Ensures async execution
 
-    for (final match in regExp.allMatches(text)) {
-      String question = match.group(1)?.trim() ?? "Incomplete question";
-      String answer = match.group(2)?.trim() ?? "Incomplete answer";
+    final blocks = text.split(RegExp(r'(?=Question:\s*)'));
+    for (final block in blocks) {
+      final question = _readLabel(block, 'Question');
+      final answer = _readLabel(block, 'Answer');
+      if (question == null || answer == null) continue;
 
-      parsedQuestions.add({"question": question, "answer": answer});
+      parsedQuestions.add({
+        'question': question,
+        'answer': answer,
+        'fake_choice_1': _readLabel(block, 'Fake Choice 1') ?? '',
+        'fake_choice_2': _readLabel(block, 'Fake Choice 2') ?? '',
+        'fake_choice_3': _readLabel(block, 'Fake Choice 3') ?? '',
+      });
     }
 
     return parsedQuestions;
   }
+
+  static String? _readLabel(String block, String label) {
+    final match = RegExp(
+      '^${RegExp.escape(label)}:\\s*(.+?)\\s*\$',
+      multiLine: true,
+      caseSensitive: false,
+    ).firstMatch(block);
+    final value = match?.group(1)?.trim();
+    return value == null || value.isEmpty ? null : value;
+  }
+
+  static String _withDistractorInstructions(String prompt) => '''
+$prompt
+
+For every question, also generate exactly three plausible but incorrect
+answers. They must be distinct from the correct answer and from one another.
+Return every item using exactly this format:
+Question: <question>
+Answer: <correct answer>
+Fake Choice 1: <plausible incorrect answer>
+Fake Choice 2: <plausible incorrect answer>
+Fake Choice 3: <plausible incorrect answer>
+''';
 
   static List<String> splitTextIntoChunks(String text, int chunkSize) {
     if (text.length <= chunkSize) return [text]; // Return as is if within size
@@ -284,7 +312,10 @@ Answer: True
               "content":
                   "You are an expert quiz generator that is facts and correct."
             },
-            {"role": "user", "content": generatePrompt()}
+            {
+              "role": "user",
+              "content": _withDistractorInstructions(generatePrompt()),
+            }
           ],
           "max_tokens": 3000
         }),

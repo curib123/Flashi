@@ -20,9 +20,8 @@ class TriviaService {
           List<String> incorrectAnswers =
               List<String>.from(trivia['incorrectAnswers']);
 
-          // Ensure there are at least two fake choices
-          if (incorrectAnswers.length < 2) {
-            incorrectAnswers.add("Unknown"); // Fallback fake choice
+          while (incorrectAnswers.length < 3) {
+            incorrectAnswers.add('Unknown ${incorrectAnswers.length + 1}');
           }
 
           triviaQuestions.add({

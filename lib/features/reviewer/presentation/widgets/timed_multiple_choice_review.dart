@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flashi/core/ads/ad_manager.dart';
+import 'package:flashi/features/reviewer/domain/quiz_choice_builder.dart';
 import 'package:flashi/shared/widgets/highlighted_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flashi/features/reviewer/presentation/widgets/multiple_choice_card.dart';
@@ -39,21 +40,15 @@ class _MultipleChoiceReviewState extends State<TimedMultipleChoiceReview> {
     _pageController = PageController();
     _timerNotifier = ValueNotifier<int>(widget.timerDuration);
 
-    _shuffledOptions = widget.cards.map((card) {
-      final correctAnswer = card['answer'] as String;
-      List<String> incorrectAnswers = widget.cards
-          .where((c) => c['answer'] != correctAnswer)
-          .map<String>((c) => c['answer'] as String)
-          .toList();
-
-      while (incorrectAnswers.length < 3) {
-        incorrectAnswers.add("none");
-      }
-
-      final options = ([correctAnswer, ...incorrectAnswers.sublist(0, 3)]
-        ..shuffle(_random));
-      return options;
-    }).toList();
+    _shuffledOptions = widget.cards
+        .map<List<String>>(
+          (card) => QuizChoiceBuilder.build(
+            card: card as Map<dynamic, dynamic>,
+            cards: widget.cards,
+            random: _random,
+          ),
+        )
+        .toList();
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timerTick) {
       if (_timerNotifier.value > 0) {
