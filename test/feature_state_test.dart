@@ -12,7 +12,6 @@ import 'package:flashi/features/history/application/history_provider.dart';
 import 'package:flashi/features/notes/application/notes_provider.dart';
 import 'package:flashi/features/onboarding/application/onboarding_provider.dart';
 import 'package:flashi/features/reviewer/application/reviewer_settings_provider.dart';
-import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -71,15 +70,13 @@ void main() {
       provider.addListener(() => notifications++);
 
       provider
-        ..setScheme(FlexScheme.greyLaw)
         ..setThemeMode(ThemeMode.dark)
         ..updateFontSize(4);
 
-      expect(provider.currentScheme, FlexScheme.greyLaw);
       expect(provider.themeMode, ThemeMode.dark);
       expect(provider.fontScale, 1);
       expect(box.get('themeMode'), ThemeMode.dark.index);
-      expect(notifications, 2);
+      expect(notifications, 1);
       provider.dispose();
     });
 

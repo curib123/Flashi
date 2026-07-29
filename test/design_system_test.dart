@@ -2,15 +2,14 @@ import 'package:flashi/core/design_system/app_surface.dart';
 import 'package:flashi/core/design_system/app_theme.dart';
 import 'package:flashi/shared/widgets/app_page_header.dart';
 import 'package:flashi/shared/widgets/empty_state_widgets.dart';
-import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   testWidgets('design system renders in light and dark modes', (tester) async {
     for (final theme in [
-      AppTheme.light(FlexScheme.tealM3),
-      AppTheme.dark(FlexScheme.tealM3),
+      AppTheme.light(),
+      AppTheme.dark(),
     ]) {
       await tester.pumpWidget(
         MaterialApp(

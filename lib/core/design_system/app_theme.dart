@@ -1,4 +1,3 @@
-import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 
 import 'app_radii.dart';
@@ -6,18 +5,12 @@ import 'app_spacing.dart';
 import 'app_colors.dart';
 
 abstract final class AppTheme {
-  static ThemeData light(FlexScheme scheme) => _build(Brightness.light, scheme);
+  static ThemeData light() => _build(Brightness.light);
 
-  static ThemeData dark(FlexScheme scheme) => _build(Brightness.dark, scheme);
+  static ThemeData dark() => _build(Brightness.dark);
 
-  static ThemeData _build(
-    Brightness brightness,
-    FlexScheme scheme,
-  ) {
+  static ThemeData _build(Brightness brightness) {
     final isDark = brightness == Brightness.dark;
-    final source = isDark
-        ? FlexColor.schemes[scheme]?.dark.primary
-        : FlexColor.schemes[scheme]?.light.primary;
     final foreground = isDark ? AppColors.darkText : AppColors.lightText;
     final background =
         isDark ? AppColors.darkBackground : AppColors.lightBackground;
@@ -25,7 +18,7 @@ abstract final class AppTheme {
     final raised = isDark ? AppColors.darkRaised : AppColors.lightRaised;
     final muted = isDark ? AppColors.darkMutedText : AppColors.lightMutedText;
     final outline = isDark ? AppColors.darkBorder : AppColors.lightBorder;
-    final accent = Color.lerp(foreground, source ?? foreground, 0.05)!;
+    final accent = foreground;
     final colors = ColorScheme.fromSeed(
       seedColor: accent,
       brightness: brightness,

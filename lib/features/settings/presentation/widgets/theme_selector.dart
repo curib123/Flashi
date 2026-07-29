@@ -1,5 +1,4 @@
 import 'package:flashi/app/state/theme_provider.dart';
-import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -13,52 +12,12 @@ class ThemeSelector extends StatelessWidget {
     // Access the theme provider to manage theme-related settings
     final themeProvider = Provider.of<ThemeProvider>(context);
 
-    // List of available theme schemes and theme modes
-    const schemes = FlexScheme.values;
     const themeModes = ThemeMode.values;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Section for selecting a theme
-        const Text("Select Theme",
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 16),
-        DropdownButton<FlexScheme>(
-          value: themeProvider.currentScheme,
-          isExpanded: true,
-          items: schemes.map((scheme) {
-            return DropdownMenuItem(
-              value: scheme,
-              child: Row(
-                children: [
-                  // Color preview for the theme
-                  Container(
-                    width: 24,
-                    height: 24,
-                    margin: const EdgeInsets.only(right: 12),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: FlexColor.schemes[scheme]?.light.primary ??
-                          Colors.grey,
-                    ),
-                  ),
-                  Text(FlexColor.schemes[scheme]?.name ?? scheme.name),
-                ],
-              ),
-            );
-          }).toList(),
-          onChanged: (newScheme) {
-            if (newScheme != null) {
-              themeProvider.setScheme(newScheme);
-            }
-          },
-        ),
-
-        const SizedBox(height: 16),
-
-        // Section for selecting a theme mode
-        const Text("Select Theme Mode",
+        const Text("Appearance",
             style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
         const SizedBox(height: 10),
         DropdownButton<ThemeMode>(
@@ -96,9 +55,7 @@ class ThemeSelector extends StatelessWidget {
             }
           },
         ),
-
         const SizedBox(height: 10),
-
         const Text("Adjust Font Size",
             style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
         Slider(

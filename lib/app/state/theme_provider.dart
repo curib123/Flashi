@@ -1,4 +1,3 @@
-import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flashi/core/design_system/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -6,11 +5,6 @@ import 'package:hive/hive.dart';
 class ThemeProvider extends ChangeNotifier {
   ThemeProvider({Box<dynamic>? box})
       : _box = box ?? Hive.box<dynamic>('theme') {
-    _scheme = _readEnum(
-      FlexScheme.values,
-      'currentScheme',
-      FlexScheme.tealM3,
-    );
     _themeMode = _readEnum(
       ThemeMode.values,
       'themeMode',
@@ -23,21 +17,13 @@ class ThemeProvider extends ChangeNotifier {
   }
 
   final Box<dynamic> _box;
-  late FlexScheme _scheme;
   late ThemeMode _themeMode;
   late double _fontScale;
 
-  FlexScheme get currentScheme => _scheme;
   ThemeMode get themeMode => _themeMode;
   double get fontScale => _fontScale;
-  ThemeData get lightTheme => AppTheme.light(_scheme);
-  ThemeData get darkTheme => AppTheme.dark(_scheme);
-
-  void setScheme(FlexScheme scheme) {
-    if (_scheme == scheme) return;
-    _scheme = scheme;
-    _persist('currentScheme', scheme.index);
-  }
+  ThemeData get lightTheme => AppTheme.light();
+  ThemeData get darkTheme => AppTheme.dark();
 
   void setThemeMode(ThemeMode mode) {
     if (_themeMode == mode) return;
