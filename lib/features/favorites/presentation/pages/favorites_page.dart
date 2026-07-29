@@ -1,6 +1,7 @@
+import 'package:flashi/core/design_system/app_spacing.dart';
+import 'package:flashi/core/design_system/responsive_content.dart';
 import 'package:flashi/presentation/widget/components/see_all_quiz_card.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_set_core.dart';
-import 'package:flashi/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/delete_confirmation_alert_box.dart';
@@ -9,16 +10,15 @@ import 'package:flashi/util/helpers/classes/other/import_export_helper_class.dar
 import 'package:flashi/util/helpers/widget/modals/create_card_bottom_modal.dart';
 import 'package:flashi/util/helpers/widget/modals/create_set_bottom_modal.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
+import 'package:flashi/util/helpers/widget/modals/theme_modal.dart';
 
 class FavoritesPage extends StatelessWidget {
   const FavoritesPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final quizProvider = Provider.of<QuizProvider>(context);
+    final quizProvider = context.watch<QuizProvider>();
     final quizSets = quizProvider.filteredQuizSetsFavorite;
 
     final ImportExportHelperClass helper =
@@ -26,96 +26,73 @@ class FavoritesPage extends StatelessWidget {
     AdManager adManager = AdManager();
 
     return Scaffold(
-        appBar: AppBar(
-          leading: GestureDetector(
-            onTap: () => Navigator.pop(context),
-            child: Icon(
-              Icons.arrow_back_ios_new_rounded,
-              color: colorScheme.primary,
-            ),
+      appBar: AppBar(
+        title: const Text('Favorites'),
+        actions: [
+          IconButton(
+            tooltip: 'Appearance',
+            onPressed: () => openThemeSelector(context),
+            icon: const Icon(Icons.contrast_outlined),
           ),
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(),
-          ),
-          backgroundColor: colorScheme.onPrimary,
-          foregroundColor: colorScheme.primary,
-          title: Text(
-            "Favorates",
-            style: TextStyle(color: colorScheme.primary),
-          ),
-          centerTitle: false,
-        ),
-        body: Stack(
-          children: [
-            quizSets.isEmpty
-                ? _buildEmptyState(context)
-                : ListView.builder(
-                    itemCount: quizSets.length,
-                    itemBuilder: (context, index) {
-                      final set = quizSets[index];
-                      final String name = set['name'] ?? 'Unnamed Set';
-                      final String description = set['description'] ?? '';
-                      final List cards = set['cards'] ?? [];
-                      final bool favorite = set['favorite'] ?? false;
-                      final DateTime timestamp =
-                          set['timestamp'] ?? DateTime.now();
+          const SizedBox(width: AppSpacing.xs),
+        ],
+      ),
+      body: ResponsiveContent(
+        child: quizSets.isEmpty
+            ? _buildEmptyState(context)
+            : ListView.separated(
+                padding: const EdgeInsets.only(bottom: AppSpacing.xxl),
+                itemCount: quizSets.length,
+                separatorBuilder: (_, __) =>
+                    const SizedBox(height: AppSpacing.sm),
+                itemBuilder: (context, index) {
+                  final set = quizSets[index];
+                  final String name = set['name'] ?? 'Unnamed Set';
+                  final String description = set['description'] ?? '';
+                  final List cards = set['cards'] ?? [];
+                  final bool favorite = set['favorite'] ?? false;
+                  final DateTime timestamp = set['timestamp'] ?? DateTime.now();
 
-                      return AnimationLimiter(
-                        child: AnimationConfiguration.staggeredList(
-                          position: index,
-                          duration: const Duration(seconds: 1),
-                          child: SlideAnimation(
-                            curve: Curves.easeInOutCubicEmphasized,
-                            verticalOffset: 50.0,
-                            child: FadeInAnimation(
-                              child: Column(
-                                children: [
-                                  adManager.getSecondBannerAdWidget(),
-                                  ReusableSetCore(
-                                    name: name,
-                                    description: description,
-                                    numberOfQuiz: cards.length,
-                                    isFavorate: favorite,
-                                    timestamp: timestamp,
-                                    onTap: () => _navigateToQuizCards(
-                                        context, name, set, index, cards),
-                                    onAddCard: () => _addCard(
-                                        context, name, set, index, cards),
-                                    onReview: () => showReviewSelection(
-                                      context: context,
-                                      heading: name,
-                                      cards: cards,
-                                      setname: name,
-                                    ),
-                                    onDelete: () =>
-                                        showDeleteConfirmationDialog(
-                                      context: context,
-                                      setName: name,
-                                      onDelete: () =>
-                                          quizProvider.removeQuizSet(set),
-                                    ),
-                                    onEdit: () => _showEditSetModal(context,
-                                        quizProvider, name, description),
-                                    onFavorate: () =>
-                                        quizProvider.toggleFavorite(set),
-                                    onViewAllCards: () => _navigateToQuizCards(
-                                        context, name, set, index, cards),
-                                    onShare: () {},
-                                    onExport: () {
-                                      helper.exportList(context, set);
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
+                  return Column(
+                    children: [
+                      adManager.getSecondBannerAdWidget(),
+                      ReusableSetCore(
+                        name: name,
+                        description: description,
+                        numberOfQuiz: cards.length,
+                        isFavorate: favorite,
+                        timestamp: timestamp,
+                        onTap: () => _navigateToQuizCards(
+                            context, name, set, index, cards),
+                        onAddCard: () =>
+                            _addCard(context, name, set, index, cards),
+                        onReview: () => showReviewSelection(
+                          context: context,
+                          heading: name,
+                          cards: cards,
+                          setname: name,
                         ),
-                      );
-                    },
-                  ),
-            ReusableThemeSettingPosition(colorScheme: colorScheme)
-          ],
-        ));
+                        onDelete: () => showDeleteConfirmationDialog(
+                          context: context,
+                          setName: name,
+                          onDelete: () => quizProvider.removeQuizSet(set),
+                        ),
+                        onEdit: () => _showEditSetModal(
+                            context, quizProvider, name, description),
+                        onFavorate: () => quizProvider.toggleFavorite(set),
+                        onViewAllCards: () => _navigateToQuizCards(
+                            context, name, set, index, cards),
+                        onShare: () {},
+                        onExport: () {
+                          helper.exportList(context, set);
+                        },
+                      ),
+                    ],
+                  );
+                },
+              ),
+      ),
+    );
   }
 
   /// Builds a placeholder widget when the quiz set list is empty.
@@ -181,6 +158,7 @@ class FavoritesPage extends StatelessWidget {
       Map<String, dynamic> set, int index, List<dynamic> cards) async {
     _navigateToQuizCards(context, name, set, index, cards);
     await Future.delayed(const Duration(seconds: 1));
+    if (!context.mounted) return;
 
     CreateCardBottomModal(
       context: context,
