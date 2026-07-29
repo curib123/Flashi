@@ -17,6 +17,7 @@ import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flashi/features/settings/presentation/pages/settings_page.dart';
 import 'package:flashi/features/quiz/presentation/pages/quiz_sets_page.dart';
 import 'package:flashi/shared/widgets/app_search_field.dart';
+import 'package:flashi/shared/widgets/app_page_header.dart';
 import 'package:flashi/features/quiz/presentation/widgets/quiz_set_list.dart';
 import 'package:flashi/core/ads/ad_manager.dart';
 import 'package:flashi/core/ads/ad_unit_id.dart';
@@ -138,119 +139,136 @@ class _DashboardPageState extends State<DashboardPage> {
     final quizSets = quiz.filteredQuizSets.reversed.toList();
 
     return Scaffold(
-      appBar: AppBar(
-        leading: MediaQuery.sizeOf(context).width < AppBreakpoints.medium
-            ? const IconButton(
-                tooltip: 'Open navigation',
-                onPressed: AppShell.openNavigation,
-                icon: Icon(Icons.menu),
-              )
-            : null,
-        title: const Text('Learn'),
-        actions: [
-          IconButton(
-            tooltip: 'Settings',
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const SettingsPage()),
+      body: SafeArea(
+        child: Column(
+          children: [
+            AppPageHeader(
+              title: 'Learning workspace',
+              description: 'Create a focused study session in a few steps.',
+              leading: MediaQuery.sizeOf(context).width < AppBreakpoints.medium
+                  ? const IconButton(
+                      tooltip: 'Open navigation',
+                      onPressed: AppShell.openNavigation,
+                      icon: Icon(Icons.menu),
+                    )
+                  : null,
+              actions: [
+                IconButton(
+                  tooltip: 'Settings',
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const SettingsPage()),
+                  ),
+                  icon: const Icon(Icons.settings_outlined),
+                ),
+              ],
             ),
-            icon: const Icon(Icons.settings_outlined),
-          ),
-          const SizedBox(width: AppSpacing.xs),
-        ],
-      ),
-      body: RefreshIndicator(
-        onRefresh: () async => setState(() {}),
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: ResponsiveContent(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      'Build your next study session',
-                      style: Theme.of(context).textTheme.headlineMedium,
-                    ),
-                    const SizedBox(height: AppSpacing.xs),
-                    Text(
-                      'Generate, organize, and review learning material.',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color:
-                                Theme.of(context).colorScheme.onSurfaceVariant,
-                          ),
-                    ),
-                    const SizedBox(height: AppSpacing.lg),
-                    AppSurface(
-                      child: Column(
-                        children: [
-                          AppSearchField(
-                            colorScheme: Theme.of(context).colorScheme,
-                            hintText: 'Search quiz sets',
-                            onChanged: quiz.updateSearchQuery,
-                            controller: quiz.searchController,
-                          ),
-                          const SizedBox(height: AppSpacing.md),
-                          SizedBox(
-                            width: double.infinity,
-                            child: FilledButton.icon(
-                              onPressed: () => generation.showFlashcardDialog(
-                                context,
-                                quiz,
-                                Theme.of(context).colorScheme,
-                                config,
-                                credits,
-                                history,
+            Expanded(
+              child: RefreshIndicator(
+                onRefresh: () async => setState(() {}),
+                child: CustomScrollView(
+                  slivers: [
+                    SliverToBoxAdapter(
+                      child: ResponsiveContent(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            AppSurface(
+                              emphasized: true,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  Text(
+                                    'What will you learn today?',
+                                    style:
+                                        Theme.of(context).textTheme.titleLarge,
+                                  ),
+                                  const SizedBox(height: AppSpacing.xs),
+                                  Text(
+                                    'Search your library or generate a new quiz.',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurfaceVariant,
+                                        ),
+                                  ),
+                                  const SizedBox(height: AppSpacing.md),
+                                  AppSearchField(
+                                    colorScheme: Theme.of(context).colorScheme,
+                                    hintText: 'Search quiz sets',
+                                    onChanged: quiz.updateSearchQuery,
+                                    controller: quiz.searchController,
+                                  ),
+                                  const SizedBox(height: AppSpacing.md),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    child: FilledButton.icon(
+                                      onPressed: () =>
+                                          generation.showFlashcardDialog(
+                                        context,
+                                        quiz,
+                                        Theme.of(context).colorScheme,
+                                        config,
+                                        credits,
+                                        history,
+                                      ),
+                                      icon: const Icon(Icons.auto_awesome),
+                                      label: const Text('Generate quiz'),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              icon: const Icon(Icons.auto_awesome),
-                              label: const Text('Generate quiz'),
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: AppSpacing.lg),
+                            _QuickActions(quizProvider: quiz),
+                            const SizedBox(height: AppSpacing.xl),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    'Quiz sets',
+                                    style:
+                                        Theme.of(context).textTheme.titleLarge,
+                                  ),
+                                ),
+                                DropdownButtonHideUnderline(
+                                  child: DropdownButton<String>(
+                                    value: sort.dropdownValueSet,
+                                    items: sort.sortOptionsSet
+                                        .map(
+                                          (value) => DropdownMenuItem(
+                                            value: value,
+                                            child: Text(value),
+                                          ),
+                                        )
+                                        .toList(),
+                                    onChanged: (value) {
+                                      if (value == null) return;
+                                      sort.updateSortValueSet(value);
+                                      quiz.sortQuizSets(value);
+                                    },
+                                  ),
+                                ),
+                                TextButton(
+                                  onPressed: () => _openAllQuizSets(quiz),
+                                  child: const Text('View all'),
+                                ),
+                              ],
+                            ),
+                            _adManager.getFirstBannerAdWidget(),
+                            const SizedBox(height: AppSpacing.md),
+                            if (quizSets.isEmpty)
+                              noSetWidget(context)
+                            else
+                              QuizSetList(quizSets: quizSets),
+                            const SizedBox(height: AppSpacing.xxl),
+                          ],
+                        ),
                       ),
                     ),
-                    const SizedBox(height: AppSpacing.lg),
-                    _QuickActions(quizProvider: quiz),
-                    const SizedBox(height: AppSpacing.xl),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            'Quiz sets',
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
-                        ),
-                        DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            value: sort.dropdownValueSet,
-                            items: sort.sortOptionsSet
-                                .map(
-                                  (value) => DropdownMenuItem(
-                                    value: value,
-                                    child: Text(value),
-                                  ),
-                                )
-                                .toList(),
-                            onChanged: (value) {
-                              if (value == null) return;
-                              sort.updateSortValueSet(value);
-                              quiz.sortQuizSets(value);
-                            },
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () => _openAllQuizSets(quiz),
-                          child: const Text('View all'),
-                        ),
-                      ],
-                    ),
-                    _adManager.getFirstBannerAdWidget(),
-                    const SizedBox(height: AppSpacing.md),
-                    if (quizSets.isEmpty)
-                      noSetWidget(context)
-                    else
-                      QuizSetList(quizSets: quizSets),
-                    const SizedBox(height: AppSpacing.xxl),
                   ],
                 ),
               ),

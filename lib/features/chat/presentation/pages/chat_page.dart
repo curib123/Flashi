@@ -6,6 +6,7 @@ import 'package:flashi/core/design_system/responsive_content.dart';
 import 'package:flashi/features/chat/presentation/widgets/typing_indicator.dart';
 import 'package:flashi/features/chat/application/chat_provider.dart';
 import 'package:flashi/core/ads/ad_manager.dart';
+import 'package:flashi/shared/widgets/app_page_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -52,69 +53,74 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: MediaQuery.sizeOf(context).width < AppBreakpoints.medium
-            ? const IconButton(
-                tooltip: 'Open navigation',
-                onPressed: AppShell.openNavigation,
-                icon: Icon(Icons.menu),
-              )
-            : null,
-        title: const Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Assistant'),
-            Text(
-              'Ask, explore, and learn',
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
-            ),
-          ],
-        ),
-      ),
-      body: ResponsiveContent(
-        maxWidth: AppBreakpoints.readingMaxWidth,
-        padding: EdgeInsets.zero,
+      body: SafeArea(
         child: Column(
           children: [
-            Expanded(
-              child: Consumer<ChatProvider>(
-                builder: (context, chatProvider, child) {
-                  WidgetsBinding.instance.addPostFrameCallback(
-                    (_) => _scrollToBottom(),
-                  );
-                  if (chatProvider.messages.isEmpty && !chatProvider.isTyping) {
-                    return const _AssistantEmptyState();
-                  }
-                  final messages = chatProvider.messages.reversed.toList();
-                  return ListView.builder(
-                    controller: _scrollController,
-                    reverse: true,
-                    padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.md,
-                      AppSpacing.lg,
-                      AppSpacing.md,
-                      AppSpacing.sm,
-                    ),
-                    itemCount:
-                        messages.length + (chatProvider.isTyping ? 1 : 0),
-                    itemBuilder: (context, index) {
-                      if (index == 0 && chatProvider.isTyping) {
-                        return const _TypingBubble();
-                      }
-                      final message =
-                          messages[index - (chatProvider.isTyping ? 1 : 0)];
-                      return _MessageBubble(
-                        text: _cleanMessage(message['text'] ?? ''),
-                        isUser: message['sender'] == 'user',
-                      );
-                    },
-                  );
-                },
-              ),
+            AppPageHeader(
+              title: 'Assistant',
+              description: 'Ask questions, explore ideas, and learn clearly.',
+              leading: MediaQuery.sizeOf(context).width < AppBreakpoints.medium
+                  ? const IconButton(
+                      tooltip: 'Open navigation',
+                      onPressed: AppShell.openNavigation,
+                      icon: Icon(Icons.menu),
+                    )
+                  : null,
+              actions: const [
+                _StatusChip(),
+              ],
             ),
-            _Composer(
-              controller: _messageController,
-              onSend: _sendMessage,
+            Expanded(
+              child: ResponsiveContent(
+                maxWidth: AppBreakpoints.readingMaxWidth,
+                padding: EdgeInsets.zero,
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Consumer<ChatProvider>(
+                        builder: (context, chatProvider, child) {
+                          WidgetsBinding.instance.addPostFrameCallback(
+                            (_) => _scrollToBottom(),
+                          );
+                          if (chatProvider.messages.isEmpty &&
+                              !chatProvider.isTyping) {
+                            return const _AssistantEmptyState();
+                          }
+                          final messages =
+                              chatProvider.messages.reversed.toList();
+                          return ListView.builder(
+                            controller: _scrollController,
+                            reverse: true,
+                            padding: const EdgeInsets.fromLTRB(
+                              AppSpacing.md,
+                              AppSpacing.lg,
+                              AppSpacing.md,
+                              AppSpacing.sm,
+                            ),
+                            itemCount: messages.length +
+                                (chatProvider.isTyping ? 1 : 0),
+                            itemBuilder: (context, index) {
+                              if (index == 0 && chatProvider.isTyping) {
+                                return const _TypingBubble();
+                              }
+                              final message = messages[
+                                  index - (chatProvider.isTyping ? 1 : 0)];
+                              return _MessageBubble(
+                                text: _cleanMessage(message['text'] ?? ''),
+                                isUser: message['sender'] == 'user',
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                    _Composer(
+                      controller: _messageController,
+                      onSend: _sendMessage,
+                    ),
+                  ],
+                ),
+              ),
             ),
           ],
         ),
@@ -133,6 +139,19 @@ class _ChatPageState extends State<ChatPage> {
     final chatProvider = context.read<ChatProvider>();
     chatProvider.sendMessage(message);
     _messageController.clear();
+  }
+}
+
+class _StatusChip extends StatelessWidget {
+  const _StatusChip();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Chip(
+      avatar: Icon(Icons.bolt_rounded, size: 16),
+      label: Text('Ready'),
+      visualDensity: VisualDensity.compact,
+    );
   }
 }
 

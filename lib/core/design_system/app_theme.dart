@@ -112,6 +112,7 @@ abstract final class AppTheme {
         foregroundColor: foreground,
         surfaceTintColor: Colors.transparent,
         titleTextStyle: textTheme.titleLarge,
+        toolbarHeight: 72,
       ),
       dividerTheme: DividerThemeData(color: outline),
       cardTheme: CardThemeData(
@@ -122,6 +123,17 @@ abstract final class AppTheme {
           borderRadius: AppRadii.large,
           side: BorderSide(color: outline),
         ),
+      ),
+      listTileTheme: ListTileThemeData(
+        minTileHeight: 48,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.xxs,
+        ),
+        shape: const RoundedRectangleBorder(borderRadius: AppRadii.medium),
+        selectedColor: foreground,
+        selectedTileColor: raised,
+        iconColor: muted,
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
@@ -166,6 +178,8 @@ abstract final class AppTheme {
         elevation: 0,
         backgroundColor: panel,
         surfaceTintColor: Colors.transparent,
+        height: 72,
+        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
         indicatorColor: foreground,
         iconTheme: WidgetStateProperty.resolveWith(
           (states) => IconThemeData(
@@ -194,6 +208,15 @@ abstract final class AppTheme {
           ),
         ),
       ),
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        elevation: 0,
+        focusElevation: 0,
+        hoverElevation: 1,
+        highlightElevation: 0,
+        backgroundColor: foreground,
+        foregroundColor: background,
+        shape: const RoundedRectangleBorder(borderRadius: AppRadii.medium),
+      ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           minimumSize: const Size(48, 48),
@@ -211,6 +234,57 @@ abstract final class AppTheme {
             borderRadius: AppRadii.medium,
           ),
         ),
+      ),
+      chipTheme: ChipThemeData(
+        backgroundColor: raised,
+        selectedColor: foreground,
+        secondarySelectedColor: foreground,
+        disabledColor: panel,
+        labelStyle: textTheme.labelMedium,
+        secondaryLabelStyle: textTheme.labelMedium?.copyWith(color: background),
+        side: BorderSide(color: outline),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(AppRadii.pill)),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
+      ),
+      segmentedButtonTheme: SegmentedButtonThemeData(
+        style: ButtonStyle(
+          visualDensity: VisualDensity.compact,
+          foregroundColor: WidgetStateProperty.resolveWith(
+            (states) =>
+                states.contains(WidgetState.selected) ? background : foreground,
+          ),
+          backgroundColor: WidgetStateProperty.resolveWith(
+            (states) =>
+                states.contains(WidgetState.selected) ? foreground : raised,
+          ),
+          side: WidgetStatePropertyAll(BorderSide(color: outline)),
+          shape: const WidgetStatePropertyAll(
+            RoundedRectangleBorder(borderRadius: AppRadii.medium),
+          ),
+        ),
+      ),
+      popupMenuTheme: PopupMenuThemeData(
+        elevation: 0,
+        color: raised,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(
+          borderRadius: AppRadii.medium,
+          side: BorderSide(color: outline),
+        ),
+      ),
+      tooltipTheme: TooltipThemeData(
+        decoration: BoxDecoration(
+          color: foreground,
+          borderRadius: AppRadii.small,
+        ),
+        textStyle: textTheme.bodySmall?.copyWith(color: background),
+      ),
+      progressIndicatorTheme: ProgressIndicatorThemeData(
+        color: foreground,
+        linearTrackColor: panel,
+        circularTrackColor: panel,
       ),
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,

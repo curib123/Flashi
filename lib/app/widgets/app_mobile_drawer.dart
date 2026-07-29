@@ -172,6 +172,22 @@ class _NavigationContent extends StatelessWidget {
             ],
           ),
         ),
+        const Padding(
+          padding: EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            0,
+            AppSpacing.lg,
+            AppSpacing.sm,
+          ),
+          child: Text(
+            'WORKSPACE',
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 1.2,
+            ),
+          ),
+        ),
         _DestinationTile(
           icon: Icons.auto_awesome_outlined,
           selectedIcon: Icons.auto_awesome,
@@ -199,6 +215,22 @@ class _NavigationContent extends StatelessWidget {
             vertical: AppSpacing.sm,
           ),
           child: Divider(),
+        ),
+        const Padding(
+          padding: EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            AppSpacing.xs,
+            AppSpacing.lg,
+            AppSpacing.xs,
+          ),
+          child: Text(
+            'LIBRARY',
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 1.2,
+            ),
+          ),
         ),
         _NavigationTile(
           icon: Icons.layers_outlined,

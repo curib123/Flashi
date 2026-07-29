@@ -10,6 +10,7 @@ import 'package:flashi/shared/widgets/content_summary_tile.dart';
 import 'package:flashi/core/ads/ad_manager.dart';
 import 'package:flashi/features/settings/presentation/dialogs/theme_dialog.dart';
 import 'package:flashi/shared/widgets/empty_state_widgets.dart';
+import 'package:flashi/shared/widgets/app_page_header.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -37,91 +38,90 @@ class _NotesPageState extends State<NotesPage> {
     final useList = sort.dropdownValueNote == 'Tiles';
 
     return Scaffold(
-      appBar: AppBar(
-        leading: MediaQuery.sizeOf(context).width < AppBreakpoints.medium
-            ? const IconButton(
-                tooltip: 'Open navigation',
-                onPressed: AppShell.openNavigation,
-                icon: Icon(Icons.menu),
-              )
-            : null,
-        title: const Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Notes'),
-            Text(
-              'Capture and organize ideas',
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
-            ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            tooltip: 'Appearance',
-            onPressed: () => openThemeSelector(context),
-            icon: const Icon(Icons.contrast_outlined),
-          ),
-          const SizedBox(width: AppSpacing.xs),
-        ],
-      ),
-      body: ResponsiveContent(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.md,
-          AppSpacing.md,
-          AppSpacing.md,
-          0,
-        ),
+      body: SafeArea(
         child: Column(
           children: [
-            TextField(
-              controller: notes.searchController,
-              onChanged: notes.onSearchChanged,
-              decoration: const InputDecoration(
-                hintText: 'Search notes',
-                prefixIcon: Icon(Icons.search),
-              ),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    filteredNotes.isEmpty
-                        ? 'Your notes'
-                        : '${filteredNotes.length} notes',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                ),
-                SegmentedButton<String>(
-                  showSelectedIcon: false,
-                  segments: const [
-                    ButtonSegment(
-                      value: 'Tiles',
-                      icon: Icon(Icons.view_agenda_outlined),
-                      label: Text('List'),
-                    ),
-                    ButtonSegment(
-                      value: 'Blocks',
-                      icon: Icon(Icons.grid_view_outlined),
-                      label: Text('Grid'),
-                    ),
-                  ],
-                  selected: {sort.dropdownValueNote},
-                  onSelectionChanged: (selection) =>
-                      sort.updateSortValueNote(selection.first),
+            AppPageHeader(
+              title: 'Notes',
+              description: 'Capture, organize, and revisit what matters.',
+              leading: MediaQuery.sizeOf(context).width < AppBreakpoints.medium
+                  ? const IconButton(
+                      tooltip: 'Open navigation',
+                      onPressed: AppShell.openNavigation,
+                      icon: Icon(Icons.menu),
+                    )
+                  : null,
+              actions: [
+                IconButton(
+                  tooltip: 'Appearance',
+                  onPressed: () => openThemeSelector(context),
+                  icon: const Icon(Icons.contrast_outlined),
                 ),
               ],
             ),
-            _adManager.getThirdBannerAdWidget(),
-            const SizedBox(height: AppSpacing.sm),
             Expanded(
-              child: filteredNotes.isEmpty
-                  ? noNotesWidget(context)
-                  : _NotesCollection(
-                      notes: filteredNotes,
-                      useList: useList,
-                      provider: notes,
+              child: ResponsiveContent(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.md,
+                  AppSpacing.xs,
+                  AppSpacing.md,
+                  0,
+                ),
+                child: Column(
+                  children: [
+                    TextField(
+                      controller: notes.searchController,
+                      onChanged: notes.onSearchChanged,
+                      decoration: const InputDecoration(
+                        hintText: 'Search notes',
+                        prefixIcon: Icon(Icons.search),
+                      ),
                     ),
+                    const SizedBox(height: AppSpacing.sm),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            filteredNotes.isEmpty
+                                ? 'Your notes'
+                                : '${filteredNotes.length} notes',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                        ),
+                        SegmentedButton<String>(
+                          showSelectedIcon: false,
+                          segments: const [
+                            ButtonSegment(
+                              value: 'Tiles',
+                              icon: Icon(Icons.view_agenda_outlined),
+                              label: Text('List'),
+                            ),
+                            ButtonSegment(
+                              value: 'Blocks',
+                              icon: Icon(Icons.grid_view_outlined),
+                              label: Text('Grid'),
+                            ),
+                          ],
+                          selected: {sort.dropdownValueNote},
+                          onSelectionChanged: (selection) =>
+                              sort.updateSortValueNote(selection.first),
+                        ),
+                      ],
+                    ),
+                    _adManager.getThirdBannerAdWidget(),
+                    const SizedBox(height: AppSpacing.sm),
+                    Expanded(
+                      child: filteredNotes.isEmpty
+                          ? noNotesWidget(context)
+                          : _NotesCollection(
+                              notes: filteredNotes,
+                              useList: useList,
+                              provider: notes,
+                            ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ],
         ),
