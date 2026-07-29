@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'app_radii.dart';
 import 'app_spacing.dart';
+import 'app_colors.dart';
 
 abstract final class AppTheme {
   static ThemeData light(
@@ -30,24 +31,35 @@ abstract final class AppTheme {
     final source = isDark
         ? FlexColor.schemes[scheme]?.dark.primary
         : FlexColor.schemes[scheme]?.light.primary;
-    final foreground =
-        isDark ? const Color(0xFFF2F2F2) : const Color(0xFF171717);
-    final surface = isDark ? const Color(0xFF171717) : Colors.white;
-    final canvas = isDark ? const Color(0xFF0D0D0D) : const Color(0xFFF7F7F7);
-    final elevated = isDark ? const Color(0xFF212121) : Colors.white;
-    final muted = isDark ? const Color(0xFFA6A6A6) : const Color(0xFF666666);
-    final outline = isDark ? const Color(0xFF353535) : const Color(0xFFE3E3E3);
-    final accent = Color.lerp(foreground, source ?? foreground, 0.08)!;
+    final foreground = isDark ? AppColors.darkText : AppColors.lightText;
+    final background =
+        isDark ? AppColors.darkBackground : AppColors.lightBackground;
+    final panel = isDark ? AppColors.darkPanel : AppColors.lightPanel;
+    final raised = isDark ? AppColors.darkRaised : AppColors.lightRaised;
+    final muted = isDark ? AppColors.darkMutedText : AppColors.lightMutedText;
+    final outline = isDark ? AppColors.darkBorder : AppColors.lightBorder;
+    final accent = Color.lerp(foreground, source ?? foreground, 0.05)!;
     final colors = ColorScheme.fromSeed(
       seedColor: accent,
       brightness: brightness,
       primary: accent,
-      surface: surface,
+      surface: background,
     ).copyWith(
+      primary: foreground,
+      onPrimary: background,
       secondary: muted,
+      onSecondary: background,
+      tertiary: accent,
+      onSurface: foreground,
       outline: outline,
       outlineVariant: outline,
-      surfaceContainerHighest: elevated,
+      surfaceContainerLowest: background,
+      surfaceContainerLow: panel,
+      surfaceContainer: panel,
+      surfaceContainerHigh: raised,
+      surfaceContainerHighest: raised,
+      inverseSurface: foreground,
+      onInverseSurface: background,
     );
     final baseText = GoogleFonts.getTextTheme(font);
     final textTheme = baseText.copyWith(
@@ -88,15 +100,15 @@ abstract final class AppTheme {
       useMaterial3: true,
       brightness: brightness,
       colorScheme: colors,
-      scaffoldBackgroundColor: canvas,
-      canvasColor: canvas,
+      scaffoldBackgroundColor: background,
+      canvasColor: background,
       fontFamily: useBundledFont ? 'Montserrat' : null,
       textTheme: textTheme,
       appBarTheme: AppBarThemeData(
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: false,
-        backgroundColor: canvas,
+        backgroundColor: background,
         foregroundColor: foreground,
         surfaceTintColor: Colors.transparent,
         titleTextStyle: textTheme.titleLarge,
@@ -105,7 +117,7 @@ abstract final class AppTheme {
       cardTheme: CardThemeData(
         elevation: 0,
         margin: EdgeInsets.zero,
-        color: elevated,
+        color: raised,
         shape: RoundedRectangleBorder(
           borderRadius: AppRadii.large,
           side: BorderSide(color: outline),
@@ -113,7 +125,7 @@ abstract final class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: elevated,
+        fillColor: raised,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.md,
           vertical: AppSpacing.sm,
@@ -127,7 +139,7 @@ abstract final class AppTheme {
       ),
       dialogTheme: DialogThemeData(
         elevation: 0,
-        backgroundColor: elevated,
+        backgroundColor: raised,
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: AppRadii.large,
@@ -136,7 +148,7 @@ abstract final class AppTheme {
       ),
       bottomSheetTheme: BottomSheetThemeData(
         elevation: 0,
-        backgroundColor: elevated,
+        backgroundColor: raised,
         surfaceTintColor: Colors.transparent,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
@@ -146,30 +158,32 @@ abstract final class AppTheme {
       ),
       drawerTheme: DrawerThemeData(
         elevation: 0,
-        backgroundColor: canvas,
+        backgroundColor: panel,
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(side: BorderSide(color: outline)),
       ),
       navigationBarTheme: NavigationBarThemeData(
         elevation: 0,
-        backgroundColor: surface,
+        backgroundColor: panel,
         surfaceTintColor: Colors.transparent,
         indicatorColor: foreground,
         iconTheme: WidgetStateProperty.resolveWith(
           (states) => IconThemeData(
-            color: states.contains(WidgetState.selected) ? surface : muted,
+            color: states.contains(WidgetState.selected) ? background : muted,
           ),
         ),
       ),
       navigationRailTheme: NavigationRailThemeData(
         elevation: 0,
-        backgroundColor: canvas,
+        backgroundColor: panel,
         indicatorColor: foreground,
-        selectedIconTheme: IconThemeData(color: canvas),
+        selectedIconTheme: IconThemeData(color: background),
         unselectedIconTheme: IconThemeData(color: muted),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
+          backgroundColor: foreground,
+          foregroundColor: background,
           minimumSize: const Size(48, 48),
           padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.lg,
@@ -201,7 +215,7 @@ abstract final class AppTheme {
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
         backgroundColor: foreground,
-        contentTextStyle: TextStyle(color: surface),
+        contentTextStyle: TextStyle(color: background),
         shape: const RoundedRectangleBorder(
           borderRadius: AppRadii.medium,
         ),

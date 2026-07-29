@@ -8,7 +8,7 @@ class ThemeProvider extends ChangeNotifier {
   // Default theme settings
   FlexScheme _currentScheme = FlexScheme.tealM3; // Default to purpleM3
   ThemeMode _themeMode = ThemeMode.light;
-  String _currentFont = 'Montserrat'; // Default font
+  String _currentFont = 'Inter';
   double _fontScale = 0.8; // Default system font scale
 
   final Box _settingsBox = Hive.box('theme');
@@ -19,7 +19,7 @@ class ThemeProvider extends ChangeNotifier {
         defaultValue: FlexScheme.tealM3.index)];
     _themeMode = ThemeMode.values[
         _settingsBox.get('themeMode', defaultValue: ThemeMode.light.index)];
-    _currentFont = _settingsBox.get('currentFont', defaultValue: 'Montserrat');
+    _currentFont = _settingsBox.get('currentFont', defaultValue: 'Inter');
     _fontScale = _settingsBox.get('fontSize', defaultValue: 1.0);
   }
 
