@@ -1,3 +1,7 @@
+import 'package:flashi/core/design_system/app_breakpoints.dart';
+import 'package:flashi/core/design_system/app_spacing.dart';
+import 'package:flashi/core/design_system/app_surface.dart';
+import 'package:flashi/core/design_system/responsive_content.dart';
 import 'package:flashi/presentation/widget/components/reviewer_settings_alert_content.dart';
 import 'package:flashi/presentation/widget/components/theme_selector_dropdown.dart';
 import 'package:flutter/material.dart';
@@ -61,7 +65,3 @@ class _SectionHeader extends StatelessWidget {
     );
   }
 }
-import 'package:flashi/core/design_system/app_breakpoints.dart';
-import 'package:flashi/core/design_system/app_spacing.dart';
-import 'package:flashi/core/design_system/app_surface.dart';
-import 'package:flashi/core/design_system/responsive_content.dart';

@@ -42,7 +42,7 @@ class ThemeSelector extends StatelessWidget {
             style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
         const SizedBox(height: 16),
         DropdownButton<FlexScheme>(
-          value: themeProvider.currentScheme ?? schemes.first,
+          value: themeProvider.currentScheme,
           isExpanded: true,
           items: schemes.map((scheme) {
             return DropdownMenuItem(
@@ -123,7 +123,7 @@ class ThemeSelector extends StatelessWidget {
             style: TextStyle(fontSize: 10, fontWeight: FontWeight.normal)),
         const SizedBox(height: 10),
         DropdownButton<String>(
-          value: themeProvider.currentFont ?? aestheticFonts.first['name'],
+          value: themeProvider.currentFont,
           isExpanded: true,
           items: aestheticFonts.map((font) {
             return DropdownMenuItem(
