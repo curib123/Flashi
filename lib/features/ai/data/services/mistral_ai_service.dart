@@ -5,6 +5,8 @@ import 'package:flashi/features/ai/data/services/api_key_storage.dart';
 import 'package:http/http.dart' as http;
 
 class MistralAiService {
+  static const Duration _requestTimeout = Duration(seconds: 45);
+
   static Future<List<Map<String, String>>> generateQuestionsFromFile(
       String content, String modelType, String type, int maxLength) async {
     String? apiKey = await getApiKey(); // Retrieve stored API key
@@ -15,12 +17,18 @@ class MistralAiService {
     }
 
     List<String> chunks = splitTextIntoChunks(content, 2000);
-    List<Map<String, String>> allQuestions = [];
+    final allQuestions = <Map<String, String>>[];
+    final seenQuestions = <String>{};
 
     for (String chunk in chunks) {
-      List<Map<String, String>> questions =
-          await processChunkMistral(chunk, apiKey, modelType, type, maxLength);
-      allQuestions.addAll(questions);
+      final remaining = maxLength - allQuestions.length;
+      if (remaining <= 0) break;
+      final questions =
+          await processChunkMistral(chunk, apiKey, modelType, type, remaining);
+      for (final question in questions) {
+        final key = question['question']!.toLowerCase();
+        if (seenQuestions.add(key)) allQuestions.add(question);
+      }
       if (allQuestions.length >= maxLength) break;
     }
 
@@ -96,28 +104,30 @@ class MistralAiService {
     }
 
     try {
-      final response = await http.post(
-        Uri.parse(mistralEndpoint),
-        headers: {
-          "Authorization": "Bearer $apiKey",
-          "Content-Type": "application/json"
-        },
-        body: jsonEncode({
-          "model": modelType, // Updated to a known model name
-          "messages": [
-            {
-              "role": "system",
-              "content":
-                  "You are an expert quiz generator that is correct and accurate."
+      final response = await http
+          .post(
+            Uri.parse(mistralEndpoint),
+            headers: {
+              "Authorization": "Bearer $apiKey",
+              "Content-Type": "application/json"
             },
-            {
-              "role": "user",
-              "content": _withDistractorInstructions(generatePrompt()),
-            }
-          ],
-          "max_tokens": 3000
-        }),
-      );
+            body: jsonEncode({
+              "model": modelType, // Updated to a known model name
+              "messages": [
+                {
+                  "role": "system",
+                  "content":
+                      "You are an expert quiz generator that is correct and accurate."
+                },
+                {
+                  "role": "user",
+                  "content": _withDistractorInstructions(generatePrompt()),
+                }
+              ],
+              "max_tokens": 3000
+            }),
+          )
+          .timeout(_requestTimeout);
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = jsonDecode(response.body);
@@ -161,12 +171,39 @@ class MistralAiService {
       final answer = _readLabel(block, 'Answer');
       if (question == null || answer == null) continue;
 
+      final normalizedQuestion = _normalizeWhitespace(question);
+      final normalizedAnswer = _normalizeWhitespace(answer);
+      if (parsedQuestions.any(
+        (item) =>
+            item['question']!.toLowerCase() == normalizedQuestion.toLowerCase(),
+      )) {
+        continue;
+      }
+
+      final distractors = <String>[];
+      for (final label in const [
+        'Fake Choice 1',
+        'Fake Choice 2',
+        'Fake Choice 3',
+      ]) {
+        final value = _readLabel(block, label);
+        if (value == null) continue;
+        final normalized = _normalizeWhitespace(value);
+        if (normalized.toLowerCase() == normalizedAnswer.toLowerCase() ||
+            distractors.any(
+              (item) => item.toLowerCase() == normalized.toLowerCase(),
+            )) {
+          continue;
+        }
+        distractors.add(normalized);
+      }
+
       parsedQuestions.add({
-        'question': question,
-        'answer': answer,
-        'fake_choice_1': _readLabel(block, 'Fake Choice 1') ?? '',
-        'fake_choice_2': _readLabel(block, 'Fake Choice 2') ?? '',
-        'fake_choice_3': _readLabel(block, 'Fake Choice 3') ?? '',
+        'question': normalizedQuestion,
+        'answer': normalizedAnswer,
+        'fake_choice_1': distractors.elementAtOrNull(0) ?? '',
+        'fake_choice_2': distractors.elementAtOrNull(1) ?? '',
+        'fake_choice_3': distractors.elementAtOrNull(2) ?? '',
       });
     }
 
@@ -175,13 +212,16 @@ class MistralAiService {
 
   static String? _readLabel(String block, String label) {
     final match = RegExp(
-      '^${RegExp.escape(label)}:\\s*(.+?)\\s*\$',
+      '^\\s*(?:(?:[-*]|\\d+[.)])\\s*)?${RegExp.escape(label)}:\\s*(.+?)\\s*\$',
       multiLine: true,
       caseSensitive: false,
     ).firstMatch(block);
     final value = match?.group(1)?.trim();
     return value == null || value.isEmpty ? null : value;
   }
+
+  static String _normalizeWhitespace(String value) =>
+      value.replaceAll(RegExp(r'\s+'), ' ').trim();
 
   static String _withDistractorInstructions(String prompt) => '''
 $prompt
@@ -197,12 +237,30 @@ Fake Choice 3: <plausible incorrect answer>
 ''';
 
   static List<String> splitTextIntoChunks(String text, int chunkSize) {
-    if (text.length <= chunkSize) return [text]; // Return as is if within size
+    final normalized = text.trim();
+    if (normalized.isEmpty) return const [];
+    if (normalized.length <= chunkSize) return [normalized];
 
-    List<String> chunks = [];
-    for (int i = 0; i < text.length; i += chunkSize) {
-      int end = (i + chunkSize < text.length) ? i + chunkSize : text.length;
-      chunks.add(text.substring(i, end));
+    final chunks = <String>[];
+    var start = 0;
+    while (start < normalized.length) {
+      var end = (start + chunkSize).clamp(0, normalized.length);
+      if (end < normalized.length) {
+        final minimumBoundary = start + (chunkSize ~/ 2);
+        final sentenceBoundary = normalized.lastIndexOf(RegExp(r'[.!?]'), end);
+        if (sentenceBoundary > minimumBoundary) {
+          end = sentenceBoundary + 1;
+        } else {
+          final wordBoundary = normalized.lastIndexOf(RegExp(r'\s'), end);
+          if (wordBoundary > minimumBoundary) end = wordBoundary;
+        }
+      }
+      chunks.add(normalized.substring(start, end).trim());
+      start = end;
+      while (start < normalized.length &&
+          RegExp(r'\s').hasMatch(normalized[start])) {
+        start++;
+      }
     }
     return chunks;
   }
@@ -220,9 +278,8 @@ Fake Choice 3: <plausible incorrect answer>
       return [];
     }
 
-    List<Map<String, String>> questions =
-        await processChunkWithTitleDescription(
-            topic, description, apiKey, modelType, type, maxLength);
+    final questions = await processChunkWithTitleDescription(
+        topic, description, apiKey, modelType, type, maxLength);
 
     return questions.take(maxLength).toList();
   }
@@ -299,28 +356,30 @@ Answer: True
     }
 
     try {
-      final response = await http.post(
-        Uri.parse(mistralEndpoint),
-        headers: {
-          "Authorization": "Bearer $apiKey",
-          "Content-Type": "application/json"
-        },
-        body: jsonEncode({
-          "model": modelType, // Updated to a known model name
-          "messages": [
-            {
-              "role": "system",
-              "content":
-                  "You are an expert quiz generator that is facts and correct."
+      final response = await http
+          .post(
+            Uri.parse(mistralEndpoint),
+            headers: {
+              "Authorization": "Bearer $apiKey",
+              "Content-Type": "application/json"
             },
-            {
-              "role": "user",
-              "content": _withDistractorInstructions(generatePrompt()),
-            }
-          ],
-          "max_tokens": 3000
-        }),
-      );
+            body: jsonEncode({
+              "model": modelType, // Updated to a known model name
+              "messages": [
+                {
+                  "role": "system",
+                  "content":
+                      "You are an expert quiz generator that is facts and correct."
+                },
+                {
+                  "role": "user",
+                  "content": _withDistractorInstructions(generatePrompt()),
+                }
+              ],
+              "max_tokens": 3000
+            }),
+          )
+          .timeout(_requestTimeout);
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = jsonDecode(response.body);

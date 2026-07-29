@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:math';
 import 'package:flashi/core/config/app_environment.dart';
 import 'package:flashi/features/ai/application/ai_credit_provider.dart';
 import 'package:flashi/features/ai/application/generation_config_provider.dart';
@@ -24,9 +23,8 @@ class AiGenerationProvider extends ChangeNotifier {
 
   final http.Client _httpClient;
   final bool _ownsHttpClient;
-  Timer? _timeoutTimer;
-  Timer? _resultTimer;
   int _generationRevision = 0;
+  static const Duration _generationTimeout = Duration(seconds: 60);
 
   String extractedText = "";
   String topic = "";
@@ -34,7 +32,6 @@ class AiGenerationProvider extends ChangeNotifier {
   bool isUnderMaintenance = false;
   String reasonMaintenance = '';
   bool isFetchData = false;
-  bool isTimeOut = false;
   bool isGenerating = false;
   String? errorMessage;
 
@@ -75,114 +72,52 @@ class AiGenerationProvider extends ChangeNotifier {
     Future<String> Function() pickAndExtractText,
   ) async {
     final int revision = _beginGeneration();
-    showLoadingDialog(context, text: "Please wait...");
     extractedText = await pickAndExtractText();
     if (revision != _generationRevision || !context.mounted) return;
 
-    if (handleExtractedTextError(context, extractedText)) {
+    if (!handleExtractedTextError(context, extractedText)) {
+      _finishGeneration(revision);
+      return;
+    }
+
+    showLoadingDialog(context, text: 'Generating quiz from your file...');
+    try {
       final questions = await AiQuestionGenerator.generateQuestionsFromFile(
         extractedText,
         fetchDataFromJsonProvider.model,
         fetchDataFromJsonProvider.quizQuestionType,
         fetchDataFromJsonProvider.maxLength,
-      );
+      ).timeout(_generationTimeout);
       if (revision != _generationRevision || !context.mounted) return;
+      if (questions.isEmpty) {
+        throw const FormatException('No valid questions were generated.');
+      }
 
-      var random = Random();
-      int randomNumber =
-          30 + random.nextInt(31); // Generates a number between 30 and 60
-
-      _timeoutTimer = Timer(Duration(seconds: randomNumber), () {
-        if (revision != _generationRevision) return;
-        isTimeOut = true;
-        notifyListeners();
-      });
-
-      _resultTimer = Timer(const Duration(seconds: 10), () {
-        if (revision != _generationRevision || !context.mounted) return;
-        _timeoutTimer?.cancel();
-        if (questions.isNotEmpty && !isTimeOut) {
-          final quizSetName = quizProvider.nameController.text.isEmpty
-              ? "Newly Created ${quizProvider.quizSets.length}"
-              : quizProvider.nameController.text;
-
-          quizProvider.addQuizSet({
-            'name': quizSetName,
-            'timestamp': DateTime.now(),
-            'description': 'Generated Quiz content From File',
-            'cards': [],
-            'numberOfQuiz': 0,
-            'limitNumberOfQuiz': fetchDataFromJsonProvider.maxLength,
-          });
-
-          for (var questionData in questions) {
-            quizProvider.addCardToQuizSet(
-              quizSetName: quizSetName,
-              card: {
-                'isUpdating': false,
-                'question': questionData['question'] ?? '',
-                'answer': questionData['answer'] ?? '',
-                'fake_choice_1': questionData['fake_choice_1'] ?? '',
-                'fake_choice_2': questionData['fake_choice_2'] ?? '',
-                'fake_choice_3': questionData['fake_choice_3'] ?? '',
-                'isIgnore': false,
-                'keyword': '',
-                'timestamp': DateTime.now(),
-              },
-            );
-          }
-
-          String formatQuestions(questions) {
-            return questions
-                .map((q) => 'Q: ${q['question']}\nA: ${q['answer']}')
-                .join('\n\n');
-          }
-
-          String formattedText = formatQuestions(questions);
-
-          historyProvider.addHistory({
-            'title': quizSetName,
-            'content': formattedText,
-            'created_at': DateTime.now(),
-            'favorite': false,
-          });
-          Navigator.pop(context);
-          Navigator.pop(context);
-          Navigator.pop(context);
-
-          for (int i = 0;
-              i < fetchDataFromJsonProvider.listOfMaxLength.length;
-              i++) {
-            if (fetchDataFromJsonProvider.listOfMaxLength[i] ==
-                fetchDataFromJsonProvider
-                    .maxLength) // Check if value matches maxLength
-            {
-              int creditAmount = i + 1; // Use index +1 as credit amount
-              aiCreditProvider.useCredit(creditAmount);
-            }
-          }
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Successfully Created Generated Quiz "),
-              backgroundColor: Colors.green,
-            ),
-          );
-        } else {
-          Navigator.pop(context);
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              duration: Duration(seconds: 10),
-              content: Text(
-                  "It seems there’s no internet connection. Please try again or choose another model."),
-              backgroundColor: Colors.red,
-            ),
-          );
-          showMessageDialog(context, "Error",
-              "Weak internet connection or choose another model");
-        }
-        _finishGeneration(revision);
-      });
-    } else {
+      final quizSetName = _saveGeneratedQuiz(
+        quizProvider: quizProvider,
+        historyProvider: historyProvider,
+        config: fetchDataFromJsonProvider,
+        questions: questions,
+        sourceDescription: 'Generated quiz from file',
+      );
+      aiCreditProvider.useCredit(fetchDataFromJsonProvider.creditsPerLength);
+      _closeGenerationDialogs(context);
+      _showSuccess(context, quizSetName);
+    } on TimeoutException {
+      if (context.mounted) {
+        _showGenerationError(
+          context,
+          'Generation took too long. Check your connection and try again.',
+        );
+      }
+    } catch (_) {
+      if (context.mounted) {
+        _showGenerationError(
+          context,
+          'No valid questions were generated. Try clearer source material or another model.',
+        );
+      }
+    } finally {
       _finishGeneration(revision);
     }
   }
@@ -206,122 +141,51 @@ class AiGenerationProvider extends ChangeNotifier {
       return;
     }
 
-    final questions = await AiQuestionGenerator.generateQuestionsFromCustom(
-      topic,
-      description,
-      fetchDataFromJsonProvider.model,
-      fetchDataFromJsonProvider.quizQuestionType,
-      fetchDataFromJsonProvider.maxLength,
-    );
-    if (revision != _generationRevision || !context.mounted) return;
-
-    var random = Random();
-    int randomNumber =
-        30 + random.nextInt(15); // Generates a number between 30 and 60
-
-    _timeoutTimer = Timer(Duration(seconds: randomNumber), () {
-      if (revision != _generationRevision) return;
-      isTimeOut = true;
-      notifyListeners();
-    });
-
-    _resultTimer = Timer(const Duration(seconds: 10), () {
+    try {
+      final questions = await AiQuestionGenerator.generateQuestionsFromCustom(
+        topic,
+        description,
+        fetchDataFromJsonProvider.model,
+        fetchDataFromJsonProvider.quizQuestionType,
+        fetchDataFromJsonProvider.maxLength,
+      ).timeout(_generationTimeout);
       if (revision != _generationRevision || !context.mounted) return;
-      _timeoutTimer?.cancel();
-      if (questions.isNotEmpty && !isTimeOut) {
-        final quizSetName = quizProvider.nameController.text.isEmpty
-            ? "Newly Created ${quizProvider.quizSets.length}"
-            : quizProvider.nameController.text;
-
-        quizProvider.addQuizSet({
-          'name': quizSetName,
-          'timestamp': DateTime.now(),
-          'description': 'Generated Quiz content From Ai',
-          'cards': [],
-          'numberOfQuiz': 0,
-          'limitNumberOfQuiz': fetchDataFromJsonProvider.maxLength,
-        });
-
-        for (var questionData in questions) {
-          quizProvider.addCardToQuizSet(
-            quizSetName: quizSetName,
-            card: {
-              'isUpdating': false,
-              'question': questionData['question'] ?? '',
-              'answer': questionData['answer'] ?? '',
-              'fake_choice_1': questionData['fake_choice_1'] ?? '',
-              'fake_choice_2': questionData['fake_choice_2'] ?? '',
-              'fake_choice_3': questionData['fake_choice_3'] ?? '',
-              'isIgnore': false,
-              'keyword': '',
-              'timestamp': DateTime.now(),
-            },
-          );
-        }
-
-        String formatQuestions(questions) {
-          return questions
-              .map((q) => 'Q: ${q['question']}\nA: ${q['answer']}')
-              .join('\n\n');
-        }
-
-        String formattedText = formatQuestions(questions);
-
-        historyProvider.addHistory({
-          'title': quizSetName,
-          'content': formattedText,
-          'created_at': DateTime.now(),
-          'favorite': false,
-        });
-
-        Navigator.pop(context);
-        Navigator.pop(context);
-        Navigator.pop(context);
-        Navigator.pop(context);
-
-        for (int i = 0;
-            i < fetchDataFromJsonProvider.listOfMaxLength.length;
-            i++) {
-          if (fetchDataFromJsonProvider.listOfMaxLength[i] ==
-              fetchDataFromJsonProvider
-                  .maxLength) // Check if value matches maxLength
-          {
-            int creditAmount = i + 1; // Use index +1 as credit amount
-            aiCreditProvider.useCredit(creditAmount);
-          }
-        }
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Successfully Created AI Generated Quiz "),
-            backgroundColor: Colors.green,
-          ),
-        );
-      } else {
-        Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            duration: Duration(seconds: 10),
-            content: Text(
-                "Error in getting response , Try again with another topic/prompt"),
-            backgroundColor: Colors.red,
-          ),
-        );
-        showMessageDialog(
-            context,
-            type: "error",
-            "Error",
-            "It seems there’s no internet connection. Please try again or choose another model.");
+      if (questions.isEmpty) {
+        throw const FormatException('No valid questions were generated.');
       }
+
+      final quizSetName = _saveGeneratedQuiz(
+        quizProvider: quizProvider,
+        historyProvider: historyProvider,
+        config: fetchDataFromJsonProvider,
+        questions: questions,
+        sourceDescription: 'AI-generated quiz',
+      );
+      aiCreditProvider.useCredit(fetchDataFromJsonProvider.creditsPerLength);
+      _closeGenerationDialogs(context);
+      _showSuccess(context, quizSetName);
+    } on TimeoutException {
+      if (context.mounted) {
+        _showGenerationError(
+          context,
+          'Generation took too long. Check your connection and try again.',
+        );
+      }
+    } catch (_) {
+      if (context.mounted) {
+        _showGenerationError(
+          context,
+          'No valid questions were generated. Refine the topic or try another model.',
+        );
+      }
+    } finally {
       _finishGeneration(revision);
-    });
+    }
   }
 
   int _beginGeneration() {
-    _timeoutTimer?.cancel();
-    _resultTimer?.cancel();
     final int revision = ++_generationRevision;
     isGenerating = true;
-    isTimeOut = false;
     errorMessage = null;
     notifyListeners();
     return revision;
@@ -329,11 +193,89 @@ class AiGenerationProvider extends ChangeNotifier {
 
   void _finishGeneration(int revision) {
     if (revision != _generationRevision) return;
-    _timeoutTimer?.cancel();
-    _resultTimer?.cancel();
     isGenerating = false;
-    isTimeOut = false;
     notifyListeners();
+  }
+
+  String _saveGeneratedQuiz({
+    required QuizProvider quizProvider,
+    required HistoryProvider historyProvider,
+    required GenerationConfigProvider config,
+    required List<Map<String, String>> questions,
+    required String sourceDescription,
+  }) {
+    final quizSetName = _uniqueQuizSetName(quizProvider);
+    final createdAt = DateTime.now();
+    final cards = questions
+        .map(
+          (question) => <String, dynamic>{
+            'isUpdating': false,
+            'question': question['question']!,
+            'answer': question['answer']!,
+            'fake_choice_1': question['fake_choice_1'] ?? '',
+            'fake_choice_2': question['fake_choice_2'] ?? '',
+            'fake_choice_3': question['fake_choice_3'] ?? '',
+            'isIgnore': false,
+            'keyword': '',
+            'timestamp': createdAt,
+          },
+        )
+        .toList(growable: false);
+
+    quizProvider.addQuizSet({
+      'name': quizSetName,
+      'timestamp': createdAt,
+      'description': sourceDescription,
+      'cards': cards,
+      'numberOfQuiz': cards.length,
+      'limitNumberOfQuiz': config.maxLength,
+    });
+    historyProvider.addHistory({
+      'title': quizSetName,
+      'content': questions
+          .map((question) =>
+              'Q: ${question['question']}\nA: ${question['answer']}')
+          .join('\n\n'),
+      'created_at': createdAt,
+      'favorite': false,
+    });
+    quizProvider.clearController();
+    return quizSetName;
+  }
+
+  String _uniqueQuizSetName(QuizProvider quizProvider) {
+    final requestedName = quizProvider.nameController.text.trim();
+    final baseName = requestedName.isEmpty ? 'Generated Quiz' : requestedName;
+    final existingNames = quizProvider.quizSets
+        .map((set) => set['name']?.toString().toLowerCase())
+        .toSet();
+    if (!existingNames.contains(baseName.toLowerCase())) return baseName;
+
+    var suffix = 2;
+    while (existingNames.contains('$baseName ($suffix)'.toLowerCase())) {
+      suffix++;
+    }
+    return '$baseName ($suffix)';
+  }
+
+  void _closeGenerationDialogs(BuildContext context) {
+    Navigator.of(context).popUntil((route) => route is! PopupRoute);
+  }
+
+  void _showSuccess(BuildContext context, String quizSetName) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('$quizSetName created successfully.'),
+        backgroundColor: Colors.green,
+      ),
+    );
+  }
+
+  void _showGenerationError(BuildContext context, String message) {
+    if (Navigator.of(context).canPop()) Navigator.of(context).pop();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: Colors.red),
+    );
   }
 
   Future<void> showFlashcardDialog(
@@ -374,7 +316,7 @@ class AiGenerationProvider extends ChangeNotifier {
                 padding: const EdgeInsets.symmetric(vertical: 15.0),
                 child: Center(
                   child: Text(
-                    "Choose Generation Method ",
+                    "Create a quiz",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
@@ -389,7 +331,7 @@ class AiGenerationProvider extends ChangeNotifier {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      "Create your own Quiz, let AI generate one for you, or extract from a PDF/Docs file!",
+                      "Choose a source. You can build manually or generate from a topic, document, or image.",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 10,
@@ -406,7 +348,7 @@ class AiGenerationProvider extends ChangeNotifier {
                     _buildDialogButton(
                       icon: Icons.style_rounded,
                       context,
-                      label: "Create Own Quiz",
+                      label: "Create manually",
                       gradientColors: [
                         colorScheme.primary,
                         colorScheme.primary.withValues(alpha: 0.5)
@@ -424,7 +366,7 @@ class AiGenerationProvider extends ChangeNotifier {
                     _buildDialogButton(
                       icon: Icons.auto_awesome,
                       context,
-                      label: "Ai-Generated Quiz ",
+                      label: "Generate from topic",
                       gradientColors: [
                         colorScheme.secondary,
                         colorScheme.secondary.withValues(alpha: 0.5)
@@ -462,14 +404,14 @@ class AiGenerationProvider extends ChangeNotifier {
                               context,
                               type: "error",
                               "Error",
-                              "Under Maintenance \n  reasonMaintenance");
+                              "Under maintenance\n$reasonMaintenance");
                         }
                       },
                     ),
                     _buildDialogButton(
                       icon: Icons.file_copy_rounded,
                       context,
-                      label: "Quiz From PDF/Word Docx",
+                      label: "Generate from PDF or DOCX",
                       gradientColors: [
                         colorScheme.tertiary,
                         colorScheme.tertiary.withValues(alpha: 0.5)
@@ -511,14 +453,14 @@ class AiGenerationProvider extends ChangeNotifier {
                               context,
                               type: "error",
                               "Error",
-                              "Under Maintenance");
+                              "Under maintenance\n$reasonMaintenance");
                         }
                       },
                     ),
                     _buildDialogButton(
                       icon: Icons.picture_in_picture,
                       context,
-                      label: "Quiz From Picture",
+                      label: "Generate from image",
                       gradientColors: [
                         colorScheme.tertiary,
                         colorScheme.tertiary.withValues(alpha: 0.5)
@@ -563,7 +505,7 @@ class AiGenerationProvider extends ChangeNotifier {
                               context,
                               type: "error",
                               "Error",
-                              "Under Maintenance");
+                              "Under maintenance\n$reasonMaintenance");
                         }
                       },
                     ),
@@ -644,8 +586,6 @@ class AiGenerationProvider extends ChangeNotifier {
   @override
   void dispose() {
     _generationRevision++;
-    _timeoutTimer?.cancel();
-    _resultTimer?.cancel();
     if (_ownsHttpClient) _httpClient.close();
     super.dispose();
   }
@@ -686,16 +626,24 @@ bool handleExtractedTextError(BuildContext context, String extractedText) {
     },
   };
 
-  if (errorMessages.containsKey(extractedText)) {
-    Navigator.pop(context);
-    showMessageDialog(
-        type: "warning",
-        context,
-        "warning",
-        errorMessages[extractedText]!["snackbar"]!);
+  Map<String, String>? error;
+  for (final entry in errorMessages.entries) {
+    if (extractedText.startsWith(entry.key)) {
+      error = entry.value;
+      break;
+    }
+  }
+  if (extractedText.trim().isEmpty) {
+    error = const {
+      'snackbar': 'The selected file did not contain readable text.',
+    };
+  }
+
+  if (error != null) {
+    showMessageDialog(type: "warning", context, "warning", error["snackbar"]!);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(errorMessages[extractedText]!["snackbar"]!),
+        content: Text(error["snackbar"]!),
         backgroundColor: Colors.red,
       ),
     );

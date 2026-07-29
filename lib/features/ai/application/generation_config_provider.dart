@@ -63,6 +63,7 @@ class GenerationConfigProvider extends ChangeNotifier {
   void updateListOfMaxLength(int length) {
     if (_maxLength == length) return;
     _maxLength = length;
+    _creditsPerLength = _calculateEnergyCost(length);
     _persistAndNotify();
   }
 
@@ -92,6 +93,7 @@ class GenerationConfigProvider extends ChangeNotifier {
       _maxLengths = List<int>.unmodifiable(
         (data['ListOfMaxLength'] as List).map((value) => value as int),
       );
+      _creditsPerLength = _calculateEnergyCost(_maxLength);
       _persist();
     } catch (error) {
       _lastError = error;
@@ -119,6 +121,13 @@ class GenerationConfigProvider extends ChangeNotifier {
     _maxLengths = List<int>.unmodifiable(
       List<int>.from(_box.get('listOfMaxLength', defaultValue: const [])),
     );
+    _creditsPerLength = _calculateEnergyCost(_maxLength);
+  }
+
+  int _calculateEnergyCost(int length) {
+    final configuredIndex = _maxLengths.indexOf(length);
+    if (configuredIndex >= 0) return configuredIndex + 1;
+    return (length / 10).ceil().clamp(1, 100);
   }
 
   void _persistAndNotify() {

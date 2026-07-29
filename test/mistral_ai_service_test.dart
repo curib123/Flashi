@@ -29,4 +29,42 @@ Fake Choice 3: Mercury
     });
     expect(questions.last['fake_choice_3'], 'Mercury');
   });
+
+  test('normalizes numbered output and removes invalid duplicates', () async {
+    const response = '''
+1. Question:  What   is ATP?
+Answer: Adenosine triphosphate
+Fake Choice 1: Adenosine diphosphate
+Fake Choice 2: Adenosine triphosphate
+Fake Choice 3: Adenosine diphosphate
+
+2) Question: What is ATP?
+Answer: Duplicate
+
+- Question: Where is ATP produced?
+Answer: Mitochondria
+Fake Choice 1: Nucleus
+''';
+
+    final questions = await MistralAiService.parseTextQuestions(response);
+
+    expect(questions, hasLength(2));
+    expect(questions.first['question'], 'What is ATP?');
+    expect(questions.first['fake_choice_1'], 'Adenosine diphosphate');
+    expect(questions.first['fake_choice_2'], isEmpty);
+    expect(questions.last['question'], 'Where is ATP produced?');
+  });
+
+  test('splits source text without cutting words when a boundary is nearby',
+      () {
+    const source =
+        'Photosynthesis converts light into energy. Chlorophyll absorbs light. '
+        'Plants release oxygen during this process.';
+
+    final chunks = MistralAiService.splitTextIntoChunks(source, 55);
+
+    expect(chunks.join(' '), source);
+    expect(chunks, everyElement(isNot(isEmpty)));
+    expect(chunks.first, endsWith('.'));
+  });
 }

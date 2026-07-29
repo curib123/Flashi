@@ -42,7 +42,7 @@ void showTopicDialog(BuildContext context, {required Function()? onTap}) {
           padding: const EdgeInsets.symmetric(vertical: 15.0),
           child: Center(
             child: Text(
-              "Customize Prompt",
+              "Generate from a topic",
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
@@ -60,7 +60,7 @@ void showTopicDialog(BuildContext context, {required Function()? onTap}) {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Make sure to input topics and provide an accurate description for the best results.",
+                  "Add a clear topic. Optional instructions can narrow the level, scope, or learning goal.",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 10,
@@ -70,15 +70,19 @@ void showTopicDialog(BuildContext context, {required Function()? onTap}) {
                 const SizedBox(height: 20),
                 _buildTextField(
                   controller: topicController,
-                  hint: "Enter topic title...",
+                  label: 'Topic',
+                  hint: 'Example: Photosynthesis',
                   colorScheme: colorScheme,
+                  maxLength: 80,
                 ),
                 const SizedBox(height: 16),
                 _buildTextField(
                   controller: descriptionController,
-                  hint: "Provide a brief description...",
+                  label: 'Focus or instructions (optional)',
+                  hint: 'Example: Grade 8 concepts and key vocabulary',
                   colorScheme: colorScheme,
                   maxLines: 4,
+                  maxLength: 500,
                 ),
                 const SizedBox(height: 10),
                 Consumer<AiCreditProvider>(
@@ -124,11 +128,9 @@ void showTopicDialog(BuildContext context, {required Function()? onTap}) {
                                       String description =
                                           descriptionController.text.trim();
 
-                                      if (topic.isNotEmpty &&
-                                          description.isNotEmpty) {
+                                      if (topic.isNotEmpty) {
                                         showLoadingDialog(context,
-                                            text:
-                                                "Please wait .. AI Processing..");
+                                            text: "Generating your quiz...");
                                         aiModelLogicProvider
                                             .updateTopicAndDescription(
                                                 topic, description);
@@ -138,7 +140,7 @@ void showTopicDialog(BuildContext context, {required Function()? onTap}) {
                                             .showSnackBar(
                                           const SnackBar(
                                             content: Text(
-                                                "Both fields are required."),
+                                                "Enter a topic to continue."),
                                             backgroundColor: Colors.redAccent,
                                           ),
                                         );
@@ -238,14 +240,19 @@ void showTopicDialog(BuildContext context, {required Function()? onTap}) {
 
 Widget _buildTextField({
   required TextEditingController controller,
+  required String label,
   required String hint,
   required ColorScheme colorScheme,
   int maxLines = 1,
+  int? maxLength,
 }) {
   return TextField(
     controller: controller,
     maxLines: maxLines,
+    maxLength: maxLength,
+    textCapitalization: TextCapitalization.sentences,
     decoration: InputDecoration(
+      labelText: label,
       hintText: hint,
       hintStyle: TextStyle(
           color: colorScheme.primary.withValues(alpha: 0.7),
