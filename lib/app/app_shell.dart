@@ -14,6 +14,13 @@ import 'package:provider/provider.dart';
 class AppShell extends StatefulWidget {
   const AppShell({super.key});
 
+  static final GlobalKey<ScaffoldState> scaffoldKey =
+      GlobalKey<ScaffoldState>();
+
+  static void openNavigation() {
+    scaffoldKey.currentState?.openDrawer();
+  }
+
   @override
   State<AppShell> createState() => _AppShellState();
 }
@@ -67,6 +74,7 @@ class _AppShellState extends State<AppShell> {
               }
 
               return Scaffold(
+                key: AppShell.scaffoldKey,
                 body: navigation.getScreen(),
                 drawer: const AppMobileDrawer(),
                 bottomNavigationBar: AppBottomNavigation(
