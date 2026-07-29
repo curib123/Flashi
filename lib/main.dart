@@ -1,18 +1,18 @@
 import 'package:flashi/app/app_shell.dart';
-import 'package:flashi/provider/DailyQuestionProvider.dart';
+import 'package:flashi/app/state/app_navigation_provider.dart';
+import 'package:flashi/app/state/theme_provider.dart';
+import 'package:flashi/core/state/sort_provider.dart';
+import 'package:flashi/features/dashboard/application/daily_question_provider.dart';
+import 'package:flashi/features/onboarding/application/onboarding_provider.dart';
+import 'package:flashi/features/reviewer/application/reviewer_settings_provider.dart';
 import 'package:flashi/provider/ai_credits_provider.dart';
 import 'package:flashi/provider/ai_model_logic_provider.dart';
 import 'package:flashi/provider/chatbot_provider.dart';
 import 'package:flashi/provider/fetch_data_from_json_provider.dart';
-import 'package:flashi/provider/bottom_navigation_provider.dart';
 import 'package:flashi/provider/check_version_provider.dart';
 import 'package:flashi/provider/history_provider.dart';
 import 'package:flashi/provider/notes_provider.dart';
-import 'package:flashi/provider/onboarding_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
-import 'package:flashi/provider/reviewer_settings_provider.dart';
-import 'package:flashi/provider/sort_provider.dart';
-import 'package:flashi/provider/theme_provider.dart';
 import 'package:flashi/util/helpers/classes/api/ai/core/api_key_secure_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -42,9 +42,7 @@ Future<void> main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-            create: (_) =>
-                BottomNavigationProvider()), // Add BottomNavigationProvider
+        ChangeNotifierProvider(create: (_) => AppNavigationProvider()),
         ChangeNotifierProvider(
             create: (_) => ThemeProvider()), // Add ThemeProvider
         ChangeNotifierProvider(

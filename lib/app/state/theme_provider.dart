@@ -33,11 +33,12 @@ class ThemeProvider extends ChangeNotifier {
   double get fontScale => _fontScale;
 
   Future<bool> isConnected() async {
-    return await InternetConnection().hasInternetAccess;
+    return InternetConnection().hasInternetAccess;
   }
 
   // Method to update the color scheme
   void setScheme(FlexScheme scheme) {
+    if (_currentScheme == scheme) return;
     _currentScheme = scheme;
     _settingsBox.put('currentScheme', scheme.index); // Save to Hive
     notifyListeners();
@@ -45,6 +46,7 @@ class ThemeProvider extends ChangeNotifier {
   // Method to update the color scheme
 
   void updateFontSize(double value) {
+    if (_fontScale == value) return;
     _fontScale = value;
     _settingsBox.put('fontSize', _fontScale); // Save to Hive
     notifyListeners();
@@ -60,6 +62,7 @@ class ThemeProvider extends ChangeNotifier {
 
   // Method to set a new font and save it to Hive
   void setFont(String font) {
+    if (_currentFont == font) return;
     _currentFont = font;
     _settingsBox.put('currentFont', font); // Save to Hive
     notifyListeners();
@@ -71,7 +74,9 @@ class ThemeProvider extends ChangeNotifier {
 // Method to check the internet connection and set the value of _isConnected
   void checkConnectionStatus() {
     isConnected().then((connectionStatus) {
+      if (_isConnected == connectionStatus) return;
       _isConnected = connectionStatus;
+      notifyListeners();
     });
   }
 

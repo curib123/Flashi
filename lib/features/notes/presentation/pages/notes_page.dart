@@ -6,7 +6,7 @@ import 'package:flashi/presentation/widget/reusable_widgets/reusable_sort_and_se
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
 import 'package:flashi/provider/notes_provider.dart';
 import 'package:flashi/presentation/widget/components/create_note_screen.dart';
-import 'package:flashi/provider/sort_provider.dart';
+import 'package:flashi/core/state/sort_provider.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
 import 'package:flashi/util/helpers/widget/other/empty_widgets.dart';
 import 'package:flutter/material.dart';

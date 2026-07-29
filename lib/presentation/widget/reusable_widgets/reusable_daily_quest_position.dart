@@ -1,4 +1,4 @@
-import 'package:flashi/provider/DailyQuestionProvider.dart';
+import 'package:flashi/features/dashboard/application/daily_question_provider.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/showDailyQuestionDialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

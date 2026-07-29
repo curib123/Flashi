@@ -1,6 +1,6 @@
 import 'package:flashi/provider/fetch_data_from_json_provider.dart';
 import 'package:flashi/util/helpers/classes/api/Trivia/fun_fact_generator.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class DailyQuestionProvider with ChangeNotifier {
@@ -8,11 +8,12 @@ class DailyQuestionProvider with ChangeNotifier {
   List<Map<String, String>> _funFacts = [];
   bool _isAlreadyShow = false;
 
-  List<Map<String, String>> get funFacts => _funFacts;
+  List<Map<String, String>> get funFacts => List.unmodifiable(_funFacts);
   bool get isAlreadyShow => _isAlreadyShow;
 
   DailyQuestionProvider() {
-    _chatBox = Hive.box('DailyQuestionProvider'); // Ensure the box is opened before using
+    _chatBox = Hive.box(
+        'DailyQuestionProvider'); // Ensure the box is opened before using
     loadFunFacts(); // Load fun facts on initialization
   }
 
@@ -32,10 +33,11 @@ class DailyQuestionProvider with ChangeNotifier {
   }
 
   // ✅ Generate and save fun facts to Hive
-  Future<void> updateFunFacts(FetchDataFromJsonProvider fetchDataFromJsonProvider) async {
+  Future<void> updateFunFacts(
+      FetchDataFromJsonProvider fetchDataFromJsonProvider) async {
     List<Map<String, String>> facts = await TriviaGenerator.fetchTrivia();
 
-    Future.delayed(Duration(seconds: 5), () {
+    Future.delayed(const Duration(seconds: 5), () {
       if (facts.isNotEmpty) {
         _funFacts = List<Map<String, String>>.from(facts);
         saveFunFacts();
@@ -46,7 +48,8 @@ class DailyQuestionProvider with ChangeNotifier {
 
   // ✅ Save fun facts to Hive with proper type conversion
   void saveFunFacts() {
-    _chatBox.put('DailyQuestionProvider', _funFacts.map((e) => e.cast<String, dynamic>()).toList());
+    _chatBox.put('DailyQuestionProvider',
+        _funFacts.map((e) => e.cast<String, dynamic>()).toList());
   }
 
   // ✅ Load fun facts from Hive safely
@@ -65,9 +68,4 @@ class DailyQuestionProvider with ChangeNotifier {
   }
 
   // ✅ Properly dispose of Hive box when provider is destroyed
-  @override
-  void dispose() {
-    _chatBox.close(); // Close the Hive box to free resources
-    super.dispose();
-  }
 }

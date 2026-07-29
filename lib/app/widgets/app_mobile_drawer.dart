@@ -3,7 +3,7 @@ import 'package:flashi/features/favorites/presentation/pages/favorites_page.dart
 import 'package:flashi/features/history/presentation/pages/history_page.dart';
 import 'package:flashi/features/settings/presentation/pages/settings_page.dart';
 import 'package:flashi/presentation/widget/components/see_all_quiz_set_list.dart';
-import 'package:flashi/provider/bottom_navigation_provider.dart';
+import 'package:flashi/app/state/app_navigation_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flashi/util/helpers/classes/other/wepage_launcher.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/about_alert_dialog.dart';
@@ -17,13 +17,13 @@ class AppMobileDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Drawer(
       child: SafeArea(
-        child: Consumer2<BottomNavigationProvider, QuizProvider>(
+        child: Consumer2<AppNavigationProvider, QuizProvider>(
           builder: (context, navigation, quiz, child) {
             return _NavigationContent(
               selectedIndex: navigation.currentIndex,
               onDestinationSelected: (index) {
                 Navigator.pop(context);
-                navigation.toogleNavigation(index);
+                navigation.selectDestination(index);
               },
               onQuizSets: () {
                 Navigator.pop(context);

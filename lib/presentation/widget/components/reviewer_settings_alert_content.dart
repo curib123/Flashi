@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flashi/provider/reviewer_settings_provider.dart';
+import 'package:flashi/features/reviewer/application/reviewer_settings_provider.dart';
 import 'package:flip_card/flip_card.dart';
 
 class ReviewerSettingsAlertContent extends StatelessWidget {
@@ -55,7 +55,7 @@ class ReviewerSettingsAlertContent extends StatelessWidget {
               }).toList(),
               onChanged: (FlipDirection? newValue) {
                 if (newValue != null) {
-                  settingsProvider.updateflashCardFlippingDirection(newValue);
+                  settingsProvider.updateFlashCardFlippingDirection(newValue);
                 }
               },
             ),

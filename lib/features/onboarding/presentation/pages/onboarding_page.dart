@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:provider/provider.dart';
-import 'package:flashi/provider/onboarding_provider.dart';
+import 'package:flashi/features/onboarding/application/onboarding_provider.dart';
 
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});

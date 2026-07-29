@@ -3,7 +3,7 @@ import 'package:flashi/presentation/widget/components/reviewer_type_pages/multip
 import 'package:flashi/presentation/widget/components/reviewer_type_pages/multiple_choice_review(timer).dart';
 import 'package:flashi/presentation/widget/components/reviewer_type_pages/text_input_review_basic.dart';
 import 'package:flashi/presentation/widget/components/reviewer_type_pages/text_to_speech_review.dart';
-import 'package:flashi/provider/reviewer_settings_provider.dart';
+import 'package:flashi/features/reviewer/application/reviewer_settings_provider.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/reviewer_settings_alert_box.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

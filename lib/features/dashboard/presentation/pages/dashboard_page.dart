@@ -10,13 +10,13 @@ import 'package:flashi/presentation/widget/reusable_widgets/reusable_quiz_set_li
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_sort_and_see_all.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_title_content.dart';
-import 'package:flashi/provider/DailyQuestionProvider.dart';
+import 'package:flashi/core/state/sort_provider.dart';
+import 'package:flashi/features/dashboard/application/daily_question_provider.dart';
 import 'package:flashi/provider/ai_credits_provider.dart';
 import 'package:flashi/provider/ai_model_logic_provider.dart';
 import 'package:flashi/provider/fetch_data_from_json_provider.dart';
 import 'package:flashi/provider/check_version_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
-import 'package:flashi/provider/sort_provider.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_unit_id.dart';
 import 'package:flashi/util/helpers/classes/ads/app_lifecycle_reactor.dart';

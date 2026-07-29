@@ -1,6 +1,6 @@
 import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reviewer_widgets_core/flip_card_core.dart';
 import 'package:flashi/provider/quiz_provider.dart';
-import 'package:flashi/provider/reviewer_settings_provider.dart';
+import 'package:flashi/features/reviewer/application/reviewer_settings_provider.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_unit_id.dart';
 import 'package:flashi/util/helpers/widget/modals/create_card_bottom_modal.dart';
