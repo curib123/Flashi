@@ -190,6 +190,39 @@ void main() {
       expect(provider.quizSets, isEmpty);
       provider.dispose();
     });
+
+    test('indexes thousands of quiz sets for bounded lookup performance',
+        () async {
+      final provider = QuizProvider(
+        criterionSet: 'Newest',
+        criterionCard: 'Newest',
+        settingsBox: quizBox,
+      );
+      final quizSets = List.generate(
+        5000,
+        (index) => <String, dynamic>{
+          'id': index,
+          'name': 'Set $index',
+          'cards': <Map<String, dynamic>>[],
+          'numberOfQuiz': 0,
+          'timestamp': DateTime.utc(2026, 7, 29),
+        },
+      );
+      final stopwatch = Stopwatch()..start();
+
+      await provider.updateQuizSets(Future.value(quizSets), merge: false);
+      for (var index = 0; index < 10000; index++) {
+        expect(
+          provider.searchQuizSet(quizSetName: 'Set ${index % 5000}'),
+          isNotNull,
+        );
+      }
+      stopwatch.stop();
+
+      expect(provider.quizSets, hasLength(5000));
+      expect(stopwatch.elapsed, lessThan(const Duration(seconds: 5)));
+      provider.dispose();
+    });
   });
 
   group('AiGenerationProvider', () {

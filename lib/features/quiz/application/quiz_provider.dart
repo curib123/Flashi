@@ -11,6 +11,7 @@ class QuizProvider extends ChangeNotifier {
   final Box<dynamic> _settingsBox;
 
   List<Map<String, dynamic>> _quizSets = []; // List of maps to store quiz sets
+  final Map<String, Map<String, dynamic>> _quizSetsByName = {};
   String _searchQuery = ""; // Variable to store the search query
   String _cardSortCriterion = '';
   String _setSortCriterion = '';
@@ -50,10 +51,12 @@ class QuizProvider extends ChangeNotifier {
         }),
       );
     }
+    _rebuildQuizSetIndex();
   }
 
   void updateSetToEmpty() {
     _quizSets = [];
+    _rebuildQuizSetIndex();
     saveQuizSets();
     notifyListeners();
   }
@@ -91,6 +94,7 @@ class QuizProvider extends ChangeNotifier {
       }
     }
 
+    _rebuildQuizSetIndex();
     saveQuizSets(); // Save the updated list
     notifyListeners(); // Notify UI
   }
@@ -213,7 +217,12 @@ class QuizProvider extends ChangeNotifier {
   }
 
   void addQuizSet(Map<String, dynamic> quizSet) {
-    _quizSets.add(Map<String, dynamic>.from(quizSet));
+    final storedQuizSet = Map<String, dynamic>.from(quizSet);
+    _quizSets.add(storedQuizSet);
+    _quizSetsByName.putIfAbsent(
+      (storedQuizSet['name'] ?? '').toString(),
+      () => storedQuizSet,
+    );
     saveQuizSets();
     clearController();
     notifyListeners();
@@ -229,6 +238,7 @@ class QuizProvider extends ChangeNotifier {
   // Remove a quiz set and persist changes in Hive
   void removeQuizSet(Map<String, dynamic> quizSet) {
     _quizSets.removeWhere((set) => set['name'] == quizSet['name']);
+    _rebuildQuizSetIndex();
     saveQuizSets();
     notifyListeners();
   }
@@ -280,6 +290,7 @@ class QuizProvider extends ChangeNotifier {
         if (newName != null) quizSet['name'] = newName;
         if (newDescription != null) quizSet['description'] = newDescription;
         quizSet['timestamp'] = DateTime.now();
+        _rebuildQuizSetIndex();
         saveQuizSets();
         clearController();
         notifyListeners();
@@ -291,10 +302,16 @@ class QuizProvider extends ChangeNotifier {
 
   // Search for a quiz set by its name
   Map<String, dynamic>? searchQuizSet({required String quizSetName}) {
-    try {
-      return _quizSets.firstWhere((quizSet) => quizSet['name'] == quizSetName);
-    } catch (e) {
-      return null;
+    return _quizSetsByName[quizSetName];
+  }
+
+  void _rebuildQuizSetIndex() {
+    _quizSetsByName.clear();
+    for (final quizSet in _quizSets) {
+      _quizSetsByName.putIfAbsent(
+        (quizSet['name'] ?? '').toString(),
+        () => quizSet,
+      );
     }
   }
 

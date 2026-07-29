@@ -305,6 +305,35 @@ void main() {
       provider.dispose();
     });
 
+    test('notes keep large collection reads indexed and cached', () {
+      final provider = NotesProvider(box: boxes['notes_test']!);
+      final createdAt = DateTime.utc(2026, 7, 29);
+      final notes = List.generate(
+        10000,
+        (index) => <String, dynamic>{
+          'id': index,
+          'title': 'Note $index',
+          'content': 'Content $index',
+          'created_at': createdAt.subtract(Duration(minutes: index)),
+          'favorite': index % 100 == 0,
+        },
+      );
+      final stopwatch = Stopwatch()..start();
+
+      provider.updateNotes(notes, merge: false);
+      provider.onSearchChanged('Note 9999');
+      final firstSearch = provider.filterNotes();
+      final cachedSearch = provider.filterNotes();
+      provider.toggleFavoriteByTitle('Note 9999');
+      stopwatch.stop();
+
+      expect(firstSearch.single['id'], 9999);
+      expect(identical(firstSearch, cachedSearch), isTrue);
+      expect(provider.filterFavorite(), hasLength(101));
+      expect(stopwatch.elapsed, lessThan(const Duration(seconds: 5)));
+      provider.dispose();
+    });
+
     test('onboarding completion is persisted and idempotent', () async {
       final box = boxes['onboarding_test']!;
       final provider = OnboardingProvider(box: box);

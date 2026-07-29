@@ -19,6 +19,11 @@ abstract class PersistedContentProvider extends ChangeNotifier {
 
   List<Map<String, dynamic>> _items = [];
   List<Map<String, dynamic>> _publishedItems = const [];
+  List<Map<String, dynamic>> _chronologicalItems = const [];
+  List<Map<String, dynamic>> _favoriteItems = const [];
+  List<Map<String, dynamic>>? _filteredItems;
+  String? _filteredQuery;
+  final Map<String, int> _titleIndex = {};
   String _searchQuery = '';
 
   List<Map<String, dynamic>> get items => _publishedItems;
@@ -47,32 +52,32 @@ abstract class PersistedContentProvider extends ChangeNotifier {
   void updateSearchQuery(String value) {
     if (_searchQuery == value) return;
     _searchQuery = value;
+    _filteredItems = null;
+    _filteredQuery = null;
     notifyListeners();
   }
 
   List<Map<String, dynamic>> filteredItems() {
     if (_searchQuery.isNotEmpty) {
+      if (_filteredQuery == _searchQuery && _filteredItems != null) {
+        return _filteredItems!;
+      }
       final normalizedQuery = _searchQuery.toLowerCase();
-      return _publishedItems
-          .where(
-            (item) => _titleOf(item).toLowerCase().contains(normalizedQuery),
-          )
-          .toList(growable: false);
+      _filteredQuery = _searchQuery;
+      _filteredItems = List.unmodifiable(
+        _publishedItems
+            .where(
+              (item) => _titleOf(item).toLowerCase().contains(normalizedQuery),
+            )
+            .toList(growable: false),
+      );
+      return _filteredItems!;
     }
 
-    final result = _publishedItems
-        .where((item) => item['created_at'] != null)
-        .toList(growable: false);
-    result.sort(
-      (a, b) =>
-          (b['created_at'] as DateTime).compareTo(a['created_at'] as DateTime),
-    );
-    return result;
+    return _chronologicalItems;
   }
 
-  List<Map<String, dynamic>> favoriteItems() => _publishedItems
-      .where((item) => item['favorite'] == true)
-      .toList(growable: false);
+  List<Map<String, dynamic>> favoriteItems() => _favoriteItems;
 
   List<Map<String, dynamic>> searchByTitle(String query) {
     final normalizedQuery = query.toLowerCase();
@@ -89,15 +94,15 @@ abstract class PersistedContentProvider extends ChangeNotifier {
   }
 
   void editItemByTitle(String title, Map<String, dynamic> updatedItem) {
-    final index = _items.indexWhere((item) => _titleOf(item) == title);
-    if (index == -1) return;
+    final index = _titleIndex[title];
+    if (index == null) return;
     _items[index] = Map<String, dynamic>.from(updatedItem);
     _commit();
   }
 
   void toggleFavoriteByTitle(String title) {
-    final index = _items.indexWhere((item) => _titleOf(item) == title);
-    if (index == -1) return;
+    final index = _titleIndex[title];
+    if (index == null) return;
     final item = Map<String, dynamic>.from(_items[index]);
     item['favorite'] = !(item['favorite'] == true);
     _items[index] = item;
@@ -105,8 +110,8 @@ abstract class PersistedContentProvider extends ChangeNotifier {
   }
 
   void deleteItemByTitle(String title) {
-    final index = _items.indexWhere((item) => _titleOf(item) == title);
-    if (index == -1) return;
+    final index = _titleIndex[title];
+    if (index == null) return;
     _items.removeAt(index);
     _commit();
   }
@@ -139,6 +144,24 @@ abstract class PersistedContentProvider extends ChangeNotifier {
     _publishedItems = List.unmodifiable(
       _items.map((item) => Map<String, dynamic>.unmodifiable(item)),
     );
+    _titleIndex.clear();
+    for (var index = 0; index < _items.length; index++) {
+      _titleIndex.putIfAbsent(_titleOf(_items[index]), () => index);
+    }
+
+    final chronologicalItems = _publishedItems
+        .where((item) => item['created_at'] is DateTime)
+        .toList(growable: false)
+      ..sort(
+        (a, b) => (b['created_at'] as DateTime)
+            .compareTo(a['created_at'] as DateTime),
+      );
+    _chronologicalItems = List.unmodifiable(chronologicalItems);
+    _favoriteItems = List.unmodifiable(
+      _publishedItems.where((item) => item['favorite'] == true),
+    );
+    _filteredItems = null;
+    _filteredQuery = null;
   }
 
   List<Map<String, dynamic>> _deduplicate(

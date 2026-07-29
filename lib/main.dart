@@ -20,21 +20,25 @@ import 'package:provider/provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  MobileAds.instance.initialize();
+  await Hive.initFlutter();
 
-  await Hive.initFlutter(); // Initialize Hive
-// Open different boxes for various settings or data
-  await Hive.openBox('theme'); // Box for theme settings
-  await Hive.openBox('sort'); // Box for sorting preferences
-  await Hive.openBox('reviewer_settings'); // Box for reviewer-related settings
-  await Hive.openBox('quiz'); // Box for quiz data
-  await Hive.openBox('notes'); // Box for storing notes
-  await Hive.openBox('onboarding'); // Box for storing onboarding
-  await Hive.openBox('timerBox');
-  await Hive.openBox('chatMessages');
-  await Hive.openBox('fetchDataFromJson');
-  await Hive.openBox('DailyQuestionProvider');
-  await Hive.openBox('history');
+  await Future.wait<Object?>([
+    MobileAds.instance.initialize(),
+    for (final boxName in const [
+      'theme',
+      'sort',
+      'reviewer_settings',
+      'quiz',
+      'notes',
+      'onboarding',
+      'timerBox',
+      'chatMessages',
+      'fetchDataFromJson',
+      'DailyQuestionProvider',
+      'history',
+    ])
+      Hive.openBox<dynamic>(boxName),
+  ]);
 
   runApp(
     MultiProvider(
