@@ -1,5 +1,5 @@
 import 'package:flashi/features/dashboard/application/daily_question_provider.dart';
-import 'package:flashi/util/helpers/widget/alert_dialog/showDailyQuestionDialog.dart';
+import 'package:flashi/util/helpers/widget/alert_dialog/daily_question_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

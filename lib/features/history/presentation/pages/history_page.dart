@@ -3,7 +3,7 @@ import 'package:flashi/core/design_system/app_spacing.dart';
 import 'package:flashi/core/design_system/responsive_content.dart';
 import 'package:flashi/features/history/application/history_provider.dart';
 import 'package:flashi/features/history/presentation/pages/history_editor_page.dart';
-import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_notes_summary_tile_core.dart';
+import 'package:flashi/shared/widgets/core/reusable_notes_summary_tile_core.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
 import 'package:flashi/util/helpers/widget/other/empty_widgets.dart';
 import 'package:flutter/material.dart';

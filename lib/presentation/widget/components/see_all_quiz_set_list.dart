@@ -1,4 +1,4 @@
-import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_search_bar_core.dart';
+import 'package:flashi/shared/widgets/core/reusable_search_bar_core.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_create_set_button_position.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_favorate_position.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_import_position.dart';

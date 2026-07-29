@@ -1,6 +1,6 @@
 import 'package:flashi/presentation/widget/components/reviewer_type_pages/flashcard_review.dart';
-import 'package:flashi/presentation/widget/components/reviewer_type_pages/multiple_choice_review(basic).dart';
-import 'package:flashi/presentation/widget/components/reviewer_type_pages/multiple_choice_review(timer).dart';
+import 'package:flashi/presentation/widget/components/reviewer_type_pages/multiple_choice_basic_review.dart';
+import 'package:flashi/presentation/widget/components/reviewer_type_pages/multiple_choice_timed_review.dart';
 import 'package:flashi/presentation/widget/components/reviewer_type_pages/text_input_review_basic.dart';
 import 'package:flashi/presentation/widget/components/reviewer_type_pages/text_to_speech_review.dart';
 import 'package:flashi/features/reviewer/application/reviewer_settings_provider.dart';

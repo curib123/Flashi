@@ -1,7 +1,7 @@
 import 'package:flashi/core/design_system/app_spacing.dart';
 import 'package:flashi/core/design_system/responsive_content.dart';
 import 'package:flashi/presentation/widget/components/see_all_quiz_card.dart';
-import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_set_core.dart';
+import 'package:flashi/shared/widgets/core/reusable_set_core.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/delete_confirmation_alert_box.dart';

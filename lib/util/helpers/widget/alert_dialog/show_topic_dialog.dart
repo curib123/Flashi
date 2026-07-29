@@ -1,4 +1,4 @@
-import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_credits_info_core.dart';
+import 'package:flashi/shared/widgets/core/reusable_credits_info_core.dart';
 import 'package:flashi/features/ai/application/ai_credit_provider.dart';
 import 'package:flashi/features/ai/application/ai_generation_provider.dart';
 import 'package:flashi/features/ai/application/generation_config_provider.dart';

@@ -15,12 +15,12 @@ import 'package:flashi/features/favorites/presentation/pages/favorites_page.dart
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flashi/features/settings/presentation/pages/settings_page.dart';
 import 'package:flashi/presentation/widget/components/see_all_quiz_set_list.dart';
-import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_search_bar_core.dart';
+import 'package:flashi/shared/widgets/core/reusable_search_bar_core.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_quiz_set_list.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_unit_id.dart';
 import 'package:flashi/util/helpers/classes/other/import_export_helper_class.dart';
-import 'package:flashi/util/helpers/widget/alert_dialog/showDailyQuestionDialog.dart';
+import 'package:flashi/util/helpers/widget/alert_dialog/daily_question_dialog.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/show_free_credits_dialog.dart';
 import 'package:flashi/util/helpers/widget/modals/theme_modal.dart';
 import 'package:flashi/util/helpers/widget/other/empty_widgets.dart';

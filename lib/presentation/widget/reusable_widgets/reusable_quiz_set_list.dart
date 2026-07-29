@@ -1,5 +1,5 @@
 import 'package:flashi/presentation/widget/components/see_all_quiz_card.dart';
-import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_set_core.dart';
+import 'package:flashi/shared/widgets/core/reusable_set_core.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/auth_dialog.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/delete_confirmation_alert_box.dart';
