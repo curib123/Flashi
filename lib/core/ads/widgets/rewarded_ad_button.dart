@@ -34,7 +34,7 @@ class RewardedAdButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(30),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.2),
+                color: Colors.black.withValues(alpha: 0.2),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -79,7 +79,7 @@ class RewardedAdButton extends StatelessWidget {
               Text(
                 "Limited to ${aiCreditProvider.maxAdsPerDay} ads per day",
                 style: TextStyle(
-                  color: colorScheme.onPrimary.withOpacity(0.8),
+                  color: colorScheme.onPrimary.withValues(alpha: 0.8),
                   fontSize: 12,
                   fontWeight: FontWeight.w400,
                 ),

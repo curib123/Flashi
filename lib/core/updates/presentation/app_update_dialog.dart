@@ -16,13 +16,14 @@ void showAppUpdateDialog(BuildContext context, String currentVersion,
             borderRadius: BorderRadius.circular(15),
           ),
           backgroundColor: colorScheme.surface,
-          titlePadding: EdgeInsets.all(10),
-          contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          actionsPadding: EdgeInsets.only(bottom: 15, right: 15),
+          titlePadding: const EdgeInsets.all(10),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          actionsPadding: const EdgeInsets.only(bottom: 15, right: 15),
           title: Row(
             children: [
               Icon(Icons.update_rounded, color: colorScheme.primary, size: 28),
-              SizedBox(width: 10),
+              const SizedBox(width: 10),
               Expanded(
                 child: Text(
                   "Update Required",
@@ -49,12 +50,12 @@ void showAppUpdateDialog(BuildContext context, String currentVersion,
                   fontSize: 13,
                 ),
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Container(
-                constraints: BoxConstraints(maxHeight: 150),
-                padding: EdgeInsets.all(10),
+                constraints: const BoxConstraints(maxHeight: 150),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: colorScheme.onSurface.withOpacity(0.05),
+                  color: colorScheme.onSurface.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: SingleChildScrollView(
@@ -79,7 +80,8 @@ void showAppUpdateDialog(BuildContext context, String currentVersion,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 10),
                   ),
                   onPressed: () {
                     ExternalLinkService(downloadLink).launch();

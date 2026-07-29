@@ -27,13 +27,13 @@ class MistralAiService {
 
   static Future<List<Map<String, String>>> processChunkMistral(String textChunk,
       String apiKey, String modelType, String type, int maxLength) async {
-    final String mistralEndpoint = "https://api.mistral.ai/v1/chat/completions";
+    const String mistralEndpoint = "https://api.mistral.ai/v1/chat/completions";
 
     String generatePrompt() {
       switch (type) {
         case 'Identification':
           return """
-      Generate exactly ${maxLength} summarize identification questions and answers from the following text in this format accurately dont put title,heading or guide:
+      Generate exactly $maxLength summarize identification questions and answers from the following text in this format accurately dont put title,heading or guide:
       Question: It is <definition/explanation/short question>.
       Answer: <term/answer>
       TEXT:
@@ -46,7 +46,7 @@ class MistralAiService {
       """;
         case 'Fill_In_The_Blank':
           return """
-      Generate exactly ${maxLength} summarize fill-in-the-blank  questions and answers from the following text in this format accurately dont put title,heading or guide:
+      Generate exactly $maxLength summarize fill-in-the-blank  questions and answers from the following text in this format accurately dont put title,heading or guide:
       TEXT:
       "$textChunk"
       Example Output:
@@ -57,7 +57,7 @@ class MistralAiService {
       """;
         case 'Definition':
           return """
-      Generate exactly ${maxLength} summarize Definition  questions and answers from the following text in this format accurately dont put title,heading or guide:
+      Generate exactly $maxLength summarize Definition  questions and answers from the following text in this format accurately dont put title,heading or guide:
       TEXT:
       "$textChunk"
       Example Output:
@@ -68,7 +68,7 @@ class MistralAiService {
       """;
         case 'Enumeration':
           return """
-      Generate exactly ${maxLength} summarize enumeration-type  questions and answers from the following text in this format accurately dont put title,heading or guide:
+      Generate exactly $maxLength summarize enumeration-type  questions and answers from the following text in this format accurately dont put title,heading or guide:
       TEXT:
       "$textChunk"
       Example Output:
@@ -79,7 +79,7 @@ class MistralAiService {
       """;
         case 'True_False':
           return """
-      Generate exactly ${maxLength}  true or false  questions and answers from the following text in this format accurately dont put title,heading or guide:
+      Generate exactly $maxLength  true or false  questions and answers from the following text in this format accurately dont put title,heading or guide:
       TEXT:
       "$textChunk"
       Example Output:
@@ -205,13 +205,13 @@ class MistralAiService {
       String modelType,
       String type,
       int maxLength) async {
-    final String mistralEndpoint = "https://api.mistral.ai/v1/chat/completions";
+    const String mistralEndpoint = "https://api.mistral.ai/v1/chat/completions";
 
     String generatePrompt() {
       switch (type) {
         case 'Identification':
           return """
-Generate exactly ${maxLength} concise identification questions and answers based on the given Topic: "$topic" and Description: "$description".
+Generate exactly $maxLength concise identification questions and answers based on the given Topic: "$topic" and Description: "$description".
 Each question should ask for a specific term or concept related to the topic.
 Avoid guides,title,heading or extra information.
 
@@ -222,7 +222,7 @@ Answer: Metabolism
 
         case 'Fill_In_The_Blank':
           return """
-Generate exactly ${maxLength} fill-in-the-blank questions and answers based on the given Topic: "$topic" and Description: "$description".
+Generate exactly $maxLength fill-in-the-blank questions and answers based on the given Topic: "$topic" and Description: "$description".
 Each question should have a missing key term related to the topic.
 Avoid guides,title,heading or extra information.
 
@@ -233,7 +233,7 @@ Answer: Metabolism
 
         case 'Definition':
           return """
-Generate exactly ${maxLength} definition-based questions and answers based on the given Topic: "$topic" and Description: "$description".
+Generate exactly $maxLength definition-based questions and answers based on the given Topic: "$topic" and Description: "$description".
 Each question should ask for the meaning of a specific concept.
 Avoid guides,title,heading or extra information.
 
@@ -244,7 +244,7 @@ Answer: Metabolism is the process of converting food into energy.
 
         case 'Enumeration':
           return """
-Generate exactly ${maxLength} enumeration-type questions and answers based on the given Topic: "$topic" and Description: "$description".
+Generate exactly $maxLength enumeration-type questions and answers based on the given Topic: "$topic" and Description: "$description".
 Each question should require listing multiple related items.
 Avoid guides,title,heading or extra information.
 
@@ -255,7 +255,7 @@ Answer: Prophase, Metaphase, Anaphase, Telophase
 
         case 'True_False':
           return """
-Generate exactly ${maxLength} true or false questions and answers based on the given Topic: "$topic" and Description: "$description".
+Generate exactly $maxLength true or false questions and answers based on the given Topic: "$topic" and Description: "$description".
 Each question should be a factual statement that can be answered with "True" or "False."
 Avoid guides,title,heading or extra information.
 

@@ -45,8 +45,8 @@ class _LoadingDialogState extends State<_LoadingDialog>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final backgroundColor = theme.colorScheme.background.withOpacity(0.9);
-    final textColor = theme.colorScheme.onBackground;
+    final backgroundColor = theme.colorScheme.surface.withValues(alpha: 0.9);
+    final textColor = theme.colorScheme.onSurface;
 
     return Dialog(
       backgroundColor: Colors.transparent,
@@ -59,7 +59,7 @@ class _LoadingDialogState extends State<_LoadingDialog>
             borderRadius: BorderRadius.circular(10),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.2),
+                color: Colors.black.withValues(alpha: 0.2),
                 blurRadius: 5,
                 spreadRadius: 2,
               ),

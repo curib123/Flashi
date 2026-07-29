@@ -13,7 +13,7 @@ void showFreeCreditsDialog({
     context: context,
     barrierDismissible: false, // Prevent closing when tapping outside
     barrierLabel: "",
-    transitionDuration: Duration(milliseconds: 300),
+    transitionDuration: const Duration(milliseconds: 300),
     pageBuilder: (context, animation, secondaryAnimation) {
       return WillPopScope(
         // Prevent closing when back button is pressed
@@ -26,11 +26,11 @@ void showFreeCreditsDialog({
             elevation: 10,
             backgroundColor: Colors.transparent,
             child: Container(
-              padding: EdgeInsets.all(20.0),
+              padding: const EdgeInsets.all(20.0),
               decoration: BoxDecoration(
-                color: colorScheme.surface.withOpacity(0.95),
+                color: colorScheme.surface.withValues(alpha: 0.95),
                 borderRadius: BorderRadius.circular(20.0),
-                boxShadow: [
+                boxShadow: const [
                   BoxShadow(
                       color: Colors.black26, blurRadius: 10, spreadRadius: 2)
                 ],
@@ -40,27 +40,27 @@ void showFreeCreditsDialog({
                 children: [
                   // Animated Reward Icon 🎉
                   Container(
-                    padding: EdgeInsets.all(12),
+                    padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       gradient: LinearGradient(
                         colors: [colorScheme.primary, colorScheme.secondary],
                       ),
                     ),
-                    child:
-                        Icon(Icons.emoji_events, size: 60, color: Colors.white)
-                            .animate()
-                            .scale(
-                                duration: 500.ms,
-                                begin: Offset(0.7, 0.7),
-                                end: Offset(1.2, 1.2))
-                            .then(delay: 100.ms)
-                            .scale(
-                                duration: 300.ms,
-                                begin: Offset(1.2, 1.2),
-                                end: Offset(1.0, 1.0)),
+                    child: const Icon(Icons.emoji_events,
+                            size: 60, color: Colors.white)
+                        .animate()
+                        .scale(
+                            duration: 500.ms,
+                            begin: const Offset(0.7, 0.7),
+                            end: const Offset(1.2, 1.2))
+                        .then(delay: 100.ms)
+                        .scale(
+                            duration: 300.ms,
+                            begin: const Offset(1.2, 1.2),
+                            end: const Offset(1.0, 1.0)),
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   // Title
                   Text(
                     "Congratulations!",
@@ -70,7 +70,7 @@ void showFreeCreditsDialog({
                       color: colorScheme.primary,
                     ),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   // Reward Message
                   Text(
                     rewardText,
@@ -80,7 +80,7 @@ void showFreeCreditsDialog({
                       color: colorScheme.onSurface,
                     ),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   // Claim Button 🎯
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
@@ -88,8 +88,8 @@ void showFreeCreditsDialog({
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 12),
                     ),
                     onPressed: () {
                       onClaim();

@@ -14,7 +14,7 @@ class AdManager {
   AdManager._internal(); // Private constructor for singleton
 
   /// Maximum duration allowed between loading and showing the ad.
-  final Duration maxCacheDuration = Duration(hours: 1);
+  static const Duration maxCacheDuration = Duration(hours: 1);
 
   /// Keep track of load time so we don't show an expired ad.
   DateTime? _appOpenLoadTime;
@@ -48,7 +48,7 @@ class AdManager {
   void loadOpenAppAd(String adUnitId) {
     AppOpenAd.load(
         adUnitId: adUnitId,
-        request: AdRequest(),
+        request: const AdRequest(),
         adLoadCallback: AppOpenAdLoadCallback(
           onAdLoaded: (ad) {
             _appOpenLoadTime = DateTime.now();
@@ -110,7 +110,7 @@ class AdManager {
     _bannerAd1 = BannerAd(
       adUnitId: id,
       size: AdSize.banner,
-      request: AdRequest(),
+      request: const AdRequest(),
       listener: BannerAdListener(
         onAdLoaded: (Ad ad) {
           _bannerHeight = 180;
@@ -126,7 +126,7 @@ class AdManager {
     _bannerAd2 = BannerAd(
       adUnitId: id,
       size: AdSize.banner,
-      request: AdRequest(),
+      request: const AdRequest(),
       listener: BannerAdListener(
         onAdLoaded: (Ad ad) {
           _bannerHeight = 180;
@@ -142,7 +142,7 @@ class AdManager {
     _bannerAd3 = BannerAd(
       adUnitId: id,
       size: AdSize.banner,
-      request: AdRequest(),
+      request: const AdRequest(),
       listener: BannerAdListener(
         onAdLoaded: (Ad ad) {
           _bannerHeight = 180;
@@ -158,7 +158,7 @@ class AdManager {
     _bannerAd4 = BannerAd(
       adUnitId: id,
       size: AdSize.banner,
-      request: AdRequest(),
+      request: const AdRequest(),
       listener: BannerAdListener(
         onAdLoaded: (Ad ad) {
           _bannerHeight = 180;
@@ -174,7 +174,7 @@ class AdManager {
     _bannerAd5 = BannerAd(
       adUnitId: id,
       size: AdSize.banner,
-      request: AdRequest(),
+      request: const AdRequest(),
       listener: BannerAdListener(
         onAdLoaded: (Ad ad) {
           _bannerHeight = 180;
@@ -189,7 +189,7 @@ class AdManager {
     _bannerAd6 = BannerAd(
       adUnitId: id,
       size: AdSize.banner,
-      request: AdRequest(),
+      request: const AdRequest(),
       listener: BannerAdListener(
         onAdLoaded: (Ad ad) {
           _bannerHeight = 180;
@@ -204,7 +204,7 @@ class AdManager {
     _bannerAd7 = BannerAd(
       adUnitId: id,
       size: AdSize.banner,
-      request: AdRequest(),
+      request: const AdRequest(),
       listener: BannerAdListener(
         onAdLoaded: (Ad ad) {
           _bannerHeight = 180;
@@ -229,90 +229,90 @@ class AdManager {
   Widget getFirstBannerAdWidget() {
     if (_bannerAd1 != null && _isBannerAd1Loaded) {
       return Container(
-        margin: EdgeInsets.symmetric(vertical: 5),
+        margin: const EdgeInsets.symmetric(vertical: 5),
         width: _bannerAd1!.size.width.toDouble(),
         height: _bannerAd1!.size.height.toDouble(),
         child: AdWidget(ad: _bannerAd1!),
       );
     } else {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
   }
 
   Widget getSecondBannerAdWidget() {
     if (_bannerAd2 != null && _isBannerAd2Loaded) {
       return Container(
-        margin: EdgeInsets.symmetric(vertical: 5),
+        margin: const EdgeInsets.symmetric(vertical: 5),
         width: _bannerAd2!.size.width.toDouble(),
         height: _bannerAd2!.size.height.toDouble(),
         child: AdWidget(ad: _bannerAd2!),
       );
     } else {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
   }
 
   Widget getThirdBannerAdWidget() {
     if (_bannerAd3 != null && _isBannerAd3Loaded) {
       return Container(
-        margin: EdgeInsets.symmetric(vertical: 5),
+        margin: const EdgeInsets.symmetric(vertical: 5),
         width: _bannerAd3!.size.width.toDouble(),
         height: _bannerAd3!.size.height.toDouble(),
         child: AdWidget(ad: _bannerAd3!),
       );
     } else {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
   }
 
   Widget getFourthBannerAdWidget() {
     if (_bannerAd4 != null && _isBannerAd4Loaded) {
       return Container(
-        margin: EdgeInsets.symmetric(vertical: 5),
+        margin: const EdgeInsets.symmetric(vertical: 5),
         width: _bannerAd4!.size.width.toDouble(),
         height: _bannerAd4!.size.height.toDouble(),
         child: AdWidget(ad: _bannerAd4!),
       );
     } else {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
   }
 
   Widget getFifthBannerAdWidget() {
     if (_bannerAd5 != null && _isBannerAd5Loaded) {
       return Container(
-        margin: EdgeInsets.symmetric(vertical: 5),
+        margin: const EdgeInsets.symmetric(vertical: 5),
         width: _bannerAd5!.size.width.toDouble(),
         height: _bannerAd5!.size.height.toDouble(),
         child: AdWidget(ad: _bannerAd5!),
       );
     } else {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
   }
 
   Widget getSixthBannerAdWidget() {
     if (_bannerAd6 != null && _isBannerAd6Loaded) {
       return Container(
-        margin: EdgeInsets.symmetric(vertical: 5),
+        margin: const EdgeInsets.symmetric(vertical: 5),
         width: _bannerAd6!.size.width.toDouble(),
         height: _bannerAd6!.size.height.toDouble(),
         child: AdWidget(ad: _bannerAd6!),
       );
     } else {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
   }
 
   Widget getSevenBannerAdWidget() {
     if (_bannerAd7 != null && _isBannerAd7Loaded) {
-      return Container(
+      return SizedBox(
         width: _bannerAd7!.size.width.toDouble(),
         height: _bannerAd7!.size.height.toDouble(),
         child: AdWidget(ad: _bannerAd7!),
       );
     } else {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
   }
 
@@ -322,7 +322,7 @@ class AdManager {
 
     InterstitialAd.load(
       adUnitId: adUnitId,
-      request: AdRequest(),
+      request: const AdRequest(),
       adLoadCallback: InterstitialAdLoadCallback(
         onAdLoaded: (InterstitialAd ad) {
           _interstitialAd = ad;

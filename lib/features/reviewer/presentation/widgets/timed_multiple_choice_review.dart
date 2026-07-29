@@ -55,7 +55,7 @@ class _MultipleChoiceReviewState extends State<TimedMultipleChoiceReview> {
       return options;
     }).toList();
 
-    _timer = Timer.periodic(Duration(seconds: 1), (timerTick) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timerTick) {
       if (_timerNotifier.value > 0) {
         _timerNotifier.value--;
       } else {
@@ -63,7 +63,7 @@ class _MultipleChoiceReviewState extends State<TimedMultipleChoiceReview> {
         if (nextPage < widget.cards.length - 1) {
           _pageController.animateToPage(
             nextPage + 1,
-            duration: Duration(milliseconds: 300),
+            duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOut,
           );
         }
@@ -83,7 +83,7 @@ class _MultipleChoiceReviewState extends State<TimedMultipleChoiceReview> {
   void resetTimer() {
     _timer.cancel();
     _timerNotifier.value = widget.timerDuration;
-    _timer = Timer.periodic(Duration(seconds: 1), (timerTick) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timerTick) {
       if (_timerNotifier.value > 0) {
         _timerNotifier.value--;
       } else {
@@ -91,7 +91,7 @@ class _MultipleChoiceReviewState extends State<TimedMultipleChoiceReview> {
         if (nextPage < widget.cards.length - 1) {
           _pageController.animateToPage(
             nextPage + 1,
-            duration: Duration(milliseconds: 300),
+            duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOut,
           );
         }
@@ -137,7 +137,7 @@ class _MultipleChoiceReviewState extends State<TimedMultipleChoiceReview> {
       // If it's the last question, show congratulations
       showCongratulationDialog(context);
     } else {
-      Future.delayed(Duration(seconds: 2), () {
+      Future.delayed(const Duration(seconds: 2), () {
         resetTimer();
 
         _pageController.nextPage(
@@ -164,7 +164,7 @@ class _MultipleChoiceReviewState extends State<TimedMultipleChoiceReview> {
               color: Theme.of(context).colorScheme.surface,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 10,
                   spreadRadius: 2,
                   offset: const Offset(0, 4),
@@ -263,7 +263,7 @@ class _MultipleChoiceReviewState extends State<TimedMultipleChoiceReview> {
       _timerNotifier.value = widget.timerDuration; // Reset timer
       _pageController.jumpToPage(0); // Go back to the first question
       _timer.cancel(); // Stop the current timer
-      _timer = Timer.periodic(Duration(seconds: 1), (timerTick) {
+      _timer = Timer.periodic(const Duration(seconds: 1), (timerTick) {
         if (_timerNotifier.value > 0) {
           _timerNotifier.value--;
         } else {
@@ -271,7 +271,7 @@ class _MultipleChoiceReviewState extends State<TimedMultipleChoiceReview> {
           if (nextPage < widget.cards.length - 1) {
             _pageController.animateToPage(
               nextPage + 1,
-              duration: Duration(milliseconds: 300),
+              duration: const Duration(milliseconds: 300),
               curve: Curves.easeInOut,
             );
           }
@@ -296,7 +296,7 @@ class _MultipleChoiceReviewState extends State<TimedMultipleChoiceReview> {
         return PageView.builder(
           controller: _pageController,
           itemCount: widget.cards.length,
-          physics: NeverScrollableScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics(),
           onPageChanged: (index) {
             if (_timerNotifier.value > 0) {
               _pageController.jumpToPage(index);

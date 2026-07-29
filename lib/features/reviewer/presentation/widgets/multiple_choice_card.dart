@@ -43,8 +43,8 @@ class _MultipleChoiceCardState extends State<MultipleChoiceCard> {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            colorScheme.background,
-            colorScheme.surface.withOpacity(0.9),
+            colorScheme.surface,
+            colorScheme.surface.withValues(alpha: 0.9),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -68,15 +68,15 @@ class _MultipleChoiceCardState extends State<MultipleChoiceCard> {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: colorScheme.shadow.withOpacity(0.1),
+                  color: colorScheme.shadow.withValues(alpha: 0.1),
                   blurRadius: 20,
                   offset: const Offset(0, 8),
                 )
               ],
               gradient: LinearGradient(
                 colors: [
-                  colorScheme.primary.withOpacity(0.8),
-                  colorScheme.primary.withOpacity(0.4)
+                  colorScheme.primary.withValues(alpha: 0.8),
+                  colorScheme.primary.withValues(alpha: 0.4)
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -106,7 +106,7 @@ class _MultipleChoiceCardState extends State<MultipleChoiceCard> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
       decoration: BoxDecoration(
-        color: bgColor.withOpacity(0.15),
+        color: bgColor.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
@@ -119,7 +119,7 @@ class _MultipleChoiceCardState extends State<MultipleChoiceCard> {
               Text(label,
                   style: TextStyle(
                     fontSize: 12,
-                    color: bgColor.withOpacity(0.8),
+                    color: bgColor.withValues(alpha: 0.8),
                     fontWeight: FontWeight.w500,
                   )),
               Text(value,
@@ -161,9 +161,9 @@ class _MultipleChoiceCardState extends State<MultipleChoiceCard> {
     if (isSelected) {
       tileColor = isCorrect ? Colors.green : Colors.red;
     } else if (hasAnswered && isCorrect) {
-      tileColor = Colors.green.withOpacity(0.8);
+      tileColor = Colors.green.withValues(alpha: 0.8);
     } else {
-      tileColor = colorScheme.primary.withOpacity(0.5);
+      tileColor = colorScheme.primary.withValues(alpha: 0.5);
     }
 
     return AnimatedContainer(
@@ -174,7 +174,7 @@ class _MultipleChoiceCardState extends State<MultipleChoiceCard> {
         boxShadow: [
           if (isSelected)
             BoxShadow(
-              color: tileColor.withOpacity(0.4),
+              color: tileColor.withValues(alpha: 0.4),
               blurRadius: 12,
               offset: const Offset(0, 6),
             )

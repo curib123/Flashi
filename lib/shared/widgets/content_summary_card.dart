@@ -12,7 +12,8 @@ class ContentSummaryCard extends StatelessWidget {
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
-  ContentSummaryCard({
+  const ContentSummaryCard({
+    super.key,
     required this.title,
     required this.content,
     required this.timestamp,
@@ -31,18 +32,18 @@ class ContentSummaryCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: EdgeInsets.all(5),
-        padding: EdgeInsets.symmetric(horizontal: 10),
+        margin: const EdgeInsets.all(5),
+        padding: const EdgeInsets.symmetric(horizontal: 10),
         decoration: _buildContainerDecoration(colorScheme),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildFavoriteButton(colorScheme),
-            Spacer(),
+            const Spacer(),
             _buildTitle(colorScheme),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             _buildSubtitle(colorScheme),
-            Spacer(),
+            const Spacer(),
           ],
         ),
       ),
@@ -54,11 +55,11 @@ class ContentSummaryCard extends StatelessWidget {
       gradient: LinearGradient(
         colors: isNote
             ? [
-                colorScheme.secondaryContainer.withOpacity(0.2),
+                colorScheme.secondaryContainer.withValues(alpha: 0.2),
                 colorScheme.primaryContainer,
               ]
             : [
-                colorScheme.tertiaryContainer.withOpacity(0.2),
+                colorScheme.tertiaryContainer.withValues(alpha: 0.2),
                 colorScheme.secondaryContainer,
               ], // Fallback gradient colors
         begin: Alignment.bottomCenter,
@@ -78,9 +79,9 @@ class ContentSummaryCard extends StatelessWidget {
           ),
           onPressed: onFavorite,
           padding: EdgeInsets.zero,
-          constraints: BoxConstraints(),
+          constraints: const BoxConstraints(),
         ),
-        Spacer(),
+        const Spacer(),
         _buildPopupMenuButton(colorScheme)
       ],
     );
@@ -170,7 +171,7 @@ class ContentSummaryCard extends StatelessWidget {
     return Row(
       children: [
         Icon(icon, color: color),
-        SizedBox(width: 8),
+        const SizedBox(width: 8),
         Text(text),
       ],
     );

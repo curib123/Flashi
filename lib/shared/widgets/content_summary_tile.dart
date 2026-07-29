@@ -13,7 +13,8 @@ class ContentSummaryTile extends StatelessWidget {
   final VoidCallback onDelete;
   final isHistoryPage;
 
-  ContentSummaryTile({
+  const ContentSummaryTile({
+    super.key,
     required this.title,
     required this.content,
     required this.timestamp,
@@ -33,7 +34,7 @@ class ContentSummaryTile extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: EdgeInsets.symmetric(vertical: 5),
+        margin: const EdgeInsets.symmetric(vertical: 5),
         decoration: _buildContainerDecoration(colorScheme),
         child: ListTile(
           contentPadding: EdgeInsets.symmetric(
@@ -159,7 +160,7 @@ class ContentSummaryTile extends StatelessWidget {
     return Row(
       children: [
         Icon(icon, color: color),
-        SizedBox(width: 8),
+        const SizedBox(width: 8),
         Text(text),
       ],
     );

@@ -72,7 +72,7 @@ class _MultipleChoiceReviewState extends State<MultipleChoiceReview> {
       // If it's the last question, show congratulations
       showCongratulationDialog(context);
     } else {
-      Future.delayed(Duration(seconds: 2), () {
+      Future.delayed(const Duration(seconds: 2), () {
         _pageController.nextPage(
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeIn,
@@ -96,7 +96,7 @@ class _MultipleChoiceReviewState extends State<MultipleChoiceReview> {
               color: Theme.of(context).colorScheme.surface,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 10,
                   spreadRadius: 2,
                   offset: const Offset(0, 4),

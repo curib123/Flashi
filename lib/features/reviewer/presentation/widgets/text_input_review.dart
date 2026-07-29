@@ -102,7 +102,7 @@ class _TextInputReviewState extends State<TextInputReview> {
               color: Theme.of(context).colorScheme.surface,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 10,
                   spreadRadius: 2,
                   offset: const Offset(0, 4),
@@ -243,8 +243,8 @@ class _TextInputReviewState extends State<TextInputReview> {
                     borderRadius: BorderRadius.circular(20),
                     gradient: LinearGradient(
                       colors: [
-                        colorScheme.primary.withOpacity(0.8),
-                        colorScheme.primary.withOpacity(0.5),
+                        colorScheme.primary.withValues(alpha: 0.8),
+                        colorScheme.primary.withValues(alpha: 0.5),
                       ],
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
@@ -275,8 +275,8 @@ class _TextInputReviewState extends State<TextInputReview> {
                   filled: true,
                   fillColor: Theme.of(context)
                       .colorScheme
-                      .surfaceVariant
-                      .withOpacity(0.1),
+                      .surfaceContainerHighest
+                      .withValues(alpha: 0.1),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                     borderSide: BorderSide(
@@ -303,7 +303,7 @@ class _TextInputReviewState extends State<TextInputReview> {
                           ),
                           textAlign: TextAlign.center,
                         )
-                      : SizedBox(),
+                      : const SizedBox(),
                 ),
               const SizedBox(height: 20),
               ElevatedButton.icon(

@@ -23,7 +23,7 @@ class AppTextField extends StatelessWidget {
         Text(
           isHideName ? "" : name,
           style: TextStyle(
-            color: colorScheme.secondary.withOpacity(.8),
+            color: colorScheme.secondary.withValues(alpha: .8),
             fontSize: 16,
             fontWeight: FontWeight.w600,
           ),
@@ -33,14 +33,14 @@ class AppTextField extends StatelessWidget {
                 isHideName ? 0 : 8), // Add spacing between label and text field
         Material(
           elevation: 10,
-          shadowColor: colorScheme.shadow.withOpacity(0.1),
+          shadowColor: colorScheme.shadow.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(10),
           child: TextField(
             controller: controller,
             decoration: InputDecoration(
               hintText: hintText ?? 'Enter $name',
-              hintStyle:
-                  TextStyle(color: colorScheme.onSurface.withOpacity(0.5)),
+              hintStyle: TextStyle(
+                  color: colorScheme.onSurface.withValues(alpha: 0.5)),
               contentPadding:
                   const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
               filled: true,

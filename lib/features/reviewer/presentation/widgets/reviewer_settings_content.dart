@@ -4,7 +4,7 @@ import 'package:flashi/features/reviewer/application/reviewer_settings_provider.
 import 'package:flip_card/flip_card.dart';
 
 class ReviewerSettingsContent extends StatelessWidget {
-  const ReviewerSettingsContent({Key? key}) : super(key: key);
+  const ReviewerSettingsContent({super.key});
 
   @override
   Widget build(BuildContext context) {

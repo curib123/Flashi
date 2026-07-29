@@ -32,7 +32,7 @@ class _TextToSpeechReviewState extends State<TextToSpeechReview> {
   void initState() {
     super.initState();
 
-    Future.delayed(Duration(minutes: 5), () {
+    Future.delayed(const Duration(minutes: 5), () {
       adManager.loadInterstitialAd(AdUnitId.interstitialAdUnitId);
     });
 
@@ -168,7 +168,7 @@ class _TextToSpeechReviewState extends State<TextToSpeechReview> {
                   backgroundColor: Theme.of(context).colorScheme.primary,
                   foregroundColor: Theme.of(context).colorScheme.onPrimary,
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.arrow_back,
                   color: Colors.white,
                 ),

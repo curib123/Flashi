@@ -32,7 +32,7 @@ class _FlashcardReviewState extends State<FlashcardReview> {
   void initState() {
     super.initState();
 
-    Future.delayed(Duration(minutes: 5), () {
+    Future.delayed(const Duration(minutes: 5), () {
       adManager.loadInterstitialAd(AdUnitId.interstitialAdUnitId);
     });
 
@@ -124,7 +124,7 @@ class _FlashcardReviewState extends State<FlashcardReview> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   IconButton(
-                    icon: Icon(Icons.arrow_left, color: Colors.grey),
+                    icon: const Icon(Icons.arrow_left, color: Colors.grey),
                     onPressed: () {
                       // Add logic to scroll left
                     },
@@ -151,7 +151,7 @@ class _FlashcardReviewState extends State<FlashcardReview> {
                     ),
                   ),
                   IconButton(
-                    icon: Icon(Icons.arrow_right, color: Colors.grey),
+                    icon: const Icon(Icons.arrow_right, color: Colors.grey),
                     onPressed: () {
                       // Add logic to scroll right
                     },

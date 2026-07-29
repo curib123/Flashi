@@ -92,7 +92,7 @@ void showQuizCardFormSheet(
                             'timestamp': DateTime.now()
                           });
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
+                            const SnackBar(
                               content: Text("Card Successfully Added"),
                               backgroundColor: Colors.green,
                             ),
@@ -105,7 +105,7 @@ void showQuizCardFormSheet(
                               newQuestion: question,
                               newAnswer: answer);
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
+                            const SnackBar(
                               content: Text('Succesfully Updated'),
                               backgroundColor: Colors.green,
                             ),
@@ -117,7 +117,7 @@ void showQuizCardFormSheet(
                         Navigator.pop(context);
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
+                          const SnackBar(
                             content: Text('Required Question'),
                             backgroundColor: Colors.red,
                           ),

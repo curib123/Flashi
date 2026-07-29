@@ -43,23 +43,23 @@ class QuizSetCard extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(20),
           bottomRight: Radius.circular(20),
         ),
         gradient: LinearGradient(
           colors: [
-            colorScheme.primaryContainer.withOpacity(0.9),
-            colorScheme.primaryContainer.withOpacity(0.1),
+            colorScheme.primaryContainer.withValues(alpha: 0.9),
+            colorScheme.primaryContainer.withValues(alpha: 0.1),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 12.0,
-            offset: Offset(4, 4),
+            offset: const Offset(4, 4),
           ),
         ],
       ),
@@ -78,7 +78,7 @@ class QuizSetCard extends StatelessWidget {
                     width: 60,
                     height: 60,
                     decoration: BoxDecoration(
-                      color: colorScheme.primary.withOpacity(0.15),
+                      color: colorScheme.primary.withValues(alpha: 0.15),
                       shape: BoxShape.circle,
                     ),
                     child: Center(
@@ -172,7 +172,8 @@ class QuizSetCard extends StatelessWidget {
                 ],
               ),
               Divider(
-                  height: 20.0, color: colorScheme.primary.withOpacity(0.6)),
+                  height: 20.0,
+                  color: colorScheme.primary.withValues(alpha: 0.6)),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -210,7 +211,7 @@ class QuizSetCard extends StatelessWidget {
       icon: Icon(icon, color: color),
       label: Text(label, style: TextStyle(color: color, fontSize: 15)),
       style: TextButton.styleFrom(
-        backgroundColor: color.withOpacity(0.1),
+        backgroundColor: color.withValues(alpha: 0.1),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );

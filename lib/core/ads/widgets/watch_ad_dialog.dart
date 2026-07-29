@@ -21,13 +21,14 @@ void showWatchAdDialog({
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             backgroundColor: colorScheme.surface,
-            contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(Icons.play_circle_fill,
                     color: colorScheme.primary, size: 50),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 Text(
                   title,
                   textAlign: TextAlign.center,
@@ -37,13 +38,13 @@ void showWatchAdDialog({
                     color: colorScheme.onSurface,
                   ),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Text(
                   message,
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 16, color: colorScheme.onSurface),
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 Text(
                   "Ads Watched Today: ${aiCreditProvider.adsWatchedToday}/${aiCreditProvider.maxAdsPerDay}",
                   style: TextStyle(
@@ -53,13 +54,13 @@ void showWatchAdDialog({
                   ),
                 ),
                 if (aiCreditProvider.adCooldown > 0) ...[
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Text(
                     "Next ad available in: ${aiCreditProvider.adCooldown}s",
-                    style: TextStyle(fontSize: 14, color: Colors.red),
+                    style: const TextStyle(fontSize: 14, color: Colors.red),
                   ),
                 ],
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -83,8 +84,8 @@ void showWatchAdDialog({
                                 aiCreditProvider.adCooldown == 0)
                             ? colorScheme.primary
                             : colorScheme.error,
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 10),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12)),
                       ),

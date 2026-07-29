@@ -5,10 +5,10 @@ class CreditSummary extends StatelessWidget {
   final ColorScheme colorScheme;
 
   const CreditSummary({
-    Key? key,
+    super.key,
     required this.credits,
     required this.colorScheme,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +32,7 @@ class CreditSummary extends StatelessWidget {
               color: colorScheme.secondary,
             ),
           ),
-          SizedBox(height: 10), // Spacing for balance
+          const SizedBox(height: 10), // Spacing for balance
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -53,7 +53,7 @@ class CreditSummary extends StatelessWidget {
                         color: colorScheme.secondary,
                       ),
                     ),
-                    TextSpan(text: " free energy left"),
+                    const TextSpan(text: " free energy left"),
                   ],
                 ),
               ),

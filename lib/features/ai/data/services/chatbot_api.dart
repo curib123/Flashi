@@ -11,9 +11,7 @@ class ChatbotApi {
       Duration(seconds: 60); // Timeout duration
 
   static Future<String?> _getCachedAPIKey() async {
-    if (_cachedApiKey == null) {
-      _cachedApiKey = await getApiKey();
-    }
+    _cachedApiKey ??= await getApiKey();
     return _cachedApiKey;
   }
 

@@ -257,7 +257,7 @@ class ModelSelectionDialog {
 
     return DropdownButtonFormField<T>(
       decoration: _inputDecoration(colorScheme, label),
-      value: value,
+      initialValue: value,
       dropdownColor: colorScheme.onPrimary,
       style: TextStyle(color: colorScheme.primary),
       items: items.map((item) {
@@ -273,7 +273,7 @@ class ModelSelectionDialog {
             value: item,
             child: Text(
               itemText,
-              style: TextStyle(fontSize: 13),
+              style: const TextStyle(fontSize: 13),
             ));
       }).toList(),
       onChanged: onChanged,
@@ -286,7 +286,7 @@ class ModelSelectionDialog {
       labelText: label,
       labelStyle: TextStyle(color: colorScheme.primary),
       filled: true,
-      fillColor: colorScheme.primary.withOpacity(0.1),
+      fillColor: colorScheme.primary.withValues(alpha: 0.1),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
         borderSide: BorderSide.none,

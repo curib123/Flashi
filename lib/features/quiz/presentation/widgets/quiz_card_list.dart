@@ -19,7 +19,7 @@ class QuizCardList extends StatelessWidget {
       onRemoveKeyword; // Callback for removing keyword
 
   const QuizCardList({
-    Key? key,
+    super.key,
     required this.name,
     required this.card,
     required this.onRemove,
@@ -27,7 +27,7 @@ class QuizCardList extends StatelessWidget {
     required this.onIgnore,
     required this.onKeyword,
     required this.onRemoveKeyword,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

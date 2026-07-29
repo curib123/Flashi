@@ -173,7 +173,7 @@ class _ReviewerSelectionScrollView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Container(
+        SizedBox(
           height: MediaQuery.of(context).size.height * 0.5,
           child: SingleChildScrollView(
             scrollDirection: Axis.vertical,
@@ -181,7 +181,7 @@ class _ReviewerSelectionScrollView extends StatelessWidget {
               children: List.generate(reviewerList.length, (index) {
                 final reviewer = reviewerList[index];
                 return TweenAnimationBuilder<double>(
-                  duration: Duration(milliseconds: 400),
+                  duration: const Duration(milliseconds: 400),
                   curve: Curves.easeInOut,
                   tween: Tween<double>(begin: 0, end: 1),
                   builder: (context, value, child) {
@@ -208,7 +208,7 @@ class _ReviewerSelectionScrollView extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
+              const Text(
                 "Swipe up to see more...",
                 style: TextStyle(
                   color: Colors.grey,
@@ -216,7 +216,7 @@ class _ReviewerSelectionScrollView extends StatelessWidget {
                   fontStyle: FontStyle.italic,
                 ),
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               _AnimatedArrowIcon(),
             ],
           ),
@@ -241,7 +241,7 @@ class _AnimatedArrowIconState extends State<_AnimatedArrowIcon>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 800),
+      duration: const Duration(milliseconds: 800),
     )..repeat(reverse: true);
 
     _animation = Tween<double>(begin: 0, end: 5).animate(
@@ -256,7 +256,7 @@ class _AnimatedArrowIconState extends State<_AnimatedArrowIcon>
       builder: (context, child) {
         return Transform.translate(
           offset: Offset(0, _animation.value),
-          child: Icon(
+          child: const Icon(
             Icons.keyboard_arrow_up,
             color: Colors.grey,
             size: 30,

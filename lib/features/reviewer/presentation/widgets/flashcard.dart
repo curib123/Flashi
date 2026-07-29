@@ -9,12 +9,12 @@ class Flashcard extends StatefulWidget {
   final VoidCallback onEdit;
 
   const Flashcard({
-    Key? key,
+    super.key,
     required this.question,
     required this.answer,
     required this.flipDirection,
     required this.onEdit,
-  }) : super(key: key);
+  });
 
   @override
   _FlashcardState createState() => _FlashcardState();
@@ -49,7 +49,7 @@ class _FlashcardState extends State<Flashcard> {
             child: Text(
               widget.answer,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
@@ -77,12 +77,12 @@ class _FlashcardState extends State<Flashcard> {
             gradient: LinearGradient(
               colors: isFront
                   ? [
-                      colorScheme.primary.withOpacity(0.8),
-                      colorScheme.primary.withOpacity(0.5),
+                      colorScheme.primary.withValues(alpha: 0.8),
+                      colorScheme.primary.withValues(alpha: 0.5),
                     ]
                   : [
-                      colorScheme.primary.withOpacity(0.5),
-                      colorScheme.primary.withOpacity(0.8),
+                      colorScheme.primary.withValues(alpha: 0.5),
+                      colorScheme.primary.withValues(alpha: 0.8),
                     ],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
@@ -95,7 +95,7 @@ class _FlashcardState extends State<Flashcard> {
           top: 12,
           left: 12,
           child: IconButton(
-            icon: Icon(Icons.edit, color: Colors.white, size: 26),
+            icon: const Icon(Icons.edit, color: Colors.white, size: 26),
             onPressed: widget.onEdit,
           ),
         ),
@@ -104,7 +104,7 @@ class _FlashcardState extends State<Flashcard> {
             top: 12,
             right: 12,
             child: IconButton(
-              icon: Icon(Icons.volume_up, color: Colors.white, size: 26),
+              icon: const Icon(Icons.volume_up, color: Colors.white, size: 26),
               onPressed: () => _speak(widget.answer),
             ),
           ),

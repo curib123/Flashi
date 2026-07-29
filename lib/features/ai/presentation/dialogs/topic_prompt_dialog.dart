@@ -136,8 +136,8 @@ void showTopicDialog(BuildContext context, {required Function()? onTap}) {
                                       } else {
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(
-                                          SnackBar(
-                                            content: const Text(
+                                          const SnackBar(
+                                            content: Text(
                                                 "Both fields are required."),
                                             backgroundColor: Colors.redAccent,
                                           ),
@@ -246,10 +246,10 @@ Widget _buildTextField({
     decoration: InputDecoration(
       hintText: hint,
       hintStyle: TextStyle(
-          color: colorScheme.primary.withOpacity(0.7),
+          color: colorScheme.primary.withValues(alpha: 0.7),
           fontWeight: FontWeight.w500),
       filled: true,
-      fillColor: colorScheme.primary.withOpacity(0.1),
+      fillColor: colorScheme.primary.withValues(alpha: 0.1),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),

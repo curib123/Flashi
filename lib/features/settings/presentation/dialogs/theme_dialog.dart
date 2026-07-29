@@ -9,8 +9,8 @@ void openThemeSelector(BuildContext context) {
     ),
     builder: (context) {
       return ListView(
-        padding: EdgeInsets.all(16.0),
-        children: [
+        padding: const EdgeInsets.all(16.0),
+        children: const [
           ThemeSelector(
             isShowCloseBtn: true,
           ),

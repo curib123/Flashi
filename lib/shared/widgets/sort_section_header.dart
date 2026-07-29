@@ -57,7 +57,7 @@ class SortSectionHeader extends StatelessWidget {
                     shadowColor:
                         WidgetStatePropertyAll(colorScheme.tertiaryContainer),
                     backgroundColor: WidgetStatePropertyAll(
-                        colorScheme.primary.withOpacity(0.8)),
+                        colorScheme.primary.withValues(alpha: 0.8)),
                   ),
                   onPressed: onSeeAllPressed,
                   child: const Text(
@@ -70,7 +70,7 @@ class SortSectionHeader extends StatelessWidget {
                 )
               : isShowReviewLink
                   ? ElevatedButton.icon(
-                      style: ButtonStyle().copyWith(
+                      style: const ButtonStyle().copyWith(
                         backgroundColor:
                             WidgetStatePropertyAll(colorScheme.primary),
                         shape: WidgetStatePropertyAll(RoundedRectangleBorder(

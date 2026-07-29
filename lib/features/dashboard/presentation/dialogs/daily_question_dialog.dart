@@ -7,8 +7,7 @@ import 'dart:math';
 class DailyQuestionDialog extends StatefulWidget {
   final List<Map<String, String>> questions;
 
-  const DailyQuestionDialog({Key? key, required this.questions})
-      : super(key: key);
+  const DailyQuestionDialog({super.key, required this.questions});
 
   @override
   _DailyQuestionDialogState createState() => _DailyQuestionDialogState();
@@ -184,17 +183,17 @@ class _DailyQuestionDialogState extends State<DailyQuestionDialog> {
                   child: ElevatedButton(
                     style: ButtonStyle(
                       backgroundColor:
-                          MaterialStateProperty.resolveWith<Color>((states) {
+                          WidgetStateProperty.resolveWith<Color>((states) {
                         if (isAnswered) {
                           return buttonColor;
                         }
                         return theme.colorScheme.primary;
                       }),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                         RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12)),
                       ),
-                      padding: MaterialStateProperty.all(
+                      padding: WidgetStateProperty.all(
                           const EdgeInsets.symmetric(vertical: 14)),
                     ),
                     onPressed: isAnswered ? null : () => _selectAnswer(choice),

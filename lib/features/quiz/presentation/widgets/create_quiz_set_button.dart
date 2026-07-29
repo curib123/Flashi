@@ -26,8 +26,8 @@ class CreateQuizSetButton extends StatelessWidget {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    colorScheme.primary.withOpacity(0.9),
-                    colorScheme.primaryContainer.withOpacity(0.8),
+                    colorScheme.primary.withValues(alpha: 0.9),
+                    colorScheme.primaryContainer.withValues(alpha: 0.8),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,

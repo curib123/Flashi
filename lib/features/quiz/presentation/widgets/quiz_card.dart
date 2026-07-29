@@ -17,7 +17,7 @@ class QuizCard extends StatelessWidget {
   final FlutterTts flutterTts = FlutterTts();
 
   QuizCard({
-    Key? key,
+    super.key,
     required this.question,
     required this.answer,
     required this.isIgnore,
@@ -29,7 +29,7 @@ class QuizCard extends StatelessWidget {
     required this.onKeyword,
     required this.keyword,
     required this.onRemoveKeyword,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +39,7 @@ class QuizCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       elevation: 10,
-      shadowColor: colorScheme.shadow.withOpacity(0.3),
+      shadowColor: colorScheme.shadow.withValues(alpha: 0.3),
       child: InkWell(
         borderRadius: BorderRadius.circular(18),
         onTap: () {},
@@ -48,8 +48,8 @@ class QuizCard extends StatelessWidget {
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                colorScheme.primaryContainer.withOpacity(0.9),
-                colorScheme.primaryContainer.withOpacity(0.1),
+                colorScheme.primaryContainer.withValues(alpha: 0.9),
+                colorScheme.primaryContainer.withValues(alpha: 0.1),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -65,7 +65,7 @@ class QuizCard extends StatelessWidget {
                   style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: colorScheme.primary.withOpacity(0.5)),
+                      color: colorScheme.primary.withValues(alpha: 0.5)),
                 )
               else ...[
                 highlightKeywords(
@@ -122,7 +122,7 @@ class QuizCard extends StatelessWidget {
   void _showPopupMenu(BuildContext context, ColorScheme colorScheme) {
     showModalBottomSheet(
       context: context,
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (context) => Wrap(
         children: [
