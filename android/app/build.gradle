@@ -2,7 +2,7 @@ import groovy.json.JsonSlurper
 
 plugins {
     id "com.android.application"
-    id "kotlin-android"
+    id "org.jetbrains.kotlin.android"
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id "dev.flutter.flutter-gradle-plugin"
 }
@@ -17,7 +17,12 @@ def keystorePropertiesFile = rootProject.file('key.properties')
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
-
+def hasReleaseSigning = [
+        'keyAlias',
+        'keyPassword',
+        'storeFile',
+        'storePassword',
+].every { keystoreProperties[it] }
 
 android {
     namespace = "com.curibtech.flashi"
@@ -25,12 +30,11 @@ android {
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
-
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11
+        jvmTarget = JavaVersion.VERSION_17
     }
 
 
@@ -49,10 +53,8 @@ android {
         ]
     }
 
-    android {
-        // ...
-
-        signingConfigs {
+    signingConfigs {
+        if (hasReleaseSigning) {
             release {
                 keyAlias = keystoreProperties['keyAlias']
                 keyPassword = keystoreProperties['keyPassword']
@@ -60,24 +62,19 @@ android {
                 storePassword = keystoreProperties['storePassword']
             }
         }
-        buildTypes {
-            release {
-                // TODO: Add your own signing config for the release build.
-                // Signing with the debug keys for now,
-                // so `flutter run --release` works.
-                signingConfig = signingConfigs.debug
-                signingConfig = signingConfigs.release
-
-                shrinkResources true
-                minifyEnabled true
-                proguardFiles
-                getDefaultProguardFile('proguard-android.txt')
-                'proguard-rules.pro'
-            }
-
-
+    }
+    buildTypes {
+        release {
+            signingConfig = hasReleaseSigning
+                    ? signingConfigs.release
+                    : signingConfigs.debug
+            shrinkResources = true
+            minifyEnabled = true
+            proguardFiles(
+                    getDefaultProguardFile('proguard-android-optimize.txt'),
+                    'proguard-rules.pro',
+            )
         }
-
     }
 }
 
