@@ -6,7 +6,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
 
-class ImportExportHelperClass {
+class QuizImportExportService {
   final String directory = '/storage/emulated/0/Flashi';
 
   Future<bool> requestPermissions() async {

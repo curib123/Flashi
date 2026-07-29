@@ -5,7 +5,7 @@ import 'package:flashi/features/settings/presentation/pages/settings_page.dart';
 import 'package:flashi/presentation/widget/components/see_all_quiz_set_list.dart';
 import 'package:flashi/app/state/app_navigation_provider.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
-import 'package:flashi/util/helpers/classes/other/wepage_launcher.dart';
+import 'package:flashi/core/services/external_link_service.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/about_alert_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -244,7 +244,7 @@ class _NavigationContent extends StatelessWidget {
         _NavigationTile(
           icon: Icons.contact_support_outlined,
           label: 'Contact',
-          onTap: () => closeBefore(WebPageLauncher('').launchEmail),
+          onTap: () => closeBefore(ExternalLinkService('').launchEmail),
         ),
         Padding(
           padding: const EdgeInsets.fromLTRB(
@@ -259,7 +259,7 @@ class _NavigationContent extends StatelessWidget {
               _TextAction(
                 label: 'Privacy',
                 onTap: () => closeBefore(
-                  WebPageLauncher(
+                  ExternalLinkService(
                     'https://curib123.github.io/flashi_/privacy_policy.html',
                   ).launch,
                 ),
@@ -267,7 +267,7 @@ class _NavigationContent extends StatelessWidget {
               _TextAction(
                 label: 'Terms',
                 onTap: () => closeBefore(
-                  WebPageLauncher(
+                  ExternalLinkService(
                     'https://curib123.github.io/flashi_/terms%26condition.html',
                   ).launch,
                 ),

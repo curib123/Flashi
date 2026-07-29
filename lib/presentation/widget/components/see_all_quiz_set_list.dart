@@ -11,7 +11,7 @@ import 'package:flashi/features/ai/application/generation_config_provider.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flashi/features/history/application/history_provider.dart';
 import 'package:flashi/core/state/sort_provider.dart';
-import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
+import 'package:flashi/core/ads/ad_manager.dart';
 import 'package:flashi/util/helpers/widget/other/empty_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

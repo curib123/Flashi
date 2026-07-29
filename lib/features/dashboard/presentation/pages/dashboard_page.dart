@@ -18,9 +18,9 @@ import 'package:flashi/features/settings/presentation/pages/settings_page.dart';
 import 'package:flashi/presentation/widget/components/see_all_quiz_set_list.dart';
 import 'package:flashi/shared/widgets/core/reusable_search_bar_core.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_quiz_set_list.dart';
-import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
-import 'package:flashi/util/helpers/classes/ads/ad_unit_id.dart';
-import 'package:flashi/util/helpers/classes/other/import_export_helper_class.dart';
+import 'package:flashi/core/ads/ad_manager.dart';
+import 'package:flashi/core/ads/ad_unit_id.dart';
+import 'package:flashi/features/quiz/data/services/quiz_import_export_service.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/daily_question_dialog.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/show_free_credits_dialog.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/show_update_dialog_alert_box.dart';
@@ -295,7 +295,7 @@ class _QuickActions extends StatelessWidget {
               width: itemWidth,
               icon: Icons.import_export_outlined,
               label: 'Import',
-              onTap: () => ImportExportHelperClass().importList(
+              onTap: () => QuizImportExportService().importList(
                 context,
                 quizProvider,
               ),

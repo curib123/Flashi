@@ -6,7 +6,7 @@ import 'package:flashi/presentation/widget/reusable_widgets/reusable_theme_setti
 import 'package:flashi/features/ai/application/ai_credit_provider.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flashi/core/state/sort_provider.dart';
-import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
+import 'package:flashi/core/ads/ad_manager.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/add_slot_alert_dialog.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/delete_confirmation_alert_box.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/highlight_keyword_alert_box.dart';

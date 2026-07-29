@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:http/http.dart' as http;
 
-class TriviaGenerator {
+class TriviaService {
   static const String triviaAPI =
       "https://the-trivia-api.com/api/questions?limit=30";
 

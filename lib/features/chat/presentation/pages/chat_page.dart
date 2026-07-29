@@ -5,7 +5,7 @@ import 'package:flashi/core/design_system/app_spacing.dart';
 import 'package:flashi/core/design_system/responsive_content.dart';
 import 'package:flashi/shared/widgets/core/reusable_typing_animation_core.dart';
 import 'package:flashi/features/chat/application/chat_provider.dart';
-import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
+import 'package:flashi/core/ads/ad_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';

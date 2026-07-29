@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:collection';
 
-import 'package:flashi/util/helpers/classes/api/Trivia/fun_fact_generator.dart';
+import 'package:flashi/features/dashboard/data/services/trivia_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -35,7 +35,7 @@ class DailyQuestionProvider extends ChangeNotifier {
   }
 
   Future<void> updateFunFacts() async {
-    final facts = await TriviaGenerator.fetchTrivia();
+    final facts = await TriviaService.fetchTrivia();
     if (_isDisposed || facts.isEmpty) return;
 
     _updateTimer?.cancel();

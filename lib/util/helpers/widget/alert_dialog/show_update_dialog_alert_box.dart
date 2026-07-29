@@ -1,4 +1,4 @@
-import 'package:flashi/util/helpers/classes/other/wepage_launcher.dart';
+import 'package:flashi/core/services/external_link_service.dart';
 import 'package:flutter/material.dart';
 
 void showUpdateDialog(BuildContext context, String currentVersion,
@@ -82,7 +82,7 @@ void showUpdateDialog(BuildContext context, String currentVersion,
                     padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                   ),
                   onPressed: () {
-                    WebPageLauncher(downloadLink).launch();
+                    ExternalLinkService(downloadLink).launch();
                   },
                   child: Text(
                     "Update Now",

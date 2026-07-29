@@ -1,16 +1,16 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:flashi/util/helpers/classes/api/ai/core/api_key_secure_storage.dart';
+import 'package:flashi/features/ai/data/services/api_key_storage.dart';
 import 'package:http/http.dart' as http;
 
-class ImageRecognition {
+class ImageRecognitionService {
   static const String apiUrl = 'https://api.mistral.ai/v1/chat/completions';
 
   static Future<String> analyzeImage(
       Future<File?> imageFileFuture, String instruction) async {
     try {
       // Retrieve stored API key
-      String? apiKey = await getAPIKey();
+      String? apiKey = await getApiKey();
       if (apiKey == null || apiKey.isEmpty) {
         return 'Error: API key is missing.';
       }

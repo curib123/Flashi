@@ -1,6 +1,6 @@
 import 'package:flashi/features/ai/application/ai_credit_provider.dart';
-import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
-import 'package:flashi/util/helpers/classes/ads/ad_unit_id.dart';
+import 'package:flashi/core/ads/ad_manager.dart';
+import 'package:flashi/core/ads/ad_unit_id.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/loading_dialog.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/show_watch_ads_dialog.dart';
 import 'package:flutter/material.dart';

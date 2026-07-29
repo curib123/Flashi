@@ -5,11 +5,11 @@ import 'package:flashi/features/ai/application/ai_credit_provider.dart';
 import 'package:flashi/features/ai/application/generation_config_provider.dart';
 import 'package:flashi/features/history/application/history_provider.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
-import 'package:flashi/util/helpers/classes/api/ai/core/ai_question_generator.dart';
+import 'package:flashi/features/ai/data/services/ai_question_generator.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/auth_dialog.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/loading_dialog.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/model_dialog.dart';
-import 'package:flashi/util/helpers/classes/other/file_text_extractor.dart';
+import 'package:flashi/features/ai/data/services/file_text_extractor.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/show_topic_dialog.dart';
 import 'package:flashi/util/helpers/widget/modals/create_set_bottom_modal.dart';
 import 'package:flutter/material.dart';
@@ -79,7 +79,7 @@ class AiGenerationProvider extends ChangeNotifier {
     if (revision != _generationRevision || !context.mounted) return;
 
     if (handleExtractedTextError(context, extractedText)) {
-      final questions = await AIQuestionGenerator.generateQuestionsFromFile(
+      final questions = await AiQuestionGenerator.generateQuestionsFromFile(
         extractedText,
         fetchDataFromJsonProvider.model,
         fetchDataFromJsonProvider.quizQuestionType,
@@ -202,7 +202,7 @@ class AiGenerationProvider extends ChangeNotifier {
       return;
     }
 
-    final questions = await AIQuestionGenerator.generateQuestionsFromCustom(
+    final questions = await AiQuestionGenerator.generateQuestionsFromCustom(
       topic,
       description,
       fetchDataFromJsonProvider.model,
@@ -543,7 +543,7 @@ class AiGenerationProvider extends ChangeNotifier {
                                 aiCreditProvider,
                                 historyProvider,
                                 () async {
-                                  return await AIQuestionGenerator.analyzeImage(
+                                  return await AiQuestionGenerator.analyzeImage(
                                       FileTextExtractor.pickOrCaptureImage(
                                           context),
                                       "Get the text in image");

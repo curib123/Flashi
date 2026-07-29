@@ -1,4 +1,4 @@
-import 'package:flashi/util/helpers/classes/other/import_export_helper_class.dart';
+import 'package:flashi/features/quiz/data/services/quiz_import_export_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:provider/provider.dart';
@@ -9,7 +9,7 @@ class ReusableImportPosition extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ImportExportHelperClass helper = ImportExportHelperClass();
+    final QuizImportExportService helper = QuizImportExportService();
     final quizProvider = Provider.of<QuizProvider>(context, listen: false);
 
     return Positioned(

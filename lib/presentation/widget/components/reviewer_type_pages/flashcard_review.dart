@@ -1,8 +1,8 @@
 import 'package:flashi/shared/widgets/core/reviewer_widgets_core/flip_card_core.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flashi/features/reviewer/application/reviewer_settings_provider.dart';
-import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
-import 'package:flashi/util/helpers/classes/ads/ad_unit_id.dart';
+import 'package:flashi/core/ads/ad_manager.dart';
+import 'package:flashi/core/ads/ad_unit_id.dart';
 import 'package:flashi/util/helpers/widget/modals/create_card_bottom_modal.dart';
 import 'package:flashi/util/helpers/widget/other/highlight_keywords.dart';
 import 'package:flutter/material.dart';

@@ -4,7 +4,7 @@ import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/auth_dialog.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/delete_confirmation_alert_box.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/review_selection_alert_box.dart';
-import 'package:flashi/util/helpers/classes/other/import_export_helper_class.dart';
+import 'package:flashi/features/quiz/data/services/quiz_import_export_service.dart';
 import 'package:flashi/util/helpers/widget/modals/create_card_bottom_modal.dart';
 import 'package:flashi/util/helpers/widget/modals/create_set_bottom_modal.dart';
 import 'package:flutter/material.dart';
@@ -32,8 +32,8 @@ class ReusableQuizSetList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ImportExportHelperClass helper =
-        ImportExportHelperClass(); // Helper instance for export/import
+    final QuizImportExportService helper =
+        QuizImportExportService(); // Helper instance for export/import
 
     return Consumer<QuizProvider>(
       builder: (context, quizProvider, child) {

@@ -1,6 +1,6 @@
 import 'dart:collection';
 
-import 'package:flashi/util/helpers/classes/api/ai/core/chatbot_api.dart';
+import 'package:flashi/features/ai/data/services/chatbot_api.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 

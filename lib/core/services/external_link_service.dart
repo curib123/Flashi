@@ -1,9 +1,9 @@
 import 'package:url_launcher/url_launcher.dart';
 
-class WebPageLauncher {
+class ExternalLinkService {
   final String url;
 
-  WebPageLauncher(this.url);
+  ExternalLinkService(this.url);
 
   /// This method launches any URL passed to it dynamically.
   Future<void> _launchUrl() async {

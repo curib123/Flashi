@@ -1,11 +1,11 @@
 import 'dart:io';
-import 'package:flashi/util/helpers/classes/api/ai/core/image_recognition.dart';
-import 'package:flashi/util/helpers/classes/api/ai/core/mistralai_logic.dart';
+import 'package:flashi/features/ai/data/services/image_recognition_service.dart';
+import 'package:flashi/features/ai/data/services/mistral_ai_service.dart';
 
-class AIQuestionGenerator {
+class AiQuestionGenerator {
   static Future<List<Map<String, String>>> generateQuestionsFromFile(
       String content, String modelType, String quizType, int maxLength) async {
-    return await MistralAiLogic.generateQuestionsFromFile(
+    return await MistralAiService.generateQuestionsFromFile(
         content, modelType, quizType, maxLength);
   }
 
@@ -15,11 +15,11 @@ class AIQuestionGenerator {
       String modelType,
       String quizType,
       int maxLength) async {
-    return await MistralAiLogic.generateQuestionsCustomAiGenerated(
+    return await MistralAiService.generateQuestionsCustomAiGenerated(
         topic, description, modelType, quizType, maxLength);
   }
 
   static analyzeImage(Future<File?> imageFileFuture, String instruction) async {
-    return ImageRecognition.analyzeImage(imageFileFuture, instruction);
+    return ImageRecognitionService.analyzeImage(imageFileFuture, instruction);
   }
 }

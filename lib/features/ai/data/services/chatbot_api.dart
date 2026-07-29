@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:async'; // Import required for timeout
-import 'package:flashi/util/helpers/classes/api/ai/core/api_key_secure_storage.dart';
+import 'package:flashi/features/ai/data/services/api_key_storage.dart';
 import 'package:http/http.dart' as http;
 
 class ChatbotApi {
@@ -12,7 +12,7 @@ class ChatbotApi {
 
   static Future<String?> _getCachedAPIKey() async {
     if (_cachedApiKey == null) {
-      _cachedApiKey = await getAPIKey();
+      _cachedApiKey = await getApiKey();
     }
     return _cachedApiKey;
   }

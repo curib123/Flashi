@@ -3,10 +3,10 @@ import 'package:flashi/core/design_system/responsive_content.dart';
 import 'package:flashi/presentation/widget/components/see_all_quiz_card.dart';
 import 'package:flashi/shared/widgets/core/reusable_set_core.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
-import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
+import 'package:flashi/core/ads/ad_manager.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/delete_confirmation_alert_box.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/review_selection_alert_box.dart';
-import 'package:flashi/util/helpers/classes/other/import_export_helper_class.dart';
+import 'package:flashi/features/quiz/data/services/quiz_import_export_service.dart';
 import 'package:flashi/util/helpers/widget/modals/create_card_bottom_modal.dart';
 import 'package:flashi/util/helpers/widget/modals/create_set_bottom_modal.dart';
 import 'package:flutter/material.dart';
@@ -21,8 +21,8 @@ class FavoritesPage extends StatelessWidget {
     final quizProvider = context.watch<QuizProvider>();
     final quizSets = quizProvider.filteredQuizSetsFavorite;
 
-    final ImportExportHelperClass helper =
-        ImportExportHelperClass(); // Helper instance for export/import
+    final QuizImportExportService helper =
+        QuizImportExportService(); // Helper instance for export/import
     AdManager adManager = AdManager();
 
     return Scaffold(

@@ -1,11 +1,11 @@
 import 'dart:convert';
-import 'package:flashi/util/helpers/classes/api/ai/core/api_key_secure_storage.dart';
+import 'package:flashi/features/ai/data/services/api_key_storage.dart';
 import 'package:http/http.dart' as http;
 
-class MistralAiLogic {
+class MistralAiService {
   static Future<List<Map<String, String>>> generateQuestionsFromFile(
       String content, String modelType, String type, int maxLength) async {
-    String? apiKey = await getAPIKey(); // Retrieve stored API key
+    String? apiKey = await getApiKey(); // Retrieve stored API key
 
     if (apiKey == null || apiKey.isEmpty) {
       print("API Key not found!");
@@ -184,7 +184,7 @@ class MistralAiLogic {
       String modelType,
       String type,
       int maxLength) async {
-    String? apiKey = await getAPIKey(); // Retrieve stored API key
+    String? apiKey = await getApiKey(); // Retrieve stored API key
 
     if (apiKey == null || apiKey.isEmpty) {
       print("API Key not found!");

@@ -7,7 +7,7 @@ import 'package:flashi/features/notes/application/notes_provider.dart';
 import 'package:flashi/features/notes/presentation/pages/note_editor_page.dart';
 import 'package:flashi/shared/widgets/core/reusable_notes_summary_block_core.dart';
 import 'package:flashi/shared/widgets/core/reusable_notes_summary_tile_core.dart';
-import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
+import 'package:flashi/core/ads/ad_manager.dart';
 import 'package:flashi/util/helpers/widget/modals/theme_modal.dart';
 import 'package:flashi/util/helpers/widget/other/empty_widgets.dart';
 import 'package:flutter/material.dart';
