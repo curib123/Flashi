@@ -9,6 +9,7 @@ import 'package:flashi/features/ai/application/ai_credit_provider.dart';
 import 'package:flashi/features/ai/application/ai_generation_provider.dart';
 import 'package:flashi/features/ai/application/generation_config_provider.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
+import 'package:flashi/features/history/application/history_provider.dart';
 import 'package:flashi/core/state/sort_provider.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
 import 'package:flashi/util/helpers/widget/other/empty_widgets.dart';
@@ -48,7 +49,6 @@ class SeeAllQuizSetList extends StatelessWidget {
           onPressed: () {
             Navigator.pop(context); // Go back to the previous screen
             quizProvider.searchController.text = quizProvider.searchQuery;
-            print(quizProvider.searchQuery);
           },
         ),
       ),
@@ -58,6 +58,7 @@ class SeeAllQuizSetList extends StatelessWidget {
 
   Widget _body(BuildContext context) {
     AdManager adManager = AdManager();
+    final historyProvider = context.read<HistoryProvider>();
 
     return Consumer5<QuizProvider, SortProvider, GenerationConfigProvider,
         AiGenerationProvider, AiCreditProvider>(
@@ -116,8 +117,13 @@ class SeeAllQuizSetList extends StatelessWidget {
               colorScheme: colorScheme,
               name: 'Generate Quiz Set',
               onTap: () {
-                aiModelLogicProvider.showFlashcardDialog(context, quizProvider,
-                    colorScheme, fetchDataFromJsonProvider, aiCreditProvider);
+                aiModelLogicProvider.showFlashcardDialog(
+                    context,
+                    quizProvider,
+                    colorScheme,
+                    fetchDataFromJsonProvider,
+                    aiCreditProvider,
+                    historyProvider);
               },
             ),
 

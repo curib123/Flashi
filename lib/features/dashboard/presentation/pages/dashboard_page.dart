@@ -12,6 +12,7 @@ import 'package:flashi/features/ai/application/ai_generation_provider.dart';
 import 'package:flashi/features/ai/application/generation_config_provider.dart';
 import 'package:flashi/features/dashboard/application/daily_question_provider.dart';
 import 'package:flashi/features/favorites/presentation/pages/favorites_page.dart';
+import 'package:flashi/features/history/application/history_provider.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flashi/features/settings/presentation/pages/settings_page.dart';
 import 'package:flashi/presentation/widget/components/see_all_quiz_set_list.dart';
@@ -133,6 +134,7 @@ class _DashboardPageState extends State<DashboardPage> {
     final config = context.watch<GenerationConfigProvider>();
     final generation = context.read<AiGenerationProvider>();
     final credits = context.watch<AiCreditProvider>();
+    final history = context.read<HistoryProvider>();
     final quizSets = quiz.filteredQuizSets.reversed.toList();
 
     return Scaffold(
@@ -198,6 +200,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                 Theme.of(context).colorScheme,
                                 config,
                                 credits,
+                                history,
                               ),
                               icon: const Icon(Icons.auto_awesome),
                               label: const Text('Generate quiz'),

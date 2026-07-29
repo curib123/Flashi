@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import 'package:flashi/features/ai/application/ai_credit_provider.dart';
@@ -14,9 +15,18 @@ import 'package:flashi/util/helpers/widget/modals/create_set_bottom_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
-import 'package:provider/provider.dart';
 
 class AiGenerationProvider extends ChangeNotifier {
+  AiGenerationProvider({http.Client? httpClient})
+      : _httpClient = httpClient ?? http.Client(),
+        _ownsHttpClient = httpClient == null;
+
+  final http.Client _httpClient;
+  final bool _ownsHttpClient;
+  Timer? _timeoutTimer;
+  Timer? _resultTimer;
+  int _generationRevision = 0;
+
   String extractedText = "";
   String topic = "";
   String description = "";
@@ -24,26 +34,34 @@ class AiGenerationProvider extends ChangeNotifier {
   String reasonMaintenance = '';
   bool isFetchData = false;
   bool isTimeOut = false;
+  bool isGenerating = false;
+  String? errorMessage;
 
   void updateTopicAndDescription(String newTopic, String newDescription) {
+    if (topic == newTopic && description == newDescription) return;
     topic = newTopic;
     description = newDescription;
     notifyListeners();
   }
 
   Future<void> fetchLatestVersion() async {
-    final response = await http
-        .get(Uri.parse('https://curib123.github.io/flashi_/flashi.json'));
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      // Extract the AI models data
-
-      isUnderMaintenance = data['under_maintenance'];
-      reasonMaintenance = data['reason_maintenance_ai'];
+    try {
+      final response = await _httpClient
+          .get(Uri.parse('https://curib123.github.io/flashi_/flashi.json'));
+      if (response.statusCode != 200) {
+        throw http.ClientException(
+          'Maintenance configuration returned ${response.statusCode}.',
+        );
+      }
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
+      isUnderMaintenance = data['under_maintenance'] == true;
+      reasonMaintenance = data['reason_maintenance_ai']?.toString() ?? '';
       isFetchData = true;
+      errorMessage = null;
+    } catch (error) {
+      errorMessage = error.toString();
+    } finally {
       notifyListeners();
-    } else {
-      print("Failed to load data");
     }
   }
 
@@ -52,10 +70,13 @@ class AiGenerationProvider extends ChangeNotifier {
     QuizProvider quizProvider,
     GenerationConfigProvider fetchDataFromJsonProvider,
     AiCreditProvider aiCreditProvider,
-    Future<String> pickAndExtractText(),
+    HistoryProvider historyProvider,
+    Future<String> Function() pickAndExtractText,
   ) async {
+    final int revision = _beginGeneration();
     showLoadingDialog(context, text: "Please wait...");
     extractedText = await pickAndExtractText();
+    if (revision != _generationRevision || !context.mounted) return;
 
     if (handleExtractedTextError(context, extractedText)) {
       final questions = await AIQuestionGenerator.generateQuestionsFromFile(
@@ -64,17 +85,21 @@ class AiGenerationProvider extends ChangeNotifier {
         fetchDataFromJsonProvider.quizQuestionType,
         fetchDataFromJsonProvider.maxLength,
       );
+      if (revision != _generationRevision || !context.mounted) return;
 
       var random = Random();
       int randomNumber =
           30 + random.nextInt(31); // Generates a number between 30 and 60
 
-      Future.delayed(Duration(seconds: randomNumber), () {
+      _timeoutTimer = Timer(Duration(seconds: randomNumber), () {
+        if (revision != _generationRevision) return;
         isTimeOut = true;
         notifyListeners();
       });
 
-      Future.delayed(Duration(seconds: 10), () {
+      _resultTimer = Timer(const Duration(seconds: 10), () {
+        if (revision != _generationRevision || !context.mounted) return;
+        _timeoutTimer?.cancel();
         if (questions.isNotEmpty && !isTimeOut) {
           final quizSetName = quizProvider.nameController.text.isEmpty
               ? "Newly Created ${quizProvider.quizSets.length}"
@@ -111,7 +136,7 @@ class AiGenerationProvider extends ChangeNotifier {
 
           String formattedText = formatQuestions(questions);
 
-          Provider.of<HistoryProvider>(context, listen: false).addHistory({
+          historyProvider.addHistory({
             'title': quizSetName,
             'content': formattedText,
             'created_at': DateTime.now(),
@@ -133,7 +158,7 @@ class AiGenerationProvider extends ChangeNotifier {
             }
           }
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
+            const SnackBar(
               content: Text("Successfully Created Generated Quiz "),
               backgroundColor: Colors.green,
             ),
@@ -141,7 +166,7 @@ class AiGenerationProvider extends ChangeNotifier {
         } else {
           Navigator.pop(context);
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
+            const SnackBar(
               duration: Duration(seconds: 10),
               content: Text(
                   "It seems there’s no internet connection. Please try again or choose another model."),
@@ -151,23 +176,25 @@ class AiGenerationProvider extends ChangeNotifier {
           showAuthDialog(context, "Error",
               "Weak internet connection or choose another model");
         }
+        _finishGeneration(revision);
       });
+    } else {
+      _finishGeneration(revision);
     }
-
-    isTimeOut = false;
-    notifyListeners();
   }
 
   Future<void> generateFlashCardsFromCustomTopic(
       BuildContext context,
       QuizProvider quizProvider,
       GenerationConfigProvider fetchDataFromJsonProvider,
-      AiCreditProvider aiCreditProvider) async {
+      AiCreditProvider aiCreditProvider,
+      HistoryProvider historyProvider) async {
+    final int revision = _beginGeneration();
     if (topic.isEmpty) {
-      notifyListeners();
+      _finishGeneration(revision);
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text("Required Topic"),
           backgroundColor: Colors.red,
         ),
@@ -182,18 +209,21 @@ class AiGenerationProvider extends ChangeNotifier {
       fetchDataFromJsonProvider.quizQuestionType,
       fetchDataFromJsonProvider.maxLength,
     );
+    if (revision != _generationRevision || !context.mounted) return;
 
-    print(questions);
     var random = Random();
     int randomNumber =
         30 + random.nextInt(15); // Generates a number between 30 and 60
 
-    Future.delayed(Duration(seconds: randomNumber), () {
+    _timeoutTimer = Timer(Duration(seconds: randomNumber), () {
+      if (revision != _generationRevision) return;
       isTimeOut = true;
       notifyListeners();
     });
 
-    Future.delayed(Duration(seconds: 10), () {
+    _resultTimer = Timer(const Duration(seconds: 10), () {
+      if (revision != _generationRevision || !context.mounted) return;
+      _timeoutTimer?.cancel();
       if (questions.isNotEmpty && !isTimeOut) {
         final quizSetName = quizProvider.nameController.text.isEmpty
             ? "Newly Created ${quizProvider.quizSets.length}"
@@ -230,7 +260,7 @@ class AiGenerationProvider extends ChangeNotifier {
 
         String formattedText = formatQuestions(questions);
 
-        Provider.of<HistoryProvider>(context, listen: false).addHistory({
+        historyProvider.addHistory({
           'title': quizSetName,
           'content': formattedText,
           'created_at': DateTime.now(),
@@ -254,7 +284,7 @@ class AiGenerationProvider extends ChangeNotifier {
           }
         }
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text("Successfully Created AI Generated Quiz "),
             backgroundColor: Colors.green,
           ),
@@ -262,7 +292,7 @@ class AiGenerationProvider extends ChangeNotifier {
       } else {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             duration: Duration(seconds: 10),
             content: Text(
                 "Error in getting response , Try again with another topic/prompt"),
@@ -275,8 +305,26 @@ class AiGenerationProvider extends ChangeNotifier {
             "Error",
             "It seems there’s no internet connection. Please try again or choose another model.");
       }
+      _finishGeneration(revision);
     });
+  }
 
+  int _beginGeneration() {
+    _timeoutTimer?.cancel();
+    _resultTimer?.cancel();
+    final int revision = ++_generationRevision;
+    isGenerating = true;
+    isTimeOut = false;
+    errorMessage = null;
+    notifyListeners();
+    return revision;
+  }
+
+  void _finishGeneration(int revision) {
+    if (revision != _generationRevision) return;
+    _timeoutTimer?.cancel();
+    _resultTimer?.cancel();
+    isGenerating = false;
     isTimeOut = false;
     notifyListeners();
   }
@@ -286,12 +334,13 @@ class AiGenerationProvider extends ChangeNotifier {
       QuizProvider quizProvider,
       ColorScheme colorScheme,
       GenerationConfigProvider fetchDataFromJsonProvider,
-      AiCreditProvider aiCreditProvider) async {
+      AiCreditProvider aiCreditProvider,
+      HistoryProvider historyProvider) async {
     showDialog(
       barrierDismissible: true,
       context: context,
       builder: (BuildContext context) {
-        void _fetchDataFromJson() {
+        void fetchConfiguration() {
           fetchLatestVersion();
           fetchDataFromJsonProvider.fetchLatestVersion();
         }
@@ -353,7 +402,7 @@ class AiGenerationProvider extends ChangeNotifier {
                       label: "Create Own Quiz",
                       gradientColors: [
                         colorScheme.primary,
-                        colorScheme.primary.withOpacity(0.5)
+                        colorScheme.primary.withValues(alpha: 0.5)
                       ],
                       onPressed: () {
                         Navigator.pop(context);
@@ -371,11 +420,12 @@ class AiGenerationProvider extends ChangeNotifier {
                       label: "Ai-Generated Quiz ",
                       gradientColors: [
                         colorScheme.secondary,
-                        colorScheme.secondary.withOpacity(0.5)
+                        colorScheme.secondary.withValues(alpha: 0.5)
                       ],
                       onPressed: () async {
                         bool isConnected =
                             await InternetConnection().hasInternetAccess;
+                        if (!context.mounted) return;
                         if (!isConnected && !isFetchData) {
                           showAuthDialog(
                               context,
@@ -385,7 +435,7 @@ class AiGenerationProvider extends ChangeNotifier {
 
                           return;
                         } else {
-                          _fetchDataFromJson();
+                          fetchConfiguration();
                         }
                         if (!isUnderMaintenance) {
                           ModelSelectionDialog.show(
@@ -396,7 +446,8 @@ class AiGenerationProvider extends ChangeNotifier {
                                   context,
                                   quizProvider,
                                   fetchDataFromJsonProvider,
-                                  aiCreditProvider);
+                                  aiCreditProvider,
+                                  historyProvider);
                             }),
                           );
                         } else {
@@ -414,11 +465,12 @@ class AiGenerationProvider extends ChangeNotifier {
                       label: "Quiz From PDF/Word Docx",
                       gradientColors: [
                         colorScheme.tertiary,
-                        colorScheme.tertiary.withOpacity(0.5)
+                        colorScheme.tertiary.withValues(alpha: 0.5)
                       ],
                       onPressed: () async {
                         bool isConnected =
                             await InternetConnection().hasInternetAccess;
+                        if (!context.mounted) return;
                         if (!isConnected && !isFetchData) {
                           showAuthDialog(
                               context,
@@ -427,7 +479,7 @@ class AiGenerationProvider extends ChangeNotifier {
                               "Please connect to the internet to generate a Quiz.");
                           return;
                         } else {
-                          _fetchDataFromJson();
+                          fetchConfiguration();
                         }
                         if (!isUnderMaintenance) {
                           ModelSelectionDialog.show(
@@ -439,6 +491,7 @@ class AiGenerationProvider extends ChangeNotifier {
                                 quizProvider,
                                 fetchDataFromJsonProvider,
                                 aiCreditProvider,
+                                historyProvider,
                                 () async {
                                   return await FileTextExtractor
                                       .pickAndExtractText();
@@ -461,11 +514,12 @@ class AiGenerationProvider extends ChangeNotifier {
                       label: "Quiz From Picture",
                       gradientColors: [
                         colorScheme.tertiary,
-                        colorScheme.tertiary.withOpacity(0.5)
+                        colorScheme.tertiary.withValues(alpha: 0.5)
                       ],
                       onPressed: () async {
                         bool isConnected =
                             await InternetConnection().hasInternetAccess;
+                        if (!context.mounted) return;
                         if (!isConnected && !isFetchData) {
                           showAuthDialog(
                               context,
@@ -475,7 +529,7 @@ class AiGenerationProvider extends ChangeNotifier {
 
                           return;
                         } else {
-                          _fetchDataFromJson();
+                          fetchConfiguration();
                         }
                         if (!isUnderMaintenance) {
                           ModelSelectionDialog.show(
@@ -487,6 +541,7 @@ class AiGenerationProvider extends ChangeNotifier {
                                 quizProvider,
                                 fetchDataFromJsonProvider,
                                 aiCreditProvider,
+                                historyProvider,
                                 () async {
                                   return await AIQuestionGenerator.analyzeImage(
                                       FileTextExtractor.pickOrCaptureImage(
@@ -536,7 +591,7 @@ class AiGenerationProvider extends ChangeNotifier {
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.2),
+                color: Colors.black.withValues(alpha: 0.2),
                 blurRadius: 6,
                 offset: const Offset(0, 3),
               ),
@@ -548,8 +603,8 @@ class AiGenerationProvider extends ChangeNotifier {
             child: InkWell(
               onTap: onPressed,
               borderRadius: BorderRadius.circular(16),
-              splashColor: Colors.white.withOpacity(0.2),
-              highlightColor: Colors.white.withOpacity(0.1),
+              splashColor: Colors.white.withValues(alpha: 0.2),
+              highlightColor: Colors.white.withValues(alpha: 0.1),
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 child: Row(
@@ -577,6 +632,15 @@ class AiGenerationProvider extends ChangeNotifier {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _generationRevision++;
+    _timeoutTimer?.cancel();
+    _resultTimer?.cancel();
+    if (_ownsHttpClient) _httpClient.close();
+    super.dispose();
   }
 }
 
