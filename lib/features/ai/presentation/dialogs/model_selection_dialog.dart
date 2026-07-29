@@ -5,9 +5,9 @@ import 'package:flashi/features/ai/application/generation_config_provider.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flashi/core/ads/ad_manager.dart';
 import 'package:flashi/core/ads/ad_unit_id.dart';
-import 'package:flashi/util/helpers/widget/alert_dialog/auth_dialog.dart';
-import 'package:flashi/util/helpers/widget/alert_dialog/loading_dialog.dart';
-import 'package:flashi/util/helpers/widget/alert_dialog/show_watch_ads_dialog.dart';
+import 'package:flashi/shared/dialogs/message_dialog.dart';
+import 'package:flashi/shared/dialogs/loading_dialog.dart';
+import 'package:flashi/core/ads/widgets/watch_ad_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:provider/provider.dart';
@@ -177,14 +177,14 @@ class ModelSelectionDialog {
                                               },
                                             );
                                           } else {
-                                            showAuthDialog(
+                                            showMessageDialog(
                                                 context,
                                                 type: "error",
                                                 "Error",
                                                 "No More Ads for Today!");
                                           }
                                         } else {
-                                          showAuthDialog(
+                                          showMessageDialog(
                                               context,
                                               type: "error",
                                               "Error",

@@ -1,7 +1,7 @@
 import 'package:flashi/core/services/external_link_service.dart';
 import 'package:flutter/material.dart';
 
-void showUpdateDialog(BuildContext context, String currentVersion,
+void showAppUpdateDialog(BuildContext context, String currentVersion,
     String latestVersion, String downloadLink, String patchNote) {
   final colorScheme = Theme.of(context).colorScheme;
 

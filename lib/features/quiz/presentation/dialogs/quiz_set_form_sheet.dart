@@ -4,13 +4,12 @@ import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-void CreateCardBottomModal(
-    {required BuildContext context,
-    required String buttonName,
-    required bool isCreate,
-    required String cardName,
-    required String name,
-    required Map<String, dynamic> card}) {
+void showQuizSetFormSheet({
+  required BuildContext context,
+  required String buttonName,
+  required bool isCreate,
+  required String setName,
+}) {
   final colorScheme = Theme.of(context).colorScheme;
 
   showModalBottomSheet(
@@ -42,12 +41,14 @@ void CreateCardBottomModal(
                 children: [
                   const SizedBox(height: 10),
                   Align(
-                    alignment: Alignment.topCenter,
+                    alignment: Alignment.topLeft,
                     child: Text(
-                      isCreate ? "Create Card " : 'Edit Card',
+                      isCreate
+                          ? "Generate Quiz Set"
+                          : 'Edit the Quiz Set: $setName',
                       style: TextStyle(
                         color: colorScheme.primary,
-                        fontSize: 18,
+                        fontSize: 25,
                         fontWeight: FontWeight.bold,
                         overflow:
                             TextOverflow.ellipsis, // Handles text overflow
@@ -59,57 +60,55 @@ void CreateCardBottomModal(
                   const SizedBox(height: 30),
                   // TextField for Set Name
                   ReusableTextfieldCore(
+                    name: "Quiz Set Name",
+                    controller: quizProvider.nameController,
                     isHideName: false,
-                    name: "Question",
-                    controller: quizProvider.questionController,
                   ),
                   const SizedBox(height: 20),
                   // TextField for Description
                   ReusableTextfieldCore(
                     isHideName: false,
-                    name: "Answer",
-                    controller: quizProvider.answerController,
+                    name: "Description - Optional",
+                    controller: quizProvider.descriptionController,
                   ),
                   const SizedBox(height: 30),
                   // Button to Create Set
                   CreateQuizSetActions(
                     createBtn: () {
                       // Get the input data from the text controllers
-                      final String question =
-                          quizProvider.questionController.text;
-                      final String answer = quizProvider.answerController.text;
+                      final String name = quizProvider.nameController.text;
+                      final String description =
+                          quizProvider.descriptionController.text;
 
                       // Add the new set to the provider
-                      if (question.isNotEmpty) {
+                      if (name.isNotEmpty) {
                         if (isCreate) {
-                          quizProvider
-                              .addCardToQuizSet(quizSetName: name, card: {
-                            'isUpdating': false,
-                            'question': question,
-                            'answer': answer,
-                            'isIgnore': false,
-                            'keyword': '',
-                            'timestamp': DateTime.now()
+                          quizProvider.addQuizSet({
+                            'name': name,
+                            'timestamp': DateTime.now(),
+                            'description': description,
+                            'cards': [],
+                            'numberOfQuiz': 0,
+                            'limitNumberOfQuiz': quizProvider.defaultMaxCards,
                           });
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text("Card Successfully Added"),
+                              content: Text('The Quiz Set $name is Generated'),
                               backgroundColor: Colors.green,
                             ),
                           );
+
                           quizProvider.clearController();
                         } else {
-                          quizProvider.updateCardInQuizSet(
-                              quizSetName: name,
-                              oldQuestion: card['question'],
-                              newQuestion: question,
-                              newAnswer: answer);
+                          quizProvider.editQuizSet(setName,
+                              newName: name, newDescription: description);
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('Succesfully Updated'),
+                              content: Text('The Quiz Set $name is Updated '),
                               backgroundColor: Colors.green,
                             ),
                           );
+
                           quizProvider.clearController();
                         }
 

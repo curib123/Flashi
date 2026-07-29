@@ -3,7 +3,7 @@ import 'package:flashi/core/updates/application/app_update_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-void showAnimatedAboutDialog(BuildContext context) {
+void showAppAboutDialog(BuildContext context) {
   final updates = context.read<AppUpdateProvider>();
 
   showGeneralDialog<void>(

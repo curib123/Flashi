@@ -7,12 +7,12 @@ import 'package:flashi/features/ai/application/ai_credit_provider.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flashi/core/state/sort_provider.dart';
 import 'package:flashi/core/ads/ad_manager.dart';
-import 'package:flashi/util/helpers/widget/alert_dialog/add_slot_alert_dialog.dart';
-import 'package:flashi/util/helpers/widget/alert_dialog/delete_confirmation_alert_box.dart';
-import 'package:flashi/util/helpers/widget/alert_dialog/highlight_keyword_alert_box.dart';
-import 'package:flashi/util/helpers/widget/alert_dialog/review_selection_alert_box.dart';
-import 'package:flashi/util/helpers/widget/other/empty_widgets.dart';
-import 'package:flashi/util/helpers/widget/modals/create_card_bottom_modal.dart';
+import 'package:flashi/features/ai/presentation/dialogs/add_credit_slot_dialog.dart';
+import 'package:flashi/shared/dialogs/delete_confirmation_dialog.dart';
+import 'package:flashi/features/reviewer/presentation/dialogs/highlight_keyword_dialog.dart';
+import 'package:flashi/features/reviewer/presentation/dialogs/review_mode_dialog.dart';
+import 'package:flashi/shared/widgets/empty_state_widgets.dart';
+import 'package:flashi/features/quiz/presentation/dialogs/quiz_card_form_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -85,7 +85,7 @@ class QuizCardsPage extends StatelessWidget {
                   isShowSeeAllLink: false,
                   isShowReviewLink: true,
                   onShowReviewLink: () {
-                    showReviewSelection(
+                    showReviewModeDialog(
                       context: context,
                       heading: name,
                       cards: cards,
@@ -119,7 +119,7 @@ class QuizCardsPage extends StatelessWidget {
                                 quizSet['question'];
                             quizProvider.answerController.text =
                                 quizSet['answer'];
-                            CreateCardBottomModal(
+                            showQuizCardFormSheet(
                               name: name,
                               context: context,
                               buttonName: "Edit Card",
@@ -136,7 +136,7 @@ class QuizCardsPage extends StatelessWidget {
                             );
                           },
                           onKeyword: (quizSet) {
-                            HighlightKeywordAlertBox(context, (keyword) {
+                            showHighlightKeywordDialog(context, (keyword) {
                               quizProvider.updateKeyWordInQuizSet(
                                 quizSetName: name,
                                 oldKeyWord: quizSet['keyword'],
@@ -173,7 +173,7 @@ class QuizCardsPage extends StatelessWidget {
                 colorScheme: colorScheme,
                 name: 'Create Card',
                 onTap: () {
-                  CreateCardBottomModal(
+                  showQuizCardFormSheet(
                     context: context,
                     buttonName: "Add Card",
                     isCreate: true,

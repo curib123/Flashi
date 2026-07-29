@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-void HighlightKeywordAlertBox(
+void showHighlightKeywordDialog(
     BuildContext context, Function(String search) onSearch) {
   TextEditingController searchController = TextEditingController();
   final colorScheme = Theme.of(context).colorScheme;

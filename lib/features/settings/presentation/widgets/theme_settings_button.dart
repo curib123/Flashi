@@ -1,4 +1,4 @@
-import 'package:flashi/util/helpers/widget/modals/theme_modal.dart';
+import 'package:flashi/features/settings/presentation/dialogs/theme_dialog.dart';
 import 'package:flutter/material.dart';
 
 class ThemeSettingsButton extends StatelessWidget {

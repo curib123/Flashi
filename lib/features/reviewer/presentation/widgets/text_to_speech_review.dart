@@ -1,6 +1,6 @@
 import 'package:flashi/core/ads/ad_manager.dart';
 import 'package:flashi/core/ads/ad_unit_id.dart';
-import 'package:flashi/util/helpers/widget/other/highlight_keywords.dart';
+import 'package:flashi/shared/widgets/highlighted_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:flashi/shared/widgets/core/reviewer_widgets_core/text_to_speech_card_core.dart';

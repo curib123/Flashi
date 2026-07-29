@@ -1,7 +1,7 @@
 import 'package:flashi/features/reviewer/presentation/widgets/reviewer_settings_content.dart';
 import 'package:flutter/material.dart';
 
-void reviewerSettingsAlertBox({
+void showReviewerSettingsDialog({
   required BuildContext context,
 }) {
   showDialog(

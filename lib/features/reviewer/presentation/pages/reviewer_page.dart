@@ -4,7 +4,7 @@ import 'package:flashi/features/reviewer/presentation/widgets/timed_multiple_cho
 import 'package:flashi/features/reviewer/presentation/widgets/text_input_review.dart';
 import 'package:flashi/features/reviewer/presentation/widgets/text_to_speech_review.dart';
 import 'package:flashi/features/reviewer/application/reviewer_settings_provider.dart';
-import 'package:flashi/util/helpers/widget/alert_dialog/reviewer_settings_alert_box.dart';
+import 'package:flashi/features/reviewer/presentation/dialogs/reviewer_settings_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -45,7 +45,7 @@ class ReviewerPage extends StatelessWidget {
               ),
             ),
             GestureDetector(
-              onTap: () => reviewerSettingsAlertBox(context: context),
+              onTap: () => showReviewerSettingsDialog(context: context),
               child: Icon(
                 Icons.edit_rounded,
                 color: Theme.of(context).colorScheme.primary,

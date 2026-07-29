@@ -2,7 +2,7 @@ import 'package:flashi/features/reviewer/presentation/pages/reviewer_page.dart';
 import 'package:flashi/shared/widgets/core/reusable_reviewer_card_core.dart';
 import 'package:flutter/material.dart';
 
-void showReviewSelection({
+void showReviewModeDialog({
   required BuildContext context,
   required String heading,
   required List<dynamic> cards,

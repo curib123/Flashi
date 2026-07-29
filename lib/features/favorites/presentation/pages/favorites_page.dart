@@ -4,14 +4,14 @@ import 'package:flashi/features/quiz/presentation/pages/quiz_cards_page.dart';
 import 'package:flashi/shared/widgets/core/reusable_set_core.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flashi/core/ads/ad_manager.dart';
-import 'package:flashi/util/helpers/widget/alert_dialog/delete_confirmation_alert_box.dart';
-import 'package:flashi/util/helpers/widget/alert_dialog/review_selection_alert_box.dart';
+import 'package:flashi/shared/dialogs/delete_confirmation_dialog.dart';
+import 'package:flashi/features/reviewer/presentation/dialogs/review_mode_dialog.dart';
 import 'package:flashi/features/quiz/data/services/quiz_import_export_service.dart';
-import 'package:flashi/util/helpers/widget/modals/create_card_bottom_modal.dart';
-import 'package:flashi/util/helpers/widget/modals/create_set_bottom_modal.dart';
+import 'package:flashi/features/quiz/presentation/dialogs/quiz_card_form_sheet.dart';
+import 'package:flashi/features/quiz/presentation/dialogs/quiz_set_form_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flashi/util/helpers/widget/modals/theme_modal.dart';
+import 'package:flashi/features/settings/presentation/dialogs/theme_dialog.dart';
 
 class FavoritesPage extends StatelessWidget {
   const FavoritesPage({super.key});
@@ -66,7 +66,7 @@ class FavoritesPage extends StatelessWidget {
                             context, name, set, index, cards),
                         onAddCard: () =>
                             _addCard(context, name, set, index, cards),
-                        onReview: () => showReviewSelection(
+                        onReview: () => showReviewModeDialog(
                           context: context,
                           heading: name,
                           cards: cards,
@@ -145,7 +145,7 @@ class FavoritesPage extends StatelessWidget {
     quizProvider.nameController.text = name;
     quizProvider.descriptionController.text = description;
 
-    CreateSetBottomModal(
+    showQuizSetFormSheet(
       context: context,
       buttonName: 'Edit',
       isCreate: false,
@@ -160,7 +160,7 @@ class FavoritesPage extends StatelessWidget {
     await Future.delayed(const Duration(seconds: 1));
     if (!context.mounted) return;
 
-    CreateCardBottomModal(
+    showQuizCardFormSheet(
       context: context,
       buttonName: "Add Card",
       isCreate: true,

@@ -3,8 +3,8 @@ import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flashi/features/reviewer/application/reviewer_settings_provider.dart';
 import 'package:flashi/core/ads/ad_manager.dart';
 import 'package:flashi/core/ads/ad_unit_id.dart';
-import 'package:flashi/util/helpers/widget/modals/create_card_bottom_modal.dart';
-import 'package:flashi/util/helpers/widget/other/highlight_keywords.dart';
+import 'package:flashi/features/quiz/presentation/dialogs/quiz_card_form_sheet.dart';
+import 'package:flashi/shared/widgets/highlighted_text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -96,7 +96,7 @@ class _FlashcardReviewState extends State<FlashcardReview> {
                       quizProvider.answerController.text = card['answer'];
 
                       // Open the modal for editing the card
-                      CreateCardBottomModal(
+                      showQuizCardFormSheet(
                         name: widget.setname,
                         context: context,
                         buttonName: "Edit Card",

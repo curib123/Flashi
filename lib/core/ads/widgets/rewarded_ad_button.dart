@@ -1,8 +1,8 @@
 import 'package:flashi/features/ai/application/ai_credit_provider.dart';
 import 'package:flashi/core/ads/ad_manager.dart';
 import 'package:flashi/core/ads/ad_unit_id.dart';
-import 'package:flashi/util/helpers/widget/alert_dialog/loading_dialog.dart';
-import 'package:flashi/util/helpers/widget/alert_dialog/show_watch_ads_dialog.dart';
+import 'package:flashi/shared/dialogs/loading_dialog.dart';
+import 'package:flashi/core/ads/widgets/watch_ad_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:provider/provider.dart';

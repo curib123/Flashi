@@ -5,7 +5,7 @@ import 'package:flashi/features/history/application/history_provider.dart';
 import 'package:flashi/features/history/presentation/pages/history_editor_page.dart';
 import 'package:flashi/shared/widgets/core/reusable_notes_summary_tile_core.dart';
 import 'package:flashi/core/ads/ad_manager.dart';
-import 'package:flashi/util/helpers/widget/other/empty_widgets.dart';
+import 'package:flashi/shared/widgets/empty_state_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

@@ -6,7 +6,7 @@ import 'package:flashi/features/quiz/presentation/pages/quiz_sets_page.dart';
 import 'package:flashi/app/state/app_navigation_provider.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flashi/core/services/external_link_service.dart';
-import 'package:flashi/util/helpers/widget/alert_dialog/about_alert_dialog.dart';
+import 'package:flashi/features/settings/presentation/dialogs/about_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -239,7 +239,7 @@ class _NavigationContent extends StatelessWidget {
         _NavigationTile(
           icon: Icons.info_outline,
           label: 'About',
-          onTap: () => closeBefore(() => showAnimatedAboutDialog(context)),
+          onTap: () => closeBefore(() => showAppAboutDialog(context)),
         ),
         _NavigationTile(
           icon: Icons.contact_support_outlined,

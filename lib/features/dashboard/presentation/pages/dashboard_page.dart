@@ -21,11 +21,11 @@ import 'package:flashi/features/quiz/presentation/widgets/quiz_set_list.dart';
 import 'package:flashi/core/ads/ad_manager.dart';
 import 'package:flashi/core/ads/ad_unit_id.dart';
 import 'package:flashi/features/quiz/data/services/quiz_import_export_service.dart';
-import 'package:flashi/util/helpers/widget/alert_dialog/daily_question_dialog.dart';
-import 'package:flashi/util/helpers/widget/alert_dialog/show_free_credits_dialog.dart';
-import 'package:flashi/util/helpers/widget/alert_dialog/show_update_dialog_alert_box.dart';
-import 'package:flashi/util/helpers/widget/modals/theme_modal.dart';
-import 'package:flashi/util/helpers/widget/other/empty_widgets.dart';
+import 'package:flashi/features/dashboard/presentation/dialogs/daily_question_dialog.dart';
+import 'package:flashi/features/ai/presentation/dialogs/free_credits_dialog.dart';
+import 'package:flashi/core/updates/presentation/app_update_dialog.dart';
+import 'package:flashi/features/settings/presentation/dialogs/theme_dialog.dart';
+import 'package:flashi/shared/widgets/empty_state_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -69,7 +69,7 @@ class _DashboardPageState extends State<DashboardPage> {
   Future<void> _checkForUpdates(AppUpdateProvider updates) async {
     final hasUpdate = await updates.checkAppVersion();
     if (!mounted || !hasUpdate) return;
-    showUpdateDialog(
+    showAppUpdateDialog(
       context,
       updates.currentVersion,
       updates.latestVersion,

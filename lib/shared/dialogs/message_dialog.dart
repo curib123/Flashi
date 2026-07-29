@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-void showAuthDialog(BuildContext context, String title, String message,
+void showMessageDialog(BuildContext context, String title, String message,
     {String type = "info"}) {
   final colorScheme = Theme.of(context).colorScheme;
   final Map<String, dynamic> dialogTypes = {

@@ -6,12 +6,12 @@ import 'package:flashi/features/ai/application/generation_config_provider.dart';
 import 'package:flashi/features/history/application/history_provider.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flashi/features/ai/data/services/ai_question_generator.dart';
-import 'package:flashi/util/helpers/widget/alert_dialog/auth_dialog.dart';
-import 'package:flashi/util/helpers/widget/alert_dialog/loading_dialog.dart';
-import 'package:flashi/util/helpers/widget/alert_dialog/model_dialog.dart';
+import 'package:flashi/shared/dialogs/message_dialog.dart';
+import 'package:flashi/shared/dialogs/loading_dialog.dart';
+import 'package:flashi/features/ai/presentation/dialogs/model_selection_dialog.dart';
 import 'package:flashi/features/ai/data/services/file_text_extractor.dart';
-import 'package:flashi/util/helpers/widget/alert_dialog/show_topic_dialog.dart';
-import 'package:flashi/util/helpers/widget/modals/create_set_bottom_modal.dart';
+import 'package:flashi/features/ai/presentation/dialogs/topic_prompt_dialog.dart';
+import 'package:flashi/features/quiz/presentation/dialogs/quiz_set_form_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
@@ -173,7 +173,7 @@ class AiGenerationProvider extends ChangeNotifier {
               backgroundColor: Colors.red,
             ),
           );
-          showAuthDialog(context, "Error",
+          showMessageDialog(context, "Error",
               "Weak internet connection or choose another model");
         }
         _finishGeneration(revision);
@@ -299,7 +299,7 @@ class AiGenerationProvider extends ChangeNotifier {
             backgroundColor: Colors.red,
           ),
         );
-        showAuthDialog(
+        showMessageDialog(
             context,
             type: "error",
             "Error",
@@ -406,7 +406,7 @@ class AiGenerationProvider extends ChangeNotifier {
                       ],
                       onPressed: () {
                         Navigator.pop(context);
-                        CreateSetBottomModal(
+                        showQuizSetFormSheet(
                           context: context,
                           buttonName: 'Save',
                           isCreate: true,
@@ -427,7 +427,7 @@ class AiGenerationProvider extends ChangeNotifier {
                             await InternetConnection().hasInternetAccess;
                         if (!context.mounted) return;
                         if (!isConnected && !isFetchData) {
-                          showAuthDialog(
+                          showMessageDialog(
                               context,
                               type: "error",
                               "Error",
@@ -451,7 +451,7 @@ class AiGenerationProvider extends ChangeNotifier {
                             }),
                           );
                         } else {
-                          showAuthDialog(
+                          showMessageDialog(
                               context,
                               type: "error",
                               "Error",
@@ -472,7 +472,7 @@ class AiGenerationProvider extends ChangeNotifier {
                             await InternetConnection().hasInternetAccess;
                         if (!context.mounted) return;
                         if (!isConnected && !isFetchData) {
-                          showAuthDialog(
+                          showMessageDialog(
                               context,
                               type: "error",
                               "Error",
@@ -500,7 +500,7 @@ class AiGenerationProvider extends ChangeNotifier {
                             },
                           );
                         } else {
-                          showAuthDialog(
+                          showMessageDialog(
                               context,
                               type: "error",
                               "Error",
@@ -521,7 +521,7 @@ class AiGenerationProvider extends ChangeNotifier {
                             await InternetConnection().hasInternetAccess;
                         if (!context.mounted) return;
                         if (!isConnected && !isFetchData) {
-                          showAuthDialog(
+                          showMessageDialog(
                               context,
                               type: "error",
                               "Error",
@@ -552,7 +552,7 @@ class AiGenerationProvider extends ChangeNotifier {
                             },
                           );
                         } else {
-                          showAuthDialog(
+                          showMessageDialog(
                               context,
                               type: "error",
                               "Error",
@@ -681,7 +681,7 @@ bool handleExtractedTextError(BuildContext context, String extractedText) {
 
   if (errorMessages.containsKey(extractedText)) {
     Navigator.pop(context);
-    showAuthDialog(
+    showMessageDialog(
         type: "warning",
         context,
         "warning",
