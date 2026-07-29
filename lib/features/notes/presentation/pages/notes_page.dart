@@ -5,8 +5,8 @@ import 'package:flashi/core/design_system/responsive_content.dart';
 import 'package:flashi/core/state/sort_provider.dart';
 import 'package:flashi/features/notes/application/notes_provider.dart';
 import 'package:flashi/features/notes/presentation/pages/note_editor_page.dart';
-import 'package:flashi/shared/widgets/core/reusable_notes_summary_block_core.dart';
-import 'package:flashi/shared/widgets/core/reusable_notes_summary_tile_core.dart';
+import 'package:flashi/shared/widgets/content_summary_card.dart';
+import 'package:flashi/shared/widgets/content_summary_tile.dart';
 import 'package:flashi/core/ads/ad_manager.dart';
 import 'package:flashi/features/settings/presentation/dialogs/theme_dialog.dart';
 import 'package:flashi/shared/widgets/empty_state_widgets.dart';
@@ -230,7 +230,7 @@ class _NoteCard extends StatelessWidget {
     void onDelete() => provider.deleteNoteByTitle(note['title']);
 
     if (useList) {
-      return ReusableNotesSummaryTileCore(
+      return ContentSummaryTile(
         isNote: true,
         title: note['title'],
         content: note['content'],
@@ -244,7 +244,7 @@ class _NoteCard extends StatelessWidget {
       );
     }
 
-    return ReusableNotesSummaryBlockCore(
+    return ContentSummaryCard(
       isNote: true,
       title: note['title'],
       content: note['content'],

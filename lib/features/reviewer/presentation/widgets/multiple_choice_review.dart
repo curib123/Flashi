@@ -3,7 +3,7 @@ import 'package:flashi/core/ads/ad_manager.dart';
 import 'package:flashi/core/ads/ad_unit_id.dart';
 import 'package:flashi/shared/widgets/highlighted_text.dart';
 import 'package:flutter/material.dart';
-import 'package:flashi/shared/widgets/core/reviewer_widgets_core/multiple_choice_core.dart';
+import 'package:flashi/features/reviewer/presentation/widgets/multiple_choice_card.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 class MultipleChoiceReview extends StatefulWidget {
@@ -214,7 +214,7 @@ class _MultipleChoiceReviewState extends State<MultipleChoiceReview> {
         final correctAnswer = card['answer'] as String;
         final options = _shuffledOptions[index];
 
-        return MultipleChoiceCore(
+        return MultipleChoiceCard(
           timer: 'None', // Removed timer
           totalScore: widget.cards.length.toString(),
           score: _score.toString(),

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class ReusableSearchBarCore extends StatelessWidget {
+class AppSearchField extends StatelessWidget {
   final ColorScheme colorScheme;
   final Function(String)? onChanged;
   final String hintText;
   final TextEditingController controller;
-  const ReusableSearchBarCore({
+  const AppSearchField({
     super.key,
     required this.colorScheme,
     required this.hintText,

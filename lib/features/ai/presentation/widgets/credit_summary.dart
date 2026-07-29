@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-class ReusableCreditsInfoCore extends StatelessWidget {
+class CreditSummary extends StatelessWidget {
   final int credits;
   final ColorScheme colorScheme;
 
-  const ReusableCreditsInfoCore({
+  const CreditSummary({
     Key? key,
     required this.credits,
     required this.colorScheme,

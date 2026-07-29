@@ -3,7 +3,7 @@ import 'package:flashi/core/ads/ad_unit_id.dart';
 import 'package:flashi/shared/widgets/highlighted_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:flashi/shared/widgets/core/reviewer_widgets_core/text_to_speech_card_core.dart';
+import 'package:flashi/features/reviewer/presentation/widgets/text_to_speech_card.dart';
 
 class TextToSpeechReview extends StatefulWidget {
   final String reviewer;
@@ -110,7 +110,7 @@ class _TextToSpeechReviewState extends State<TextToSpeechReview> {
             },
             itemBuilder: (context, index) {
               final card = widget.cards[index];
-              return TextToSpeechCardCore(
+              return TextToSpeechCard(
                 question: highlightKeywords(
                     context: context,
                     keyword: card['keyword'],

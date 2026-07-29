@@ -1,5 +1,5 @@
 import 'package:flashi/features/quiz/presentation/widgets/create_quiz_set_actions.dart';
-import 'package:flashi/shared/widgets/core/reusable_textfield_core.dart';
+import 'package:flashi/shared/widgets/app_text_field.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -58,14 +58,14 @@ void showQuizCardFormSheet(
                   ),
                   const SizedBox(height: 30),
                   // TextField for Set Name
-                  ReusableTextfieldCore(
+                  AppTextField(
                     isHideName: false,
                     name: "Question",
                     controller: quizProvider.questionController,
                   ),
                   const SizedBox(height: 20),
                   // TextField for Description
-                  ReusableTextfieldCore(
+                  AppTextField(
                     isHideName: false,
                     name: "Answer",
                     controller: quizProvider.answerController,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class ReusableSetCore extends StatelessWidget {
+class QuizSetCard extends StatelessWidget {
   final String name;
   final String description;
   final int numberOfQuiz;
@@ -17,7 +17,7 @@ class ReusableSetCore extends StatelessWidget {
   final DateTime timestamp;
   final bool isFavorate;
 
-  const ReusableSetCore({
+  const QuizSetCard({
     super.key,
     required this.name,
     required this.description,

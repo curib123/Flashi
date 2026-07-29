@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
-class FlipCardCore extends StatefulWidget {
+class Flashcard extends StatefulWidget {
   final Widget question;
   final String answer;
   final FlipDirection flipDirection;
   final VoidCallback onEdit;
 
-  const FlipCardCore({
+  const Flashcard({
     Key? key,
     required this.question,
     required this.answer,
@@ -17,10 +17,10 @@ class FlipCardCore extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _FlipCardCoreState createState() => _FlipCardCoreState();
+  _FlashcardState createState() => _FlashcardState();
 }
 
-class _FlipCardCoreState extends State<FlipCardCore> {
+class _FlashcardState extends State<Flashcard> {
   late FlutterTts _flutterTts;
 
   @override

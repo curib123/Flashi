@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:flashi/shared/widgets/highlighted_text.dart';
 
-class ReusableCardCore extends StatelessWidget {
+class QuizCard extends StatelessWidget {
   final String question;
   final String keyword;
   final String answer;
@@ -16,7 +16,7 @@ class ReusableCardCore extends StatelessWidget {
   final Function() onRemoveKeyword;
   final FlutterTts flutterTts = FlutterTts();
 
-  ReusableCardCore({
+  QuizCard({
     Key? key,
     required this.question,
     required this.answer,

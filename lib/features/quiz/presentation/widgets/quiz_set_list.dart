@@ -1,5 +1,5 @@
 import 'package:flashi/features/quiz/presentation/pages/quiz_cards_page.dart';
-import 'package:flashi/shared/widgets/core/reusable_set_core.dart';
+import 'package:flashi/features/quiz/presentation/widgets/quiz_set_card.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flashi/shared/dialogs/message_dialog.dart';
 import 'package:flashi/shared/dialogs/delete_confirmation_dialog.dart';
@@ -62,7 +62,7 @@ class QuizSetList extends StatelessWidget {
                         curve: Curves.easeInOutCubicEmphasized,
                         verticalOffset: 100.0,
                         child: FadeInAnimation(
-                          child: ReusableSetCore(
+                          child: QuizSetCard(
                             name: name,
                             description: description,
                             numberOfQuiz: cards.length,

@@ -16,7 +16,7 @@ import 'package:flashi/features/history/application/history_provider.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flashi/features/settings/presentation/pages/settings_page.dart';
 import 'package:flashi/features/quiz/presentation/pages/quiz_sets_page.dart';
-import 'package:flashi/shared/widgets/core/reusable_search_bar_core.dart';
+import 'package:flashi/shared/widgets/app_search_field.dart';
 import 'package:flashi/features/quiz/presentation/widgets/quiz_set_list.dart';
 import 'package:flashi/core/ads/ad_manager.dart';
 import 'package:flashi/core/ads/ad_unit_id.dart';
@@ -184,7 +184,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     AppSurface(
                       child: Column(
                         children: [
-                          ReusableSearchBarCore(
+                          AppSearchField(
                             colorScheme: Theme.of(context).colorScheme,
                             hintText: 'Search quiz sets',
                             onChanged: quiz.updateSearchQuery,

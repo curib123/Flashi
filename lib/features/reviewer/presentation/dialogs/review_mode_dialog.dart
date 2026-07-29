@@ -1,5 +1,5 @@
 import 'package:flashi/features/reviewer/presentation/pages/reviewer_page.dart';
-import 'package:flashi/shared/widgets/core/reusable_reviewer_card_core.dart';
+import 'package:flashi/features/reviewer/presentation/widgets/review_mode_card.dart';
 import 'package:flutter/material.dart';
 
 void showReviewModeDialog({
@@ -189,7 +189,7 @@ class _ReviewerSelectionScrollView extends StatelessWidget {
                       opacity: value,
                       child: Transform.translate(
                         offset: Offset(0, (1 - value) * 20),
-                        child: ReusableReviewerCardCore(
+                        child: ReviewModeCard(
                           iconData: reviewer['iconData'] ?? Icons.help,
                           title: reviewer['title'] ?? 'No Title',
                           subtitle: reviewer['subtitle'] ?? 'No Subtitle',

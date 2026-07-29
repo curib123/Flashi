@@ -1,4 +1,4 @@
-import 'package:flashi/shared/widgets/core/reusable_btn_core.dart';
+import 'package:flashi/shared/widgets/app_button.dart';
 import 'package:flutter/material.dart';
 
 class CreateQuizSetActions extends StatelessWidget {
@@ -15,7 +15,7 @@ class CreateQuizSetActions extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        ReusableBtnCore(
+        AppButton(
           name: buttonName,
           color: colorScheme.primary,
           icon: Icons.save,
@@ -24,7 +24,7 @@ class CreateQuizSetActions extends StatelessWidget {
         const SizedBox(
           width: 10,
         ),
-        ReusableBtnCore(
+        AppButton(
           name: "Cancel",
           color: colorScheme.secondary,
           icon: Icons.cancel,

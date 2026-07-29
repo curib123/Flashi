@@ -1,4 +1,4 @@
-import 'package:flashi/shared/widgets/core/reviewer_widgets_core/flip_card_core.dart';
+import 'package:flashi/features/reviewer/presentation/widgets/flashcard.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flashi/features/reviewer/application/reviewer_settings_provider.dart';
 import 'package:flashi/core/ads/ad_manager.dart';
@@ -78,7 +78,7 @@ class _FlashcardReviewState extends State<FlashcardReview> {
                   Map<String, dynamic> card =
                       Map<String, dynamic>.from(widget.cards[index]);
 
-                  return FlipCardCore(
+                  return Flashcard(
                     flipDirection:
                         reviewerSettingsProvider.flashCardFlippingDirection,
                     question: highlightKeywords(

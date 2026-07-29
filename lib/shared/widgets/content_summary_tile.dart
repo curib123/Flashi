@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class ReusableNotesSummaryTileCore extends StatelessWidget {
+class ContentSummaryTile extends StatelessWidget {
   final String title;
   final String content;
   final bool isNote;
@@ -13,7 +13,7 @@ class ReusableNotesSummaryTileCore extends StatelessWidget {
   final VoidCallback onDelete;
   final isHistoryPage;
 
-  ReusableNotesSummaryTileCore({
+  ContentSummaryTile({
     required this.title,
     required this.content,
     required this.timestamp,

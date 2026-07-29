@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class MultipleChoiceCore extends StatefulWidget {
+class MultipleChoiceCard extends StatefulWidget {
   final Widget question;
   final String answer;
   final String optionA;
@@ -12,7 +12,7 @@ class MultipleChoiceCore extends StatefulWidget {
   final String totalScore;
   final ValueChanged<String> onAnswerSelected;
 
-  const MultipleChoiceCore({
+  const MultipleChoiceCard({
     super.key,
     required this.question,
     required this.optionA,
@@ -27,10 +27,10 @@ class MultipleChoiceCore extends StatefulWidget {
   });
 
   @override
-  State<MultipleChoiceCore> createState() => _MultipleChoiceCoreState();
+  State<MultipleChoiceCard> createState() => _MultipleChoiceCardState();
 }
 
-class _MultipleChoiceCoreState extends State<MultipleChoiceCore> {
+class _MultipleChoiceCardState extends State<MultipleChoiceCard> {
   String? selectedOption;
   bool hasAnswered = false;
 

@@ -1,16 +1,14 @@
 // Dot Waving Animation Widget
 import 'package:flutter/material.dart';
 
-class ReusableTypingAnimationCore extends StatefulWidget {
-  const ReusableTypingAnimationCore({super.key});
+class TypingIndicator extends StatefulWidget {
+  const TypingIndicator({super.key});
 
   @override
-  _ReusableTypingAnimationCoreState createState() =>
-      _ReusableTypingAnimationCoreState();
+  _TypingIndicatorState createState() => _TypingIndicatorState();
 }
 
-class _ReusableTypingAnimationCoreState
-    extends State<ReusableTypingAnimationCore>
+class _TypingIndicatorState extends State<TypingIndicator>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 

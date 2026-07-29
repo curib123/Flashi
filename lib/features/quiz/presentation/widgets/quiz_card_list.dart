@@ -1,4 +1,4 @@
-import 'package:flashi/shared/widgets/core/reusable_card_core.dart';
+import 'package:flashi/features/quiz/presentation/widgets/quiz_card.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -54,7 +54,7 @@ class QuizCardList extends StatelessWidget {
       itemBuilder: (context, index) {
         final quizSet = quizSets[index];
 
-        return ReusableCardCore(
+        return QuizCard(
           isUpdating: quizSet['isUpdating'] ?? false,
           question: quizSet['question'] ?? 'No question provided',
           keyword: quizSet['keyword'] ?? '',

@@ -1,4 +1,4 @@
-import 'package:flashi/shared/widgets/core/reusable_search_bar_core.dart';
+import 'package:flashi/shared/widgets/app_search_field.dart';
 import 'package:flashi/features/quiz/presentation/widgets/create_quiz_set_button.dart';
 import 'package:flashi/features/quiz/presentation/widgets/favorites_button.dart';
 import 'package:flashi/features/quiz/presentation/widgets/quiz_import_button.dart';
@@ -89,7 +89,7 @@ class QuizSetsPage extends StatelessWidget {
                   onShowReviewLink: () {},
                 ),
                 adManager.getFifthBannerAdWidget(),
-                ReusableSearchBarCore(
+                AppSearchField(
                   colorScheme: colorScheme,
                   hintText: 'Search Quiz Set ',
                   onChanged: (value) {

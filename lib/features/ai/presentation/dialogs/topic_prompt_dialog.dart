@@ -1,4 +1,4 @@
-import 'package:flashi/shared/widgets/core/reusable_credits_info_core.dart';
+import 'package:flashi/features/ai/presentation/widgets/credit_summary.dart';
 import 'package:flashi/features/ai/application/ai_credit_provider.dart';
 import 'package:flashi/features/ai/application/ai_generation_provider.dart';
 import 'package:flashi/features/ai/application/generation_config_provider.dart';
@@ -85,7 +85,7 @@ void showTopicDialog(BuildContext context, {required Function()? onTap}) {
                   builder: (context, aiCreditProvider, _) {
                     return Column(
                       children: [
-                        ReusableCreditsInfoCore(
+                        CreditSummary(
                             credits: aiCreditProvider.credits,
                             colorScheme: colorScheme),
                         const SizedBox(height: 20),

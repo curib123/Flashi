@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class ReusableNotesSummaryBlockCore extends StatelessWidget {
+class ContentSummaryCard extends StatelessWidget {
   final String title;
   final String content;
   final bool isNote;
@@ -12,7 +12,7 @@ class ReusableNotesSummaryBlockCore extends StatelessWidget {
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
-  ReusableNotesSummaryBlockCore({
+  ContentSummaryCard({
     required this.title,
     required this.content,
     required this.timestamp,

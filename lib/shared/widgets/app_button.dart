@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class ReusableBtnCore extends StatelessWidget {
+class AppButton extends StatelessWidget {
   final Function()? onTap;
   final String name;
   final Color color;
   final IconData icon;
 
-  const ReusableBtnCore({
+  const AppButton({
     super.key,
     this.onTap,
     required this.name,

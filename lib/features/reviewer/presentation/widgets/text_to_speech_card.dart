@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-class TextToSpeechCardCore extends StatelessWidget {
+class TextToSpeechCard extends StatelessWidget {
   final Widget question;
   final String answer;
 
-  const TextToSpeechCardCore({
+  const TextToSpeechCard({
     super.key,
     required this.question,
     required this.answer,

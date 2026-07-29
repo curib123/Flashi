@@ -3,7 +3,7 @@ import 'package:flashi/core/design_system/app_breakpoints.dart';
 import 'package:flashi/core/design_system/app_radii.dart';
 import 'package:flashi/core/design_system/app_spacing.dart';
 import 'package:flashi/core/design_system/responsive_content.dart';
-import 'package:flashi/shared/widgets/core/reusable_typing_animation_core.dart';
+import 'package:flashi/features/chat/presentation/widgets/typing_indicator.dart';
 import 'package:flashi/features/chat/application/chat_provider.dart';
 import 'package:flashi/core/ads/ad_manager.dart';
 import 'package:flutter/material.dart';
@@ -187,7 +187,7 @@ class _TypingBubble extends StatelessWidget {
           color: Theme.of(context).colorScheme.surfaceContainerHigh,
           borderRadius: AppRadii.large,
         ),
-        child: const ReusableTypingAnimationCore(),
+        child: const TypingIndicator(),
       ),
     );
   }

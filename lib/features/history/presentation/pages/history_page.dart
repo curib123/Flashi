@@ -3,7 +3,7 @@ import 'package:flashi/core/design_system/app_spacing.dart';
 import 'package:flashi/core/design_system/responsive_content.dart';
 import 'package:flashi/features/history/application/history_provider.dart';
 import 'package:flashi/features/history/presentation/pages/history_editor_page.dart';
-import 'package:flashi/shared/widgets/core/reusable_notes_summary_tile_core.dart';
+import 'package:flashi/shared/widgets/content_summary_tile.dart';
 import 'package:flashi/core/ads/ad_manager.dart';
 import 'package:flashi/shared/widgets/empty_state_widgets.dart';
 import 'package:flutter/material.dart';
@@ -92,7 +92,7 @@ class _HistoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ReusableNotesSummaryTileCore(
+    return ContentSummaryTile(
       isNote: true,
       title: item['title'],
       content: item['content'],

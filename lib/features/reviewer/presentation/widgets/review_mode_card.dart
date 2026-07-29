@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class ReusableReviewerCardCore extends StatelessWidget {
+class ReviewModeCard extends StatelessWidget {
   final IconData iconData;
   final String title;
   final String subtitle;
   final VoidCallback onTap;
 
-  const ReusableReviewerCardCore(
+  const ReviewModeCard(
       {super.key,
       required this.iconData,
       required this.title,

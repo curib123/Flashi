@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class ReusableTextfieldCore extends StatelessWidget {
+class AppTextField extends StatelessWidget {
   final String name;
   final bool isHideName;
   final String? hintText;
   final TextEditingController? controller;
 
-  const ReusableTextfieldCore({
+  const AppTextField({
     super.key,
     required this.name,
     this.hintText,
