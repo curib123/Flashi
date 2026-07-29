@@ -4,7 +4,7 @@ import 'package:flashi/core/design_system/app_spacing.dart';
 import 'package:flashi/core/design_system/responsive_content.dart';
 import 'package:flashi/core/state/sort_provider.dart';
 import 'package:flashi/features/notes/application/notes_provider.dart';
-import 'package:flashi/presentation/widget/components/create_note_screen.dart';
+import 'package:flashi/features/notes/presentation/pages/note_editor_page.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_notes_summary_block_core.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_notes_summary_tile_core.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
@@ -141,7 +141,7 @@ class _NotesPageState extends State<NotesPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => CreateNotesPage(
+        builder: (_) => NoteEditorPage(
           isCreate: true,
           title: '',
           isRead: false,
@@ -263,7 +263,7 @@ class _NoteCard extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => CreateNotesPage(
+        builder: (_) => NoteEditorPage(
           isCreate: false,
           title: note['title'],
           isRead: isRead,
