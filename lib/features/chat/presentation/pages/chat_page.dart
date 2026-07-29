@@ -131,10 +131,7 @@ class _ChatPageState extends State<ChatPage> {
 
     _scrollToBottom();
     final chatProvider = context.read<ChatProvider>();
-    chatProvider.setTyping(true);
-    chatProvider.sendMessage(message).then((_) {
-      chatProvider.setTyping(false);
-    });
+    chatProvider.sendMessage(message);
     _messageController.clear();
   }
 }

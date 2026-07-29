@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flashi/util/helpers/classes/api/ai/core/chatbot_api.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -12,8 +14,11 @@ class ChatProvider extends ChangeNotifier {
   ];
 
   bool _isTyping = false;
+  int _pendingResponses = 0;
 
-  List<Map<String, String>> get messages => List.unmodifiable(_messages);
+  List<Map<String, String>> get messages => UnmodifiableListView(
+        _messages.map(UnmodifiableMapView.new),
+      );
   bool get isTyping => _isTyping;
 
   ChatProvider() {
@@ -55,17 +60,19 @@ class ChatProvider extends ChangeNotifier {
   }
 
   Future<void> sendMessage(String text) async {
-    if (text.trim().isEmpty) return; // Prevent sending empty messages
+    final normalizedText = text.trim();
+    if (normalizedText.isEmpty) return;
 
-    _messages.add({'text': text, 'sender': 'user'});
+    _messages.add({'text': normalizedText, 'sender': 'user'});
 
     // Keep the chat limited to 20 messages, removing the oldest 5 if needed
     if (_messages.length > 20) {
       _messages.removeRange(0, 5);
     }
 
-    notifyListeners();
-    save(); // Save chat after adding user message
+    _pendingResponses++;
+    setTyping(true);
+    save();
 
     try {
       final aiResponse = await ChatbotApi.sendMessage(_messages);
@@ -88,7 +95,9 @@ class ChatProvider extends ChangeNotifier {
       }
 
       save();
+    } finally {
+      _pendingResponses--;
+      setTyping(_pendingResponses > 0);
     }
-    notifyListeners();
   }
 }

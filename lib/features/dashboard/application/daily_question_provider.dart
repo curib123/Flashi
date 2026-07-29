@@ -1,71 +1,75 @@
-import 'package:flashi/features/ai/application/generation_config_provider.dart';
+import 'dart:async';
+import 'dart:collection';
+
 import 'package:flashi/util/helpers/classes/api/Trivia/fun_fact_generator.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-class DailyQuestionProvider with ChangeNotifier {
-  late final Box _chatBox;
-  List<Map<String, String>> _funFacts = [];
-  bool _isAlreadyShow = false;
-
-  List<Map<String, String>> get funFacts => List.unmodifiable(_funFacts);
-  bool get isAlreadyShow => _isAlreadyShow;
-
-  DailyQuestionProvider() {
-    _chatBox = Hive.box(
-        'DailyQuestionProvider'); // Ensure the box is opened before using
-    loadFunFacts(); // Load fun facts on initialization
+class DailyQuestionProvider extends ChangeNotifier {
+  DailyQuestionProvider() : _box = Hive.box<dynamic>('DailyQuestionProvider') {
+    _load();
   }
 
-  // ✅ Show/hide fun facts
+  final Box<dynamic> _box;
+  List<Map<String, String>> _funFacts = [];
+  bool _isAlreadyShown = false;
+  bool _isDisposed = false;
+  Timer? _updateTimer;
+
+  List<Map<String, String>> get funFacts => UnmodifiableListView(
+        _funFacts.map(UnmodifiableMapView.new),
+      );
+  bool get isAlreadyShow => _isAlreadyShown;
+
   void toggleFunFacts() {
-    _isAlreadyShow = true;
+    if (_isAlreadyShown) return;
+    _isAlreadyShown = true;
     notifyListeners();
   }
 
-  // ✅ Remove a specific fun fact by index
   void removeFunFactAt(int index) {
-    if (index >= 0 && index < _funFacts.length) {
-      _funFacts.removeAt(index);
-      saveFunFacts(); // Update storage
-      notifyListeners();
-    }
+    if (index < 0 || index >= _funFacts.length) return;
+    _funFacts.removeAt(index);
+    _save();
+    notifyListeners();
   }
 
-  // ✅ Generate and save fun facts to Hive
-  Future<void> updateFunFacts(
-      GenerationConfigProvider fetchDataFromJsonProvider) async {
-    List<Map<String, String>> facts = await TriviaGenerator.fetchTrivia();
+  Future<void> updateFunFacts() async {
+    final facts = await TriviaGenerator.fetchTrivia();
+    if (_isDisposed || facts.isEmpty) return;
 
-    Future.delayed(const Duration(seconds: 5), () {
-      if (facts.isNotEmpty) {
-        _funFacts = List<Map<String, String>>.from(facts);
-        saveFunFacts();
-        notifyListeners();
-      }
+    _updateTimer?.cancel();
+    _updateTimer = Timer(const Duration(seconds: 5), () {
+      if (_isDisposed) return;
+      _funFacts = facts.map(Map<String, String>.from).toList();
+      _save();
+      notifyListeners();
     });
   }
 
-  // ✅ Save fun facts to Hive with proper type conversion
-  void saveFunFacts() {
-    _chatBox.put('DailyQuestionProvider',
-        _funFacts.map((e) => e.cast<String, dynamic>()).toList());
+  void _save() {
+    _box.put(
+      'DailyQuestionProvider',
+      _funFacts.map((item) => item.cast<String, dynamic>()).toList(),
+    );
   }
 
-  // ✅ Load fun facts from Hive safely
-  void loadFunFacts() {
-    final storedData = _chatBox.get('DailyQuestionProvider', defaultValue: []);
-
-    if (storedData is List) {
-      _funFacts = storedData
-          .whereType<Map<dynamic, dynamic>>() // Ensure only maps are processed
-          .map((e) => Map<String, String>.from(e)) // Convert to correct type
-          .toList();
-    } else {
-      _funFacts = [];
-    }
-    notifyListeners();
+  void _load() {
+    final storedData = _box.get(
+      'DailyQuestionProvider',
+      defaultValue: const [],
+    );
+    if (storedData is! List) return;
+    _funFacts = storedData
+        .whereType<Map<dynamic, dynamic>>()
+        .map((item) => Map<String, String>.from(item))
+        .toList();
   }
 
-  // ✅ Properly dispose of Hive box when provider is destroyed
+  @override
+  void dispose() {
+    _isDisposed = true;
+    _updateTimer?.cancel();
+    super.dispose();
+  }
 }

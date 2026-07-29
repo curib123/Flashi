@@ -53,7 +53,7 @@ class _DashboardPageState extends State<DashboardPage> {
     config.fetchLatestVersion();
     generation.fetchLatestVersion();
     updates.checkAppVersion(context);
-    dailyQuestions.updateFunFacts(config);
+    dailyQuestions.updateFunFacts();
 
     Future.delayed(const Duration(seconds: 5), () {
       if (!mounted) return;
