@@ -1,62 +1,45 @@
 import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 
 class GenerationConfigProvider extends ChangeNotifier {
-  final Box<dynamic> _configurationBox = Hive.box('fetchDataFromJson');
+  GenerationConfigProvider({
+    Box<dynamic>? box,
+    http.Client? client,
+  })  : _box = box ?? Hive.box<dynamic>('fetchDataFromJson'),
+        _client = client ?? http.Client(),
+        _ownsClient = client == null {
+    _load();
+  }
+
+  static final Uri _configurationUri =
+      Uri.parse('https://curib123.github.io/flashi_/flashi.json');
+
+  final Box<dynamic> _box;
+  final http.Client _client;
+  final bool _ownsClient;
 
   String _model = 'mistral-small-latest';
   int _maxLength = 10;
   int _creditsPerLength = 0;
   String _quizQuestionType = 'Identification';
-  List<String> _models = [];
-  List<String> _quizQuestionTypes = [];
-  List<int> _maxLengths = [];
+  List<String> _models = const [];
+  List<String> _quizQuestionTypes = const [];
+  List<int> _maxLengths = const [];
+  bool _isLoading = false;
+  Object? _lastError;
 
   String get model => _model;
   int get maxLength => _maxLength;
   int get creditsPerLength => _creditsPerLength;
   String get quizQuestionType => _quizQuestionType;
-  List<String> get listOfModels => List.unmodifiable(_models);
-  List<String> get listOfQuizQuestionTypes =>
-      List.unmodifiable(_quizQuestionTypes);
-  List<int> get listOfMaxLength => List.unmodifiable(_maxLengths);
-
-  GenerationConfigProvider() {
-    hiveLoad();
-  }
-
-  /// Load data from Hive
-  void hiveLoad() {
-    _model = _configurationBox.get('model', defaultValue: _model);
-    _maxLength = _configurationBox.get('maxLength', defaultValue: _maxLength);
-    _quizQuestionType = _configurationBox.get(
-      'quiz_question_type',
-      defaultValue: _quizQuestionType,
-    );
-
-    _models = List<String>.from(
-      _configurationBox.get('listOfModels', defaultValue: []),
-    );
-    _quizQuestionTypes = List<String>.from(
-      _configurationBox.get('listOfQuizQuestionTypes', defaultValue: []),
-    );
-    _maxLengths = List<int>.from(
-      _configurationBox.get('listOfMaxLength', defaultValue: []),
-    );
-  }
-
-  /// Save data to Hive
-  void hiveSave() {
-    _configurationBox.put('model', _model);
-    _configurationBox.put('maxLength', _maxLength);
-    _configurationBox.put('quiz_question_type', _quizQuestionType);
-
-    _configurationBox.put('listOfModels', _models);
-    _configurationBox.put('listOfQuizQuestionTypes', _quizQuestionTypes);
-    _configurationBox.put('listOfMaxLength', _maxLengths);
-  }
+  List<String> get listOfModels => _models;
+  List<String> get listOfQuizQuestionTypes => _quizQuestionTypes;
+  List<int> get listOfMaxLength => _maxLengths;
+  bool get isLoading => _isLoading;
+  Object? get lastError => _lastError;
 
   void updateCreditsPerLength(int value) {
     if (_creditsPerLength == value) return;
@@ -64,48 +47,97 @@ class GenerationConfigProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Update functions with Hive saving
-  void updateModel(String newModel) {
-    if (_model == newModel) return;
-    _model = newModel;
-    hiveSave();
-    notifyListeners();
+  void updateModel(String model) {
+    if (_model == model) return;
+    _model = model;
+    _persistAndNotify();
   }
 
-  void updateQuizQuestionType(String newValue) {
-    if (_quizQuestionType == newValue) return;
-    _quizQuestionType = newValue;
-    hiveSave();
-    notifyListeners();
+  void updateQuizQuestionType(String type) {
+    if (_quizQuestionType == type) return;
+    _quizQuestionType = type;
+    _persistAndNotify();
   }
 
-  void updateListOfMaxLength(int newValue) {
-    if (_maxLength == newValue) return;
-    _maxLength = newValue;
-    hiveSave();
-    notifyListeners();
+  void updateListOfMaxLength(int length) {
+    if (_maxLength == length) return;
+    _maxLength = length;
+    _persistAndNotify();
   }
 
-  /// Fetch latest version from API
   Future<void> fetchLatestVersion() async {
-    final response = await http
-        .get(Uri.parse('https://curib123.github.io/flashi_/flashi.json'));
+    if (_isLoading) return;
+    _isLoading = true;
+    _lastError = null;
+    notifyListeners();
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-
-      _models = List<String>.from(
-        data['ai_models'].map((model) => model['model_name']),
+    try {
+      final response = await _client.get(_configurationUri);
+      if (response.statusCode != 200) {
+        throw http.ClientException(
+          'Unable to load generation configuration (${response.statusCode})',
+          _configurationUri,
+        );
+      }
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
+      _models = List<String>.unmodifiable(
+        (data['ai_models'] as List)
+            .map((model) => (model as Map)['model_name'].toString()),
       );
-      _quizQuestionTypes = List<String>.from(
-        data['listOfQuizQuestionTypes'].map((type) => type['name']),
+      _quizQuestionTypes = List<String>.unmodifiable(
+        (data['listOfQuizQuestionTypes'] as List)
+            .map((type) => (type as Map)['name'].toString()),
       );
-      _maxLengths = List<int>.from(data['ListOfMaxLength']);
-
-      hiveSave(); // Save the fetched data to Hive
+      _maxLengths = List<int>.unmodifiable(
+        (data['ListOfMaxLength'] as List).map((value) => value as int),
+      );
+      _persist();
+    } catch (error) {
+      _lastError = error;
+    } finally {
+      _isLoading = false;
       notifyListeners();
-    } else {
-      debugPrint('Failed to load generation configuration');
     }
+  }
+
+  void _load() {
+    _model = _box.get('model', defaultValue: _model) as String;
+    _maxLength = _box.get('maxLength', defaultValue: _maxLength) as int;
+    _quizQuestionType = _box.get(
+      'quiz_question_type',
+      defaultValue: _quizQuestionType,
+    ) as String;
+    _models = List<String>.unmodifiable(
+      List<String>.from(_box.get('listOfModels', defaultValue: const [])),
+    );
+    _quizQuestionTypes = List<String>.unmodifiable(
+      List<String>.from(
+        _box.get('listOfQuizQuestionTypes', defaultValue: const []),
+      ),
+    );
+    _maxLengths = List<int>.unmodifiable(
+      List<int>.from(_box.get('listOfMaxLength', defaultValue: const [])),
+    );
+  }
+
+  void _persistAndNotify() {
+    _persist();
+    notifyListeners();
+  }
+
+  void _persist() {
+    _box
+      ..put('model', _model)
+      ..put('maxLength', _maxLength)
+      ..put('quiz_question_type', _quizQuestionType)
+      ..put('listOfModels', _models)
+      ..put('listOfQuizQuestionTypes', _quizQuestionTypes)
+      ..put('listOfMaxLength', _maxLengths);
+  }
+
+  @override
+  void dispose() {
+    if (_ownsClient) _client.close();
+    super.dispose();
   }
 }
