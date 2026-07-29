@@ -365,18 +365,21 @@ class _BrandMark extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    return Container(
-      width: 36,
-      height: 36,
-      decoration: BoxDecoration(
-        color: colorScheme.inverseSurface,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      alignment: Alignment.center,
-      child: Icon(
-        Icons.bolt_rounded,
-        size: 20,
-        color: colorScheme.onInverseSurface,
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(10),
+      child: Container(
+        width: 36,
+        height: 36,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(color: colorScheme.outlineVariant),
+        ),
+        padding: const EdgeInsets.all(2),
+        child: Image.asset(
+          'asset/icon/logo.png',
+          fit: BoxFit.cover,
+          filterQuality: FilterQuality.medium,
+        ),
       ),
     );
   }
