@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flashi/core/ads/ad_manager.dart';
 import 'package:flashi/core/ads/ad_unit_id.dart';
 import 'package:flashi/shared/widgets/highlighted_text.dart';
@@ -27,12 +29,14 @@ class _TextToSpeechReviewState extends State<TextToSpeechReview> {
   bool _isSpeaking = false; // Track if TTS is speaking
   int _currentIndex = 0; // Track current page index
   AdManager adManager = AdManager();
+  Timer? _adPreloadTimer;
+  int _speechRevision = 0;
 
   @override
   void initState() {
     super.initState();
 
-    Future.delayed(const Duration(minutes: 5), () {
+    _adPreloadTimer = Timer(const Duration(minutes: 5), () {
       adManager.loadInterstitialAd(AdUnitId.interstitialAdUnitId);
     });
 
@@ -43,6 +47,8 @@ class _TextToSpeechReviewState extends State<TextToSpeechReview> {
 
   @override
   void dispose() {
+    _speechRevision++;
+    _adPreloadTimer?.cancel();
     _flutterTts.stop(); // Stop TTS when widget is disposed
     _pageController.dispose(); // Dispose PageController
     super.dispose();
@@ -50,6 +56,7 @@ class _TextToSpeechReviewState extends State<TextToSpeechReview> {
 
   Future<void> _speakAndAutoScroll() async {
     if (_isSpeaking) return;
+    final revision = ++_speechRevision;
 
     setState(() {
       _isSpeaking = true;
@@ -62,9 +69,11 @@ class _TextToSpeechReviewState extends State<TextToSpeechReview> {
 
       // Speak the content
       await _flutterTts.speak("Question: $question. Answer: $answer.");
+      if (!mounted || revision != _speechRevision) return;
 
       // Wait for the speech to complete
       await _flutterTts.awaitSpeakCompletion(true);
+      if (!mounted || revision != _speechRevision) return;
 
       // Move to the next page if not on the last one
       if (i < widget.cards.length - 1) {
@@ -78,6 +87,7 @@ class _TextToSpeechReviewState extends State<TextToSpeechReview> {
       }
     }
 
+    if (!mounted || revision != _speechRevision) return;
     setState(() {
       _isSpeaking = false;
     });
@@ -145,22 +155,16 @@ class _TextToSpeechReviewState extends State<TextToSpeechReview> {
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {
-                  // Stop the TTS if it's speaking
                   if (_isSpeaking) {
+                    _speechRevision++;
                     _flutterTts.stop();
-                    _speakAndAutoScroll;
                   }
 
-                  // Reset to the first card and restart the PageView
                   setState(() {
-                    _currentIndex = 0; // Reset the page to the first one
+                    _currentIndex = 0;
+                    _isSpeaking = false;
                   });
-                  _pageController.jumpToPage(0); // Jump to the first card
-
-                  // Reset the text-to-speech state
-                  setState(() {
-                    _isSpeaking = false; // Ensure speaking is not in progress
-                  });
+                  _pageController.jumpToPage(0);
                 },
                 style: ElevatedButton.styleFrom(
                   padding:

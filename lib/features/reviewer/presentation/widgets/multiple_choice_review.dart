@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 import 'package:flashi/core/ads/ad_manager.dart';
 import 'package:flashi/core/ads/ad_unit_id.dart';
@@ -29,6 +30,7 @@ class _MultipleChoiceReviewState extends State<MultipleChoiceReview> {
   late List<List<String>> _shuffledOptions;
   int _score = 0;
   AdManager adManager = AdManager();
+  Timer? _advanceTimer;
 
   @override
   void initState() {
@@ -51,6 +53,7 @@ class _MultipleChoiceReviewState extends State<MultipleChoiceReview> {
 
   @override
   void dispose() {
+    _advanceTimer?.cancel();
     _pageController.dispose();
     super.dispose();
   }
@@ -67,7 +70,9 @@ class _MultipleChoiceReviewState extends State<MultipleChoiceReview> {
       // If it's the last question, show congratulations
       showCongratulationDialog(context);
     } else {
-      Future.delayed(const Duration(seconds: 2), () {
+      _advanceTimer?.cancel();
+      _advanceTimer = Timer(const Duration(seconds: 2), () {
+        if (!mounted) return;
         _pageController.nextPage(
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeIn,

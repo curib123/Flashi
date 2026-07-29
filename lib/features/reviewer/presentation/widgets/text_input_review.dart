@@ -28,6 +28,7 @@ class _TextInputReviewState extends State<TextInputReview> {
   bool _isWrong = false;
   String _correctAnswerShown = '';
   AdManager adManager = AdManager();
+  Timer? _advanceTimer;
 
   @override
   void initState() {
@@ -39,6 +40,7 @@ class _TextInputReviewState extends State<TextInputReview> {
 
   @override
   void dispose() {
+    _advanceTimer?.cancel();
     _pageController.dispose();
     _answerController.dispose();
     super.dispose();
@@ -64,7 +66,9 @@ class _TextInputReviewState extends State<TextInputReview> {
         _correctAnswerShown = 'Correct answer: $correctAnswer';
         _answerController.clear();
         // Wait for 3 seconds then move to the next page if wrong
-        Future.delayed(const Duration(seconds: 3), () {
+        _advanceTimer?.cancel();
+        _advanceTimer = Timer(const Duration(seconds: 3), () {
+          if (!mounted) return;
           _goToNextPage();
         });
       }

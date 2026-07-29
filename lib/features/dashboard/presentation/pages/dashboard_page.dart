@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flashi/app/app_shell.dart';
@@ -39,12 +40,14 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage> {
   final AdManager _adManager = AdManager();
+  Timer? _adPreloadTimer;
+  Timer? _dailyRewardTimer;
 
   @override
   void initState() {
     super.initState();
     _adManager.loadOpenAppAd(AdUnitId.appOpenAdUnitId);
-    Future.delayed(const Duration(minutes: 5), () {
+    _adPreloadTimer = Timer(const Duration(minutes: 5), () {
       _adManager.loadInterstitialAd(AdUnitId.interstitialAdUnitId);
     });
 
@@ -58,7 +61,7 @@ class _DashboardPageState extends State<DashboardPage> {
     _checkForUpdates(updates);
     dailyQuestions.updateFunFacts();
 
-    Future.delayed(const Duration(seconds: 5), () {
+    _dailyRewardTimer = Timer(const Duration(seconds: 5), () {
       if (!mounted) return;
       _showDailyRewards(
         context.read<AiCreditProvider>(),
@@ -124,6 +127,8 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   void dispose() {
+    _adPreloadTimer?.cancel();
+    _dailyRewardTimer?.cancel();
     _adManager.showInterstitialAd();
     super.dispose();
   }

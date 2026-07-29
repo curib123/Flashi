@@ -30,6 +30,7 @@ class _MultipleChoiceReviewState extends State<TimedMultipleChoiceReview> {
   late PageController _pageController;
   late ValueNotifier<int> _timerNotifier;
   late Timer _timer;
+  Timer? _advanceTimer;
   final Random _random = Random();
 
   late List<List<String>> _shuffledOptions;
@@ -70,6 +71,7 @@ class _MultipleChoiceReviewState extends State<TimedMultipleChoiceReview> {
 
   @override
   void dispose() {
+    _advanceTimer?.cancel();
     _timer.cancel();
     _pageController.dispose();
     _timerNotifier.dispose();
@@ -133,7 +135,9 @@ class _MultipleChoiceReviewState extends State<TimedMultipleChoiceReview> {
       // If it's the last question, show congratulations
       showCongratulationDialog(context);
     } else {
-      Future.delayed(const Duration(seconds: 2), () {
+      _advanceTimer?.cancel();
+      _advanceTimer = Timer(const Duration(seconds: 2), () {
+        if (!mounted) return;
         resetTimer();
 
         _pageController.nextPage(

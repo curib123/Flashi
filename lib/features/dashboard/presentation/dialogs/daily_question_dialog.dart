@@ -20,6 +20,8 @@ class _DailyQuestionDialogState extends State<DailyQuestionDialog> {
   bool isAnswered = false;
   String? selectedAnswer;
   Timer? _timer;
+  Timer? _feedbackTimer;
+  Timer? _nextQuestionTimer;
   int timeLeft = 20;
   List<String> choices = [];
 
@@ -42,6 +44,8 @@ class _DailyQuestionDialogState extends State<DailyQuestionDialog> {
   }
 
   void _loadQuestion() {
+    _feedbackTimer?.cancel();
+    _nextQuestionTimer?.cancel();
     setState(() {
       isAnswered = false;
       selectedAnswer = null;
@@ -80,13 +84,15 @@ class _DailyQuestionDialogState extends State<DailyQuestionDialog> {
       _speakText("Correct!");
     } else {
       _speakText("Wrong answer.");
-      Future.delayed(const Duration(seconds: 2), () {
+      _feedbackTimer = Timer(const Duration(seconds: 2), () {
+        if (!mounted) return;
         _speakText(
             "The correct answer is ${questions[currentIndex]["correct_answer"]}");
       });
     }
 
-    Future.delayed(const Duration(seconds: 5), _nextQuestion);
+    _nextQuestionTimer?.cancel();
+    _nextQuestionTimer = Timer(const Duration(seconds: 5), _nextQuestion);
   }
 
   void _nextQuestion() {
@@ -114,6 +120,8 @@ class _DailyQuestionDialogState extends State<DailyQuestionDialog> {
   @override
   void dispose() {
     _timer?.cancel();
+    _feedbackTimer?.cancel();
+    _nextQuestionTimer?.cancel();
     flutterTts.stop();
     super.dispose();
   }
