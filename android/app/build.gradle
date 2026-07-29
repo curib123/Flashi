@@ -37,6 +37,14 @@ android {
         jvmTarget = JavaVersion.VERSION_17
     }
 
+    packaging {
+        resources {
+            // PDFBox depends on Bouncy Castle for standard PDF encryption.
+            // Its post-quantum lookup tables are unrelated to PDF parsing and
+            // otherwise add several megabytes to every release artifact.
+            excludes += ['org/bouncycastle/pqc/**']
+        }
+    }
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
