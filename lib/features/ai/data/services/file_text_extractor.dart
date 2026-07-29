@@ -1,59 +1,35 @@
 import 'dart:io';
-import 'package:device_info_plus/device_info_plus.dart';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_pdf_text/flutter_pdf_text.dart';
 import 'package:docx_to_text/docx_to_text.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class FileTextExtractor {
-  /// Request permissions based on Android version.
-  Future<bool> requestPermissions() async {
-    if (Platform.isAndroid) {
-      final androidInfo = await DeviceInfoPlugin().androidInfo;
-
-      if (androidInfo.version.sdkInt >= 33) {
-        // Android 13+ (Scoped Storage) - No need to request storage permissions
-        return true;
-      } else {
-        // Android 12 and below - Request storage permission
-        PermissionStatus storageStatus = await Permission.storage.request();
-        return storageStatus.isGranted;
-      }
-    }
-
-    // iOS and other platforms don't need permission
-    return true;
-  }
-
   /// Pick a file (PDF or DOCX) and extract text
   static Future<String> pickAndExtractText() async {
-    FileTextExtractor extractor = FileTextExtractor();
-
-    bool hasPermission = await extractor.requestPermissions();
-    if (!hasPermission) {
-      return "Permission denied. Please allow file access.";
-    }
-
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
+    final result = await FilePicker.platform.pickFiles(
+      dialogTitle: 'Choose a PDF or DOCX file',
       type: FileType.custom,
-      allowedExtensions: ['pdf', 'docx'],
+      allowedExtensions: const ['pdf', 'docx'],
     );
 
     if (result == null) return "No file selected";
 
     try {
-      String? filePath = result.files.single.path;
-      if (filePath == null) return "Invalid file";
-
-      File file = File(filePath);
-
-      if (filePath.endsWith(".pdf")) {
+      final selectedFile = result.files.single;
+      final extension = selectedFile.extension?.toLowerCase();
+      final filePath = selectedFile.path;
+      if (extension == 'pdf') {
+        if (filePath == null) return 'The selected PDF could not be opened.';
+        final file = File(filePath);
         PDFDoc pdfDoc = await PDFDoc.fromFile(file);
         return await pdfDoc.text;
-      } else if (filePath.endsWith(".docx")) {
-        final bytes = await file.readAsBytes();
+      } else if (extension == 'docx') {
+        final bytes = selectedFile.bytes ??
+            (filePath == null ? null : await File(filePath).readAsBytes());
+        if (bytes == null) return 'The selected DOCX could not be opened.';
         return docxToText(bytes);
       } else {
         return "Unsupported file format";
@@ -65,11 +41,7 @@ class FileTextExtractor {
 
   /// Pick or capture an image from camera or gallery
   static Future<File?> pickOrCaptureImage(BuildContext context) async {
-    FileTextExtractor extractor = FileTextExtractor();
-    bool hasPermission = await extractor.requestPermissions();
-    if (!hasPermission) return null;
-    if (!context.mounted) return null;
-
+    final extractor = FileTextExtractor();
     final ImagePicker picker = ImagePicker();
     ImageSource? source = await extractor.showImageSourceModal(context);
     if (source == null) return null;

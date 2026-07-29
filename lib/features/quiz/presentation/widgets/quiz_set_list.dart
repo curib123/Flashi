@@ -8,7 +8,6 @@ import 'package:flashi/features/quiz/data/services/quiz_import_export_service.da
 import 'package:flashi/features/quiz/presentation/dialogs/quiz_card_form_sheet.dart';
 import 'package:flashi/features/quiz/presentation/dialogs/quiz_set_form_sheet.dart';
 import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
@@ -20,15 +19,6 @@ class QuizSetList extends StatelessWidget {
     super.key,
     required this.quizSets,
   });
-
-  Future<void> requestPermissions() async {
-    if (!await Permission.storage.isGranted) {
-      await Permission.storage.request();
-    }
-    if (!await Permission.manageExternalStorage.isGranted) {
-      await Permission.manageExternalStorage.request();
-    }
-  }
 
   @override
   Widget build(BuildContext context) {

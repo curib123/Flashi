@@ -26,6 +26,10 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Flashi uses the camera when you choose to capture an image for quiz generation.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Flashi uses selected photos for quiz generation.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
