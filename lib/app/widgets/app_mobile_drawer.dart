@@ -4,6 +4,7 @@ import 'package:flashi/features/history/presentation/pages/history_page.dart';
 import 'package:flashi/features/settings/presentation/pages/settings_page.dart';
 import 'package:flashi/features/quiz/presentation/pages/quiz_sets_page.dart';
 import 'package:flashi/app/state/app_navigation_provider.dart';
+import 'package:flashi/core/config/app_environment.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flashi/core/services/external_link_service.dart';
 import 'package:flashi/features/settings/presentation/dialogs/about_dialog.dart';
@@ -292,7 +293,7 @@ class _NavigationContent extends StatelessWidget {
                 label: 'Privacy',
                 onTap: () => closeBefore(
                   ExternalLinkService(
-                    'https://curib123.github.io/flashi_/privacy_policy.html',
+                    AppEnvironment.privacyPolicyUrl,
                   ).launch,
                 ),
               ),
@@ -300,7 +301,7 @@ class _NavigationContent extends StatelessWidget {
                 label: 'Terms',
                 onTap: () => closeBefore(
                   ExternalLinkService(
-                    'https://curib123.github.io/flashi_/terms%26condition.html',
+                    AppEnvironment.termsUrl,
                   ).launch,
                 ),
               ),

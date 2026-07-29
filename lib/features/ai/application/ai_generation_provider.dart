@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
+import 'package:flashi/core/config/app_environment.dart';
 import 'package:flashi/features/ai/application/ai_credit_provider.dart';
 import 'package:flashi/features/ai/application/generation_config_provider.dart';
 import 'package:flashi/features/history/application/history_provider.dart';
@@ -46,8 +47,8 @@ class AiGenerationProvider extends ChangeNotifier {
 
   Future<void> fetchLatestVersion() async {
     try {
-      final response = await _httpClient
-          .get(Uri.parse('https://curib123.github.io/flashi_/flashi.json'));
+      final response =
+          await _httpClient.get(Uri.parse(AppEnvironment.releaseConfigUrl));
       if (response.statusCode != 200) {
         throw http.ClientException(
           'Maintenance configuration returned ${response.statusCode}.',

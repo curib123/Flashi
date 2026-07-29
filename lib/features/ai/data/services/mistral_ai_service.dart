@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
+import 'package:flashi/core/config/app_environment.dart';
 import 'package:flashi/features/ai/data/services/api_key_storage.dart';
 import 'package:http/http.dart' as http;
 
@@ -28,7 +29,7 @@ class MistralAiService {
 
   static Future<List<Map<String, String>>> processChunkMistral(String textChunk,
       String apiKey, String modelType, String type, int maxLength) async {
-    const String mistralEndpoint = "https://api.mistral.ai/v1/chat/completions";
+    const String mistralEndpoint = AppEnvironment.mistralApiUrl;
 
     String generatePrompt() {
       switch (type) {
@@ -233,7 +234,7 @@ Fake Choice 3: <plausible incorrect answer>
       String modelType,
       String type,
       int maxLength) async {
-    const String mistralEndpoint = "https://api.mistral.ai/v1/chat/completions";
+    const String mistralEndpoint = AppEnvironment.mistralApiUrl;
 
     String generatePrompt() {
       switch (type) {

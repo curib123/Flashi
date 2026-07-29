@@ -1,9 +1,16 @@
+import groovy.json.JsonSlurper
+
 plugins {
     id "com.android.application"
     id "kotlin-android"
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id "dev.flutter.flutter-gradle-plugin"
 }
+
+def environmentFile = rootProject.file("../.env")
+def environment = environmentFile.exists()
+        ? new JsonSlurper().parse(environmentFile)
+        : [:]
 
 def keystoreProperties = new Properties()
 def keystorePropertiesFile = rootProject.file('key.properties')
@@ -36,6 +43,10 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        manifestPlaceholders = [
+                admobApplicationId: environment.ANDROID_ADMOB_APP_ID
+                        ?: "ca-app-pub-3940256099942544~3347511713"
+        ]
     }
 
     android {

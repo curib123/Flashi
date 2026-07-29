@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flashi/core/config/app_environment.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
@@ -14,8 +15,7 @@ class AppUpdateProvider extends ChangeNotifier {
         _ownsClient = client == null,
         _packageInfoLoader = packageInfoLoader ?? PackageInfo.fromPlatform;
 
-  static final Uri _releaseInfoUri =
-      Uri.parse('https://curib123.github.io/flashi_/flashi.json');
+  static final Uri _releaseInfoUri = Uri.parse(AppEnvironment.releaseConfigUrl);
 
   final http.Client _client;
   final bool _ownsClient;

@@ -15,7 +15,25 @@ Flashi is an advanced AI-powered tool designed to help you create and customize 
 To start using Flashi, follow these steps:
 1. Clone this repository.
 2. Install the required dependencies.
-3. Run the application on your device.
+3. Copy `.env.example` to `.env` and fill in the environment configuration.
+4. Run the application with:
+
+```powershell
+flutter run --dart-define-from-file=.env
+```
+
+Use the same configuration for release builds:
+
+```powershell
+flutter build apk --dart-define-from-file=.env
+```
+
+The `.env` file is ignored by Git and is not bundled as a Flutter asset.
+Values passed through `dart-define` are compiled into the application, so they
+must be treated as public configuration rather than secure server secrets.
+The user's Mistral key remains in platform secure storage. Secrets that must
+not be recoverable from the installed application belong behind a server-side
+API and must never be added to `.env`.
 
 ## License
 This project is proprietary, and all rights are reserved by the author.

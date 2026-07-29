@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flashi/core/config/app_environment.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
@@ -15,7 +16,7 @@ class GenerationConfigProvider extends ChangeNotifier {
   }
 
   static final Uri _configurationUri =
-      Uri.parse('https://curib123.github.io/flashi_/flashi.json');
+      Uri.parse(AppEnvironment.releaseConfigUrl);
 
   final Box<dynamic> _box;
   final http.Client _client;

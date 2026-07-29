@@ -1,10 +1,11 @@
 import 'dart:convert';
 import 'dart:async'; // Import required for timeout
+import 'package:flashi/core/config/app_environment.dart';
 import 'package:flashi/features/ai/data/services/api_key_storage.dart';
 import 'package:http/http.dart' as http;
 
 class ChatbotApi {
-  static const String apiUrl = "https://api.mistral.ai/v1/chat/completions";
+  static const String apiUrl = AppEnvironment.mistralApiUrl;
   static String? _cachedApiKey;
   static final http.Client _client = http.Client(); // Persistent HTTP client
   static const Duration timeoutDuration =

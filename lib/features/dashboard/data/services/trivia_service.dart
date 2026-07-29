@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
 import 'dart:math';
+import 'package:flashi/core/config/app_environment.dart';
 import 'package:http/http.dart' as http;
 
 class TriviaService {
-  static const String triviaAPI =
-      "https://the-trivia-api.com/api/questions?limit=30";
+  static const String triviaAPI = AppEnvironment.triviaApiUrl;
 
   static Future<List<Map<String, String>>> fetchTrivia() async {
     try {
