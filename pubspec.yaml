@@ -51,16 +51,12 @@ dependencies:
   flutter_pdf_text: ^0.8.1
   device_info_plus: ^11.3.0
   docx_to_text: ^1.0.1
-  dart_openai: ^5.1.0
   flutter_secure_storage: ^9.2.4
   package_info_plus: ^8.2.1
   google_mobile_ads: ^5.3.1
   ntp: ^2.0.0
   flutter_animate: ^4.5.2
-  dart_levenshtein: ^1.0.1
   image_picker: ^1.1.2
-  shimmer: ^3.0.0
-  email_validator: ^3.0.0
   http: ^1.6.0
   connectivity_plus: ^7.3.1
 
