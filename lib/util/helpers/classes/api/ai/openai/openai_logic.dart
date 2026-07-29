@@ -6,17 +6,14 @@ import 'package:flashi/util/helpers/classes/api/ai/core/api_key_secure_storage.d
 class OpenAiLogic {
   static Future<List<Map<String, String>>> generateQuestionsOpenAi(
       String content) async {
-    await saveAPIKey(
-        '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');
-
 // Retrieve the stored API key securely
-    String? apiKey = await getAPIKey();
+    final apiKey = await getAPIKey();
 
 // Ensure the key is not null before assigning
     if (apiKey != null && apiKey.isNotEmpty) {
       OpenAI.apiKey = apiKey;
     } else {
-      print("API Key not found!");
+      throw StateError('OpenAI API key is not configured');
     }
 
     List<String> chunks = splitTextIntoChunks(content, 1000);
@@ -28,7 +25,7 @@ class OpenAiLogic {
       if (allQuestions.length >= 20) break;
     }
 
-    return allQuestions.take(20).toList() ?? [];
+    return allQuestions.take(20).toList();
   }
 
   static Future<List<Map<String, String>>> processChunkOpenai(
