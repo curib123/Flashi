@@ -8,22 +8,30 @@ class QuizProvider extends ChangeNotifier {
   final TextEditingController questionController = TextEditingController();
   final TextEditingController answerController = TextEditingController();
 
-  final Box<dynamic> _settingsBox = Hive.box('quiz');
+  final Box<dynamic> _settingsBox;
 
   List<Map<String, dynamic>> _quizSets = []; // List of maps to store quiz sets
   String _searchQuery = ""; // Variable to store the search query
-  String newValueCard = ""; // sort of cards
-  String setValue = ""; // sort of cards
+  String _cardSortCriterion = '';
+  String _setSortCriterion = '';
   int _defaultMaxCards = 20;
   String _currentQuizSetNameToSetLimit = '';
+  int _updateRevision = 0;
 
   int get defaultMaxCards => _defaultMaxCards;
   String get currentQuizSetNameToSetLimit => _currentQuizSetNameToSetLimit;
+  String get newValueCard => _cardSortCriterion;
+  String get setValue => _setSortCriterion;
 
-  QuizProvider({required String criterionSet, required String criterionCard}) {
+  QuizProvider({
+    required String criterionSet,
+    required String criterionCard,
+    Box<dynamic>? settingsBox,
+  }) : _settingsBox = settingsBox ?? Hive.box('quiz') {
     loadQuizSets();
-    sortQuizSets(criterionSet);
-    toggleNewValueCard(criterionCard);
+    _setSortCriterion = criterionSet;
+    _cardSortCriterion = criterionCard;
+    _sortQuizSets(criterionSet);
   }
 
   void loadQuizSets() {
@@ -42,8 +50,6 @@ class QuizProvider extends ChangeNotifier {
         }),
       );
     }
-
-    notifyListeners();
   }
 
   void updateSetToEmpty() {
@@ -55,8 +61,9 @@ class QuizProvider extends ChangeNotifier {
   Future<void> updateQuizSets(
       Future<List<Map<String, dynamic>>> newQuizSetsFuture,
       {bool merge = true}) async {
-    List<Map<String, dynamic>> newQuizSets =
-        await newQuizSetsFuture; // Await the future result
+    final int revision = ++_updateRevision;
+    final List<Map<String, dynamic>> newQuizSets = await newQuizSetsFuture;
+    if (revision != _updateRevision) return;
 
     if (merge) {
       // Create a Set to store unique (id, name) pairs
@@ -66,7 +73,7 @@ class QuizProvider extends ChangeNotifier {
       for (var newSet in newQuizSets) {
         String key = "${newSet["id"]}-${newSet["name"]}";
         if (!existingKeys.contains(key)) {
-          _quizSets.add(newSet);
+          _quizSets.add(Map<String, dynamic>.from(newSet));
           existingKeys.add(key);
         }
       }
@@ -78,7 +85,7 @@ class QuizProvider extends ChangeNotifier {
       for (var newSet in newQuizSets) {
         String key = "${newSet["id"]}-${newSet["name"]}";
         if (!addedKeys.contains(key)) {
-          _quizSets.add(newSet);
+          _quizSets.add(Map<String, dynamic>.from(newSet));
           addedKeys.add(key);
         }
       }
@@ -89,7 +96,8 @@ class QuizProvider extends ChangeNotifier {
   }
 
   void updateSetValue(String newValue) {
-    setValue = newValue;
+    if (_setSortCriterion == newValue) return;
+    _setSortCriterion = newValue;
     notifyListeners();
   }
 
@@ -112,13 +120,13 @@ class QuizProvider extends ChangeNotifier {
   // Get filtered quiz sets based on the search query
   List<Map<String, dynamic>> get filteredQuizSets {
     if (_searchQuery.isEmpty) {
-      return _quizSets;
+      return List.unmodifiable(_quizSets);
     } else {
       return _quizSets
           .where((set) =>
               set['name']?.toLowerCase().contains(_searchQuery.toLowerCase()) ??
               false)
-          .toList();
+          .toList(growable: false);
     }
   }
 
@@ -126,11 +134,18 @@ class QuizProvider extends ChangeNotifier {
   List<Map<String, dynamic>> get filteredQuizSetsFavorite {
     return _quizSets
         .where((set) => set['favorite'] == true) // Ensure 'favorite' is true
-        .toList();
+        .toList(growable: false);
   }
 
   // Sort quiz sets based on the criterion
   void sortQuizSets(String criterion) {
+    _setSortCriterion = criterion;
+    _sortQuizSets(criterion);
+    saveQuizSets();
+    notifyListeners();
+  }
+
+  void _sortQuizSets(String criterion) {
     if (criterion == 'Alphabetical') {
       _quizSets.sort((a, b) => (b['name'] ?? '')
           .toLowerCase()
@@ -143,20 +158,27 @@ class QuizProvider extends ChangeNotifier {
           .toLowerCase()
           .compareTo((b['name'] ?? '').toLowerCase()));
     } else if (criterion == 'Newest') {
-      _quizSets.sort((a, b) => (a['timestamp'] ?? DateTime.now())
-          .compareTo(b['timestamp'] ?? DateTime.now()));
+      _quizSets.sort(
+        (a, b) => _timestampOf(a).compareTo(_timestampOf(b)),
+      );
     } else if (criterion == 'Oldest') {
-      _quizSets.sort((a, b) => (b['timestamp'] ?? DateTime.now())
-          .compareTo(a['timestamp'] ?? DateTime.now()));
+      _quizSets.sort(
+        (a, b) => _timestampOf(b).compareTo(_timestampOf(a)),
+      );
     }
+  }
 
-    notifyListeners();
+  DateTime _timestampOf(Map<String, dynamic> value) {
+    final dynamic timestamp = value['timestamp'];
+    return timestamp is DateTime
+        ? timestamp
+        : DateTime.fromMillisecondsSinceEpoch(0);
   }
 
   // Sort quiz sets based on the criterion
   List<Map<String, dynamic>> sortQuizCard(
       {required final List<Map<String, dynamic>> quizSet}) {
-    String criterion = newValueCard;
+    final String criterion = _cardSortCriterion;
     if (criterion == 'Alphabetical') {
       quizSet.sort((a, b) => (b['question'] ?? '')
           .toLowerCase()
@@ -166,11 +188,9 @@ class QuizProvider extends ChangeNotifier {
           .toLowerCase()
           .compareTo((b['question'] ?? '').toLowerCase()));
     } else if (criterion == 'Newest') {
-      quizSet.sort((a, b) => (a['timestamp'] ?? DateTime.now())
-          .compareTo(b['timestamp'] ?? DateTime.now()));
+      quizSet.sort((a, b) => _timestampOf(a).compareTo(_timestampOf(b)));
     } else if (criterion == 'Oldest') {
-      quizSet.sort((a, b) => (b['timestamp'] ?? DateTime.now())
-          .compareTo(a['timestamp'] ?? DateTime.now()));
+      quizSet.sort((a, b) => _timestampOf(b).compareTo(_timestampOf(a)));
     }
 
     return quizSet;
@@ -179,7 +199,8 @@ class QuizProvider extends ChangeNotifier {
   //toggle sort card
 
   void toggleNewValueCard(String newValueCard) {
-    this.newValueCard = newValueCard;
+    if (_cardSortCriterion == newValueCard) return;
+    _cardSortCriterion = newValueCard;
     notifyListeners();
   }
 
@@ -192,7 +213,7 @@ class QuizProvider extends ChangeNotifier {
   }
 
   void addQuizSet(Map<String, dynamic> quizSet) {
-    _quizSets.add(quizSet);
+    _quizSets.add(Map<String, dynamic>.from(quizSet));
     saveQuizSets();
     clearController();
     notifyListeners();
@@ -214,6 +235,9 @@ class QuizProvider extends ChangeNotifier {
 
   void updateCurrentQuizSetNameToSetLimit(
       String newCurrentQuizSetNameToSetLimit) {
+    if (_currentQuizSetNameToSetLimit == newCurrentQuizSetNameToSetLimit) {
+      return;
+    }
     _currentQuizSetNameToSetLimit = newCurrentQuizSetNameToSetLimit;
     notifyListeners();
   }
@@ -238,6 +262,7 @@ class QuizProvider extends ChangeNotifier {
   }
 
   void updateDefaultMaxCard(int value) {
+    if (_defaultMaxCards == value) return;
     _defaultMaxCards = value;
     notifyListeners();
   }
@@ -391,6 +416,7 @@ class QuizProvider extends ChangeNotifier {
       int cardIndex = quizSet['cards']
               ?.indexWhere((card) => card['question'] == question) ??
           -1;
+      if (cardIndex == -1) return false;
       quizSet['cards']?[cardIndex]['isIgnore'] =
           !quizSet['cards']?[cardIndex]['isIgnore'];
       saveQuizSets();
@@ -455,7 +481,7 @@ class QuizProvider extends ChangeNotifier {
 
   // Show all quiz sets
   List<Map<String, dynamic>> showAllQuizSets() {
-    return _quizSets;
+    return List.unmodifiable(_quizSets);
   }
 
   // Show all cards in a specific quiz set
