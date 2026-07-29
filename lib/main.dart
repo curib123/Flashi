@@ -1,4 +1,4 @@
-import 'package:flashi/home.dart';
+import 'package:flashi/app/app_shell.dart';
 import 'package:flashi/provider/DailyQuestionProvider.dart';
 import 'package:flashi/provider/ai_credits_provider.dart';
 import 'package:flashi/provider/ai_model_logic_provider.dart';
@@ -20,7 +20,6 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
 Future<void> main() async {
-
   WidgetsFlutterBinding.ensureInitialized();
   MobileAds.instance.initialize();
 
@@ -43,32 +42,45 @@ Future<void> main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => BottomNavigationProvider()), // Add BottomNavigationProvider
-        ChangeNotifierProvider(create: (_) => ThemeProvider()), // Add ThemeProvider
-        ChangeNotifierProvider(create: (_) => SortProvider()), // Add SortProvider
-        ChangeNotifierProvider(create: (_) => ReviewerSettingsProvider()), // Add SortProvider
-        ChangeNotifierProvider(create: (_) => NotesProvider()), // Add SortProvider
-        ChangeNotifierProvider(create: (_) => OnboardingProvider()), // Add OnboardingProvider
-        ChangeNotifierProvider(create: (_) => FetchDataFromJsonProvider()), // Add TextReaderProvider
-        ChangeNotifierProvider(create: (_) => AiModelLogicProvider()), // Add AiModelLogicProvider
-        ChangeNotifierProvider(create: (_) => CheckVersionProvider()), // Add CheckVersionProvider
-        ChangeNotifierProvider(create: (_) => ChatBotProvider()), // Add CheckVersionProvider
-        ChangeNotifierProvider(create: (_) => AiCreditProvider()), // Add CheckVersionProvider
-        ChangeNotifierProvider(create: (_) => DailyQuestionProvider()), // Add CheckVersionProvider
-        ChangeNotifierProvider(create: (_) => HistoryProvider()), // Add CheckVersionProvider
+        ChangeNotifierProvider(
+            create: (_) =>
+                BottomNavigationProvider()), // Add BottomNavigationProvider
+        ChangeNotifierProvider(
+            create: (_) => ThemeProvider()), // Add ThemeProvider
+        ChangeNotifierProvider(
+            create: (_) => SortProvider()), // Add SortProvider
+        ChangeNotifierProvider(
+            create: (_) => ReviewerSettingsProvider()), // Add SortProvider
+        ChangeNotifierProvider(
+            create: (_) => NotesProvider()), // Add SortProvider
+        ChangeNotifierProvider(
+            create: (_) => OnboardingProvider()), // Add OnboardingProvider
+        ChangeNotifierProvider(
+            create: (_) =>
+                FetchDataFromJsonProvider()), // Add TextReaderProvider
+        ChangeNotifierProvider(
+            create: (_) => AiModelLogicProvider()), // Add AiModelLogicProvider
+        ChangeNotifierProvider(
+            create: (_) => CheckVersionProvider()), // Add CheckVersionProvider
+        ChangeNotifierProvider(
+            create: (_) => ChatBotProvider()), // Add CheckVersionProvider
+        ChangeNotifierProvider(
+            create: (_) => AiCreditProvider()), // Add CheckVersionProvider
+        ChangeNotifierProvider(
+            create: (_) => DailyQuestionProvider()), // Add CheckVersionProvider
+        ChangeNotifierProvider(
+            create: (_) => HistoryProvider()), // Add CheckVersionProvider
         ChangeNotifierProvider(
             create: (context) => QuizProvider(
-                criterionSet: Provider.of<SortProvider>(context,listen: false).dropdownValueSet,
-                criterionCard: Provider.of<SortProvider>(context,listen: false).dropdownValueCard)
-
-        ), // Add QuizProvider
+                criterionSet: Provider.of<SortProvider>(context, listen: false)
+                    .dropdownValueSet,
+                criterionCard: Provider.of<SortProvider>(context, listen: false)
+                    .dropdownValueCard)), // Add QuizProvider
       ],
       child: const Flashi(),
     ),
   );
-
 }
-
 
 class Flashi extends StatelessWidget {
   const Flashi({super.key});
@@ -80,11 +92,10 @@ class Flashi extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: "Flashi Ai",
-      home: const Home(),
-      theme:  themeProvider.getLightTheme(),
+      home: const AppShell(),
+      theme: themeProvider.getLightTheme(),
       darkTheme: themeProvider.getDarkTheme(),
       themeMode: themeProvider.themeMode,
     );
   }
 }
-

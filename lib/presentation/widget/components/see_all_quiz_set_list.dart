@@ -27,19 +27,17 @@ class SeeAllQuizSetList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     // Access both providers directly
     final quizProvider = Provider.of<QuizProvider>(context);
-
 
     return Scaffold(
       appBar: AppBar(
         foregroundColor: colorScheme.primary, // For text and icons color
-        backgroundColor: colorScheme.onPrimary, // Background color of the app bar
+        backgroundColor:
+            colorScheme.onPrimary, // Background color of the app bar
         title: Text(name),
         shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-          ),
+          borderRadius: BorderRadius.only(),
         ),
         // Custom Back Arrow Icon
         leading: IconButton(
@@ -48,7 +46,6 @@ class SeeAllQuizSetList extends StatelessWidget {
             color: colorScheme.primary, // Custom color for the icon
           ),
           onPressed: () {
-
             Navigator.pop(context); // Go back to the previous screen
             quizProvider.searchController.text = quizProvider.searchQuery;
             print(quizProvider.searchQuery);
@@ -62,22 +59,25 @@ class SeeAllQuizSetList extends StatelessWidget {
   Widget _body(BuildContext context) {
     AdManager adManager = AdManager();
 
-    return Consumer5<QuizProvider, SortProvider,FetchDataFromJsonProvider,AiModelLogicProvider,AiCreditProvider>(
-      builder: (context, quizProvider, sortProvider,fetchDataFromJsonProvider,aiModelLogicProvider,aiCreditProvider, child) {
-        final filteredQuizSets = quizProvider.filteredQuizSets.reversed.toList();
+    return Consumer5<QuizProvider, SortProvider, FetchDataFromJsonProvider,
+        AiModelLogicProvider, AiCreditProvider>(
+      builder: (context, quizProvider, sortProvider, fetchDataFromJsonProvider,
+          aiModelLogicProvider, aiCreditProvider, child) {
+        final filteredQuizSets =
+            quizProvider.filteredQuizSets.reversed.toList();
 
         return Stack(
           children: [
             ListView(
               children: [
-
                 ReusableSortAndSeeAll(
                   dropdownValue: sortProvider.dropdownValueSet,
                   sortOptions: sortProvider.sortOptionsSet,
                   onSortChanged: (newValue) {
                     if (newValue != null) {
                       sortProvider.updateSortValueSet(newValue);
-                      quizProvider.sortQuizSets(newValue); // Trigger sorting in the provider
+                      quizProvider.sortQuizSets(
+                          newValue); // Trigger sorting in the provider
                     }
                   },
                   onSeeAllPressed: () {
@@ -85,7 +85,7 @@ class SeeAllQuizSetList extends StatelessWidget {
                   },
                   isShowSeeAllLink: false,
                   isShowReviewLink: false,
-                  onShowReviewLink: () {  },
+                  onShowReviewLink: () {},
                 ),
                 adManager.getFifthBannerAdWidget(),
                 ReusableSearchBarCore(
@@ -93,25 +93,22 @@ class SeeAllQuizSetList extends StatelessWidget {
                   hintText: 'Search Quiz Set ',
                   onChanged: (value) {
                     quizProvider.updateSearchQuery(value);
-                  }, controller: quizProvider.searchController,
+                  },
+                  controller: quizProvider.searchController,
                 ),
-
-
-        filteredQuizSets.isEmpty
+                filteredQuizSets.isEmpty
                     ? noSetWidget(context)
                     : SizedBox(
-                  width: MediaQuery.sizeOf(context).width,
-                  height: MediaQuery.sizeOf(context).height * 0.60,
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.vertical,
-                    child: ReusableQuizSetList(
-                      quizSets: filteredQuizSets,
-                    ),
-                  ),
-                ),
-
+                        width: MediaQuery.sizeOf(context).width,
+                        height: MediaQuery.sizeOf(context).height * 0.60,
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.vertical,
+                          child: ReusableQuizSetList(
+                            quizSets: filteredQuizSets,
+                          ),
+                        ),
+                      ),
               ],
-
             ),
             // Create Button Position
             ReusableCreateSetButtonPosition(
@@ -119,7 +116,8 @@ class SeeAllQuizSetList extends StatelessWidget {
               colorScheme: colorScheme,
               name: 'Generate Quiz Set',
               onTap: () {
-              aiModelLogicProvider.showFlashcardDialog(context, quizProvider, colorScheme,fetchDataFromJsonProvider,aiCreditProvider);
+                aiModelLogicProvider.showFlashcardDialog(context, quizProvider,
+                    colorScheme, fetchDataFromJsonProvider, aiCreditProvider);
               },
             ),
 
@@ -132,4 +130,3 @@ class SeeAllQuizSetList extends StatelessWidget {
     );
   }
 }
-

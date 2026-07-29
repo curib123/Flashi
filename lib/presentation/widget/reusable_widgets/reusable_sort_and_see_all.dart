@@ -9,7 +9,6 @@ class ReusableSortAndSeeAll extends StatelessWidget {
   final bool isShowReviewLink;
   final VoidCallback onShowReviewLink;
 
-
   const ReusableSortAndSeeAll({
     super.key,
     required this.dropdownValue,
@@ -48,47 +47,56 @@ class ReusableSortAndSeeAll extends StatelessWidget {
             onChanged: onSortChanged,
           ),
 
-
           // "See All" button
           isShowSeeAllLink
               ? TextButton(
-            style: ButtonStyle(
-              elevation:const WidgetStatePropertyAll(5),
-              shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-              shadowColor: WidgetStatePropertyAll(colorScheme.tertiaryContainer),
-              backgroundColor: WidgetStatePropertyAll(colorScheme.primary.withOpacity(0.8)),
-            ),
-            onPressed: onSeeAllPressed,
-            child:const Text(
-              "VIEW ALL",
-              style: TextStyle(
-                color: Colors.white, // Assuming a contrasting text color
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          )
-              : isShowReviewLink ? ElevatedButton.icon(
-            style: ButtonStyle().copyWith(
-              backgroundColor: WidgetStatePropertyAll(colorScheme.primary),
-              shape:WidgetStatePropertyAll( RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-            ),
-            onPressed: onShowReviewLink ,
-            icon: Icon(Icons.rate_review,color: colorScheme.onPrimary,),
-            label: Text(
-              "Quiz Mode",
-              style: TextStyle(
-                color: colorScheme.onPrimary, // Assuming a contrasting text color
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ) : Text(
-            "All",
-            style: TextStyle(
-              color: colorScheme.primary,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-
+                  style: ButtonStyle(
+                    elevation: const WidgetStatePropertyAll(5),
+                    shape: WidgetStatePropertyAll(RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10))),
+                    shadowColor:
+                        WidgetStatePropertyAll(colorScheme.tertiaryContainer),
+                    backgroundColor: WidgetStatePropertyAll(
+                        colorScheme.primary.withOpacity(0.8)),
+                  ),
+                  onPressed: onSeeAllPressed,
+                  child: const Text(
+                    "VIEW ALL",
+                    style: TextStyle(
+                      color: Colors.white, // Assuming a contrasting text color
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                )
+              : isShowReviewLink
+                  ? ElevatedButton.icon(
+                      style: ButtonStyle().copyWith(
+                        backgroundColor:
+                            WidgetStatePropertyAll(colorScheme.primary),
+                        shape: WidgetStatePropertyAll(RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10))),
+                      ),
+                      onPressed: onShowReviewLink,
+                      icon: Icon(
+                        Icons.rate_review,
+                        color: colorScheme.onPrimary,
+                      ),
+                      label: Text(
+                        "Quiz Mode",
+                        style: TextStyle(
+                          color: colorScheme
+                              .onPrimary, // Assuming a contrasting text color
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    )
+                  : Text(
+                      "All",
+                      style: TextStyle(
+                        color: colorScheme.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
         ],
       ),
     );

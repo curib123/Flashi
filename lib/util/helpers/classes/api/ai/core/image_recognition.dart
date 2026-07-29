@@ -6,7 +6,8 @@ import 'package:http/http.dart' as http;
 class ImageRecognition {
   static const String apiUrl = 'https://api.mistral.ai/v1/chat/completions';
 
-  static Future<String> analyzeImage(Future<File?> imageFileFuture, String instruction) async {
+  static Future<String> analyzeImage(
+      Future<File?> imageFileFuture, String instruction) async {
     try {
       // Retrieve stored API key
       String? apiKey = await getAPIKey();
@@ -36,7 +37,10 @@ class ImageRecognition {
               'role': 'user',
               'content': [
                 {'type': 'text', 'text': instruction},
-                {'type': 'image_url', 'image_url': 'data:image/jpeg;base64,$base64Image'}
+                {
+                  'type': 'image_url',
+                  'image_url': 'data:image/jpeg;base64,$base64Image'
+                }
               ]
             }
           ],

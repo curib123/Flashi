@@ -4,7 +4,7 @@ Widget noSetWidget(BuildContext context) {
   return SizedBox(
     height: MediaQuery.of(context).size.height * 0.30,
     width: MediaQuery.of(context).size.width,
-    child:   Center(
+    child: Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -13,15 +13,15 @@ Widget noSetWidget(BuildContext context) {
           Text(
             "No Quiz Set Available",
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: Colors.grey,
-            ),
+                  color: Colors.grey,
+                ),
           ),
           const SizedBox(height: 10),
           Text(
             "Create Some Quiz Set to Retain now.",
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.grey.shade600,
-            ),
+                  color: Colors.grey.shade600,
+                ),
             textAlign: TextAlign.center,
           ),
         ],
@@ -34,7 +34,7 @@ Widget noNotesWidget(BuildContext context) {
   return SizedBox(
     height: MediaQuery.of(context).size.height,
     width: MediaQuery.of(context).size.width,
-    child:   Center(
+    child: Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -43,15 +43,15 @@ Widget noNotesWidget(BuildContext context) {
           Text(
             "No Notes available",
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: Colors.grey,
-            ),
+                  color: Colors.grey,
+                ),
           ),
           const SizedBox(height: 10),
           Text(
             "Add some Notes to see them here.",
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.grey.shade600,
-            ),
+                  color: Colors.grey.shade600,
+                ),
             textAlign: TextAlign.center,
           ),
         ],
@@ -64,7 +64,7 @@ Widget noHistoryWidget(BuildContext context) {
   return SizedBox(
     height: MediaQuery.of(context).size.height,
     width: MediaQuery.of(context).size.width,
-    child:   Center(
+    child: Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -73,15 +73,15 @@ Widget noHistoryWidget(BuildContext context) {
           Text(
             "No History",
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: Colors.grey,
-            ),
+                  color: Colors.grey,
+                ),
           ),
           const SizedBox(height: 10),
           Text(
             "Generate Quiz Now",
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.grey.shade600,
-            ),
+                  color: Colors.grey.shade600,
+                ),
             textAlign: TextAlign.center,
           ),
         ],
@@ -94,7 +94,7 @@ Widget noCardWidget(BuildContext context) {
   return SizedBox(
     height: MediaQuery.of(context).size.height * 0.30,
     width: MediaQuery.of(context).size.width,
-    child:   Center(
+    child: Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -103,15 +103,15 @@ Widget noCardWidget(BuildContext context) {
           Text(
             "No Cards available",
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: Colors.grey,
-            ),
+                  color: Colors.grey,
+                ),
           ),
           const SizedBox(height: 10),
           Text(
             "Create some Cards to see them here.",
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.grey.shade600,
-            ),
+                  color: Colors.grey.shade600,
+                ),
             textAlign: TextAlign.center,
           ),
         ],
@@ -120,12 +120,11 @@ Widget noCardWidget(BuildContext context) {
   );
 }
 
-
 Widget noTaskWidget(BuildContext context) {
   return SizedBox(
     height: MediaQuery.of(context).size.height,
     width: MediaQuery.of(context).size.width,
-    child:   Center(
+    child: Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -134,15 +133,15 @@ Widget noTaskWidget(BuildContext context) {
           Text(
             "No Task available",
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: Colors.grey,
-            ),
+                  color: Colors.grey,
+                ),
           ),
           const SizedBox(height: 10),
           Text(
             "Add some task to see them here.",
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.grey.shade600,
-            ),
+                  color: Colors.grey.shade600,
+                ),
             textAlign: TextAlign.center,
           ),
         ],

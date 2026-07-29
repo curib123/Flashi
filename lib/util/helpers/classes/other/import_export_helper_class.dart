@@ -26,11 +26,13 @@ class ImportExportHelperClass {
     return true;
   }
 
-  Future<void> exportList(BuildContext context, Map<String, dynamic> sets) async {
+  Future<void> exportList(
+      BuildContext context, Map<String, dynamic> sets) async {
     try {
       bool permissionGranted = await requestPermissions();
       if (!permissionGranted) {
-        showSnack(context, "Permission Denied: Storage permission required.", Colors.red);
+        showSnack(context, "Permission Denied: Storage permission required.",
+            Colors.red);
         return;
       }
 
@@ -45,7 +47,10 @@ class ImportExportHelperClass {
 
       await file.writeAsString(jsonEncode(convertTimestampsToString(sets)));
 
-      showSnack(context, "Save Successful: The list has been saved to $filePath", Colors.green);
+      showSnack(
+          context,
+          "Save Successful: The list has been saved to $filePath",
+          Colors.green);
       convertStringsToTimestamps(sets); // restore original format if needed
     } catch (e) {
       showSnack(context, "Export Failed: $e", Colors.red);
@@ -53,7 +58,8 @@ class ImportExportHelperClass {
     }
   }
 
-  Future<void> importList(BuildContext context, QuizProvider quizProvider) async {
+  Future<void> importList(
+      BuildContext context, QuizProvider quizProvider) async {
     final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
 
@@ -69,7 +75,8 @@ class ImportExportHelperClass {
         final contents = await file.readAsString();
         Map<String, dynamic> importedData = jsonDecode(contents);
 
-        bool isDuplicate = quizProvider.quizSets.any((set) => set['name'] == importedData['name']);
+        bool isDuplicate = quizProvider.quizSets
+            .any((set) => set['name'] == importedData['name']);
 
         if (isDuplicate) {
           showSnack(context, "Oops! This set already exists!", Colors.orange);
@@ -87,10 +94,13 @@ class ImportExportHelperClass {
     }
   }
 
-  static Map<String, dynamic> convertTimestampsToString(Map<String, dynamic> data) {
+  static Map<String, dynamic> convertTimestampsToString(
+      Map<String, dynamic> data) {
     Map<String, dynamic> converted = Map<String, dynamic>.from(data);
-    if (converted.containsKey('timestamp') && converted['timestamp'] is DateTime) {
-      converted['timestamp'] = (converted['timestamp'] as DateTime).toIso8601String();
+    if (converted.containsKey('timestamp') &&
+        converted['timestamp'] is DateTime) {
+      converted['timestamp'] =
+          (converted['timestamp'] as DateTime).toIso8601String();
     }
     if (converted.containsKey('cards')) {
       for (var card in converted['cards']) {
@@ -102,9 +112,11 @@ class ImportExportHelperClass {
     return converted;
   }
 
-  static Map<String, dynamic> convertStringsToTimestamps(Map<String, dynamic> data) {
+  static Map<String, dynamic> convertStringsToTimestamps(
+      Map<String, dynamic> data) {
     Map<String, dynamic> converted = Map<String, dynamic>.from(data);
-    if (converted.containsKey('timestamp') && converted['timestamp'] is String) {
+    if (converted.containsKey('timestamp') &&
+        converted['timestamp'] is String) {
       converted['timestamp'] = DateTime.parse(converted['timestamp']);
     }
     if (converted.containsKey('cards')) {

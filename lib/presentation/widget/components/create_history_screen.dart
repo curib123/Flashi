@@ -8,13 +8,13 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-class CreateHistoryScreen extends StatelessWidget {
+class CreateHistoryPage extends StatelessWidget {
   final bool isCreate;
   final bool isRead;
   final String title;
   final DateTime date;
 
-  const CreateHistoryScreen({
+  const CreateHistoryPage({
     Key? key,
     required this.isCreate,
     required this.title,
@@ -69,49 +69,51 @@ class CreateHistoryScreen extends StatelessWidget {
     );
   }
 
-  AppBar _buildAppBar(ColorScheme colorScheme, BuildContext context, String title) {
+  AppBar _buildAppBar(
+      ColorScheme colorScheme, BuildContext context, String title) {
     return AppBar(
       leading: IconButton(
-        icon: Icon(Icons.arrow_back_ios_new_rounded, color: colorScheme.primary),
+        icon:
+            Icon(Icons.arrow_back_ios_new_rounded, color: colorScheme.primary),
         onPressed: () => Navigator.of(context).pop(),
       ),
       title: !isRead
           ? Text(
-        isCreate ? "Create History" : "Edit History",
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 20,
-          color: colorScheme.primary,
-        ),
-      )
+              isCreate ? "Create History" : "Edit History",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+                color: colorScheme.primary,
+              ),
+            )
           : Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            'View History',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
-              color: colorScheme.primary,
-            ),
-          ),
-          const SizedBox(width: 10),
-          IconButton(
-            icon: Icon(Icons.edit, color: colorScheme.primary),
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => CreateHistoryScreen(
-                  isCreate: false,
-                  title: title,
-                  isRead: false,
-                  date: date,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'View History',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                    color: colorScheme.primary,
+                  ),
                 ),
-              ));
-            },
-          ),
-        ],
-      ),
+                const SizedBox(width: 10),
+                IconButton(
+                  icon: Icon(Icons.edit, color: colorScheme.primary),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => CreateHistoryPage(
+                        isCreate: false,
+                        title: title,
+                        isRead: false,
+                        date: date,
+                      ),
+                    ));
+                  },
+                ),
+              ],
+            ),
       backgroundColor: colorScheme.onPrimary,
       elevation: 2,
       shape: const RoundedRectangleBorder(
@@ -120,7 +122,8 @@ class CreateHistoryScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildBody(Size size, HistoryProvider historyProvider, ColorScheme colorScheme) {
+  Widget _buildBody(
+      Size size, HistoryProvider historyProvider, ColorScheme colorScheme) {
     String formattedDate = DateFormat('MMM dd, yyyy - hh:mm a').format(date);
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -132,12 +135,15 @@ class CreateHistoryScreen extends StatelessWidget {
           style: TextStyle(color: colorScheme.onSurface.withOpacity(0.6)),
         ),
         _buildContentInputField(size, historyProvider, colorScheme),
-        Center(child: Text(formattedDate, style: TextStyle(color: colorScheme.onSurface))),
+        Center(
+            child: Text(formattedDate,
+                style: TextStyle(color: colorScheme.onSurface))),
       ],
     );
   }
 
-  Widget _buildTitleInputField(HistoryProvider historyProvider, ColorScheme colorScheme) {
+  Widget _buildTitleInputField(
+      HistoryProvider historyProvider, ColorScheme colorScheme) {
     return Container(
       // Use the surface color for a card-like background.
       color: colorScheme.surface,
@@ -155,7 +161,8 @@ class CreateHistoryScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildContentInputField(Size size, HistoryProvider historyProvider, ColorScheme colorScheme) {
+  Widget _buildContentInputField(
+      Size size, HistoryProvider historyProvider, ColorScheme colorScheme) {
     return Container(
       width: size.width,
       child: TextField(

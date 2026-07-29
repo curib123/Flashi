@@ -5,8 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 class MistralAiLogic {
-  static Future<List<Map<String, String>>> generateQuestionsFromFile(String content,String modelType,String type,int maxLength) async {
-
+  static Future<List<Map<String, String>>> generateQuestionsFromFile(
+      String content, String modelType, String type, int maxLength) async {
     String? apiKey = await getAPIKey(); // Retrieve stored API key
 
     if (apiKey == null || apiKey.isEmpty) {
@@ -18,14 +18,17 @@ class MistralAiLogic {
     List<Map<String, String>> allQuestions = [];
 
     for (String chunk in chunks) {
-      List<Map<String, String>> questions = await processChunkMistral(chunk, apiKey,modelType,type,maxLength);
+      List<Map<String, String>> questions =
+          await processChunkMistral(chunk, apiKey, modelType, type, maxLength);
       allQuestions.addAll(questions);
       if (allQuestions.length >= maxLength) break;
     }
 
     return allQuestions.take(maxLength).toList();
   }
-  static Future<List<Map<String, String>>> processChunkMistral(String textChunk, String apiKey,String modelType,String type,int maxLength) async {
+
+  static Future<List<Map<String, String>>> processChunkMistral(String textChunk,
+      String apiKey, String modelType, String type, int maxLength) async {
     final String mistralEndpoint = "https://api.mistral.ai/v1/chat/completions";
 
     String generatePrompt() {
@@ -92,8 +95,6 @@ class MistralAiLogic {
       }
     }
 
-
-
     try {
       final response = await http.post(
         Uri.parse(mistralEndpoint),
@@ -104,7 +105,11 @@ class MistralAiLogic {
         body: jsonEncode({
           "model": modelType, // Updated to a known model name
           "messages": [
-            {"role": "system", "content": "You are an expert quiz generator that is correct and accurate."},
+            {
+              "role": "system",
+              "content":
+                  "You are an expert quiz generator that is correct and accurate."
+            },
             {"role": "user", "content": generatePrompt()}
           ],
           "max_tokens": 3000
@@ -118,8 +123,8 @@ class MistralAiLogic {
         if (responseData.containsKey('choices') &&
             responseData['choices'] is List &&
             responseData['choices'].isNotEmpty) {
-
-          String aiResponse = responseData['choices'][0]['message']?['content']?.trim() ?? "";
+          String aiResponse =
+              responseData['choices'][0]['message']?['content']?.trim() ?? "";
 
           if (aiResponse.isNotEmpty) {
             print(aiResponse);
@@ -142,8 +147,8 @@ class MistralAiLogic {
     }
   }
 
-
-  static Future<List<Map<String, String>>> parseTextQuestions(String text) async {
+  static Future<List<Map<String, String>>> parseTextQuestions(
+      String text) async {
     final List<Map<String, String>> parsedQuestions = [];
 
     final RegExp regExp = RegExp(
@@ -164,8 +169,6 @@ class MistralAiLogic {
     return parsedQuestions;
   }
 
-
-
   static List<String> splitTextIntoChunks(String text, int chunkSize) {
     if (text.length <= chunkSize) return [text]; // Return as is if within size
 
@@ -177,12 +180,12 @@ class MistralAiLogic {
     return chunks;
   }
 
-
-
   static Future<List<Map<String, String>>> generateQuestionsCustomAiGenerated(
-      String topic,String description, String modelType, String type, int maxLength) async {
-
-
+      String topic,
+      String description,
+      String modelType,
+      String type,
+      int maxLength) async {
     String? apiKey = await getAPIKey(); // Retrieve stored API key
 
     if (apiKey == null || apiKey.isEmpty) {
@@ -190,17 +193,20 @@ class MistralAiLogic {
       return [];
     }
 
-
-    List<Map<String, String>> questions = await processChunkWithTitleDescription(
-        topic,description, apiKey, modelType, type, maxLength
-    );
+    List<Map<String, String>> questions =
+        await processChunkWithTitleDescription(
+            topic, description, apiKey, modelType, type, maxLength);
 
     return questions.take(maxLength).toList();
   }
 
   static Future<List<Map<String, String>>> processChunkWithTitleDescription(
-      String topic,String description, String apiKey, String modelType, String type, int maxLength) async {
-
+      String topic,
+      String description,
+      String apiKey,
+      String modelType,
+      String type,
+      int maxLength) async {
     final String mistralEndpoint = "https://api.mistral.ai/v1/chat/completions";
 
     String generatePrompt() {
@@ -265,7 +271,6 @@ Answer: True
       }
     }
 
-
     try {
       final response = await http.post(
         Uri.parse(mistralEndpoint),
@@ -276,7 +281,11 @@ Answer: True
         body: jsonEncode({
           "model": modelType, // Updated to a known model name
           "messages": [
-            {"role": "system", "content": "You are an expert quiz generator that is facts and correct."},
+            {
+              "role": "system",
+              "content":
+                  "You are an expert quiz generator that is facts and correct."
+            },
             {"role": "user", "content": generatePrompt()}
           ],
           "max_tokens": 3000
@@ -289,8 +298,8 @@ Answer: True
         if (responseData.containsKey('choices') &&
             responseData['choices'] is List &&
             responseData['choices'].isNotEmpty) {
-
-          String aiResponse = responseData['choices'][0]['message']?['content']?.trim() ?? "";
+          String aiResponse =
+              responseData['choices'][0]['message']?['content']?.trim() ?? "";
 
           if (aiResponse.isNotEmpty) {
             print(aiResponse);
@@ -312,8 +321,4 @@ Answer: True
       return [];
     }
   }
-
-
-
-
 }

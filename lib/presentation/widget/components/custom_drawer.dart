@@ -1,4 +1,4 @@
-import 'package:flashi/presentation/screen/main/history_screen.dart';
+import 'package:flashi/features/history/presentation/pages/history_page.dart';
 import 'package:flashi/presentation/widget/components/see_all_quiz_set_list.dart';
 import 'package:flashi/provider/ai_credits_provider.dart';
 import 'package:flashi/provider/chatbot_provider.dart';
@@ -6,8 +6,8 @@ import 'package:flashi/provider/notes_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flashi/presentation/screen/main/favorate_screen.dart';
-import 'package:flashi/presentation/screen/main/settings_screen.dart';
+import 'package:flashi/features/favorites/presentation/pages/favorites_page.dart';
+import 'package:flashi/features/settings/presentation/pages/settings_page.dart';
 import 'package:flashi/provider/bottom_navigation_provider.dart';
 import 'package:flashi/util/helpers/classes/other/wepage_launcher.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/about_alert_dialog.dart';
@@ -35,8 +35,10 @@ class CustomDrawer extends StatelessWidget {
       );
     }
 
-    return Consumer5<BottomNavigationProvider,QuizProvider,AiCreditProvider,NotesProvider,ChatBotProvider>(
-      builder: (context, bottomNavProvider,quizProvider, aiCreditProvider,notesProvider,chatBotProvider ,child) {
+    return Consumer5<BottomNavigationProvider, QuizProvider, AiCreditProvider,
+        NotesProvider, ChatBotProvider>(
+      builder: (context, bottomNavProvider, quizProvider, aiCreditProvider,
+          notesProvider, chatBotProvider, child) {
         return Drawer(
           backgroundColor: colorScheme.onPrimary,
           shape: const RoundedRectangleBorder(
@@ -56,34 +58,41 @@ class CustomDrawer extends StatelessWidget {
                     const SizedBox(height: 30),
                     Container(
                       padding: const EdgeInsets.all(12),
-
                       child: Column(
                         children: [
                           Text("Flashi",
-                              style:  TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color:colorScheme.primary)),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                  color: colorScheme.primary)),
                           const SizedBox(height: 5),
                           Text("Quiz Maker & Learner",
-                              style:  TextStyle(fontSize: 16, color: colorScheme.primary.withOpacity(0.7))),
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  color: colorScheme.primary.withOpacity(0.7))),
                         ],
                       ),
                     ),
                     // Optional: Add a divider for better separation
-                    Divider(color: colorScheme.primary.withOpacity(0.2), thickness: 1, indent: 20, endIndent: 20),
+                    Divider(
+                        color: colorScheme.primary.withOpacity(0.2),
+                        thickness: 1,
+                        indent: 20,
+                        endIndent: 20),
                   ],
                 ),
               ),
-
               Expanded(
                 child: ListView(
                   padding: EdgeInsets.zero,
                   children: [
-
                     buildListTile(
                       icon: Icons.layers_rounded,
                       title: 'Quiz Set',
                       onTap: () {
                         Navigator.pop(context);
-                        quizProvider.searchController.text = quizProvider.searchQuery;
+                        quizProvider.searchController.text =
+                            quizProvider.searchQuery;
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -103,7 +112,7 @@ class CustomDrawer extends StatelessWidget {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const FavoriteScreen()));
+                                builder: (context) => const FavoritesPage()));
                       },
                     ),
                     buildListTile(
@@ -114,10 +123,14 @@ class CustomDrawer extends StatelessWidget {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const SettingsScreen()));
+                                builder: (context) => const SettingsPage()));
                       },
                     ),
-                    Divider(color: colorScheme.primary.withOpacity(0.2), thickness: 1, indent: 20, endIndent: 20),
+                    Divider(
+                        color: colorScheme.primary.withOpacity(0.2),
+                        thickness: 1,
+                        indent: 20,
+                        endIndent: 20),
                     buildListTile(
                       icon: Icons.smart_toy_rounded,
                       title: 'Chatbot',
@@ -134,11 +147,14 @@ class CustomDrawer extends StatelessWidget {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => HistoryScreen()));
+                                builder: (context) => HistoryPage()));
                       },
                     ),
-
-                    Divider(color: colorScheme.primary.withOpacity(0.2), thickness: 1, indent: 20, endIndent: 20),
+                    Divider(
+                        color: colorScheme.primary.withOpacity(0.2),
+                        thickness: 1,
+                        indent: 20,
+                        endIndent: 20),
                     buildListTile(
                       icon: Icons.contact_mail,
                       title: 'Contact Us',
@@ -161,7 +177,7 @@ class CustomDrawer extends StatelessWidget {
                       onTap: () {
                         Navigator.pop(context);
                         WebPageLauncher(
-                            'https://curib123.github.io/flashi_/privacy_policy.html')
+                                'https://curib123.github.io/flashi_/privacy_policy.html')
                             .launch();
                       },
                     ),
@@ -171,7 +187,7 @@ class CustomDrawer extends StatelessWidget {
                       onTap: () {
                         Navigator.pop(context);
                         WebPageLauncher(
-                            'https://curib123.github.io/flashi_/terms%26condition.html')
+                                'https://curib123.github.io/flashi_/terms%26condition.html')
                             .launch();
                       },
                     ),

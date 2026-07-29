@@ -1,10 +1,9 @@
-
 import 'package:url_launcher/url_launcher.dart';
 
 class WebPageLauncher {
   final String url;
 
-  WebPageLauncher( this.url);
+  WebPageLauncher(this.url);
 
   /// This method launches any URL passed to it dynamically.
   Future<void> _launchUrl() async {
@@ -25,11 +24,11 @@ class WebPageLauncher {
     launchUrl(emailUri);
   }
 
-
   // Add a method to trigger the URL launch
   void launch() {
     _launchUrl();
   }
+
   // Add a method to trigger the URL launch
   void launchEmail() {
     _launchEmail();

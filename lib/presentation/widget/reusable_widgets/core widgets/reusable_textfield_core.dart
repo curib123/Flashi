@@ -11,7 +11,7 @@ class ReusableTextfieldCore extends StatelessWidget {
     required this.name,
     this.hintText,
     this.controller,
-     required this.isHideName,
+    required this.isHideName,
   });
 
   @override
@@ -28,7 +28,9 @@ class ReusableTextfieldCore extends StatelessWidget {
             fontWeight: FontWeight.w600,
           ),
         ),
-        SizedBox(height: isHideName ? 0 : 8), // Add spacing between label and text field
+        SizedBox(
+            height:
+                isHideName ? 0 : 8), // Add spacing between label and text field
         Material(
           elevation: 10,
           shadowColor: colorScheme.shadow.withOpacity(0.1),
@@ -37,8 +39,10 @@ class ReusableTextfieldCore extends StatelessWidget {
             controller: controller,
             decoration: InputDecoration(
               hintText: hintText ?? 'Enter $name',
-              hintStyle: TextStyle(color: colorScheme.onSurface.withOpacity(0.5)),
-              contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+              hintStyle:
+                  TextStyle(color: colorScheme.onSurface.withOpacity(0.5)),
+              contentPadding:
+                  const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
               filled: true,
               fillColor: colorScheme.surface,
               enabledBorder: OutlineInputBorder(
@@ -56,8 +60,10 @@ class ReusableTextfieldCore extends StatelessWidget {
                 ),
               ),
             ),
-            style:  TextStyle(
-              color: Theme.of(context).colorScheme.primary, // Ensures the text value is black
+            style: TextStyle(
+              color: Theme.of(context)
+                  .colorScheme
+                  .primary, // Ensures the text value is black
               fontSize: 16,
             ),
           ),

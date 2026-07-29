@@ -1,4 +1,4 @@
-import 'package:flashi/presentation/screen/main/favorate_screen.dart';
+import 'package:flashi/features/favorites/presentation/pages/favorites_page.dart';
 import 'package:flutter/material.dart';
 
 class ReusableFavoratePosition extends StatelessWidget {
@@ -7,23 +7,25 @@ class ReusableFavoratePosition extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  Positioned(
-      bottom: 115 ,
+    return Positioned(
+      bottom: 115,
       right: 5,
       child: GestureDetector(
         onTap: () => {
           Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const FavoriteScreen()),
-        )},
+            context,
+            MaterialPageRoute(builder: (context) => const FavoritesPage()),
+          )
+        },
         child: Container(
           padding: const EdgeInsets.all(5),
           decoration: BoxDecoration(
               color: colorScheme.primary,
-              borderRadius: BorderRadius.circular(50)
-
+              borderRadius: BorderRadius.circular(50)),
+          child: Icon(
+            Icons.favorite_rounded,
+            color: colorScheme.onPrimary,
           ),
-          child: Icon(Icons.favorite_rounded,color: colorScheme.onPrimary,),
         ),
       ),
     );

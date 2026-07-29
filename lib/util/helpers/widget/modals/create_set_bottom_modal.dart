@@ -1,4 +1,3 @@
-
 import 'package:flashi/presentation/widget/components/create_set_buttons.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_textfield_core.dart';
 import 'package:flashi/provider/quiz_provider.dart';
@@ -30,24 +29,32 @@ void CreateSetBottomModal({
         builder: (context, quizProvider, child) {
           return Container(
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-            height: 400 + keyboardHeight, // Fixed height, adjusting for the keyboard
+            height: 400 +
+                keyboardHeight, // Fixed height, adjusting for the keyboard
             child: Padding(
-              padding: EdgeInsets.only(bottom: keyboardHeight), // Padding adjusts with keyboard height
+              padding: EdgeInsets.only(
+                  bottom:
+                      keyboardHeight), // Padding adjusts with keyboard height
               child: Column(
-                mainAxisSize: MainAxisSize.min, // Ensures the modal doesn't stretch more than necessary
+                mainAxisSize: MainAxisSize
+                    .min, // Ensures the modal doesn't stretch more than necessary
                 children: [
                   const SizedBox(height: 10),
                   Align(
                     alignment: Alignment.topLeft,
                     child: Text(
-                      isCreate ? "Generate Quiz Set" : 'Edit the Quiz Set: $setName',
+                      isCreate
+                          ? "Generate Quiz Set"
+                          : 'Edit the Quiz Set: $setName',
                       style: TextStyle(
                         color: colorScheme.primary,
                         fontSize: 25,
                         fontWeight: FontWeight.bold,
-                        overflow: TextOverflow.ellipsis, // Handles text overflow
+                        overflow:
+                            TextOverflow.ellipsis, // Handles text overflow
                       ),
-                      maxLines: 1, // Ensures the title doesn't wrap onto multiple lines
+                      maxLines:
+                          1, // Ensures the title doesn't wrap onto multiple lines
                     ),
                   ),
                   const SizedBox(height: 30),
@@ -70,7 +77,8 @@ void CreateSetBottomModal({
                     createBtn: () {
                       // Get the input data from the text controllers
                       final String name = quizProvider.nameController.text;
-                      final String description = quizProvider.descriptionController.text;
+                      final String description =
+                          quizProvider.descriptionController.text;
 
                       // Add the new set to the provider
                       if (name.isNotEmpty) {
@@ -92,7 +100,8 @@ void CreateSetBottomModal({
 
                           quizProvider.clearController();
                         } else {
-                          quizProvider.editQuizSet(setName, newName: name, newDescription: description);
+                          quizProvider.editQuizSet(setName,
+                              newName: name, newDescription: description);
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text('The Quiz Set $name is Updated '),
@@ -112,7 +121,6 @@ void CreateSetBottomModal({
                             backgroundColor: Colors.red,
                           ),
                         );
-
                       }
                     },
                     buttonName: isCreate ? buttonName : 'Save Changes',

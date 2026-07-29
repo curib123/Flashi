@@ -16,16 +16,21 @@ class ReusableTitleContent extends StatefulWidget {
   final String title;
   final VoidCallback onUpgradePro;
   final VoidCallback onSettings;
-  final bool isEnergyShow ;
+  final bool isEnergyShow;
 
-  const ReusableTitleContent({super.key, required this.colorScheme, required this.title, required this.onUpgradePro, required this.onSettings, required this.isEnergyShow});
+  const ReusableTitleContent(
+      {super.key,
+      required this.colorScheme,
+      required this.title,
+      required this.onUpgradePro,
+      required this.onSettings,
+      required this.isEnergyShow});
 
   @override
   State<ReusableTitleContent> createState() => _ReusableTitleContentState();
 }
 
 class _ReusableTitleContentState extends State<ReusableTitleContent> {
-
   AdManager adManager = AdManager();
   @override
   void initState() {
@@ -34,10 +39,13 @@ class _ReusableTitleContentState extends State<ReusableTitleContent> {
 
     adManager.loadRewardedAd(AdUnitId.rewardedAdUnitId);
   }
+
   @override
   Widget build(BuildContext context) {
-    return Consumer4<QuizProvider, AiCreditProvider,NotesProvider,ChatBotProvider>(
-      builder: (context, quizProvider, aiCreditProvider,notesProvider,chatBotProvider, child) {
+    return Consumer4<QuizProvider, AiCreditProvider, NotesProvider,
+        ChatBotProvider>(
+      builder: (context, quizProvider, aiCreditProvider, notesProvider,
+          chatBotProvider, child) {
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -56,55 +64,79 @@ class _ReusableTitleContentState extends State<ReusableTitleContent> {
             // SizedBox(width: 20,),
             Row(
               children: [
-                widget.isEnergyShow ? GestureDetector(
-                  onTap: () async {
-                   adManager.loadRewardedAd(AdUnitId.rewardedAdUnitId);
-                    bool isConnected = await InternetConnection().hasInternetAccess;
-                   showLoadingDialog(context, text: "Loading ads... Please wait.\nIf it doesn’t appear, try again.");
-                 if(isConnected){
-                   Navigator.of(context).pop();
-                   showWatchAdDialog(
-                       context: context,
-                       title: "Earn Free energy!",
-                       message: "Watch a short ad and instantly earn 5 free energy!",
-                       cancelText: "Maybe Later",
-                       confirmText: "Watch Ads",
-                     onWatchAd: () {
-                       showLoadingDialog(context, text: "Loading ads... Please wait.\nIf it doesn’t appear, try again.");
-                       Future.delayed(const Duration(seconds: 10), () {
-                         Navigator.of(context).pop();
-                         adManager.showRewarded(context, 'energy');
-                       });
-                     },
-                   );
-                 }else{
-                   Navigator.of(context).pop();
-                   showAuthDialog(context, "Error", "Please connect to internet");
-                 }
-                  },
-                  child: Container(
-                    padding: EdgeInsets.only(left:10),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(20)),
-                      color: widget.colorScheme.onPrimary,
-                    ),
-                    child: Row(
-                      children: [
-                        Text(
-                          aiCreditProvider.credits.toString(),
-                          style: TextStyle(fontSize:  aiCreditProvider.credits.toString().length >= 5 ? 12 :  15, color: widget.colorScheme.primary,fontWeight: FontWeight.w600),
+                widget.isEnergyShow
+                    ? GestureDetector(
+                        onTap: () async {
+                          adManager.loadRewardedAd(AdUnitId.rewardedAdUnitId);
+                          bool isConnected =
+                              await InternetConnection().hasInternetAccess;
+                          showLoadingDialog(context,
+                              text:
+                                  "Loading ads... Please wait.\nIf it doesn’t appear, try again.");
+                          if (isConnected) {
+                            Navigator.of(context).pop();
+                            showWatchAdDialog(
+                              context: context,
+                              title: "Earn Free energy!",
+                              message:
+                                  "Watch a short ad and instantly earn 5 free energy!",
+                              cancelText: "Maybe Later",
+                              confirmText: "Watch Ads",
+                              onWatchAd: () {
+                                showLoadingDialog(context,
+                                    text:
+                                        "Loading ads... Please wait.\nIf it doesn’t appear, try again.");
+                                Future.delayed(const Duration(seconds: 10), () {
+                                  Navigator.of(context).pop();
+                                  adManager.showRewarded(context, 'energy');
+                                });
+                              },
+                            );
+                          } else {
+                            Navigator.of(context).pop();
+                            showAuthDialog(
+                                context, "Error", "Please connect to internet");
+                          }
+                        },
+                        child: Container(
+                          padding: EdgeInsets.only(left: 10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(20)),
+                            color: widget.colorScheme.onPrimary,
+                          ),
+                          child: Row(
+                            children: [
+                              Text(
+                                aiCreditProvider.credits.toString(),
+                                style: TextStyle(
+                                    fontSize: aiCreditProvider.credits
+                                                .toString()
+                                                .length >=
+                                            5
+                                        ? 12
+                                        : 15,
+                                    color: widget.colorScheme.primary,
+                                    fontWeight: FontWeight.w600),
+                              ),
+                              SizedBox(width: 5),
+                              Icon(Icons.offline_bolt_rounded,
+                                  size: 20,
+                                  color: widget.colorScheme.secondary),
+                              SizedBox(width: 2),
+                              Icon(
+                                Icons.add_circle_rounded,
+                                size: 30,
+                                color: widget.colorScheme.primary,
+                              )
+                            ],
+                          ),
                         ),
-                        SizedBox(width: 5),
-                        Icon(Icons.offline_bolt_rounded, size: 20, color: widget.colorScheme.secondary),
-                        SizedBox(width: 2),
-                        Icon(Icons.add_circle_rounded,size: 30,color: widget.colorScheme.primary,)
-                      ],
-                    ),
-
-                  ),
-                ) : Text(""),
-              SizedBox(width: 20,),
-               GestureDetector(
+                      )
+                    : Text(""),
+                SizedBox(
+                  width: 20,
+                ),
+                GestureDetector(
                   onTap: widget.onSettings,
                   child: CircleAvatar(
                     backgroundColor: Colors.transparent,
@@ -115,7 +147,6 @@ class _ReusableTitleContentState extends State<ReusableTitleContent> {
                     ),
                   ),
                 )
-
               ],
             ),
           ],

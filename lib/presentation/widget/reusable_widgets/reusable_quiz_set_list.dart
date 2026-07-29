@@ -1,4 +1,3 @@
-
 import 'package:flashi/presentation/widget/components/see_all_quiz_card.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_set_core.dart';
 import 'package:flashi/provider/quiz_provider.dart';
@@ -33,8 +32,8 @@ class ReusableQuizSetList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-     final ImportExportHelperClass helper = ImportExportHelperClass();  // Helper instance for export/import
+    final ImportExportHelperClass helper =
+        ImportExportHelperClass(); // Helper instance for export/import
 
     return Consumer<QuizProvider>(
       builder: (context, quizProvider, child) {
@@ -45,7 +44,7 @@ class ReusableQuizSetList extends StatelessWidget {
               child: Column(
                 children: List.generate(
                   quizSets.length,
-                      (index) {
+                  (index) {
                     final set = quizSets[index];
 
                     // Extract quiz set details with fallbacks for null values
@@ -53,7 +52,8 @@ class ReusableQuizSetList extends StatelessWidget {
                     final String description = set['description'] ?? '';
                     final List cards = set['cards'] ?? [];
                     final bool favorite = set['favorite'] ?? false;
-                    final DateTime timestamp = set['timestamp'] ?? DateTime.now();
+                    final DateTime timestamp =
+                        set['timestamp'] ?? DateTime.now();
 
                     return AnimationConfiguration.staggeredList(
                       position: index,
@@ -63,63 +63,73 @@ class ReusableQuizSetList extends StatelessWidget {
                         verticalOffset: 100.0,
                         child: FadeInAnimation(
                           child: ReusableSetCore(
-                              name: name,
-                              description: description,
-                              numberOfQuiz: cards.length,
-                              isFavorate: favorite,
-                              timestamp: timestamp,
-                              onTap: () => {
-                                _navigateToQuizCards(
-                                    context, name, set, index, set['cards']),
-                                quizProvider.updateCurrentQuizSetNameToSetLimit(name),
-                              },
-                              onAddCard: () async {
-                                if ( (  set['limitNumberOfQuiz'] - quizProvider.getNumberOfCardsInSet(name)  ) > 0 ) {
-                                  _addCard(context, name, set, index, set['cards']);
-
-                                } else {
-                                  _navigateToSeeAllQuizCard(context, name, set, index, set['cards']);
-                                  showAuthDialog(context,type: "warning", "warning", "You have run out of slots. Use Energy Free 2 slots");
-                                }
-                                quizProvider.updateCurrentQuizSetNameToSetLimit(name);
-                              },
-
-                              onReview: () => showReviewSelection(context: context, heading:name, cards:set['cards'], setname: name ),
-                              onDelete: () => showDeleteConfirmationDialog(
-                                context: context,
-                                setName: name,
-                                onDelete: () => quizProvider.removeQuizSet(set),
-                              ),
-                              onEdit: () {
-                                quizProvider.nameController.text = name;
-                                quizProvider.descriptionController.text = description;
-                                CreateSetBottomModal(
-                                  context: context,
-                                  buttonName: 'Edit',
-                                  isCreate: false,
-                                  setName: name,
-                                );
-                              },
-                              onFavorate: () => quizProvider.toggleFavorite(set),
-                              onViewAllCards: () => {
+                            name: name,
+                            description: description,
+                            numberOfQuiz: cards.length,
+                            isFavorate: favorite,
+                            timestamp: timestamp,
+                            onTap: () => {
+                              _navigateToQuizCards(
+                                  context, name, set, index, set['cards']),
+                              quizProvider
+                                  .updateCurrentQuizSetNameToSetLimit(name),
+                            },
+                            onAddCard: () async {
+                              if ((set['limitNumberOfQuiz'] -
+                                      quizProvider
+                                          .getNumberOfCardsInSet(name)) >
+                                  0) {
+                                _addCard(
+                                    context, name, set, index, set['cards']);
+                              } else {
                                 _navigateToSeeAllQuizCard(
-                                    context, name, set, index, set['cards']),
-                                quizProvider.updateCurrentQuizSetNameToSetLimit(name),
-                              },
-                              onShare: ()  {
-
-
-                           //    await shareFile();
-                              },
-
-                              onExport: () {
-                                helper.exportList(context, set);
-                              },
-
-
+                                    context, name, set, index, set['cards']);
+                                showAuthDialog(
+                                    context,
+                                    type: "warning",
+                                    "warning",
+                                    "You have run out of slots. Use Energy Free 2 slots");
+                              }
+                              quizProvider
+                                  .updateCurrentQuizSetNameToSetLimit(name);
+                            },
+                            onReview: () => showReviewSelection(
+                                context: context,
+                                heading: name,
+                                cards: set['cards'],
+                                setname: name),
+                            onDelete: () => showDeleteConfirmationDialog(
+                              context: context,
+                              setName: name,
+                              onDelete: () => quizProvider.removeQuizSet(set),
                             ),
+                            onEdit: () {
+                              quizProvider.nameController.text = name;
+                              quizProvider.descriptionController.text =
+                                  description;
+                              CreateSetBottomModal(
+                                context: context,
+                                buttonName: 'Edit',
+                                isCreate: false,
+                                setName: name,
+                              );
+                            },
+                            onFavorate: () => quizProvider.toggleFavorite(set),
+                            onViewAllCards: () => {
+                              _navigateToSeeAllQuizCard(
+                                  context, name, set, index, set['cards']),
+                              quizProvider
+                                  .updateCurrentQuizSetNameToSetLimit(name),
+                            },
+                            onShare: () {
+                              //    await shareFile();
+                            },
+                            onExport: () {
+                              helper.exportList(context, set);
+                            },
                           ),
                         ),
+                      ),
                     );
                   },
                 ),
@@ -129,16 +139,11 @@ class ReusableQuizSetList extends StatelessWidget {
         );
       },
     );
-
-
   }
 
-
-
-
   /// Navigate to the quiz card screen.
-  void _navigateToQuizCards(BuildContext context, String name, Map<String, dynamic> set,int index,List<dynamic> cards) {
-
+  void _navigateToQuizCards(BuildContext context, String name,
+      Map<String, dynamic> set, int index, List<dynamic> cards) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -154,9 +159,8 @@ class ReusableQuizSetList extends StatelessWidget {
   }
 
   /// Add a card to a quiz set after a delay.
-  Future<void> _addCard(BuildContext context, String name, Map<String, dynamic> set,int index,List<dynamic> cards) async {
-
-
+  Future<void> _addCard(BuildContext context, String name,
+      Map<String, dynamic> set, int index, List<dynamic> cards) async {
     // Navigate to the Add Card List screen
     Navigator.push(
       context,
@@ -185,7 +189,8 @@ class ReusableQuizSetList extends StatelessWidget {
   }
 
   /// Navigate to the Add Card List screen.
-  void _navigateToSeeAllQuizCard(BuildContext context, String name, Map<String, dynamic> set,int index,List<dynamic> cards) {
+  void _navigateToSeeAllQuizCard(BuildContext context, String name,
+      Map<String, dynamic> set, int index, List<dynamic> cards) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -200,4 +205,3 @@ class ReusableQuizSetList extends StatelessWidget {
     );
   }
 }
-

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-void showAuthDialog(BuildContext context, String title, String message, {String type = "info"}) {
+void showAuthDialog(BuildContext context, String title, String message,
+    {String type = "info"}) {
   final colorScheme = Theme.of(context).colorScheme;
   final Map<String, dynamic> dialogTypes = {
     "success": {"icon": Icons.check_circle, "color": colorScheme.primary},
@@ -50,11 +51,16 @@ void showAuthDialog(BuildContext context, String title, String message, {String 
                 child: ElevatedButton(
                   onPressed: () => Navigator.of(context).pop(),
                   style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
                     backgroundColor: iconColor,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
-                  child: const Text("OK", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+                  child: const Text("OK",
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white)),
                 ),
               ),
             ],

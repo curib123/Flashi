@@ -2,8 +2,8 @@ import 'package:flashi/presentation/widget/components/reviewer_settings_alert_co
 import 'package:flashi/presentation/widget/components/theme_selector_dropdown.dart';
 import 'package:flutter/material.dart';
 
-class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({super.key});
+class SettingsPage extends StatelessWidget {
+  const SettingsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -19,13 +19,14 @@ class SettingsScreen extends StatelessWidget {
           ),
         ),
         shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-
-          ),
+          borderRadius: BorderRadius.only(),
         ),
         backgroundColor: colorScheme.onPrimary,
         foregroundColor: colorScheme.primary,
-        title: Text("Settings",style: TextStyle(color: colorScheme.primary),),
+        title: Text(
+          "Settings",
+          style: TextStyle(color: colorScheme.primary),
+        ),
         centerTitle: true,
       ),
       body: Padding(
@@ -47,4 +48,4 @@ class SettingsScreen extends StatelessWidget {
       ],
     );
   }
-  }
+}

@@ -11,7 +11,7 @@ class ReusableNotesSummaryTileCore extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
-  final isHistoryScreen ;
+  final isHistoryPage;
 
   ReusableNotesSummaryTileCore({
     required this.title,
@@ -23,14 +23,12 @@ class ReusableNotesSummaryTileCore extends StatelessWidget {
     required this.onEdit,
     required this.onDelete,
     required this.isNote,
-    required this.isHistoryScreen,
+    required this.isHistoryPage,
   });
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-
-
 
     return GestureDetector(
       onTap: onTap,
@@ -38,8 +36,9 @@ class ReusableNotesSummaryTileCore extends StatelessWidget {
         margin: EdgeInsets.symmetric(vertical: 5),
         decoration: _buildContainerDecoration(colorScheme),
         child: ListTile(
-          contentPadding: EdgeInsets.symmetric(vertical: 5, horizontal: isHistoryScreen ? 30 : 15),
-          leading: isHistoryScreen ? null : _buildFavoriteButton(colorScheme),
+          contentPadding: EdgeInsets.symmetric(
+              vertical: 5, horizontal: isHistoryPage ? 30 : 15),
+          leading: isHistoryPage ? null : _buildFavoriteButton(colorScheme),
           title: _buildTitle(colorScheme),
           subtitle: _buildSubtitle(colorScheme),
           trailing: _buildPopupMenuButton(colorScheme),
@@ -53,13 +52,13 @@ class ReusableNotesSummaryTileCore extends StatelessWidget {
       gradient: LinearGradient(
         colors: isNote
             ? [
-          colorScheme.primaryContainer,
-          colorScheme.secondaryContainer,
-        ]
+                colorScheme.primaryContainer,
+                colorScheme.secondaryContainer,
+              ]
             : [
-          colorScheme.secondaryContainer,
-          colorScheme.tertiaryContainer,
-        ], // Fallback gradient colors
+                colorScheme.secondaryContainer,
+                colorScheme.tertiaryContainer,
+              ], // Fallback gradient colors
         begin: Alignment.bottomRight,
         end: Alignment.topLeft,
       ),
@@ -67,9 +66,8 @@ class ReusableNotesSummaryTileCore extends StatelessWidget {
     );
   }
 
-
   IconButton _buildFavoriteButton(ColorScheme colorScheme) {
-    return  IconButton(
+    return IconButton(
       icon: Icon(
         isFavorite ? Icons.star_rounded : Icons.star_border_rounded,
         color: colorScheme.primary,
@@ -82,16 +80,17 @@ class ReusableNotesSummaryTileCore extends StatelessWidget {
     return Text(
       title,
       style: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.bold,
-        color: colorScheme.primary,
-        overflow: TextOverflow.ellipsis
-      ),
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: colorScheme.primary,
+          overflow: TextOverflow.ellipsis),
     );
   }
+
   Column _buildSubtitle(ColorScheme colorScheme) {
     // Formatting date and time to 12-hour format
-    String formattedDate = DateFormat('MMM dd, yyyy - hh:mm a').format(timestamp);
+    String formattedDate =
+        DateFormat('MMM dd, yyyy - hh:mm a').format(timestamp);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -105,7 +104,9 @@ class ReusableNotesSummaryTileCore extends StatelessWidget {
             color: colorScheme.secondary,
           ),
         ),
-        const SizedBox(height: 10,),
+        const SizedBox(
+          height: 10,
+        ),
         Text(
           formattedDate,
           maxLines: 1,
@@ -118,6 +119,7 @@ class ReusableNotesSummaryTileCore extends StatelessWidget {
       ],
     );
   }
+
   PopupMenuButton<String> _buildPopupMenuButton(ColorScheme colorScheme) {
     return PopupMenuButton<String>(
       onSelected: (value) {
@@ -152,7 +154,8 @@ class ReusableNotesSummaryTileCore extends StatelessWidget {
     );
   }
 
-  Row _buildPopupMenuItem({required IconData icon, required Color color, required String text}) {
+  Row _buildPopupMenuItem(
+      {required IconData icon, required Color color, required String text}) {
     return Row(
       children: [
         Icon(icon, color: color),

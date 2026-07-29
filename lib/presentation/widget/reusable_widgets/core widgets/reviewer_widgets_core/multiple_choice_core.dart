@@ -55,8 +55,10 @@ class _MultipleChoiceCoreState extends State<MultipleChoiceCore> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildInfoCard("Score", "${widget.score}/${widget.totalScore}", Icons.star, colorScheme.primary),
-              _buildInfoCard("Timer", widget.timer, Icons.timer, colorScheme.secondary),
+              _buildInfoCard("Score", "${widget.score}/${widget.totalScore}",
+                  Icons.star, colorScheme.primary),
+              _buildInfoCard(
+                  "Timer", widget.timer, Icons.timer, colorScheme.secondary),
             ],
           ),
           const SizedBox(height: 24),
@@ -99,9 +101,10 @@ class _MultipleChoiceCoreState extends State<MultipleChoiceCore> {
     );
   }
 
-  Widget _buildInfoCard(String label, String value, IconData icon, Color bgColor) {
+  Widget _buildInfoCard(
+      String label, String value, IconData icon, Color bgColor) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 30 , vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
       decoration: BoxDecoration(
         color: bgColor.withOpacity(0.15),
         borderRadius: BorderRadius.circular(16),
@@ -143,9 +146,15 @@ class _MultipleChoiceCoreState extends State<MultipleChoiceCore> {
         color: colorScheme.onPrimary,
       );
     } else if (hasAnswered && isCorrect) {
-      leadingIcon = Icon(Icons.check_circle_outline, color: colorScheme.onPrimary,);
+      leadingIcon = Icon(
+        Icons.check_circle_outline,
+        color: colorScheme.onPrimary,
+      );
     } else {
-      leadingIcon = Icon(Icons.circle_outlined,  color: colorScheme.onPrimary,);
+      leadingIcon = Icon(
+        Icons.circle_outlined,
+        color: colorScheme.onPrimary,
+      );
     }
 
     Color tileColor;
@@ -175,16 +184,16 @@ class _MultipleChoiceCoreState extends State<MultipleChoiceCore> {
         onTap: hasAnswered
             ? null
             : () {
-          setState(() {
-            selectedOption = option;
-            hasAnswered = true;
-          });
-          widget.onAnswerSelected(option);
-        },
+                setState(() {
+                  selectedOption = option;
+                  hasAnswered = true;
+                });
+                widget.onAnswerSelected(option);
+              },
         leading: leadingIcon,
         title: Text(
           option,
-          style:  TextStyle(
+          style: TextStyle(
             color: colorScheme.onPrimary,
             fontSize: 18,
             fontWeight: FontWeight.w600,

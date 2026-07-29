@@ -62,7 +62,8 @@ class _FlipCardCoreState extends State<FlipCardCore> {
     );
   }
 
-  Widget _buildCardSide(BuildContext context, {required Widget content, required bool isFront}) {
+  Widget _buildCardSide(BuildContext context,
+      {required Widget content, required bool isFront}) {
     final size = MediaQuery.of(context).size;
     final colorScheme = Theme.of(context).colorScheme;
 
@@ -75,14 +76,17 @@ class _FlipCardCoreState extends State<FlipCardCore> {
             borderRadius: BorderRadius.circular(20),
             gradient: LinearGradient(
               colors: isFront
-                  ? [ colorScheme.primary.withOpacity(0.8),
-                colorScheme.primary.withOpacity(0.5),]
-                  : [ colorScheme.primary.withOpacity(0.5),
-                colorScheme.primary.withOpacity(0.8),],
+                  ? [
+                      colorScheme.primary.withOpacity(0.8),
+                      colorScheme.primary.withOpacity(0.5),
+                    ]
+                  : [
+                      colorScheme.primary.withOpacity(0.5),
+                      colorScheme.primary.withOpacity(0.8),
+                    ],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
             ),
-
           ),
           padding: const EdgeInsets.all(20),
           child: Center(child: content),

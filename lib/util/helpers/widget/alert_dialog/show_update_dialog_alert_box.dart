@@ -1,7 +1,8 @@
 import 'package:flashi/util/helpers/classes/other/wepage_launcher.dart';
 import 'package:flutter/material.dart';
 
-void showUpdateDialog(BuildContext context, String currentVersion, String latestVersion, String downloadLink, String patchNote) {
+void showUpdateDialog(BuildContext context, String currentVersion,
+    String latestVersion, String downloadLink, String patchNote) {
   final colorScheme = Theme.of(context).colorScheme;
 
   showDialog(
@@ -18,7 +19,6 @@ void showUpdateDialog(BuildContext context, String currentVersion, String latest
           titlePadding: EdgeInsets.all(10),
           contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           actionsPadding: EdgeInsets.only(bottom: 15, right: 15),
-
           title: Row(
             children: [
               Icon(Icons.update_rounded, color: colorScheme.primary, size: 28),
@@ -37,7 +37,6 @@ void showUpdateDialog(BuildContext context, String currentVersion, String latest
               ),
             ],
           ),
-
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -70,7 +69,6 @@ void showUpdateDialog(BuildContext context, String currentVersion, String latest
               ),
             ],
           ),
-
           actions: [
             Row(
               mainAxisAlignment: MainAxisAlignment.end,

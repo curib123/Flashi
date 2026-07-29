@@ -41,11 +41,16 @@ class SeeAllQuizCard extends StatelessWidget {
       appBar: AppBar(
         foregroundColor: colorScheme.primary,
         backgroundColor: colorScheme.onPrimary,
-        title: Text(name,style: TextStyle(fontSize: 16,color: colorScheme.primary,fontWeight: FontWeight.bold),),
+        title: Text(
+          name,
+          style: TextStyle(
+              fontSize: 16,
+              color: colorScheme.primary,
+              fontWeight: FontWeight.bold),
+        ),
         centerTitle: false,
         shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-          ),
+          borderRadius: BorderRadius.only(),
         ),
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_new, color: colorScheme.primary),
@@ -60,11 +65,10 @@ class SeeAllQuizCard extends StatelessWidget {
   }
 
   Widget _body(BuildContext context) {
-
     AdManager adManager = AdManager();
 
-    return Consumer3<QuizProvider, SortProvider,AiCreditProvider>(
-      builder: (context, quizProvider, sortProvider,aiCreditProvider, child) {
+    return Consumer3<QuizProvider, SortProvider, AiCreditProvider>(
+      builder: (context, quizProvider, sortProvider, aiCreditProvider, child) {
         return Stack(
           children: [
             ListView(
@@ -87,65 +91,68 @@ class SeeAllQuizCard extends StatelessWidget {
                       cards: cards,
                       setname: name,
                     );
-                  }, onSeeAllPressed: () {  },
+                  },
+                  onSeeAllPressed: () {},
                 ),
                 adManager.getSixthBannerAdWidget(),
                 cards.isEmpty
                     ? noCardWidget(context)
                     : SizedBox(
-                  width: MediaQuery.sizeOf(context).width,
-                  height: MediaQuery.sizeOf(context).height * 0.68,
-                  child:ReusableQuizCardList(
-                      name: name,
-                      card: card,
-                      onRemove: (quizSet) {
-                        showDeleteConfirmationDialog(
-                          context: context,
-                          setName: name,
-                          onDelete: () => quizProvider.removeCardFromQuizSet(
-                            quizSetName: name,
-                            question: quizSet['question'],
-                          ),
-                        );
-                      },
-                      onEdit: (quizSet) {
-                        quizProvider.questionController.text = quizSet['question'];
-                        quizProvider.answerController.text = quizSet['answer'];
-                        CreateCardBottomModal(
+                        width: MediaQuery.sizeOf(context).width,
+                        height: MediaQuery.sizeOf(context).height * 0.68,
+                        child: ReusableQuizCardList(
                           name: name,
-                          context: context,
-                          buttonName: "Edit Card",
-                          isCreate: false,
-                          cardName: quizSet['question'],
-                          card: quizSet,
-                        );
-                      },
-                      onIgnore: (name, quizSet) {
-                        quizProvider.toggleIgnore(
-                          quizSetName: name,
-                          isIgnore: quizSet['isIgnore'],
-                          question: quizSet['question'],
-                        );
-                      },
-                      onKeyword: (quizSet) {
-                        HighlightKeywordAlertBox(context, (keyword) {
-                          quizProvider.updateKeyWordInQuizSet(
-                            quizSetName: name,
-                            oldKeyWord: quizSet['keyword'],
-                            newKeyWord: keyword,
-                          );
-                        });
-                      },
-                      onRemoveKeyword: (quizSet) {
-                        quizProvider.updateKeyWordInQuizSet(
-                          quizSetName: name,
-                          oldKeyWord: quizSet['keyword'],
-                          newKeyWord: '',
-                        );
-                      },
-                    ),
-
-                ),
+                          card: card,
+                          onRemove: (quizSet) {
+                            showDeleteConfirmationDialog(
+                              context: context,
+                              setName: name,
+                              onDelete: () =>
+                                  quizProvider.removeCardFromQuizSet(
+                                quizSetName: name,
+                                question: quizSet['question'],
+                              ),
+                            );
+                          },
+                          onEdit: (quizSet) {
+                            quizProvider.questionController.text =
+                                quizSet['question'];
+                            quizProvider.answerController.text =
+                                quizSet['answer'];
+                            CreateCardBottomModal(
+                              name: name,
+                              context: context,
+                              buttonName: "Edit Card",
+                              isCreate: false,
+                              cardName: quizSet['question'],
+                              card: quizSet,
+                            );
+                          },
+                          onIgnore: (name, quizSet) {
+                            quizProvider.toggleIgnore(
+                              quizSetName: name,
+                              isIgnore: quizSet['isIgnore'],
+                              question: quizSet['question'],
+                            );
+                          },
+                          onKeyword: (quizSet) {
+                            HighlightKeywordAlertBox(context, (keyword) {
+                              quizProvider.updateKeyWordInQuizSet(
+                                quizSetName: name,
+                                oldKeyWord: quizSet['keyword'],
+                                newKeyWord: keyword,
+                              );
+                            });
+                          },
+                          onRemoveKeyword: (quizSet) {
+                            quizProvider.updateKeyWordInQuizSet(
+                              quizSetName: name,
+                              oldKeyWord: quizSet['keyword'],
+                              newKeyWord: '',
+                            );
+                          },
+                        ),
+                      ),
               ],
             ),
             Positioned(
@@ -158,7 +165,9 @@ class SeeAllQuizCard extends StatelessWidget {
                 ),
               ),
             ),
-            if (card['limitNumberOfQuiz'] - quizProvider.getNumberOfCardsInSet(name) != 0)
+            if (card['limitNumberOfQuiz'] -
+                    quizProvider.getNumberOfCardsInSet(name) !=
+                0)
               ReusableCreateSetButtonPosition(
                 icon: Icons.add_circle,
                 colorScheme: colorScheme,
@@ -175,21 +184,23 @@ class SeeAllQuizCard extends StatelessWidget {
                 },
               )
             else
-              aiCreditProvider.credits > 0 ? ReusableCreateSetButtonPosition(
-                 colorScheme: colorScheme,
-                 name: "Add More Slot",
-                 onTap: (){
-                   showAddSlotAlertDialog(context: context, onConfirm: (){
-                     aiCreditProvider.useCredit(1);
-                     quizProvider.updateQuizSetLimit(2);
-                   });
-                 },
-                 icon: Icons.add_circle_rounded
-             ) :
-            ReusableRewardedAdsButtonPosition(
-              colorScheme: colorScheme,
-              name: "Watch Ad Free 5 Credits",
-            ),
+              aiCreditProvider.credits > 0
+                  ? ReusableCreateSetButtonPosition(
+                      colorScheme: colorScheme,
+                      name: "Add More Slot",
+                      onTap: () {
+                        showAddSlotAlertDialog(
+                            context: context,
+                            onConfirm: () {
+                              aiCreditProvider.useCredit(1);
+                              quizProvider.updateQuizSetLimit(2);
+                            });
+                      },
+                      icon: Icons.add_circle_rounded)
+                  : ReusableRewardedAdsButtonPosition(
+                      colorScheme: colorScheme,
+                      name: "Watch Ad Free 5 Credits",
+                    ),
             ReusableThemeSettingPosition(colorScheme: colorScheme),
           ],
         );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-void HighlightKeywordAlertBox(BuildContext context, Function(String search) onSearch) {
+void HighlightKeywordAlertBox(
+    BuildContext context, Function(String search) onSearch) {
   TextEditingController searchController = TextEditingController();
   final colorScheme = Theme.of(context).colorScheme;
 
@@ -60,7 +61,7 @@ void HighlightKeywordAlertBox(BuildContext context, Function(String search) onSe
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: colorScheme.secondary,
-                      foregroundColor:colorScheme.onSecondary,
+                      foregroundColor: colorScheme.onSecondary,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),

@@ -13,7 +13,11 @@ class FlashcardReview extends StatefulWidget {
   final List<dynamic> cards;
   final String setname;
 
-  const FlashcardReview({super.key, required this.reviewer, required this.cards, required this.setname});
+  const FlashcardReview(
+      {super.key,
+      required this.reviewer,
+      required this.cards,
+      required this.setname});
 
   @override
   _FlashcardReviewState createState() => _FlashcardReviewState();
@@ -22,21 +26,19 @@ class FlashcardReview extends StatefulWidget {
 class _FlashcardReviewState extends State<FlashcardReview> {
   late PageController _pageController;
   int _currentPage = 0;
-AdManager adManager = AdManager();
+  AdManager adManager = AdManager();
 
   @override
   void initState() {
     super.initState();
 
-    Future.delayed(Duration(minutes: 5),(){
+    Future.delayed(Duration(minutes: 5), () {
       adManager.loadInterstitialAd(AdUnitId.interstitialAdUnitId);
     });
 
     adManager.showInterstitialAd();
     _pageController = PageController();
-
   }
-
 
   @override
   void dispose() {
@@ -48,17 +50,17 @@ AdManager adManager = AdManager();
   Widget build(BuildContext context) {
     // Access both providers directly
     final quizProvider = Provider.of<QuizProvider>(context);
-    final reviewerSettingsProvider = Provider.of<ReviewerSettingsProvider>(context);
-
+    final reviewerSettingsProvider =
+        Provider.of<ReviewerSettingsProvider>(context);
 
     if (widget.cards.isEmpty) {
       return Center(
-        child: Text("No cards available", style: TextStyle(color: Theme.of(context).colorScheme.primary)),
+        child: Text("No cards available",
+            style: TextStyle(color: Theme.of(context).colorScheme.primary)),
       );
     }
 
     //ads here
-
 
     return Center(
       child: Column(
@@ -73,11 +75,20 @@ AdManager adManager = AdManager();
                 itemCount: widget.cards.length,
                 itemBuilder: (context, index) {
                   // Ensure the card is cast to the correct type
-                  Map<String, dynamic> card = Map<String, dynamic>.from(widget.cards[index]);
+                  Map<String, dynamic> card =
+                      Map<String, dynamic>.from(widget.cards[index]);
 
                   return FlipCardCore(
-                    flipDirection: reviewerSettingsProvider.flashCardFlippingDirection,
-                    question: highlightKeywords( context: context, keyword:  card['keyword'] , text:  card['question'] , fontSize: 20 , fontColor: Theme.of(context).colorScheme.onPrimary, fontSizeKeyword: 15, isCenter: true),
+                    flipDirection:
+                        reviewerSettingsProvider.flashCardFlippingDirection,
+                    question: highlightKeywords(
+                        context: context,
+                        keyword: card['keyword'],
+                        text: card['question'],
+                        fontSize: 20,
+                        fontColor: Theme.of(context).colorScheme.onPrimary,
+                        fontSizeKeyword: 15,
+                        isCenter: true),
                     answer: card['answer'],
                     onEdit: () {
                       // Populate the quiz provider with the current card's data
@@ -96,7 +107,6 @@ AdManager adManager = AdManager();
                     },
                   );
                 },
-
                 onPageChanged: (index) {
                   setState(() {
                     _currentPage = index;
@@ -107,7 +117,8 @@ AdManager adManager = AdManager();
           ),
           // Indicator in a Row for horizontal alignment
           Padding(
-            padding: const EdgeInsets.only(top: 5.0), // Adds space between indicator and cards
+            padding: const EdgeInsets.only(
+                top: 5.0), // Adds space between indicator and cards
             child: Center(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -121,10 +132,11 @@ AdManager adManager = AdManager();
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center, // Center the indicators
+                      mainAxisAlignment:
+                          MainAxisAlignment.center, // Center the indicators
                       children: List.generate(
                         3,
-                            (index) => Container(
+                        (index) => Container(
                           margin: const EdgeInsets.symmetric(horizontal: 2.0),
                           width: widget.cards.length <= 15 ? 10 : 6,
                           height: widget.cards.length <= 15 ? 10 : 6,
@@ -148,7 +160,6 @@ AdManager adManager = AdManager();
               ),
             ),
           )
-
         ],
       ),
     );

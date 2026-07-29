@@ -3,7 +3,8 @@ import 'dart:math';
 import 'package:http/http.dart' as http;
 
 class TriviaGenerator {
-  static const String triviaAPI = "https://the-trivia-api.com/api/questions?limit=30";
+  static const String triviaAPI =
+      "https://the-trivia-api.com/api/questions?limit=30";
 
   static Future<List<Map<String, String>>> fetchTrivia() async {
     try {
@@ -16,7 +17,8 @@ class TriviaGenerator {
         for (var trivia in triviaList) {
           String question = trivia['question'];
           String correctAnswer = trivia['correctAnswer'];
-          List<String> incorrectAnswers = List<String>.from(trivia['incorrectAnswers']);
+          List<String> incorrectAnswers =
+              List<String>.from(trivia['incorrectAnswers']);
 
           // Ensure there are at least two fake choices
           if (incorrectAnswers.length < 2) {

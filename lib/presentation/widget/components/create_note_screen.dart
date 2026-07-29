@@ -8,13 +8,13 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-class CreateNoteScreen extends StatelessWidget {
+class CreateNotesPage extends StatelessWidget {
   final bool isCreate;
   final bool isRead;
   final String title;
   final DateTime date;
 
-  const CreateNoteScreen({
+  const CreateNotesPage({
     Key? key,
     required this.isCreate,
     required this.title,
@@ -68,54 +68,56 @@ class CreateNoteScreen extends StatelessWidget {
     );
   }
 
-  AppBar _buildAppBar(ColorScheme colorScheme, BuildContext context, String title) {
+  AppBar _buildAppBar(
+      ColorScheme colorScheme, BuildContext context, String title) {
     return AppBar(
       leading: IconButton(
-        icon: Icon(Icons.arrow_back_ios_new_rounded, color: colorScheme.primary),
+        icon:
+            Icon(Icons.arrow_back_ios_new_rounded, color: colorScheme.primary),
         onPressed: () => Navigator.of(context).pop(),
       ),
       title: !isRead
           ? Text(
-        isCreate ? "Create Note" : "Edit Note",
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 20,
-          color: colorScheme.primary,
-        ),
-      )
+              isCreate ? "Create Note" : "Edit Note",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+                color: colorScheme.primary,
+              ),
+            )
           : Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            'View Note',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
-              color: colorScheme.primary,
-            ),
-          ),
-          const SizedBox(width: 10),
-          IconButton(
-            icon: Icon(Icons.edit, color: colorScheme.primary),
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => CreateNoteScreen(
-                  isCreate: false,
-                  title: title,
-                  isRead: false,
-                  date: date,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'View Note',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                    color: colorScheme.primary,
+                  ),
                 ),
-              ));
-            },
-          ),
-        ],
-      ),
-
+                const SizedBox(width: 10),
+                IconButton(
+                  icon: Icon(Icons.edit, color: colorScheme.primary),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => CreateNotesPage(
+                        isCreate: false,
+                        title: title,
+                        isRead: false,
+                        date: date,
+                      ),
+                    ));
+                  },
+                ),
+              ],
+            ),
     );
   }
 
-  Widget _buildBody(Size size, NotesProvider noteProvider, ColorScheme colorScheme) {
+  Widget _buildBody(
+      Size size, NotesProvider noteProvider, ColorScheme colorScheme) {
     String formattedDate = DateFormat('MMM dd, yyyy - hh:mm a').format(date);
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -127,23 +129,25 @@ class CreateNoteScreen extends StatelessWidget {
           style: TextStyle(color: colorScheme.primary),
         ),
         _buildContentInputField(size, noteProvider, colorScheme),
-        Center(child: Text(formattedDate, style: TextStyle(color: colorScheme.primary))),
+        Center(
+            child: Text(formattedDate,
+                style: TextStyle(color: colorScheme.primary))),
       ],
     );
   }
 
-  Widget _buildTitleInputField(NotesProvider noteProvider, ColorScheme colorScheme) {
+  Widget _buildTitleInputField(
+      NotesProvider noteProvider, ColorScheme colorScheme) {
     return Container(
       // Use the surface color for a card-
       color: colorScheme.onPrimary,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
       child: TextField(
-
         readOnly: isRead,
         controller: noteProvider.titleController,
-        decoration:  InputDecoration(
+        decoration: InputDecoration(
           hintText: 'Title Here',
-          hintStyle: TextStyle(color:colorScheme.primary),
+          hintStyle: TextStyle(color: colorScheme.primary),
           border: InputBorder.none,
         ),
         // Use onSurface so the text contrasts with the surface color.
@@ -152,7 +156,8 @@ class CreateNoteScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildContentInputField(Size size, NotesProvider noteProvider, ColorScheme colorScheme) {
+  Widget _buildContentInputField(
+      Size size, NotesProvider noteProvider, ColorScheme colorScheme) {
     return Container(
       color: colorScheme.onPrimary,
       width: size.width,

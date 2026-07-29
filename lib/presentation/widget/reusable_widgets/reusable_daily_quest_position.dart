@@ -1,4 +1,3 @@
-
 import 'package:flashi/provider/DailyQuestionProvider.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/showDailyQuestionDialog.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +9,6 @@ class ReusableDailyQuestPosition extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     final dailyQuestionProvider = Provider.of<DailyQuestionProvider>(context);
 
     return Positioned(
@@ -19,10 +17,9 @@ class ReusableDailyQuestPosition extends StatelessWidget {
       child: GestureDetector(
         onTap: () {
           showDialog(
-            context: context,
-            builder: (context) => DailyQuestionDialog(questions: dailyQuestionProvider.funFacts)
-          );
-
+              context: context,
+              builder: (context) => DailyQuestionDialog(
+                  questions: dailyQuestionProvider.funFacts));
         },
         child: Container(
           padding: const EdgeInsets.all(5),

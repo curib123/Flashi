@@ -1,5 +1,5 @@
 import 'dart:math';
-import 'package:flashi/presentation/screen/main/settings_screen.dart';
+import 'package:flashi/features/settings/presentation/pages/settings_page.dart';
 import 'package:flashi/presentation/widget/components/see_all_quiz_set_list.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_daily_quest_position.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_favorate_position.dart';
@@ -26,15 +26,14 @@ import 'package:flashi/util/helpers/widget/other/empty_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class DashboardPage extends StatefulWidget {
+  const DashboardPage({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<DashboardPage> createState() => _DashboardPageState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-
+class _DashboardPageState extends State<DashboardPage> {
   AdManager adManager = AdManager();
   late AppLifecycleReactor appLifecycleReactor;
 
@@ -43,71 +42,75 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
 
     AdManager adManager = AdManager()..loadOpenAppAd(AdUnitId.appOpenAdUnitId);
-    appLifecycleReactor = AppLifecycleReactor(
-        adManager: adManager);
-    Future.delayed(Duration(minutes: 5),(){
+    appLifecycleReactor = AppLifecycleReactor(adManager: adManager);
+    Future.delayed(Duration(minutes: 5), () {
       adManager.loadInterstitialAd(AdUnitId.interstitialAdUnitId);
     });
 
-    final fetchDataFromJsonProvider = Provider.of<FetchDataFromJsonProvider>(context,listen: false);
-    final aiModelLogicProvider = Provider.of<AiModelLogicProvider>(context,listen: false);
-    final checkVersionProvider = Provider.of<CheckVersionProvider>(context,listen: false);
-    final aiCreditProvider = Provider.of<AiCreditProvider>(context,listen: false);
-    final dailyQuestionProvider = Provider.of<DailyQuestionProvider>(context,listen: false);
+    final fetchDataFromJsonProvider =
+        Provider.of<FetchDataFromJsonProvider>(context, listen: false);
+    final aiModelLogicProvider =
+        Provider.of<AiModelLogicProvider>(context, listen: false);
+    final checkVersionProvider =
+        Provider.of<CheckVersionProvider>(context, listen: false);
+    final aiCreditProvider =
+        Provider.of<AiCreditProvider>(context, listen: false);
+    final dailyQuestionProvider =
+        Provider.of<DailyQuestionProvider>(context, listen: false);
 
     fetchDataFromJsonProvider.fetchLatestVersion();
     aiModelLogicProvider.fetchLatestVersion();
     checkVersionProvider.checkAppVersion(context);
     dailyQuestionProvider.updateFunFacts(fetchDataFromJsonProvider);
 
-
-
-
-    Future.delayed(Duration(seconds: 5),(){
+    Future.delayed(Duration(seconds: 5), () {
       print(dailyQuestionProvider.funFacts);
       handleFreeCreditsDialog(aiCreditProvider, context);
-      if (dailyQuestionProvider.funFacts.isNotEmpty && !dailyQuestionProvider.isAlreadyShow) {
-          showDialog(
-              context: context,
-              builder: (context) => DailyQuestionDialog(questions: dailyQuestionProvider.funFacts));
+      if (dailyQuestionProvider.funFacts.isNotEmpty &&
+          !dailyQuestionProvider.isAlreadyShow) {
+        showDialog(
+            context: context,
+            builder: (context) =>
+                DailyQuestionDialog(questions: dailyQuestionProvider.funFacts));
 
         dailyQuestionProvider.toggleFunFacts();
       }
     });
-
   }
 
+  void handleFreeCreditsDialog(
+      AiCreditProvider aiCreditProvider, BuildContext context) async {
+    if (await aiCreditProvider.hasInternet()) {
+      final now = await aiCreditProvider.getNetworkTime();
+      final random = Random();
 
-  void handleFreeCreditsDialog(AiCreditProvider aiCreditProvider,BuildContext context) async{
-        if (await aiCreditProvider.hasInternet()) {
-          final now = await aiCreditProvider.getNetworkTime();
-          final random = Random();
+      print(now);
+      print(aiCreditProvider.lastUpdated);
 
-          print(now);
-          print(aiCreditProvider.lastUpdated);
+      if (aiCreditProvider.credits <= 10) {
+        aiCreditProvider.updateAddedCredits(random.nextInt(4) + 4);
+      } else if (aiCreditProvider.credits > 10 &&
+          aiCreditProvider.credits <= 10) {
+        aiCreditProvider.updateAddedCredits(random.nextInt(3) + 3);
+      } else if (aiCreditProvider.credits > 15 &&
+          aiCreditProvider.credits <= 15) {
+        aiCreditProvider.updateAddedCredits(random.nextInt(2) + 2);
+      } else {
+        aiCreditProvider.updateAddedCredits(random.nextInt(1) + 1);
+      }
 
-          if (aiCreditProvider.credits <= 10) {
-            aiCreditProvider.updateAddedCredits(random.nextInt(4) + 4);
-          } else if (aiCreditProvider.credits > 10 && aiCreditProvider.credits <= 10) {
-           aiCreditProvider.updateAddedCredits( random.nextInt(3) + 3);
-          } else if (aiCreditProvider.credits > 15 && aiCreditProvider.credits <= 15) {
-           aiCreditProvider.updateAddedCredits(random.nextInt(2) + 2);
-          } else {
-           aiCreditProvider.updateAddedCredits(random.nextInt(1) + 1);
-          }
-
-          if (aiCreditProvider.lastUpdated == null || now.difference(aiCreditProvider.lastUpdated!).inDays > 0) {
-            showFreeCreditsDialog(
-              context: context,
-              rewardText: "You have free ${aiCreditProvider.addedCredits} energy",
-              onClaim: () async {
-                await aiCreditProvider.handleDataChange(now: now);
-              },
-            );
-
-          }
-        };
-
+      if (aiCreditProvider.lastUpdated == null ||
+          now.difference(aiCreditProvider.lastUpdated!).inDays > 0) {
+        showFreeCreditsDialog(
+          context: context,
+          rewardText: "You have free ${aiCreditProvider.addedCredits} energy",
+          onClaim: () async {
+            await aiCreditProvider.handleDataChange(now: now);
+          },
+        );
+      }
+    }
+    ;
   }
 
   void change(QuizProvider quizProvider) {
@@ -125,15 +128,16 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
     adManager.showInterstitialAd();
   }
+
   @override
   Widget build(BuildContext context) {
-
     // Retrieve the current theme's color scheme
     final colorScheme = Theme.of(context).colorScheme;
 
     // Access the QuizProvider and SortProvider from the context
     final quizProvider = Provider.of<QuizProvider>(context);
-    final fetchDataFromJsonProvider = Provider.of<FetchDataFromJsonProvider>(context);
+    final fetchDataFromJsonProvider =
+        Provider.of<FetchDataFromJsonProvider>(context);
     final sortProvider = Provider.of<SortProvider>(context);
     final aiModelLogicProvider = Provider.of<AiModelLogicProvider>(context);
     final aiCreditProvider = Provider.of<AiCreditProvider>(context);
@@ -142,7 +146,6 @@ class _HomeScreenState extends State<HomeScreen> {
     final filteredQuizSets = quizProvider.filteredQuizSets.reversed.toList();
 
     AdManager adManager = AdManager();
-
 
     change(quizProvider);
 
@@ -184,16 +187,17 @@ class _HomeScreenState extends State<HomeScreen> {
                   pinned: true, // Keeps the header visible when scrolling
                   floating: true, // Header doesn't float when scrolling
                   expandedHeight: 190, // Height of the expanded header
-                  title:  ReusableTitleContent(
+                  title: ReusableTitleContent(
                       isEnergyShow: true,
-                      colorScheme: colorScheme, title: "FLASHI", onUpgradePro: () {},
+                      colorScheme: colorScheme,
+                      title: "FLASHI",
+                      onUpgradePro: () {},
                       onSettings: () {
-            
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => const SettingsScreen()),
+                          MaterialPageRoute(
+                              builder: (context) => const SettingsPage()),
                         );
-            
                       }),
                   flexibleSpace: FlexibleSpaceBar(
                     background: Container(
@@ -214,7 +218,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ),
                           ),
-                          SizedBox(height: 10,),
+                          SizedBox(
+                            height: 10,
+                          ),
                           // Search bar for filtering quiz sets
                           Container(
                             height: 75,
@@ -230,7 +236,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   ),
-            
+
                   shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.only(
                       bottomRight: Radius.circular(35),
@@ -238,52 +244,51 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ),
-            
+
                 // Content section below the header
                 SliverToBoxAdapter(
                   child: Container(
-                    padding: const EdgeInsets.only(top: 0, bottom: 300,right: 2,left: 2),
-                    child: Stack(
-                      children: [
-                        Column(
-                          children: [
-                            // Sorting and "See All" button
-                           Column(
-                             children: [
-                               ReusableSortAndSeeAll(
-                                 dropdownValue: sortProvider.dropdownValueSet,
-                                 sortOptions: sortProvider.sortOptionsSet,
-                                 onSortChanged: (newValue) {
-                                   sortProvider.updateSortValueSet(newValue!);
-                                   quizProvider.sortQuizSets(newValue);
-                                 },
-                                 onSeeAllPressed: ()  {
-                                   quizProvider.searchController.text = quizProvider.searchQuery;
-                                   gotoSeeAllQuizSetList();
-                                 },
-                                 isShowSeeAllLink: true,
-                                 isShowReviewLink: false,
-                                 onShowReviewLink: () { },
-                               ),
-                               // Positioned Banner Ads (Floating Above the Content)
-                               adManager.getFirstBannerAdWidget(),
-                             ],
-                           ),
-            
-                            // Quiz set list or message
-                            if (filteredQuizSets.isNotEmpty)
-                              ReusableQuizSetList(quizSets: filteredQuizSets)
-                            else
-                              noSetWidget(context)
-            
-                          ],
-                        ),
-            
-            
-                      ],
-                    )
-            
-                  ),
+                      padding: const EdgeInsets.only(
+                          top: 0, bottom: 300, right: 2, left: 2),
+                      child: Stack(
+                        children: [
+                          Column(
+                            children: [
+                              // Sorting and "See All" button
+                              Column(
+                                children: [
+                                  ReusableSortAndSeeAll(
+                                    dropdownValue:
+                                        sortProvider.dropdownValueSet,
+                                    sortOptions: sortProvider.sortOptionsSet,
+                                    onSortChanged: (newValue) {
+                                      sortProvider
+                                          .updateSortValueSet(newValue!);
+                                      quizProvider.sortQuizSets(newValue);
+                                    },
+                                    onSeeAllPressed: () {
+                                      quizProvider.searchController.text =
+                                          quizProvider.searchQuery;
+                                      gotoSeeAllQuizSetList();
+                                    },
+                                    isShowSeeAllLink: true,
+                                    isShowReviewLink: false,
+                                    onShowReviewLink: () {},
+                                  ),
+                                  // Positioned Banner Ads (Floating Above the Content)
+                                  adManager.getFirstBannerAdWidget(),
+                                ],
+                              ),
+
+                              // Quiz set list or message
+                              if (filteredQuizSets.isNotEmpty)
+                                ReusableQuizSetList(quizSets: filteredQuizSets)
+                              else
+                                noSetWidget(context)
+                            ],
+                          ),
+                        ],
+                      )),
                 ),
               ],
             ),
@@ -294,8 +299,9 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icons.add_circle,
             colorScheme: colorScheme,
             name: 'Generate Quiz',
-            onTap: ()  {
-              aiModelLogicProvider.showFlashcardDialog(context, quizProvider, colorScheme,fetchDataFromJsonProvider,aiCreditProvider);
+            onTap: () {
+              aiModelLogicProvider.showFlashcardDialog(context, quizProvider,
+                  colorScheme, fetchDataFromJsonProvider, aiCreditProvider);
             },
           ),
 
@@ -304,10 +310,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ReusableDailyQuestPosition(colorScheme: colorScheme),
           ReusableImportPosition(colorScheme: colorScheme),
           ReusableFavoratePosition(colorScheme: colorScheme),
-
         ],
       ),
     );
   }
 }
-

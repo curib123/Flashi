@@ -43,7 +43,6 @@ class ReusableNotesSummaryBlockCore extends StatelessWidget {
             SizedBox(height: 8),
             _buildSubtitle(colorScheme),
             Spacer(),
-
           ],
         ),
       ),
@@ -55,20 +54,19 @@ class ReusableNotesSummaryBlockCore extends StatelessWidget {
       gradient: LinearGradient(
         colors: isNote
             ? [
-          colorScheme.secondaryContainer.withOpacity(0.2),
-          colorScheme.primaryContainer,
-        ]
+                colorScheme.secondaryContainer.withOpacity(0.2),
+                colorScheme.primaryContainer,
+              ]
             : [
-          colorScheme.tertiaryContainer.withOpacity(0.2),
-          colorScheme.secondaryContainer,
-        ], // Fallback gradient colors
+                colorScheme.tertiaryContainer.withOpacity(0.2),
+                colorScheme.secondaryContainer,
+              ], // Fallback gradient colors
         begin: Alignment.bottomCenter,
         end: Alignment.topLeft,
       ),
       borderRadius: BorderRadius.circular(15),
     );
   }
-
 
   Row _buildFavoriteButton(ColorScheme colorScheme) {
     return Row(
@@ -102,7 +100,8 @@ class ReusableNotesSummaryBlockCore extends StatelessWidget {
 
   Column _buildSubtitle(ColorScheme colorScheme) {
     // Formatting date and time to 12-hour format
-    String formattedDate = DateFormat('MMM dd, yyyy - hh:mm a').format(timestamp);
+    String formattedDate =
+        DateFormat('MMM dd, yyyy - hh:mm a').format(timestamp);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -116,7 +115,9 @@ class ReusableNotesSummaryBlockCore extends StatelessWidget {
             color: colorScheme.secondary,
           ),
         ),
-        const SizedBox(height: 10,),
+        const SizedBox(
+          height: 10,
+        ),
         Text(
           formattedDate,
           maxLines: 1,
@@ -164,7 +165,8 @@ class ReusableNotesSummaryBlockCore extends StatelessWidget {
     );
   }
 
-  Row _buildPopupMenuItem({required IconData icon, required Color color, required String text}) {
+  Row _buildPopupMenuItem(
+      {required IconData icon, required Color color, required String text}) {
     return Row(
       children: [
         Icon(icon, color: color),

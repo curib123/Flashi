@@ -62,7 +62,10 @@ class ReusableCardCore extends StatelessWidget {
               if (isIgnore)
                 Text(
                   "This card is hidden.",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colorScheme.primary.withOpacity(0.5)),
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: colorScheme.primary.withOpacity(0.5)),
                 )
               else ...[
                 highlightKeywords(
@@ -77,9 +80,12 @@ class ReusableCardCore extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   answer,
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colorScheme.secondary),
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: colorScheme.secondary),
                 ),
-              //  const SizedBox(height: 10),
+                //  const SizedBox(height: 10),
                 // Text(
                 //   isUpdating ? "Updated on: $formattedTimestamp" : "Created on: $formattedTimestamp",
                 //   style: TextStyle(fontSize: 12, color: colorScheme.onSurface.withOpacity(0.6)),
@@ -91,13 +97,16 @@ class ReusableCardCore extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
-                      icon: Icon(Icons.volume_up_rounded, color: colorScheme.primary),
+                      icon: Icon(Icons.volume_up_rounded,
+                          color: colorScheme.primary),
                       onPressed: () async {
-                        await flutterTts.speak('The question: $question The answer: $answer');
+                        await flutterTts.speak(
+                            'The question: $question The answer: $answer');
                       },
                     ),
                     IconButton(
-                      icon: Icon(Icons.more_vert_rounded, color: colorScheme.primary),
+                      icon: Icon(Icons.more_vert_rounded,
+                          color: colorScheme.primary),
                       onPressed: () => _showPopupMenu(context, colorScheme),
                     ),
                   ],
@@ -113,23 +122,33 @@ class ReusableCardCore extends StatelessWidget {
   void _showPopupMenu(BuildContext context, ColorScheme colorScheme) {
     showModalBottomSheet(
       context: context,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (context) => Wrap(
         children: [
           _buildMenuItem(context, colorScheme, 'Edit', Icons.edit, onEdit),
-          _buildMenuItem(context, colorScheme, 'Remove', Icons.delete, onRemove, isDestructive: true),
-          _buildMenuItem(context, colorScheme, 'Highlight keyword', Icons.key, onKeyword),
-          _buildMenuItem(context, colorScheme, 'Remove keyword', Icons.key_off, onRemoveKeyword),
-          _buildMenuItem(context, colorScheme, isIgnore ? 'Unignore' : 'Ignore', Icons.visibility, onIgnore),
+          _buildMenuItem(context, colorScheme, 'Remove', Icons.delete, onRemove,
+              isDestructive: true),
+          _buildMenuItem(
+              context, colorScheme, 'Highlight keyword', Icons.key, onKeyword),
+          _buildMenuItem(context, colorScheme, 'Remove keyword', Icons.key_off,
+              onRemoveKeyword),
+          _buildMenuItem(context, colorScheme, isIgnore ? 'Unignore' : 'Ignore',
+              Icons.visibility, onIgnore),
         ],
       ),
     );
   }
 
-  Widget _buildMenuItem(BuildContext context, ColorScheme colorScheme, String text, IconData icon, Function() onTap, {bool isDestructive = false}) {
+  Widget _buildMenuItem(BuildContext context, ColorScheme colorScheme,
+      String text, IconData icon, Function() onTap,
+      {bool isDestructive = false}) {
     return ListTile(
-      leading: Icon(icon, color: isDestructive ? colorScheme.error : colorScheme.primary),
-      title: Text(text, style: TextStyle(color: isDestructive ? colorScheme.error : colorScheme.primary)),
+      leading: Icon(icon,
+          color: isDestructive ? colorScheme.error : colorScheme.primary),
+      title: Text(text,
+          style: TextStyle(
+              color: isDestructive ? colorScheme.error : colorScheme.primary)),
       onTap: () {
         Navigator.pop(context);
         onTap();

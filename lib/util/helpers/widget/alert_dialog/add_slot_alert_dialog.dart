@@ -27,7 +27,8 @@ void showAddSlotAlertDialog({
           padding: const EdgeInsets.symmetric(vertical: 8.0),
           child: Text(
             "Unlock 2 slots for just 1 energy.\nWould you like to proceed?",
-            style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+            style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant),
             textAlign: TextAlign.center,
           ),
         ),
@@ -35,7 +36,8 @@ void showAddSlotAlertDialog({
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text("Cancel", style: TextStyle(color: Theme.of(context).colorScheme.error)),
+            child: Text("Cancel",
+                style: TextStyle(color: Theme.of(context).colorScheme.error)),
           ),
           ElevatedButton(
             onPressed: () {
@@ -45,7 +47,8 @@ void showAddSlotAlertDialog({
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.primary,
               foregroundColor: Theme.of(context).colorScheme.onPrimary,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8)),
             ),
             child: const Text("Confirm"),
           ),

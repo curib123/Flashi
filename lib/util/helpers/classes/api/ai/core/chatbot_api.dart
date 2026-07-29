@@ -7,7 +7,8 @@ class ChatbotApi {
   static const String apiUrl = "https://api.mistral.ai/v1/chat/completions";
   static String? _cachedApiKey;
   static final http.Client _client = http.Client(); // Persistent HTTP client
-  static const Duration timeoutDuration = Duration(seconds: 60); // Timeout duration
+  static const Duration timeoutDuration =
+      Duration(seconds: 60); // Timeout duration
 
   static Future<String?> _getCachedAPIKey() async {
     if (_cachedApiKey == null) {
@@ -25,8 +26,9 @@ class ChatbotApi {
       }
 
       // Extract only the last two messages
-      List<Map<String, String>> lastTwoMessages =
-      messages.length > 2 ? messages.sublist(messages.length - 2) : messages;
+      List<Map<String, String>> lastTwoMessages = messages.length > 2
+          ? messages.sublist(messages.length - 2)
+          : messages;
 
       // Format messages for API request
       List<Map<String, String>> formattedMessages = lastTwoMessages.map((msg) {
@@ -38,18 +40,18 @@ class ChatbotApi {
 
       final response = await _client
           .post(
-        Uri.parse(apiUrl),
-        headers: {
-          "Authorization": "Bearer $apiKey",
-          "Content-Type": "application/json",
-          "Accept-Encoding": "gzip",
-        },
-        body: jsonEncode({
-          "model": "pixtral-12b-2409",
-          "messages": formattedMessages,
-          "max_tokens": 500,
-        }),
-      )
+            Uri.parse(apiUrl),
+            headers: {
+              "Authorization": "Bearer $apiKey",
+              "Content-Type": "application/json",
+              "Accept-Encoding": "gzip",
+            },
+            body: jsonEncode({
+              "model": "pixtral-12b-2409",
+              "messages": formattedMessages,
+              "max_tokens": 500,
+            }),
+          )
           .timeout(timeoutDuration); // Apply 60-second timeout
 
       if (response.statusCode == 200) {

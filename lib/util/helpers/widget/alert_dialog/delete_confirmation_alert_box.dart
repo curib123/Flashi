@@ -1,37 +1,44 @@
-
 import 'package:flutter/material.dart';
 
-void showDeleteConfirmationDialog({required BuildContext context,required String setName, required Function() onDelete}) {
+void showDeleteConfirmationDialog(
+    {required BuildContext context,
+    required String setName,
+    required Function() onDelete}) {
   showDialog(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
         shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(16.0)), // Rounded corners
+          borderRadius:
+              BorderRadius.all(Radius.circular(16.0)), // Rounded corners
         ),
         title: Row(
           children: [
-            Icon(Icons.warning, color:  Theme.of(context).colorScheme.error, size: 30), // Warning icon
+            Icon(Icons.warning,
+                color: Theme.of(context).colorScheme.error,
+                size: 30), // Warning icon
             const SizedBox(width: 10),
             Text(
               'Confirm Deletion',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color:  Theme.of(context).colorScheme.error,
+                color: Theme.of(context).colorScheme.error,
               ),
             ),
           ],
         ),
         content: Text(
           'Are you sure you want to delete $setName',
-          style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.primary),
+          style: TextStyle(
+              fontSize: 16, color: Theme.of(context).colorScheme.primary),
         ),
         actions: <Widget>[
           // No button with style and color
           TextButton(
             style: TextButton.styleFrom(
-              foregroundColor: Colors.grey, shape: RoundedRectangleBorder(
+              foregroundColor: Colors.grey,
+              shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8.0),
               ),
             ),
@@ -43,8 +50,8 @@ void showDeleteConfirmationDialog({required BuildContext context,required String
           // Yes button with style and color
           TextButton(
             style: TextButton.styleFrom(
-              foregroundColor:  Theme.of(context).colorScheme.onError,
-              backgroundColor:  Theme.of(context).colorScheme.error,
+              foregroundColor: Theme.of(context).colorScheme.onError,
+              backgroundColor: Theme.of(context).colorScheme.error,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8.0),
               ),
@@ -60,7 +67,6 @@ void showDeleteConfirmationDialog({required BuildContext context,required String
                   backgroundColor: Colors.red,
                 ),
               );
-
             },
           ),
         ],

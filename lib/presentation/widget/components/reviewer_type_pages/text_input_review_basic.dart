@@ -46,7 +46,8 @@ class _TextInputReviewState extends State<TextInputReviewBasic> {
 
   void onSubmit(String typedAnswer, String correctAnswer) {
     setState(() {
-      final isCorrect = typedAnswer.trim().toLowerCase() == correctAnswer.trim().toLowerCase();
+      final isCorrect = typedAnswer.trim().toLowerCase() ==
+          correctAnswer.trim().toLowerCase();
 
       if (isCorrect) {
         if (!_isWrong) {
@@ -72,7 +73,8 @@ class _TextInputReviewState extends State<TextInputReviewBasic> {
 
   void _goToNextPage() {
     setState(() {
-      _correctAnswerShown = ''; // Clear the correct answer shown when transitioning
+      _correctAnswerShown =
+          ''; // Clear the correct answer shown when transitioning
     });
 
     if (_pageController.page?.toInt() == widget.cards.length - 1) {
@@ -91,7 +93,8 @@ class _TextInputReviewState extends State<TextInputReviewBasic> {
       barrierDismissible: false,
       builder: (context) {
         return Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           child: Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
@@ -109,7 +112,8 @@ class _TextInputReviewState extends State<TextInputReviewBasic> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.emoji_events, size: 50, color: Theme.of(context).colorScheme.primary)
+                Icon(Icons.emoji_events,
+                        size: 50, color: Theme.of(context).colorScheme.primary)
                     .animate()
                     .fadeIn(duration: 500.ms)
                     .moveY(begin: -20, end: 0, curve: Curves.easeOutBack),
@@ -117,10 +121,10 @@ class _TextInputReviewState extends State<TextInputReviewBasic> {
                 Text(
                   '🎉 Congratulations! 🎉',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: Theme.of(context).colorScheme.primary,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
+                        color: Theme.of(context).colorScheme.primary,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
                   textAlign: TextAlign.center,
                 ).animate().fadeIn(duration: 500.ms),
                 const SizedBox(height: 10),
@@ -133,9 +137,9 @@ class _TextInputReviewState extends State<TextInputReviewBasic> {
                 Text(
                   'Your score is $_score out of ${widget.cards.length}.',
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Theme.of(context).colorScheme.secondary,
-                    fontWeight: FontWeight.w600,
-                  ),
+                        color: Theme.of(context).colorScheme.secondary,
+                        fontWeight: FontWeight.w600,
+                      ),
                   textAlign: TextAlign.center,
                 ).animate().fadeIn(duration: 600.ms, delay: 200.ms),
                 const SizedBox(height: 15),
@@ -151,7 +155,8 @@ class _TextInputReviewState extends State<TextInputReviewBasic> {
                       icon: const Icon(Icons.check_circle, size: 18),
                       label: const Text('OK'),
                       style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
                     ).animate().fadeIn(duration: 700.ms, delay: 300.ms),
@@ -162,12 +167,17 @@ class _TextInputReviewState extends State<TextInputReviewBasic> {
                         Navigator.pop(context);
                         restartQuiz();
                       },
-                      icon: Icon(Icons.replay, size: 18, color: Theme.of(context).colorScheme.onSecondary),
+                      icon: Icon(Icons.replay,
+                          size: 18,
+                          color: Theme.of(context).colorScheme.onSecondary),
                       label: const Text('Restart'),
                       style: ElevatedButton.styleFrom(
-                        foregroundColor: Theme.of(context).colorScheme.onSecondary,
-                        backgroundColor: Theme.of(context).colorScheme.secondary,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        foregroundColor:
+                            Theme.of(context).colorScheme.onSecondary,
+                        backgroundColor:
+                            Theme.of(context).colorScheme.secondary,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
                     ).animate().fadeIn(duration: 700.ms, delay: 400.ms),
@@ -220,13 +230,12 @@ class _TextInputReviewState extends State<TextInputReviewBasic> {
               Text(
                 "Score: $_score / ${widget.cards.length}",
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 18,
-                ),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 18,
+                    ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),
-
               Expanded(
                 child: Container(
                   padding: const EdgeInsets.all(20),
@@ -256,9 +265,7 @@ class _TextInputReviewState extends State<TextInputReviewBasic> {
                   ),
                 ),
               ),
-
               const SizedBox(height: 28),
-
               TextField(
                 controller: _answerController,
                 textAlign: TextAlign.center,
@@ -266,36 +273,42 @@ class _TextInputReviewState extends State<TextInputReviewBasic> {
                 decoration: InputDecoration(
                   hintText: 'Type your answer...',
                   filled: true,
-                  fillColor: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.1),
+                  fillColor: Theme.of(context)
+                      .colorScheme
+                      .surfaceVariant
+                      .withOpacity(0.1),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                     borderSide: BorderSide(
-                      color: _isWrong ? Colors.red : Theme.of(context).colorScheme.primary,
+                      color: _isWrong
+                          ? Colors.red
+                          : Theme.of(context).colorScheme.primary,
                       width: 2,
                     ),
                   ),
-                  contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                  contentPadding:
+                      const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
                 ),
               ),
-
               if (_isWrong)
                 Padding(
                   padding: const EdgeInsets.only(top: 12.0),
-                  child: _correctAnswerShown.isNotEmpty ?  Text(
-                    _correctAnswerShown,
-                    style: TextStyle(
-                      color: colorScheme.primary,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
-                  ) : SizedBox(),
+                  child: _correctAnswerShown.isNotEmpty
+                      ? Text(
+                          _correctAnswerShown,
+                          style: TextStyle(
+                            color: colorScheme.primary,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        )
+                      : SizedBox(),
                 ),
-
               const SizedBox(height: 20),
-
               ElevatedButton.icon(
-                onPressed: () => onSubmit(_answerController.text, correctAnswer),
+                onPressed: () =>
+                    onSubmit(_answerController.text, correctAnswer),
                 icon: const Icon(Icons.send_rounded),
                 label: const Text(
                   "Submit",
@@ -303,7 +316,8 @@ class _TextInputReviewState extends State<TextInputReviewBasic> {
                 ),
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
                 ),
               ),
             ],

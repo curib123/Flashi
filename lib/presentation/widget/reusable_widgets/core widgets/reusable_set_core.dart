@@ -5,7 +5,15 @@ class ReusableSetCore extends StatelessWidget {
   final String name;
   final String description;
   final int numberOfQuiz;
-  final VoidCallback onTap, onAddCard, onReview, onDelete, onEdit, onFavorate, onShare, onExport, onViewAllCards;
+  final VoidCallback onTap,
+      onAddCard,
+      onReview,
+      onDelete,
+      onEdit,
+      onFavorate,
+      onShare,
+      onExport,
+      onViewAllCards;
   final DateTime timestamp;
   final bool isFavorate;
 
@@ -30,7 +38,8 @@ class ReusableSetCore extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final String formattedTimestamp = DateFormat('yyyy-MM-dd HH:mm').format(timestamp);
+    final String formattedTimestamp =
+        DateFormat('yyyy-MM-dd HH:mm').format(timestamp);
 
     return Container(
       decoration: BoxDecoration(
@@ -52,7 +61,6 @@ class ReusableSetCore extends StatelessWidget {
             blurRadius: 12.0,
             offset: Offset(4, 4),
           ),
-
         ],
       ),
       margin: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
@@ -119,35 +127,59 @@ class ReusableSetCore extends StatelessWidget {
                   ),
                   PopupMenuButton<String>(
                     padding: EdgeInsets.zero,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
                     color: colorScheme.surface,
                     icon: Icon(Icons.more_vert, color: colorScheme.primary),
                     onSelected: (String value) {
                       switch (value) {
-                        case 'favorate': onFavorate(); break;
-                        case 'edit': onEdit(); break;
-                        case 'view_all': onViewAllCards(); break;
-                        case 'export': onExport(); break;
-                        case 'share': onShare(); break;
-                        case 'delete': onDelete(); break;
+                        case 'favorate':
+                          onFavorate();
+                          break;
+                        case 'edit':
+                          onEdit();
+                          break;
+                        case 'view_all':
+                          onViewAllCards();
+                          break;
+                        case 'export':
+                          onExport();
+                          break;
+                        case 'share':
+                          onShare();
+                          break;
+                        case 'delete':
+                          onDelete();
+                          break;
                       }
                     },
                     itemBuilder: (context) => [
-                      _buildPopupMenuItem('Favorate', isFavorate ? Icons.favorite : Icons.favorite_border, 'favorate', colorScheme.error),
-                      _buildPopupMenuItem('Edit', Icons.edit, 'edit', colorScheme.primary),
-                      _buildPopupMenuItem('View All Pairs', Icons.view_agenda, 'view_all', colorScheme.primary),
-                      _buildPopupMenuItem('Save in Folder', Icons.save, 'export', colorScheme.primary),
-                      _buildPopupMenuItem('Delete', Icons.delete, 'delete', colorScheme.error),
+                      _buildPopupMenuItem(
+                          'Favorate',
+                          isFavorate ? Icons.favorite : Icons.favorite_border,
+                          'favorate',
+                          colorScheme.error),
+                      _buildPopupMenuItem(
+                          'Edit', Icons.edit, 'edit', colorScheme.primary),
+                      _buildPopupMenuItem('View All Pairs', Icons.view_agenda,
+                          'view_all', colorScheme.primary),
+                      _buildPopupMenuItem('Save in Folder', Icons.save,
+                          'export', colorScheme.primary),
+                      _buildPopupMenuItem(
+                          'Delete', Icons.delete, 'delete', colorScheme.error),
                     ],
                   ),
                 ],
               ),
-              Divider(height: 20.0, color: colorScheme.primary.withOpacity(0.6)),
+              Divider(
+                  height: 20.0, color: colorScheme.primary.withOpacity(0.6)),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _buildActionButton('Add Pairs', Icons.add_circle, onAddCard, colorScheme.primary),
-                  _buildActionButton('Quiz Mode', Icons.rate_review, onReview, colorScheme.secondary),
+                  _buildActionButton('Add Pairs', Icons.add_circle, onAddCard,
+                      colorScheme.primary),
+                  _buildActionButton('Quiz Mode', Icons.rate_review, onReview,
+                      colorScheme.secondary),
                 ],
               ),
             ],
@@ -157,7 +189,8 @@ class ReusableSetCore extends StatelessWidget {
     );
   }
 
-  PopupMenuItem<String> _buildPopupMenuItem(String text, IconData icon, String value, Color iconColor) {
+  PopupMenuItem<String> _buildPopupMenuItem(
+      String text, IconData icon, String value, Color iconColor) {
     return PopupMenuItem<String>(
       value: value,
       child: Row(
@@ -170,11 +203,12 @@ class ReusableSetCore extends StatelessWidget {
     );
   }
 
-  TextButton _buildActionButton(String label, IconData icon, VoidCallback onPressed, Color color) {
+  TextButton _buildActionButton(
+      String label, IconData icon, VoidCallback onPressed, Color color) {
     return TextButton.icon(
       onPressed: onPressed,
       icon: Icon(icon, color: color),
-      label: Text(label, style: TextStyle(color: color,fontSize: 15)),
+      label: Text(label, style: TextStyle(color: color, fontSize: 15)),
       style: TextButton.styleFrom(
         backgroundColor: color.withOpacity(0.1),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),

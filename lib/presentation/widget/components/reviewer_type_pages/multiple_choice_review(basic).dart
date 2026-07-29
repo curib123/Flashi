@@ -28,7 +28,7 @@ class _MultipleChoiceReviewState extends State<MultipleChoiceReviewBasic> {
   final Random _random = Random();
   late List<List<String>> _shuffledOptions;
   int _score = 0;
-AdManager adManager = AdManager();
+  AdManager adManager = AdManager();
 
   @override
   void initState() {
@@ -49,7 +49,8 @@ AdManager adManager = AdManager();
         incorrectAnswers.add("No Answer");
       }
 
-      final options = ([correctAnswer, ...incorrectAnswers.sublist(0, 3)]..shuffle(_random));
+      final options = ([correctAnswer, ...incorrectAnswers.sublist(0, 3)]
+        ..shuffle(_random));
       return options;
     }).toList();
   }
@@ -81,14 +82,14 @@ AdManager adManager = AdManager();
     }
   }
 
-
   void showCongratulationDialog(BuildContext context) {
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) {
         return Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           child: Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
@@ -110,36 +111,35 @@ AdManager adManager = AdManager();
                   Icons.emoji_events, // 🏆 Trophy icon
                   size: 50,
                   color: Theme.of(context).colorScheme.primary,
-                ).animate().fadeIn(duration: 500.ms).moveY(begin: -20, end: 0, curve: Curves.easeOutBack),
-
+                )
+                    .animate()
+                    .fadeIn(duration: 500.ms)
+                    .moveY(begin: -20, end: 0, curve: Curves.easeOutBack),
                 const SizedBox(height: 15),
                 Text(
                   '🎉 Congratulations! 🎉',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: Theme.of(context).colorScheme.primary,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
+                        color: Theme.of(context).colorScheme.primary,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                   textAlign: TextAlign.center,
                 ).animate().fadeIn(duration: 500.ms),
-
                 const SizedBox(height: 10),
                 Text(
                   'You have completed the quiz!',
                   style: Theme.of(context).textTheme.bodyMedium,
                   textAlign: TextAlign.center,
                 ).animate().fadeIn(duration: 600.ms, delay: 100.ms),
-
                 const SizedBox(height: 8),
                 Text(
                   'Your score is $_score out of ${widget.cards.length}.',
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Theme.of(context).colorScheme.secondary,
-                    fontWeight: FontWeight.w600,
-                  ),
+                        color: Theme.of(context).colorScheme.secondary,
+                        fontWeight: FontWeight.w600,
+                      ),
                   textAlign: TextAlign.center,
                 ).animate().fadeIn(duration: 600.ms, delay: 200.ms),
-
                 const SizedBox(height: 15),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -150,27 +150,34 @@ AdManager adManager = AdManager();
                         Navigator.pop(context);
                         Navigator.pop(context);
                       },
-                      icon: const Icon(Icons.check_circle, size: 18), // ✅ OK icon
+                      icon:
+                          const Icon(Icons.check_circle, size: 18), // ✅ OK icon
                       label: const Text('OK'),
                       style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
                       ),
                     ).animate().fadeIn(duration: 700.ms, delay: 300.ms),
-
                     const SizedBox(width: 10),
-
                     ElevatedButton.icon(
                       onPressed: () {
                         adManager.showInterstitialAd();
                         Navigator.pop(context);
                         restartQuiz();
                       },
-                      icon:  Icon(Icons.replay, size: 18,color:  Theme.of(context).colorScheme.onSecondary,), // 🔄 Restart icon
+                      icon: Icon(
+                        Icons.replay,
+                        size: 18,
+                        color: Theme.of(context).colorScheme.onSecondary,
+                      ), // 🔄 Restart icon
                       label: const Text('Restart'),
                       style: ElevatedButton.styleFrom(
-                        foregroundColor: Theme.of(context).colorScheme.onSecondary,
-                        backgroundColor: Theme.of(context).colorScheme.secondary,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        foregroundColor:
+                            Theme.of(context).colorScheme.onSecondary,
+                        backgroundColor:
+                            Theme.of(context).colorScheme.secondary,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
                       ),
                     ).animate().fadeIn(duration: 700.ms, delay: 400.ms),
                   ],
@@ -183,7 +190,6 @@ AdManager adManager = AdManager();
     );
   }
 
-
   void restartQuiz() {
     setState(() {
       _score = 0; // Reset score
@@ -193,10 +199,10 @@ AdManager adManager = AdManager();
 
   @override
   Widget build(BuildContext context) {
-
     if (widget.cards.isEmpty) {
       return Center(
-        child: Text("No cards available", style: TextStyle(color: Theme.of(context).colorScheme.primary)),
+        child: Text("No cards available",
+            style: TextStyle(color: Theme.of(context).colorScheme.primary)),
       );
     }
 
@@ -213,7 +219,14 @@ AdManager adManager = AdManager();
           timer: 'None', // Removed timer
           totalScore: widget.cards.length.toString(),
           score: _score.toString(),
-          question: highlightKeywords( context: context, keyword:  card['keyword'] , text:  card['question'] , fontSize: 22 , fontColor: Theme.of(context).colorScheme.onPrimary, fontSizeKeyword: 17, isCenter: true),
+          question: highlightKeywords(
+              context: context,
+              keyword: card['keyword'],
+              text: card['question'],
+              fontSize: 22,
+              fontColor: Theme.of(context).colorScheme.onPrimary,
+              fontSizeKeyword: 17,
+              isCenter: true),
           optionA: options[0],
           optionB: options[1],
           optionC: options[2],

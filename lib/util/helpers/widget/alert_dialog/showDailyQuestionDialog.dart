@@ -7,7 +7,8 @@ import 'dart:math';
 class DailyQuestionDialog extends StatefulWidget {
   final List<Map<String, String>> questions;
 
-  const DailyQuestionDialog({Key? key, required this.questions}) : super(key: key);
+  const DailyQuestionDialog({Key? key, required this.questions})
+      : super(key: key);
 
   @override
   _DailyQuestionDialogState createState() => _DailyQuestionDialogState();
@@ -26,15 +27,17 @@ class _DailyQuestionDialogState extends State<DailyQuestionDialog> {
   @override
   void initState() {
     super.initState();
-    questions = widget.questions.isNotEmpty ? widget.questions : [
-      {
-        "question": "No daily question available.",
-        "correct_answer": "",
-        "fake_choice_1": "",
-        "fake_choice_2": "",
-        "fake_choice_3": ""
-      }
-    ];
+    questions = widget.questions.isNotEmpty
+        ? widget.questions
+        : [
+            {
+              "question": "No daily question available.",
+              "correct_answer": "",
+              "fake_choice_1": "",
+              "fake_choice_2": "",
+              "fake_choice_3": ""
+            }
+          ];
     questions.shuffle(Random());
     _loadQuestion();
   }
@@ -76,11 +79,11 @@ class _DailyQuestionDialogState extends State<DailyQuestionDialog> {
 
     if (choice == questions[currentIndex]["correct_answer"]) {
       _speakText("Correct!");
-
     } else {
       _speakText("Wrong answer.");
       Future.delayed(const Duration(seconds: 2), () {
-        _speakText("The correct answer is ${questions[currentIndex]["correct_answer"]}");
+        _speakText(
+            "The correct answer is ${questions[currentIndex]["correct_answer"]}");
       });
     }
 
@@ -131,16 +134,20 @@ class _DailyQuestionDialogState extends State<DailyQuestionDialog> {
           children: [
             Text(
               "Daily Quiz",
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: theme.colorScheme.primary),
+              style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.primary),
             ).animate().fadeIn(duration: 300.ms),
             const SizedBox(height: 16),
-
             AnimatedSwitcher(
               duration: 400.ms,
               transitionBuilder: (widget, animation) => FadeTransition(
                 opacity: animation,
                 child: SlideTransition(
-                  position: Tween<Offset>(begin: const Offset(0, 0.5), end: Offset.zero).animate(animation),
+                  position: Tween<Offset>(
+                          begin: const Offset(0, 0.5), end: Offset.zero)
+                      .animate(animation),
                   child: widget,
                 ),
               ),
@@ -148,13 +155,16 @@ class _DailyQuestionDialogState extends State<DailyQuestionDialog> {
                 questionData["question"] ?? "No question available.",
                 key: ValueKey(currentIndex),
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500, color: theme.colorScheme.onSurface),
+                style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w500,
+                    color: theme.colorScheme.onSurface),
               ),
             ),
             const SizedBox(height: 10),
-            Text("Time Left: $timeLeft s", style: const TextStyle(color: Colors.red, fontSize: 16)),
+            Text("Time Left: $timeLeft s",
+                style: const TextStyle(color: Colors.red, fontSize: 16)),
             const SizedBox(height: 20),
-
             Wrap(
               spacing: 10,
               runSpacing: 10,
@@ -173,23 +183,28 @@ class _DailyQuestionDialogState extends State<DailyQuestionDialog> {
                   width: MediaQuery.of(context).size.width * 0.3,
                   child: ElevatedButton(
                     style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+                      backgroundColor:
+                          MaterialStateProperty.resolveWith<Color>((states) {
                         if (isAnswered) {
                           return buttonColor;
                         }
                         return theme.colorScheme.primary;
                       }),
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
                       ),
-                      padding: MaterialStateProperty.all(const EdgeInsets.symmetric(vertical: 14)),
+                      padding: MaterialStateProperty.all(
+                          const EdgeInsets.symmetric(vertical: 14)),
                     ),
                     onPressed: isAnswered ? null : () => _selectAnswer(choice),
                     child: Text(
                       choice,
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: choice.length > 20 ? 12 : (choice.length > 10 ? 14 : 16),
+                        fontSize: choice.length > 20
+                            ? 12
+                            : (choice.length > 10 ? 14 : 16),
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -197,16 +212,15 @@ class _DailyQuestionDialogState extends State<DailyQuestionDialog> {
                 );
               }).toList(),
             ),
-
             const SizedBox(height: 20),
-
             TextButton.icon(
               onPressed: () {
                 flutterTts.stop();
                 Navigator.pop(context);
               },
               icon: Icon(Icons.close, color: theme.colorScheme.primary),
-              label: Text("Close", style: TextStyle(color: theme.colorScheme.primary)),
+              label: Text("Close",
+                  style: TextStyle(color: theme.colorScheme.primary)),
             ),
           ],
         ),

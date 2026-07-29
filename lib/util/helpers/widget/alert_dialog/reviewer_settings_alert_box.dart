@@ -11,7 +11,8 @@ void reviewerSettingsAlertBox({
       final textTheme = Theme.of(context).textTheme;
 
       return AlertDialog(
-        contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
         elevation: 15,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
@@ -94,9 +95,9 @@ Widget _buildActionButton({
     child: Text(
       label,
       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-        color: textColor,
-        fontWeight: FontWeight.w600,
-      ),
+            color: textColor,
+            fontWeight: FontWeight.w600,
+          ),
     ),
   );
 }

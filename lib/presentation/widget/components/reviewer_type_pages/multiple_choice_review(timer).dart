@@ -6,6 +6,7 @@ import 'package:flashi/util/helpers/widget/other/highlight_keywords.dart';
 import 'package:flutter/material.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reviewer_widgets_core/multiple_choice_core.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+
 class MultipleChoiceReviewTimer extends StatefulWidget {
   final String reviewer;
   final List<dynamic> cards;
@@ -33,7 +34,6 @@ class _MultipleChoiceReviewState extends State<MultipleChoiceReviewTimer> {
   late List<List<String>> _shuffledOptions;
   int _score = 0;
 
-
   @override
   void initState() {
     super.initState();
@@ -51,7 +51,8 @@ class _MultipleChoiceReviewState extends State<MultipleChoiceReviewTimer> {
         incorrectAnswers.add("none");
       }
 
-      final options = ([correctAnswer, ...incorrectAnswers.sublist(0, 3)]..shuffle(_random));
+      final options = ([correctAnswer, ...incorrectAnswers.sublist(0, 3)]
+        ..shuffle(_random));
       return options;
     }).toList();
 
@@ -126,7 +127,6 @@ class _MultipleChoiceReviewState extends State<MultipleChoiceReviewTimer> {
   //   }
   // }
 
-
   void onAnswerSelected(String selectedAnswer, String correctAnswer) {
     if (selectedAnswer == correctAnswer) {
       setState(() {
@@ -138,7 +138,6 @@ class _MultipleChoiceReviewState extends State<MultipleChoiceReviewTimer> {
       // If it's the last question, show congratulations
       showCongratulationDialog(context);
     } else {
-
       Future.delayed(Duration(seconds: 2), () {
         resetTimer();
 
@@ -157,7 +156,8 @@ class _MultipleChoiceReviewState extends State<MultipleChoiceReviewTimer> {
       barrierDismissible: false,
       builder: (context) {
         return Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           child: Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
@@ -179,36 +179,35 @@ class _MultipleChoiceReviewState extends State<MultipleChoiceReviewTimer> {
                   Icons.emoji_events, // 🏆 Trophy icon
                   size: 50,
                   color: Theme.of(context).colorScheme.primary,
-                ).animate().fadeIn(duration: 500.ms).moveY(begin: -20, end: 0, curve: Curves.easeOutBack),
-
+                )
+                    .animate()
+                    .fadeIn(duration: 500.ms)
+                    .moveY(begin: -20, end: 0, curve: Curves.easeOutBack),
                 const SizedBox(height: 15),
                 Text(
                   '🎉 Congratulations! 🎉',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: Theme.of(context).colorScheme.primary,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
+                        color: Theme.of(context).colorScheme.primary,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                   textAlign: TextAlign.center,
                 ).animate().fadeIn(duration: 500.ms),
-
                 const SizedBox(height: 10),
                 Text(
                   'You have completed the quiz!',
                   style: Theme.of(context).textTheme.bodyMedium,
                   textAlign: TextAlign.center,
                 ).animate().fadeIn(duration: 600.ms, delay: 100.ms),
-
                 const SizedBox(height: 8),
                 Text(
                   'Your score is $_score out of ${widget.cards.length}.',
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Theme.of(context).colorScheme.secondary,
-                    fontWeight: FontWeight.w600,
-                  ),
+                        color: Theme.of(context).colorScheme.secondary,
+                        fontWeight: FontWeight.w600,
+                      ),
                   textAlign: TextAlign.center,
                 ).animate().fadeIn(duration: 600.ms, delay: 200.ms),
-
                 const SizedBox(height: 15),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -219,27 +218,34 @@ class _MultipleChoiceReviewState extends State<MultipleChoiceReviewTimer> {
                         Navigator.pop(context);
                         Navigator.pop(context);
                       },
-                      icon: const Icon(Icons.check_circle, size: 18), // ✅ OK icon
+                      icon:
+                          const Icon(Icons.check_circle, size: 18), // ✅ OK icon
                       label: const Text('OK'),
                       style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
                       ),
                     ).animate().fadeIn(duration: 700.ms, delay: 300.ms),
-
                     const SizedBox(width: 10),
-
                     ElevatedButton.icon(
                       onPressed: () {
                         adManager.showInterstitialAd();
                         Navigator.pop(context);
                         restartQuiz();
                       },
-                      icon:  Icon(Icons.replay, size: 18,color:  Theme.of(context).colorScheme.onSecondary,), // 🔄 Restart icon
+                      icon: Icon(
+                        Icons.replay,
+                        size: 18,
+                        color: Theme.of(context).colorScheme.onSecondary,
+                      ), // 🔄 Restart icon
                       label: const Text('Restart'),
                       style: ElevatedButton.styleFrom(
-                        foregroundColor: Theme.of(context).colorScheme.onSecondary,
-                        backgroundColor: Theme.of(context).colorScheme.secondary,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        foregroundColor:
+                            Theme.of(context).colorScheme.onSecondary,
+                        backgroundColor:
+                            Theme.of(context).colorScheme.secondary,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
                       ),
                     ).animate().fadeIn(duration: 700.ms, delay: 400.ms),
                   ],
@@ -251,7 +257,6 @@ class _MultipleChoiceReviewState extends State<MultipleChoiceReviewTimer> {
       },
     );
   }
-
 
   void restartQuiz() {
     setState(() {
@@ -277,13 +282,12 @@ class _MultipleChoiceReviewState extends State<MultipleChoiceReviewTimer> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
-
     if (widget.cards.isEmpty) {
       return Center(
-        child: Text("No cards available", style: TextStyle(color: Theme.of(context).colorScheme.primary)),
+        child: Text("No cards available",
+            style: TextStyle(color: Theme.of(context).colorScheme.primary)),
       );
     }
 
@@ -300,21 +304,24 @@ class _MultipleChoiceReviewState extends State<MultipleChoiceReviewTimer> {
             } else {
               resetTimer();
             }
-
-
-
-
           },
           itemBuilder: (context, index) {
             final card = widget.cards[index];
             final correctAnswer = card['answer'] as String;
-            final options  = _shuffledOptions[index];
+            final options = _shuffledOptions[index];
 
             return MultipleChoiceCore(
               timer: _timerNotifier.value.toString(),
               totalScore: widget.cards.length.toString(),
               score: _score.toString(),
-              question: highlightKeywords( context: context, keyword:  card['keyword'] , text:  card['question'] , fontSize: 22 , fontColor: Theme.of(context).colorScheme.onPrimary, fontSizeKeyword: 17, isCenter: true),
+              question: highlightKeywords(
+                  context: context,
+                  keyword: card['keyword'],
+                  text: card['question'],
+                  fontSize: 22,
+                  fontColor: Theme.of(context).colorScheme.onPrimary,
+                  fontSizeKeyword: 17,
+                  isCenter: true),
               optionA: options[0],
               optionB: options[1],
               optionC: options[2],

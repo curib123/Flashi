@@ -1,4 +1,3 @@
-
 // Dot Waving Animation Widget
 import 'package:flutter/material.dart';
 
@@ -6,10 +5,13 @@ class ReusableTypingAnimationCore extends StatefulWidget {
   const ReusableTypingAnimationCore({super.key});
 
   @override
-  _ReusableTypingAnimationCoreState createState() => _ReusableTypingAnimationCoreState();
+  _ReusableTypingAnimationCoreState createState() =>
+      _ReusableTypingAnimationCoreState();
 }
 
-class _ReusableTypingAnimationCoreState extends State<ReusableTypingAnimationCore> with SingleTickerProviderStateMixin {
+class _ReusableTypingAnimationCoreState
+    extends State<ReusableTypingAnimationCore>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
   @override
@@ -18,8 +20,7 @@ class _ReusableTypingAnimationCoreState extends State<ReusableTypingAnimationCor
     _controller = AnimationController(
       duration: const Duration(seconds: 1),
       vsync: this,
-    )
-      ..repeat();
+    )..repeat();
   }
 
   @override
@@ -37,8 +38,8 @@ class _ReusableTypingAnimationCoreState extends State<ReusableTypingAnimationCor
           animation: _controller,
           builder: (context, child) {
             return Transform.translate(
-              offset: Offset(
-                  0, 4 * (1 - (_controller.value + (index * 0.2)) % 1)),
+              offset:
+                  Offset(0, 4 * (1 - (_controller.value + (index * 0.2)) % 1)),
               child: child,
             );
           },
@@ -47,10 +48,7 @@ class _ReusableTypingAnimationCoreState extends State<ReusableTypingAnimationCor
             width: 8,
             height: 8,
             decoration: BoxDecoration(
-              color: Theme
-                  .of(context)
-                  .colorScheme
-                  .primary,
+              color: Theme.of(context).colorScheme.primary,
               shape: BoxShape.circle,
             ),
           ),

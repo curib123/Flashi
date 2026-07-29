@@ -21,7 +21,8 @@ class ReusableBtnCore extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15), // Consistent padding
+        padding: const EdgeInsets.symmetric(
+            vertical: 8, horizontal: 15), // Consistent padding
         decoration: BoxDecoration(
           color: color,
           borderRadius: BorderRadius.circular(10), // Rounded corners
@@ -40,7 +41,8 @@ class ReusableBtnCore extends StatelessWidget {
               style: TextStyle(
                 color: colorScheme.onPrimary, // Text color based on theme
                 fontSize: 16, // Moderate text size for clarity
-                fontWeight: FontWeight.w600, // Semi-bold text for better visibility
+                fontWeight:
+                    FontWeight.w600, // Semi-bold text for better visibility
               ),
             ),
           ],

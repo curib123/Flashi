@@ -64,7 +64,8 @@ class HomeScreen extends StatelessWidget {
 
 void showAnimatedAboutDialog(BuildContext context) {
   final colorScheme = Theme.of(context).colorScheme;
-  final checkVersionProvider = Provider.of<CheckVersionProvider>(context,listen: false);
+  final checkVersionProvider =
+      Provider.of<CheckVersionProvider>(context, listen: false);
 
   showGeneralDialog(
     context: context,
@@ -97,8 +98,10 @@ void showAnimatedAboutDialog(BuildContext context) {
                   ),
                   SizedBox(height: 5),
                   Divider(color: colorScheme.outline),
-                  _buildInfoTile(context, Icons.rocket_launch, "Version", checkVersionProvider.currentVersion),
-                  _buildInfoTile(context, Icons.person, "Developer", "Curib Tech"),
+                  _buildInfoTile(context, Icons.rocket_launch, "Version",
+                      checkVersionProvider.currentVersion),
+                  _buildInfoTile(
+                      context, Icons.person, "Developer", "Curib Tech"),
                   SizedBox(height: 10),
                   ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
@@ -108,7 +111,10 @@ void showAnimatedAboutDialog(BuildContext context) {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    icon: Icon(Icons.check,color: colorScheme.onPrimary,),
+                    icon: Icon(
+                      Icons.check,
+                      color: colorScheme.onPrimary,
+                    ),
                     label: Text("Got It!"),
                     onPressed: () => Navigator.pop(context),
                   ),
@@ -127,8 +133,11 @@ Widget _buildInfoTile(
   final colorScheme = Theme.of(context).colorScheme;
   return ListTile(
     leading: Icon(icon, color: colorScheme.primary),
-    title: Text(title, style: TextStyle(fontWeight: FontWeight.bold, color: colorScheme.primary)),
-    subtitle: Text(subtitle, style: TextStyle(color: colorScheme.primary.withOpacity(0.8))),
+    title: Text(title,
+        style:
+            TextStyle(fontWeight: FontWeight.bold, color: colorScheme.primary)),
+    subtitle: Text(subtitle,
+        style: TextStyle(color: colorScheme.primary.withOpacity(0.8))),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     tileColor: colorScheme.surfaceVariant.withOpacity(0.2),
     contentPadding: EdgeInsets.symmetric(horizontal: 20),
@@ -140,7 +149,8 @@ class ThemeProvider extends ChangeNotifier {
   ThemeMode get themeMode => _themeMode;
 
   void toggleTheme() {
-    _themeMode = (_themeMode == ThemeMode.dark) ? ThemeMode.light : ThemeMode.dark;
+    _themeMode =
+        (_themeMode == ThemeMode.dark) ? ThemeMode.light : ThemeMode.dark;
     notifyListeners();
   }
 }

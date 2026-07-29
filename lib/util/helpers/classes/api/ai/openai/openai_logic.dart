@@ -3,10 +3,11 @@ import 'dart:convert';
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flashi/util/helpers/classes/api/ai/core/api_key_secure_storage.dart';
 
-class OpenAiLogic{
-
-  static Future<List<Map<String, String>>> generateQuestionsOpenAi(String content) async {
-    await saveAPIKey('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');
+class OpenAiLogic {
+  static Future<List<Map<String, String>>> generateQuestionsOpenAi(
+      String content) async {
+    await saveAPIKey(
+        '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');
 
 // Retrieve the stored API key securely
     String? apiKey = await getAPIKey();
@@ -30,8 +31,8 @@ class OpenAiLogic{
     return allQuestions.take(20).toList() ?? [];
   }
 
-
-  static Future<List<Map<String, String>>> processChunkOpenai(String textChunk) async {
+  static Future<List<Map<String, String>>> processChunkOpenai(
+      String textChunk) async {
     final prompt = """
   Generate 20 identification-type questions and answers from the following text:
 
@@ -52,25 +53,27 @@ class OpenAiLogic{
         messages: [
           OpenAIChatCompletionChoiceMessageModel(
               role: OpenAIChatMessageRole.system,
-              content: [OpenAIChatCompletionChoiceMessageContentItemModel.text("You are an expert quiz generator.")]
-          ),
+              content: [
+                OpenAIChatCompletionChoiceMessageContentItemModel.text(
+                    "You are an expert quiz generator.")
+              ]),
           OpenAIChatCompletionChoiceMessageModel(
               role: OpenAIChatMessageRole.user,
-              content: [OpenAIChatCompletionChoiceMessageContentItemModel.text(prompt)]
-          )
+              content: [
+                OpenAIChatCompletionChoiceMessageContentItemModel.text(prompt)
+              ])
         ],
       );
 
-      String aiResponse = response.choices.first.message.content?.first.text ?? "";
+      String aiResponse =
+          response.choices.first.message.content?.first.text ?? "";
       print(aiResponse);
       return parseJsonQuestions(aiResponse);
-
     } catch (e) {
       print("Error processing chunk: $e");
       return [];
     }
   }
-
 
   static List<Map<String, String>> parseJsonQuestions(String jsonString) {
     try {
@@ -78,8 +81,7 @@ class OpenAiLogic{
 
       return decodedList.map((item) {
         return Map<String, String>.from(
-            item.map((key, value) => MapEntry(key, value.toString()))
-        );
+            item.map((key, value) => MapEntry(key, value.toString())));
       }).toList();
     } catch (e) {
       print("Error parsing JSON: $e");
@@ -87,13 +89,15 @@ class OpenAiLogic{
     }
   }
 
-
   /// Splits large text into smaller chunks (e.g., 1000 words per chunk)
   static List<String> splitTextIntoChunks(String text, int chunkSize) {
     List<String> words = text.split(' ');
     List<String> chunks = [];
     for (int i = 0; i < words.length; i += chunkSize) {
-      chunks.add(words.sublist(i, i + chunkSize > words.length ? words.length : i + chunkSize).join(' '));
+      chunks.add(words
+          .sublist(
+              i, i + chunkSize > words.length ? words.length : i + chunkSize)
+          .join(' '));
     }
     return chunks;
   }

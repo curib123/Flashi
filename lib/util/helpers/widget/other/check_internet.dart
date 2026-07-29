@@ -15,4 +15,3 @@ Future<bool> isHaveInternet() async {
   }
   return false;
 }
-

@@ -148,12 +148,12 @@ class FileTextExtractor {
 
   /// Button builder for camera/gallery options
   Widget _buildOption(
-      BuildContext context, {
-        required IconData icon,
-        required String text,
-        required Color color,
-        required ImageSource source,
-      }) {
+    BuildContext context, {
+    required IconData icon,
+    required String text,
+    required Color color,
+    required ImageSource source,
+  }) {
     return ElevatedButton.icon(
       style: ElevatedButton.styleFrom(
         backgroundColor: color,

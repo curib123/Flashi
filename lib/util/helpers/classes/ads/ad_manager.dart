@@ -11,14 +11,13 @@ class AdManager {
     return _instance;
   }
 
-  AdManager._internal();  // Private constructor for singleton
+  AdManager._internal(); // Private constructor for singleton
 
   /// Maximum duration allowed between loading and showing the ad.
   final Duration maxCacheDuration = Duration(hours: 1);
 
   /// Keep track of load time so we don't show an expired ad.
   DateTime? _appOpenLoadTime;
-
 
   BannerAd? _bannerAd1;
   BannerAd? _bannerAd2;
@@ -29,12 +28,12 @@ class AdManager {
   BannerAd? _bannerAd7;
   double _bannerHeight = 150;
   bool _isBannerAd1Loaded = false;
-  bool _isBannerAd2Loaded= false;
-  bool _isBannerAd3Loaded= false;
-  bool _isBannerAd4Loaded= false;
-  bool _isBannerAd5Loaded= false;
-  bool _isBannerAd6Loaded= false;
-  bool _isBannerAd7Loaded= false;
+  bool _isBannerAd2Loaded = false;
+  bool _isBannerAd3Loaded = false;
+  bool _isBannerAd4Loaded = false;
+  bool _isBannerAd5Loaded = false;
+  bool _isBannerAd6Loaded = false;
+  bool _isBannerAd7Loaded = false;
 
   InterstitialAd? _interstitialAd;
 
@@ -46,21 +45,20 @@ class AdManager {
   double get bannerHeight => _bannerHeight;
 
   /// Load an AppOpenAd.
-  void loadOpenAppAd(String adUnitId ) {
+  void loadOpenAppAd(String adUnitId) {
     AppOpenAd.load(
         adUnitId: adUnitId,
         request: AdRequest(),
-    adLoadCallback: AppOpenAdLoadCallback(
-    onAdLoaded: (ad) {
-      _appOpenLoadTime = DateTime.now();
-    _appOpenAd = ad;
-    },
-    onAdFailedToLoad: (error) {
-    print('AppOpenAd failed to load: $error');
-    // Handle the error.
-    },
-    )
-    );
+        adLoadCallback: AppOpenAdLoadCallback(
+          onAdLoaded: (ad) {
+            _appOpenLoadTime = DateTime.now();
+            _appOpenAd = ad;
+          },
+          onAdFailedToLoad: (error) {
+            print('AppOpenAd failed to load: $error');
+            // Handle the error.
+          },
+        ));
   }
 
   /// Whether an ad is available to be shown.
@@ -68,7 +66,7 @@ class AdManager {
     return _appOpenAd != null;
   }
 
-   void showAdIfAvailable() {
+  void showAdIfAvailable() {
     if (!isAdAvailable) {
       print('Tried to show ad before available.');
       loadOpenAppAd(AdUnitId.appOpenAdUnitId);
@@ -117,12 +115,10 @@ class AdManager {
         onAdLoaded: (Ad ad) {
           _bannerHeight = 180;
           _isBannerAd1Loaded = true;
-
         },
         onAdFailedToLoad: (Ad ad, LoadAdError error) {
           _bannerHeight = 150;
           _isBannerAd1Loaded = false;
-
         },
       ),
     );
@@ -135,12 +131,10 @@ class AdManager {
         onAdLoaded: (Ad ad) {
           _bannerHeight = 180;
           _isBannerAd2Loaded = true;
-
         },
         onAdFailedToLoad: (Ad ad, LoadAdError error) {
           _bannerHeight = 150;
           _isBannerAd2Loaded = false;
-
         },
       ),
     );
@@ -153,15 +147,12 @@ class AdManager {
         onAdLoaded: (Ad ad) {
           _bannerHeight = 180;
           _isBannerAd3Loaded = true;
-
         },
         onAdFailedToLoad: (Ad ad, LoadAdError error) {
           _bannerHeight = 150;
           _isBannerAd3Loaded = false;
-
         },
       ),
-
     );
 
     _bannerAd4 = BannerAd(
@@ -172,12 +163,10 @@ class AdManager {
         onAdLoaded: (Ad ad) {
           _bannerHeight = 180;
           _isBannerAd4Loaded = true;
-
         },
         onAdFailedToLoad: (Ad ad, LoadAdError error) {
           _bannerHeight = 150;
           _isBannerAd4Loaded = false;
-
         },
       ),
     );
@@ -190,16 +179,14 @@ class AdManager {
         onAdLoaded: (Ad ad) {
           _bannerHeight = 180;
           _isBannerAd5Loaded = true;
-
         },
         onAdFailedToLoad: (Ad ad, LoadAdError error) {
           _bannerHeight = 150;
           _isBannerAd5Loaded = false;
-
         },
       ),
     );
-_bannerAd6 = BannerAd(
+    _bannerAd6 = BannerAd(
       adUnitId: id,
       size: AdSize.banner,
       request: AdRequest(),
@@ -207,16 +194,14 @@ _bannerAd6 = BannerAd(
         onAdLoaded: (Ad ad) {
           _bannerHeight = 180;
           _isBannerAd6Loaded = true;
-
         },
         onAdFailedToLoad: (Ad ad, LoadAdError error) {
           _bannerHeight = 150;
           _isBannerAd6Loaded = false;
-
         },
       ),
     );
-_bannerAd7 = BannerAd(
+    _bannerAd7 = BannerAd(
       adUnitId: id,
       size: AdSize.banner,
       request: AdRequest(),
@@ -224,12 +209,10 @@ _bannerAd7 = BannerAd(
         onAdLoaded: (Ad ad) {
           _bannerHeight = 180;
           _isBannerAd7Loaded = true;
-
         },
         onAdFailedToLoad: (Ad ad, LoadAdError error) {
           _bannerHeight = 150;
           _isBannerAd7Loaded = false;
-
         },
       ),
     );
@@ -268,6 +251,7 @@ _bannerAd7 = BannerAd(
       return SizedBox.shrink();
     }
   }
+
   Widget getThirdBannerAdWidget() {
     if (_bannerAd3 != null && _isBannerAd3Loaded) {
       return Container(
@@ -306,6 +290,7 @@ _bannerAd7 = BannerAd(
       return SizedBox.shrink();
     }
   }
+
   Widget getSixthBannerAdWidget() {
     if (_bannerAd6 != null && _isBannerAd6Loaded) {
       return Container(
@@ -330,8 +315,6 @@ _bannerAd7 = BannerAd(
       return SizedBox.shrink();
     }
   }
-
-
 
   // Preload interstitial ad
   void loadInterstitialAd(String adUnitId) {
@@ -361,15 +344,14 @@ _bannerAd7 = BannerAd(
 
   /// Loads a rewarded ad.
   void loadRewardedAd(String adUnitId) {
-
     RewardedAd.load(
-        adUnitId: adUnitId ,
+        adUnitId: adUnitId,
         request: const AdRequest(),
         rewardedAdLoadCallback: RewardedAdLoadCallback(
           // Called when an ad is successfully received.
           onAdLoaded: (ad) {
             ad.fullScreenContentCallback = FullScreenContentCallback(
-              // Called when the ad showed the full screen content.
+                // Called when the ad showed the full screen content.
                 onAdShowedFullScreenContent: (ad) {},
                 // Called when an impression occurs on the ad.
                 onAdImpression: (ad) {},
@@ -377,7 +359,6 @@ _bannerAd7 = BannerAd(
                 onAdFailedToShowFullScreenContent: (ad, err) {
                   // Dispose the ad here to free resources.
                   ad.dispose();
-
                 },
                 // Called when the ad dismissed full screen content.
                 onAdDismissedFullScreenContent: (ad) {
@@ -395,24 +376,22 @@ _bannerAd7 = BannerAd(
           onAdFailedToLoad: (LoadAdError error) {
             debugPrint('RewardedAd failed to load: $error');
           },
-        )
-    );
+        ));
   }
 
-  void showRewarded(BuildContext context,String whatRewards){
+  void showRewarded(BuildContext context, String whatRewards) {
     // Access the QuizProvider and SortProvider from the context
-    final aiCreditProvider = Provider.of<AiCreditProvider>(context,listen: false);
+    final aiCreditProvider =
+        Provider.of<AiCreditProvider>(context, listen: false);
 
-    _rewardedAd?.show(onUserEarnedReward: (AdWithoutView ad, RewardItem rewardItem) {
-
-      if(whatRewards == "energy"){
+    _rewardedAd?.show(
+        onUserEarnedReward: (AdWithoutView ad, RewardItem rewardItem) {
+      if (whatRewards == "energy") {
         aiCreditProvider.addCredits(5);
         aiCreditProvider.addAdsWatched();
       }
-
     });
   }
-
 
   void dispose() {
     _bannerAd1?.dispose();

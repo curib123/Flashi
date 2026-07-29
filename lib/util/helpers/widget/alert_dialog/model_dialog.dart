@@ -13,7 +13,8 @@ import 'package:internet_connection_checker_plus/internet_connection_checker_plu
 import 'package:provider/provider.dart';
 
 class ModelSelectionDialog {
-  static Future<void> show(BuildContext context, bool isCustomPrompt, {VoidCallback? onTap}) async {
+  static Future<void> show(BuildContext context, bool isCustomPrompt,
+      {VoidCallback? onTap}) async {
     return await showDialog<void>(
       context: context,
       builder: (context) {
@@ -54,11 +55,12 @@ class ModelSelectionDialog {
           content: Padding(
             padding: const EdgeInsets.all(10.0),
             child: SingleChildScrollView(
-              child: Consumer2<FetchDataFromJsonProvider,QuizProvider>(
-                builder: (context, fetchDataProvider,quizProvider, _) {
+              child: Consumer2<FetchDataFromJsonProvider, QuizProvider>(
+                builder: (context, fetchDataProvider, quizProvider, _) {
                   String selectedModel = fetchDataProvider.model;
                   int selectedMaxLength = fetchDataProvider.ListOfMaxLength;
-                  String selectedQuizType = fetchDataProvider.quiz_question_type;
+                  String selectedQuizType =
+                      fetchDataProvider.quiz_question_type;
 
                   return Column(
                     mainAxisSize: MainAxisSize.min,
@@ -73,7 +75,6 @@ class ModelSelectionDialog {
                         ),
                       ),
                       const SizedBox(height: 20),
-
                       _buildDropdown<int>(
                         context,
                         label: "How Many Question and Answer?",
@@ -84,19 +85,23 @@ class ModelSelectionDialog {
 
                           fetchDataProvider.updateListOfMaxLength(newValue!);
 
-                          for (int i = 0; i < fetchDataProvider.listOfMaxLength.length; i++)
-                          {
-                            if (fetchDataProvider.listOfMaxLength[i] == fetchDataProvider.ListOfMaxLength) // Check if value matches maxLength
-                                {
-                              int creditAmount = i + 1; // Use index +1 as credit amount
-                              fetchDataProvider.updateCreditsPerLength(creditAmount);
+                          for (int i = 0;
+                              i < fetchDataProvider.listOfMaxLength.length;
+                              i++) {
+                            if (fetchDataProvider.listOfMaxLength[i] ==
+                                fetchDataProvider
+                                    .ListOfMaxLength) // Check if value matches maxLength
+                            {
+                              int creditAmount =
+                                  i + 1; // Use index +1 as credit amount
+                              fetchDataProvider
+                                  .updateCreditsPerLength(creditAmount);
                             }
                           }
                         },
                         getCredits: (item) => item ~/ 10,
                       ),
                       const SizedBox(height: 20),
-
                       _buildDropdown<String>(
                         context,
                         label: "Select Quiz Type",
@@ -104,7 +109,6 @@ class ModelSelectionDialog {
                         items: fetchDataProvider.listOfQuizQuestionTypes,
                         onChanged: (newValue) {
                           if (newValue != null) selectedQuizType = newValue;
-
                         },
                         getCredits: null,
                       ),
@@ -114,57 +118,78 @@ class ModelSelectionDialog {
                         controller: quizProvider.nameController,
                       ),
                       const SizedBox(height: 10),
-
-
                       Consumer<AiCreditProvider>(
                         builder: (context, aiCreditProvider, _) {
                           return Column(
                             children: [
-                                ReusableCreditsInfoCore(credits: aiCreditProvider.credits, colorScheme: colorScheme),
+                              ReusableCreditsInfoCore(
+                                  credits: aiCreditProvider.credits,
+                                  colorScheme: colorScheme),
                               const SizedBox(height: 10),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   TextButton(
                                     onPressed: () => Navigator.pop(context),
-                                    style: TextButton.styleFrom(foregroundColor: colorScheme.secondary),
-                                    child: const Text("Cancel", style: TextStyle(fontSize: 16)),
+                                    style: TextButton.styleFrom(
+                                        foregroundColor: colorScheme.secondary),
+                                    child: const Text("Cancel",
+                                        style: TextStyle(fontSize: 16)),
                                   ),
                                   ElevatedButton(
                                     onPressed: () async {
-                                      fetchDataProvider.updateModel(selectedModel);
-                                      fetchDataProvider.updateQuizQuestionType(selectedQuizType);
+                                      fetchDataProvider
+                                          .updateModel(selectedModel);
+                                      fetchDataProvider.updateQuizQuestionType(
+                                          selectedQuizType);
                                       if (isCustomPrompt) {
                                         onTap?.call();
-                                      } else if (aiCreditProvider.credits  >= fetchDataProvider.creditsPerLength) {
+                                      } else if (aiCreditProvider.credits >=
+                                          fetchDataProvider.creditsPerLength) {
                                         onTap?.call();
                                       } else {
-                                        adManager.loadRewardedAd(AdUnitId.rewardedAdUnitId);
+                                        adManager.loadRewardedAd(
+                                            AdUnitId.rewardedAdUnitId);
                                         bool isConnected =
-                                            await InternetConnection().hasInternetAccess;
+                                            await InternetConnection()
+                                                .hasInternetAccess;
 
-                                        if(isConnected){
-                                          if(aiCreditProvider.watchAd()){
+                                        if (isConnected) {
+                                          if (aiCreditProvider.watchAd()) {
                                             showWatchAdDialog(
                                               context: context,
                                               title: "Earn Free energy!",
-                                              message: "Watch a short ad and instantly earn 5 free energy!",
+                                              message:
+                                                  "Watch a short ad and instantly earn 5 free energy!",
                                               cancelText: "Maybe Later",
                                               confirmText: "Watch Ad",
                                               onWatchAd: () {
-                                                showLoadingDialog(context, text: "Loading ads... Please wait.\nIf it doesn’t appear, try again.");
-                                                Future.delayed(const Duration(seconds: 10), () {
+                                                showLoadingDialog(context,
+                                                    text:
+                                                        "Loading ads... Please wait.\nIf it doesn’t appear, try again.");
+                                                Future.delayed(
+                                                    const Duration(seconds: 10),
+                                                    () {
                                                   Navigator.of(context).pop();
-                                                  adManager.showRewarded(context, 'energy');
+                                                  adManager.showRewarded(
+                                                      context, 'energy');
                                                 });
                                               },
                                             );
-                                          }else{
-                                            showAuthDialog(context,type: "error", "Error", "No More Ads for Today!");
-
+                                          } else {
+                                            showAuthDialog(
+                                                context,
+                                                type: "error",
+                                                "Error",
+                                                "No More Ads for Today!");
                                           }
-                                        }else{
-                                          showAuthDialog(context,type: "error", "Error", "Please connect to internet");
+                                        } else {
+                                          showAuthDialog(
+                                              context,
+                                              type: "error",
+                                              "Error",
+                                              "Please connect to internet");
                                         }
                                       }
                                     },
@@ -174,21 +199,30 @@ class ModelSelectionDialog {
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(8),
                                       ),
-                                      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 15, vertical: 10),
                                     ),
                                     child: Row(
                                       children: [
                                         Icon(
-                                          isCustomPrompt ? Icons.arrow_forward :aiCreditProvider.credits  >= fetchDataProvider.creditsPerLength ? Icons.upload_file_rounded : Icons.play_circle_fill,
+                                          isCustomPrompt
+                                              ? Icons.arrow_forward
+                                              : aiCreditProvider.credits >=
+                                                      fetchDataProvider
+                                                          .creditsPerLength
+                                                  ? Icons.upload_file_rounded
+                                                  : Icons.play_circle_fill,
                                           color: colorScheme.onPrimary,
                                         ),
                                         const SizedBox(width: 10),
                                         Text(
                                           isCustomPrompt
                                               ? "Next"
-                                              :aiCreditProvider.credits  >= fetchDataProvider.creditsPerLength
-                                              ? "Upload File"
-                                              : "Watch Ads",
+                                              : aiCreditProvider.credits >=
+                                                      fetchDataProvider
+                                                          .creditsPerLength
+                                                  ? "Upload File"
+                                                  : "Watch Ads",
                                           style: const TextStyle(fontSize: 16),
                                         ),
                                       ],
@@ -211,12 +245,14 @@ class ModelSelectionDialog {
     );
   }
 
-  static Widget _buildDropdown<T>(BuildContext context, {
+  static Widget _buildDropdown<T>(
+    BuildContext context, {
     required String label,
     required T value,
     required List<T> items,
     required ValueChanged<T?> onChanged,
-    required int Function(T item)? getCredits, // Make it nullable to avoid errors for non-int types
+    required int Function(T item)?
+        getCredits, // Make it nullable to avoid errors for non-int types
   }) {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
 
@@ -234,13 +270,19 @@ class ModelSelectionDialog {
           itemText = "$item Pairs - Spend $credits Energy";
         }
 
-        return DropdownMenuItem(value: item, child: Text(itemText,style: TextStyle(fontSize: 13),));
+        return DropdownMenuItem(
+            value: item,
+            child: Text(
+              itemText,
+              style: TextStyle(fontSize: 13),
+            ));
       }).toList(),
       onChanged: onChanged,
     );
   }
 
-  static InputDecoration _inputDecoration(ColorScheme colorScheme, String label) {
+  static InputDecoration _inputDecoration(
+      ColorScheme colorScheme, String label) {
     return InputDecoration(
       labelText: label,
       labelStyle: TextStyle(color: colorScheme.primary),

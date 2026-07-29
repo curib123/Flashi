@@ -85,7 +85,9 @@ void showTopicDialog(BuildContext context, {required Function()? onTap}) {
                   builder: (context, aiCreditProvider, _) {
                     return Column(
                       children: [
-                        ReusableCreditsInfoCore(credits: aiCreditProvider.credits, colorScheme: colorScheme),
+                        ReusableCreditsInfoCore(
+                            credits: aiCreditProvider.credits,
+                            colorScheme: colorScheme),
                         const SizedBox(height: 20),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -94,12 +96,15 @@ void showTopicDialog(BuildContext context, {required Function()? onTap}) {
                               onPressed: () => Navigator.of(context).pop(),
                               style: TextButton.styleFrom(
                                 foregroundColor: colorScheme.primary,
-                                textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+                                textStyle: const TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.w400),
                               ),
                               child: const Text("Cancel"),
                             ),
-                            Consumer2<AiModelLogicProvider,FetchDataFromJsonProvider>(
-                              builder: (context, aiModelLogicProvider,fetchDataFromJsonProvider, _) {
+                            Consumer2<AiModelLogicProvider,
+                                FetchDataFromJsonProvider>(
+                              builder: (context, aiModelLogicProvider,
+                                  fetchDataFromJsonProvider, _) {
                                 return ElevatedButton(
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: colorScheme.primary,
@@ -107,58 +112,88 @@ void showTopicDialog(BuildContext context, {required Function()? onTap}) {
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12),
                                     ),
-                                    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 15, vertical: 10),
                                   ),
                                   onPressed: () async {
-                                    if (aiCreditProvider.credits  >= fetchDataFromJsonProvider.creditsPerLength) {
-                                      String topic = topicController.text.trim();
-                                      String description = descriptionController.text.trim();
+                                    if (aiCreditProvider.credits >=
+                                        fetchDataFromJsonProvider
+                                            .creditsPerLength) {
+                                      String topic =
+                                          topicController.text.trim();
+                                      String description =
+                                          descriptionController.text.trim();
 
-                                      if (topic.isNotEmpty && description.isNotEmpty) {
-                                        showLoadingDialog(context, text: "Please wait .. AI Processing..");
-                                        aiModelLogicProvider.updateTopicAndDescription(topic, description);
+                                      if (topic.isNotEmpty &&
+                                          description.isNotEmpty) {
+                                        showLoadingDialog(context,
+                                            text:
+                                                "Please wait .. AI Processing..");
+                                        aiModelLogicProvider
+                                            .updateTopicAndDescription(
+                                                topic, description);
                                         onTap?.call();
                                       } else {
-                                        ScaffoldMessenger.of(context).showSnackBar(
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
                                           SnackBar(
-                                            content: const Text("Both fields are required."),
+                                            content: const Text(
+                                                "Both fields are required."),
                                             backgroundColor: Colors.redAccent,
                                           ),
                                         );
                                       }
                                     } else {
-                                      adManager.loadRewardedAd(AdUnitId.rewardedAdUnitId);
+                                      adManager.loadRewardedAd(
+                                          AdUnitId.rewardedAdUnitId);
                                       bool isConnected =
-                                          await InternetConnection().hasInternetAccess;
+                                          await InternetConnection()
+                                              .hasInternetAccess;
 
-                                      if(isConnected){
-                                        if(aiCreditProvider.watchAd()){
+                                      if (isConnected) {
+                                        if (aiCreditProvider.watchAd()) {
                                           showWatchAdDialog(
                                             context: context,
                                             title: "Earn Free energy!",
-                                            message: "Watch a short ad and instantly earn 5 free energy!",
+                                            message:
+                                                "Watch a short ad and instantly earn 5 free energy!",
                                             cancelText: "Maybe Later",
                                             confirmText: "Watch Ad",
                                             onWatchAd: () {
-                                              showLoadingDialog(context, text: "Loading ads... Please wait.\nIf it doesn’t appear, try again.");
-                                              Future.delayed(const Duration(seconds: 10), () {
+                                              showLoadingDialog(context,
+                                                  text:
+                                                      "Loading ads... Please wait.\nIf it doesn’t appear, try again.");
+                                              Future.delayed(
+                                                  const Duration(seconds: 10),
+                                                  () {
                                                 Navigator.of(context).pop();
-                                                adManager.showRewarded(context, 'energy');
+                                                adManager.showRewarded(
+                                                    context, 'energy');
                                               });
                                             },
                                           );
-                                        }else{
-                                          showAuthDialog(context,type: "error", "Error", "No More Ads for Today!");
+                                        } else {
+                                          showAuthDialog(
+                                              context,
+                                              type: "error",
+                                              "Error",
+                                              "No More Ads for Today!");
                                         }
-                                      }else{
-                                        showAuthDialog(context,type: "error", "Error", "Please connect to internet");
+                                      } else {
+                                        showAuthDialog(
+                                            context,
+                                            type: "error",
+                                            "Error",
+                                            "Please connect to internet");
                                       }
                                     }
                                   },
                                   child: Row(
                                     children: [
                                       Icon(
-                                        aiCreditProvider.credits  >= fetchDataFromJsonProvider.creditsPerLength
+                                        aiCreditProvider.credits >=
+                                                fetchDataFromJsonProvider
+                                                    .creditsPerLength
                                             ? Icons.auto_awesome
                                             : Icons.play_circle_fill,
                                         color: colorScheme.onPrimary,
@@ -166,8 +201,18 @@ void showTopicDialog(BuildContext context, {required Function()? onTap}) {
                                       ),
                                       const SizedBox(width: 10),
                                       Text(
-                                        aiCreditProvider.credits  >= fetchDataFromJsonProvider.creditsPerLength? "Generate" : "Watch Ads",
-                                        style: TextStyle(fontSize:aiCreditProvider.credits  >= fetchDataFromJsonProvider.creditsPerLength ? 18 : 15),
+                                        aiCreditProvider.credits >=
+                                                fetchDataFromJsonProvider
+                                                    .creditsPerLength
+                                            ? "Generate"
+                                            : "Watch Ads",
+                                        style: TextStyle(
+                                            fontSize: aiCreditProvider
+                                                        .credits >=
+                                                    fetchDataFromJsonProvider
+                                                        .creditsPerLength
+                                                ? 18
+                                                : 15),
                                       ),
                                     ],
                                   ),
@@ -200,7 +245,9 @@ Widget _buildTextField({
     maxLines: maxLines,
     decoration: InputDecoration(
       hintText: hint,
-      hintStyle: TextStyle(color: colorScheme.primary.withOpacity(0.7), fontWeight: FontWeight.w500),
+      hintStyle: TextStyle(
+          color: colorScheme.primary.withOpacity(0.7),
+          fontWeight: FontWeight.w500),
       filled: true,
       fillColor: colorScheme.primary.withOpacity(0.1),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),

@@ -4,10 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ThemeSelector extends StatelessWidget {
-
   final bool isShowCloseBtn;
 
-  const ThemeSelector({super.key,required, required this.isShowCloseBtn });
+  const ThemeSelector({super.key, required, required this.isShowCloseBtn});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +26,10 @@ class ThemeSelector extends StatelessWidget {
       {'name': 'Raleway', 'description': 'Elegant and clean.'},
       {'name': 'Merriweather', 'description': 'Classic and readable.'},
       {'name': 'Fira Sans', 'description': 'Clear and versatile.'},
-      {'name': 'Playfair Display', 'description': 'Elegant serif with a modern twist.'},
+      {
+        'name': 'Playfair Display',
+        'description': 'Elegant serif with a modern twist.'
+      },
       {'name': 'Bebas Neue', 'description': 'Strong and timeless.'},
     ];
 
@@ -35,7 +37,8 @@ class ThemeSelector extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Section for selecting a theme
-        const Text("Select Theme", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+        const Text("Select Theme",
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
         const SizedBox(height: 16),
         DropdownButton<FlexScheme>(
           value: themeProvider.currentScheme ?? schemes.first,
@@ -52,7 +55,8 @@ class ThemeSelector extends StatelessWidget {
                     margin: const EdgeInsets.only(right: 12),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: FlexColor.schemes[scheme]?.light.primary ?? Colors.grey,
+                      color: FlexColor.schemes[scheme]?.light.primary ??
+                          Colors.grey,
                     ),
                   ),
                   Text(FlexColor.schemes[scheme]?.name ?? scheme.name),
@@ -70,7 +74,8 @@ class ThemeSelector extends StatelessWidget {
         const SizedBox(height: 16),
 
         // Section for selecting a theme mode
-        const Text("Select Theme Mode", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+        const Text("Select Theme Mode",
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
         const SizedBox(height: 10),
         DropdownButton<ThemeMode>(
           value: themeProvider.themeMode,
@@ -85,8 +90,8 @@ class ThemeSelector extends StatelessWidget {
                     mode == ThemeMode.light
                         ? Icons.light_mode
                         : mode == ThemeMode.dark
-                        ? Icons.dark_mode
-                        : Icons.settings,
+                            ? Icons.dark_mode
+                            : Icons.settings,
                     color: Theme.of(context).colorScheme.primary,
                   ),
                   const SizedBox(width: 12),
@@ -94,8 +99,8 @@ class ThemeSelector extends StatelessWidget {
                     mode == ThemeMode.light
                         ? "Light Mode"
                         : mode == ThemeMode.dark
-                        ? "Dark Mode"
-                        : "System Default",
+                            ? "Dark Mode"
+                            : "System Default",
                   ),
                 ],
               ),
@@ -111,8 +116,10 @@ class ThemeSelector extends StatelessWidget {
         const SizedBox(height: 10),
 
         // Section for selecting a font
-        const Text("Select Font", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-        const Text("Need Internet", style: TextStyle(fontSize: 10, fontWeight: FontWeight.normal)),
+        const Text("Select Font",
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+        const Text("Need Internet",
+            style: TextStyle(fontSize: 10, fontWeight: FontWeight.normal)),
         const SizedBox(height: 10),
         DropdownButton<String>(
           value: themeProvider.currentFont ?? aestheticFonts.first['name'],
@@ -123,8 +130,10 @@ class ThemeSelector extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(font['name']!, style: TextStyle(fontFamily: font['name'])),
-                  Text(font['description']!, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                  Text(font['name']!,
+                      style: TextStyle(fontFamily: font['name'])),
+                  Text(font['description']!,
+                      style: const TextStyle(fontSize: 12, color: Colors.grey)),
                 ],
               ),
             );
@@ -137,7 +146,8 @@ class ThemeSelector extends StatelessWidget {
         ),
 
         const SizedBox(height: 10),
-        const Text("Adjust Font Size", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+        const Text("Adjust Font Size",
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
         Slider(
           value: themeProvider.fontScale,
           min: 0.5, // Min font scale (50%)
@@ -148,7 +158,6 @@ class ThemeSelector extends StatelessWidget {
             themeProvider.updateFontSize(value);
           },
         ),
-
       ],
     );
   }

@@ -7,11 +7,16 @@ import 'package:provider/provider.dart';
 class ReusableQuizCardList extends StatelessWidget {
   final String name; // Name of the quiz set
   final Map<String, dynamic> card; // Quiz card data
-  final Function(Map<String, dynamic> quizSet)? onRemove; // Callback for removing a quiz card
-  final Function(Map<String, dynamic> quizSet)? onEdit; // Callback for editing a quiz card
-  final Function(String name, Map<String, dynamic> quizSet)? onIgnore; // Callback for ignoring/unignoring a quiz card
-  final Function(Map<String, dynamic> quizSet)? onKeyword; // Callback for keyword action
-  final Function(Map<String, dynamic> quizSet)? onRemoveKeyword; // Callback for removing keyword
+  final Function(Map<String, dynamic> quizSet)?
+      onRemove; // Callback for removing a quiz card
+  final Function(Map<String, dynamic> quizSet)?
+      onEdit; // Callback for editing a quiz card
+  final Function(String name, Map<String, dynamic> quizSet)?
+      onIgnore; // Callback for ignoring/unignoring a quiz card
+  final Function(Map<String, dynamic> quizSet)?
+      onKeyword; // Callback for keyword action
+  final Function(Map<String, dynamic> quizSet)?
+      onRemoveKeyword; // Callback for removing keyword
 
   const ReusableQuizCardList({
     Key? key,
@@ -28,8 +33,10 @@ class ReusableQuizCardList extends StatelessWidget {
   Widget build(BuildContext context) {
     // Safely extract quiz sets from the provided card
     final quizSet = (card['cards'] as List?)
-        ?.map((item) => item is Map<String, dynamic> ? item : Map<String, dynamic>.from(item))
-        .toList() ??
+            ?.map((item) => item is Map<String, dynamic>
+                ? item
+                : Map<String, dynamic>.from(item))
+            .toList() ??
         [];
 
     final quizProvider = Provider.of<QuizProvider>(context, listen: false);
@@ -37,7 +44,8 @@ class ReusableQuizCardList extends StatelessWidget {
 
     if (quizSets.isEmpty) {
       return Center(
-        child: Text("No cards available", style: TextStyle(color: Theme.of(context).colorScheme.primary)),
+        child: Text("No cards available",
+            style: TextStyle(color: Theme.of(context).colorScheme.primary)),
       );
     }
 

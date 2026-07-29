@@ -54,7 +54,9 @@ class ReusableRewardedAdsButtonPosition extends StatelessWidget {
                   const SizedBox(width: 8),
                   Flexible(
                     child: Text(
-                      aiCreditProvider.adsWatchedToday < 3 ? name : 'Ad Limit Reached',
+                      aiCreditProvider.adsWatchedToday < 3
+                          ? name
+                          : 'Ad Limit Reached',
                       style: TextStyle(
                         color: colorScheme.onPrimary,
                         fontSize: 13,
@@ -89,14 +91,16 @@ class ReusableRewardedAdsButtonPosition extends StatelessWidget {
     );
   }
 
-  Future<void> _handleAdTap(BuildContext context, AiCreditProvider aiCreditProvider) async {
+  Future<void> _handleAdTap(
+      BuildContext context, AiCreditProvider aiCreditProvider) async {
     bool isConnected = await InternetConnection().hasInternetAccess;
 
     if (!isConnected) {
       _showDialog(
         context,
         title: "No Internet",
-        message: "Please connect to the internet to watch an ad. Try turning on Wi-Fi or mobile data.",
+        message:
+            "Please connect to the internet to watch an ad. Try turning on Wi-Fi or mobile data.",
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -117,19 +121,21 @@ class ReusableRewardedAdsButtonPosition extends StatelessWidget {
         cancelText: "Maybe Later",
         confirmText: "Watch Ads",
         onWatchAd: () {
-          showLoadingDialog(context, text: "Loading ads... Please wait.\nIf it doesn’t appear, try again.");
+          showLoadingDialog(context,
+              text:
+                  "Loading ads... Please wait.\nIf it doesn’t appear, try again.");
           Future.delayed(const Duration(seconds: 10), () {
             Navigator.of(context).pop();
             adManager.showRewarded(context, 'energy');
           });
         },
       );
-
     } else {
       _showDialog(
         context,
         title: "Ad Limit Reached",
-        message: "You have reached the maximum of ${aiCreditProvider.maxAdsPerDay} ads for today. Please come back tomorrow!",
+        message:
+            "You have reached the maximum of ${aiCreditProvider.maxAdsPerDay} ads for today. Please come back tomorrow!",
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -140,8 +146,8 @@ class ReusableRewardedAdsButtonPosition extends StatelessWidget {
     }
   }
 
-
-  void _showDialog(BuildContext context, {
+  void _showDialog(
+    BuildContext context, {
     required String title,
     required String message,
     required List<Widget> actions,

@@ -15,12 +15,14 @@ void showFreeCreditsDialog({
     barrierLabel: "",
     transitionDuration: Duration(milliseconds: 300),
     pageBuilder: (context, animation, secondaryAnimation) {
-      return WillPopScope( // Prevent closing when back button is pressed
+      return WillPopScope(
+        // Prevent closing when back button is pressed
         onWillPop: () async => false,
         child: ScaleTransition(
           scale: CurvedAnimation(parent: animation, curve: Curves.easeOutBack),
           child: Dialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0)),
             elevation: 10,
             backgroundColor: Colors.transparent,
             child: Container(
@@ -29,7 +31,8 @@ void showFreeCreditsDialog({
                 color: colorScheme.surface.withOpacity(0.95),
                 borderRadius: BorderRadius.circular(20.0),
                 boxShadow: [
-                  BoxShadow(color: Colors.black26, blurRadius: 10, spreadRadius: 2)
+                  BoxShadow(
+                      color: Colors.black26, blurRadius: 10, spreadRadius: 2)
                 ],
               ),
               child: Column(
@@ -44,11 +47,18 @@ void showFreeCreditsDialog({
                         colors: [colorScheme.primary, colorScheme.secondary],
                       ),
                     ),
-                    child: Icon(Icons.emoji_events, size: 60, color: Colors.white)
-                        .animate()
-                        .scale(duration: 500.ms, begin: Offset(0.7, 0.7), end: Offset(1.2, 1.2))
-                        .then(delay: 100.ms)
-                        .scale(duration: 300.ms, begin: Offset(1.2, 1.2), end: Offset(1.0, 1.0)),
+                    child:
+                        Icon(Icons.emoji_events, size: 60, color: Colors.white)
+                            .animate()
+                            .scale(
+                                duration: 500.ms,
+                                begin: Offset(0.7, 0.7),
+                                end: Offset(1.2, 1.2))
+                            .then(delay: 100.ms)
+                            .scale(
+                                duration: 300.ms,
+                                begin: Offset(1.2, 1.2),
+                                end: Offset(1.0, 1.0)),
                   ),
                   SizedBox(height: 16),
                   // Title
@@ -78,7 +88,8 @@ void showFreeCreditsDialog({
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                     ),
                     onPressed: () {
                       onClaim();
@@ -86,7 +97,9 @@ void showFreeCreditsDialog({
                     },
                     child: Text(
                       "Claim Reward",
-                      style: TextStyle(color: colorScheme.onPrimary,fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          color: colorScheme.onPrimary,
+                          fontWeight: FontWeight.bold),
                     ),
                   ),
                 ],

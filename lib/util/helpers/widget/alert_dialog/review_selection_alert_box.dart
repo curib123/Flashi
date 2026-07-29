@@ -90,12 +90,17 @@ Map<String, dynamic> _createReviewerItem({
   };
 }
 
-void _handleTap(String title, BuildContext context, List<dynamic> cards, String setname) {
+void _handleTap(
+    String title, BuildContext context, List<dynamic> cards, String setname) {
   print('$title tapped');
   Navigator.push(
     context,
     MaterialPageRoute(
-      builder: (context) => ReviewerPage(reviewer: title, cards: cards, setname: setname,),
+      builder: (context) => ReviewerPage(
+        reviewer: title,
+        cards: cards,
+        setname: setname,
+      ),
     ),
   );
 }
@@ -251,7 +256,11 @@ class _AnimatedArrowIconState extends State<_AnimatedArrowIcon>
       builder: (context, child) {
         return Transform.translate(
           offset: Offset(0, _animation.value),
-          child: Icon(Icons.keyboard_arrow_up, color: Colors.grey,size: 30,),
+          child: Icon(
+            Icons.keyboard_arrow_up,
+            color: Colors.grey,
+            size: 30,
+          ),
         );
       },
     );

@@ -27,23 +27,20 @@ class _TextToSpeechReviewState extends State<TextToSpeechReview> {
   late final PageController _pageController; // Controller for PageView
   bool _isSpeaking = false; // Track if TTS is speaking
   int _currentIndex = 0; // Track current page index
- AdManager adManager = AdManager();
-
+  AdManager adManager = AdManager();
 
   @override
   void initState() {
     super.initState();
 
-    Future.delayed(Duration(minutes: 5),(){
+    Future.delayed(Duration(minutes: 5), () {
       adManager.loadInterstitialAd(AdUnitId.interstitialAdUnitId);
     });
 
     adManager.showInterstitialAd();
-    _pageController = PageController(initialPage: _currentIndex); // Start at the first card
-
+    _pageController =
+        PageController(initialPage: _currentIndex); // Start at the first card
   }
-
-
 
   @override
   void dispose() {
@@ -115,7 +112,14 @@ class _TextToSpeechReviewState extends State<TextToSpeechReview> {
             itemBuilder: (context, index) {
               final card = widget.cards[index];
               return TextToSpeechCardCore(
-                question: highlightKeywords( context: context, keyword:  card['keyword'] , text:  card['question'] , fontSize: 22 , fontColor: Theme.of(context).colorScheme.onPrimary, fontSizeKeyword: 17, isCenter: true),
+                question: highlightKeywords(
+                    context: context,
+                    keyword: card['keyword'],
+                    text: card['question'],
+                    fontSize: 22,
+                    fontColor: Theme.of(context).colorScheme.onPrimary,
+                    fontSizeKeyword: 17,
+                    isCenter: true),
                 answer: card['answer'] ?? 'No answer available',
               );
             },
@@ -129,7 +133,8 @@ class _TextToSpeechReviewState extends State<TextToSpeechReview> {
               ElevatedButton(
                 onPressed: _speakAndAutoScroll,
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
                   backgroundColor: Theme.of(context).colorScheme.primary,
                   foregroundColor: Theme.of(context).colorScheme.onPrimary,
                 ),
@@ -159,13 +164,16 @@ class _TextToSpeechReviewState extends State<TextToSpeechReview> {
                   });
                 },
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
                   backgroundColor: Theme.of(context).colorScheme.primary,
                   foregroundColor: Theme.of(context).colorScheme.onPrimary,
                 ),
-                child: Icon(Icons.arrow_back,color: Colors.white,),
+                child: Icon(
+                  Icons.arrow_back,
+                  color: Colors.white,
+                ),
               ),
-
             ],
           ),
         ),
