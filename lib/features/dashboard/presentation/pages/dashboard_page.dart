@@ -40,7 +40,7 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   void initState() {
     super.initState();
-    final openAdManager = AdManager()..loadOpenAppAd(AdUnitId.appOpenAdUnitId);
+    _adManager.loadOpenAppAd(AdUnitId.appOpenAdUnitId);
     Future.delayed(const Duration(minutes: 5), () {
       _adManager.loadInterstitialAd(AdUnitId.interstitialAdUnitId);
     });

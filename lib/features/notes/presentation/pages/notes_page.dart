@@ -1,16 +1,16 @@
-import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_notes_summary_block_core.dart';
-import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_notes_summary_tile_core.dart';
-import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_search_bar_core.dart';
-import 'package:flashi/presentation/widget/reusable_widgets/reusable_create_set_button_position.dart';
-import 'package:flashi/presentation/widget/reusable_widgets/reusable_sort_and_see_all.dart';
-import 'package:flashi/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
+import 'package:flashi/app/app_shell.dart';
+import 'package:flashi/core/design_system/app_breakpoints.dart';
+import 'package:flashi/core/design_system/app_spacing.dart';
+import 'package:flashi/core/design_system/responsive_content.dart';
+import 'package:flashi/core/state/sort_provider.dart';
 import 'package:flashi/features/notes/application/notes_provider.dart';
 import 'package:flashi/presentation/widget/components/create_note_screen.dart';
-import 'package:flashi/core/state/sort_provider.dart';
+import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_notes_summary_block_core.dart';
+import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_notes_summary_tile_core.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
+import 'package:flashi/util/helpers/widget/modals/theme_modal.dart';
 import 'package:flashi/util/helpers/widget/other/empty_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 
 class NotesPage extends StatefulWidget {
@@ -21,297 +21,255 @@ class NotesPage extends StatefulWidget {
 }
 
 class _NotesPageState extends State<NotesPage> {
-  AdManager adManager = AdManager();
-
-  @override
-  void initState() {
-    super.initState();
-  }
+  final AdManager _adManager = AdManager();
 
   @override
   void dispose() {
-    // TODO: implement dispose
+    _adManager.showInterstitialAd();
     super.dispose();
-    adManager.showInterstitialAd();
   }
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final notesProvider = Provider.of<NotesProvider>(context);
-    final sortProvider = Provider.of<SortProvider>(context);
-    var filteredNotes = notesProvider.filterNotes().toList();
+    final notes = context.watch<NotesProvider>();
+    final sort = context.watch<SortProvider>();
+    final filteredNotes = notes.filterNotes();
+    final useList = sort.dropdownValueNote == 'Tiles';
 
     return Scaffold(
       appBar: AppBar(
-        leading: GestureDetector(
-          onTap: () => Scaffold.of(context).openDrawer(),
-          child: Icon(
-            Icons.notes_rounded,
-            size: 30,
-            color: colorScheme.primary,
+        leading: MediaQuery.sizeOf(context).width < AppBreakpoints.medium
+            ? const IconButton(
+                tooltip: 'Open navigation',
+                onPressed: AppShell.openNavigation,
+                icon: Icon(Icons.menu),
+              )
+            : null,
+        title: const Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Notes'),
+            Text(
+              'Capture and organize ideas',
+              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
+            ),
+          ],
+        ),
+        actions: [
+          IconButton(
+            tooltip: 'Appearance',
+            onPressed: () => openThemeSelector(context),
+            icon: const Icon(Icons.contrast_outlined),
           ),
-        ),
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(),
-        ),
-        backgroundColor: colorScheme.onPrimary,
-        foregroundColor: colorScheme.primary,
-        title: Text(
-          "Notes",
-          style: TextStyle(
-              color: colorScheme.primary, fontWeight: FontWeight.bold),
-        ),
-        centerTitle: false,
+          const SizedBox(width: AppSpacing.xs),
+        ],
       ),
-      body: Stack(
-        children: [
-          sortProvider.dropdownValueNote == 'Tiles'
-              ? _NoteBodyTile(
-                  colorScheme, filteredNotes, adManager.bannerHeight)
-              : _NoteBodyBlock(
-                  colorScheme, filteredNotes, adManager.bannerHeight),
-          Container(
-            color: colorScheme.onPrimary,
-            height: adManager.bannerHeight,
-            child: Column(
+      body: ResponsiveContent(
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.md,
+          AppSpacing.md,
+          AppSpacing.md,
+          0,
+        ),
+        child: Column(
+          children: [
+            TextField(
+              controller: notes.searchController,
+              onChanged: notes.onSearchChanged,
+              decoration: const InputDecoration(
+                hintText: 'Search notes',
+                prefixIcon: Icon(Icons.search),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            Row(
               children: [
-                ReusableSearchBarCore(
-                    colorScheme: colorScheme,
-                    hintText: 'search notes',
-                    onChanged: (value) =>
-                        {notesProvider.onSearchChanged(value)},
-                    controller: notesProvider.searchController),
-                ReusableSortAndSeeAll(
-                    dropdownValue: sortProvider.dropdownValueNote,
-                    sortOptions: sortProvider.sortOptionsNote,
-                    onSortChanged: (value) =>
-                        sortProvider.updateSortValueNote(value!),
-                    onSeeAllPressed: () {},
-                    isShowSeeAllLink: false,
-                    isShowReviewLink: false,
-                    onShowReviewLink: () {}),
-
-                //ads here
-                adManager.getThirdBannerAdWidget()
+                Expanded(
+                  child: Text(
+                    filteredNotes.isEmpty
+                        ? 'Your notes'
+                        : '${filteredNotes.length} notes',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ),
+                SegmentedButton<String>(
+                  showSelectedIcon: false,
+                  segments: const [
+                    ButtonSegment(
+                      value: 'Tiles',
+                      icon: Icon(Icons.view_agenda_outlined),
+                      label: Text('List'),
+                    ),
+                    ButtonSegment(
+                      value: 'Blocks',
+                      icon: Icon(Icons.grid_view_outlined),
+                      label: Text('Grid'),
+                    ),
+                  ],
+                  selected: {sort.dropdownValueNote},
+                  onSelectionChanged: (selection) =>
+                      sort.updateSortValueNote(selection.first),
+                ),
               ],
             ),
-          ),
-          ReusableThemeSettingPosition(colorScheme: colorScheme),
-          ReusableCreateSetButtonPosition(
-              icon: Icons.add_circle_rounded,
-              colorScheme: colorScheme,
-              name: 'Add Notes',
-              onTap: () {
-                notesProvider.titleController.text = '';
-                notesProvider.contentController.text = '';
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (BuildContext pageContext) {
-                      return CreateNotesPage(
-                        isCreate: true,
-                        title: '',
-                        isRead: false,
-                        date: DateTime.now(),
-                      );
-                    },
-                  ),
-                );
-              })
-        ],
+            _adManager.getThirdBannerAdWidget(),
+            const SizedBox(height: AppSpacing.sm),
+            Expanded(
+              child: filteredNotes.isEmpty
+                  ? noNotesWidget(context)
+                  : _NotesCollection(
+                      notes: filteredNotes,
+                      useList: useList,
+                      provider: notes,
+                    ),
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        tooltip: 'Create note',
+        onPressed: () => _openEditor(notes),
+        icon: const Icon(Icons.add),
+        label: const Text('New note'),
+      ),
+    );
+  }
+
+  void _openEditor(NotesProvider notes) {
+    notes.titleController.clear();
+    notes.contentController.clear();
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => CreateNotesPage(
+          isCreate: true,
+          title: '',
+          isRead: false,
+          date: DateTime.now(),
+        ),
       ),
     );
   }
 }
 
-Widget _NoteBodyTile(
-    ColorScheme colorScheme, List filteredNotes, double bannerHeight) {
-  return Consumer<NotesProvider>(
-    builder: (context, notesProvider, child) {
-      return _buildNoteListView(filteredNotes, colorScheme, notesProvider,
-          'Tile', context, bannerHeight);
-    },
-  );
-}
+class _NotesCollection extends StatelessWidget {
+  const _NotesCollection({
+    required this.notes,
+    required this.useList,
+    required this.provider,
+  });
 
-Widget _NoteBodyBlock(
-    ColorScheme colorScheme, List filteredNotes, double bannerHeight) {
-  return Consumer<NotesProvider>(
-    builder: (context, notesProvider, child) {
-      return _buildNoteGridView(filteredNotes, colorScheme, notesProvider,
-          "Block", context, bannerHeight);
-    },
-  );
-}
+  final List<Map<String, dynamic>> notes;
+  final bool useList;
+  final NotesProvider provider;
 
-Widget _buildNoteListView(
-    List filteredNotes,
-    ColorScheme colorScheme,
-    NotesProvider notesProvider,
-    String layout,
-    BuildContext context,
-    double bannerHeight) {
-  return filteredNotes.isEmpty
-      ? noNotesWidget(context)
-      : AnimationLimiter(
-          child: ListView.builder(
-            padding: EdgeInsets.symmetric(
-              vertical: bannerHeight, // Adjust padding as needed
-              horizontal: 15,
-            ),
-            itemCount: filteredNotes.length,
-            itemBuilder: (context, index) {
-              var note = filteredNotes[index];
-              return _buildNoteLayout(
-                  note, index, colorScheme, notesProvider, context, layout);
-            },
+  @override
+  Widget build(BuildContext context) {
+    if (useList) {
+      return ListView.separated(
+        padding: const EdgeInsets.only(
+          top: AppSpacing.xs,
+          bottom: AppSpacing.xxl * 2,
+        ),
+        itemCount: notes.length,
+        separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.sm),
+        itemBuilder: (context, index) => _NoteCard(
+          note: notes[index],
+          provider: provider,
+          useList: true,
+        ),
+      );
+    }
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final columns = constraints.maxWidth >= 900
+            ? 3
+            : constraints.maxWidth >= 560
+                ? 2
+                : 1;
+        return GridView.builder(
+          padding: const EdgeInsets.only(
+            top: AppSpacing.xs,
+            bottom: AppSpacing.xxl * 2,
+          ),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: columns,
+            crossAxisSpacing: AppSpacing.sm,
+            mainAxisSpacing: AppSpacing.sm,
+            childAspectRatio: columns == 1 ? 2.1 : 1,
+          ),
+          itemCount: notes.length,
+          itemBuilder: (context, index) => _NoteCard(
+            note: notes[index],
+            provider: provider,
+            useList: false,
           ),
         );
+      },
+    );
+  }
 }
 
-Widget _buildNoteGridView(
-    List filteredNotes,
-    ColorScheme colorScheme,
-    NotesProvider notesProvider,
-    String layout,
-    BuildContext context,
-    double bannerHeight) {
-  return filteredNotes.isEmpty
-      ? noNotesWidget(context)
-      : AnimationLimiter(
-          child: GridView.builder(
-            padding: EdgeInsets.symmetric(
-              vertical: bannerHeight, // Adjust padding as needed
-              horizontal: 15,
-            ),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: MediaQuery.of(context).size.width > 600 ? 3 : 2,
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 10,
-              childAspectRatio: 1,
-            ),
-            itemCount: filteredNotes.length,
-            itemBuilder: (context, index) {
-              var note = filteredNotes[index];
-              return _buildNoteLayout(
-                  note, index, colorScheme, notesProvider, context, layout);
-            },
-          ),
-        );
-}
+class _NoteCard extends StatelessWidget {
+  const _NoteCard({
+    required this.note,
+    required this.provider,
+    required this.useList,
+  });
 
-Widget _buildNoteLayout(
-    Map<String, dynamic> note,
-    int index,
-    ColorScheme colorScheme,
-    NotesProvider notesProvider,
-    BuildContext context,
-    String layout) {
-  return AnimationConfiguration.staggeredList(
-    position: index,
-    duration: const Duration(seconds: 2),
-    child: SlideAnimation(
-      curve: Curves.fastEaseInToSlowEaseOut,
-      verticalOffset: 100.0,
-      child: FadeInAnimation(
-        child: layout == 'Tile'
-            ? ReusableNotesSummaryTileCore(
-                isNote: true,
-                title: note['title'],
-                content: note['content'],
-                timestamp: note['created_at'],
-                isFavorite: note['favorite'],
-                onTap: () {
-                  notesProvider.titleController.text = note['title'];
-                  notesProvider.contentController.text = note['content'];
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (BuildContext pageContext) {
-                        return CreateNotesPage(
-                          isCreate: false,
-                          title: note['title'],
-                          isRead: true,
-                          date: note['created_at'],
-                        );
-                      },
-                    ),
-                  );
-                },
-                onFavorite: () {
-                  notesProvider.toggleFavoriteByTitle(note['title']);
-                },
-                onEdit: () {
-                  notesProvider.titleController.text = note['title'];
-                  notesProvider.contentController.text = note['content'];
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (BuildContext pageContext) {
-                        return CreateNotesPage(
-                          isCreate: false,
-                          title: note['title'],
-                          isRead: false,
-                          date: note['created_at'],
-                        );
-                      },
-                    ),
-                  );
-                },
-                onDelete: () {
-                  notesProvider.deleteNoteByTitle(note['title']);
-                },
-                isHistoryPage: false,
-              )
-            : ReusableNotesSummaryBlockCore(
-                isNote: true,
-                title: note['title'],
-                content: note['content'],
-                timestamp: note['created_at'],
-                isFavorite: note['favorite'],
-                onTap: () {
-                  notesProvider.titleController.text = note['title'];
-                  notesProvider.contentController.text = note['content'];
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (BuildContext pageContext) {
-                        return CreateNotesPage(
-                          isCreate: false,
-                          title: note['title'],
-                          isRead: true,
-                          date: note['created_at'],
-                        );
-                      },
-                    ),
-                  );
-                },
-                onFavorite: () {
-                  notesProvider.toggleFavoriteByTitle(note['title']);
-                },
-                onEdit: () {
-                  notesProvider.titleController.text = note['title'];
-                  notesProvider.contentController.text = note['content'];
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (BuildContext pageContext) {
-                        return CreateNotesPage(
-                          isCreate: false,
-                          title: note['title'],
-                          isRead: false,
-                          date: note['created_at'],
-                        );
-                      },
-                    ),
-                  );
-                },
-                onDelete: () {
-                  notesProvider.deleteNoteByTitle(note['title']);
-                },
-              ),
+  final Map<String, dynamic> note;
+  final NotesProvider provider;
+  final bool useList;
+
+  @override
+  Widget build(BuildContext context) {
+    void onRead() => _openNote(context, isRead: true);
+    void onEdit() => _openNote(context, isRead: false);
+    void onFavorite() => provider.toggleFavoriteByTitle(note['title']);
+    void onDelete() => provider.deleteNoteByTitle(note['title']);
+
+    if (useList) {
+      return ReusableNotesSummaryTileCore(
+        isNote: true,
+        title: note['title'],
+        content: note['content'],
+        timestamp: note['created_at'],
+        isFavorite: note['favorite'],
+        onTap: onRead,
+        onFavorite: onFavorite,
+        onEdit: onEdit,
+        onDelete: onDelete,
+        isHistoryPage: false,
+      );
+    }
+
+    return ReusableNotesSummaryBlockCore(
+      isNote: true,
+      title: note['title'],
+      content: note['content'],
+      timestamp: note['created_at'],
+      isFavorite: note['favorite'],
+      onTap: onRead,
+      onFavorite: onFavorite,
+      onEdit: onEdit,
+      onDelete: onDelete,
+    );
+  }
+
+  void _openNote(BuildContext context, {required bool isRead}) {
+    provider.titleController.text = note['title'];
+    provider.contentController.text = note['content'];
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => CreateNotesPage(
+          isCreate: false,
+          title: note['title'],
+          isRead: isRead,
+          date: note['created_at'],
+        ),
       ),
-    ),
-  );
+    );
+  }
 }
