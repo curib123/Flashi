@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class ReusableCreateSetButtonPosition extends StatelessWidget {
+class CreateQuizSetButton extends StatelessWidget {
   final ColorScheme colorScheme;
   final String name;
   final Function()? onTap;
   final IconData icon;
-  const ReusableCreateSetButtonPosition(
+  const CreateQuizSetButton(
       {super.key,
       required this.colorScheme,
       required this.name,

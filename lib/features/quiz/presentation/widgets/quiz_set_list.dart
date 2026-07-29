@@ -1,4 +1,4 @@
-import 'package:flashi/presentation/widget/components/see_all_quiz_card.dart';
+import 'package:flashi/features/quiz/presentation/pages/quiz_cards_page.dart';
 import 'package:flashi/shared/widgets/core/reusable_set_core.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/auth_dialog.dart';
@@ -13,10 +13,10 @@ import 'package:provider/provider.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 /// Reusable widget to display a list of quiz sets with animations and interactive actions.
-class ReusableQuizSetList extends StatelessWidget {
+class QuizSetList extends StatelessWidget {
   final List<Map<String, dynamic>> quizSets;
 
-  const ReusableQuizSetList({
+  const QuizSetList({
     super.key,
     required this.quizSets,
   });
@@ -82,7 +82,7 @@ class ReusableQuizSetList extends StatelessWidget {
                                 _addCard(
                                     context, name, set, index, set['cards']);
                               } else {
-                                _navigateToSeeAllQuizCard(
+                                _navigateToQuizCardsPage(
                                     context, name, set, index, set['cards']);
                                 showAuthDialog(
                                     context,
@@ -116,7 +116,7 @@ class ReusableQuizSetList extends StatelessWidget {
                             },
                             onFavorate: () => quizProvider.toggleFavorite(set),
                             onViewAllCards: () => {
-                              _navigateToSeeAllQuizCard(
+                              _navigateToQuizCardsPage(
                                   context, name, set, index, set['cards']),
                               quizProvider
                                   .updateCurrentQuizSetNameToSetLimit(name),
@@ -147,7 +147,7 @@ class ReusableQuizSetList extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => SeeAllQuizCard(
+        builder: (context) => QuizCardsPage(
           name: name,
           colorScheme: Theme.of(context).colorScheme,
           card: set,
@@ -165,7 +165,7 @@ class ReusableQuizSetList extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => SeeAllQuizCard(
+        builder: (context) => QuizCardsPage(
           name: name,
           colorScheme: Theme.of(context).colorScheme,
           card: set,
@@ -189,12 +189,12 @@ class ReusableQuizSetList extends StatelessWidget {
   }
 
   /// Navigate to the Add Card List screen.
-  void _navigateToSeeAllQuizCard(BuildContext context, String name,
+  void _navigateToQuizCardsPage(BuildContext context, String name,
       Map<String, dynamic> set, int index, List<dynamic> cards) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => SeeAllQuizCard(
+        builder: (context) => QuizCardsPage(
           name: name,
           colorScheme: Theme.of(context).colorScheme,
           card: set,

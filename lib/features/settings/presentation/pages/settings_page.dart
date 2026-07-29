@@ -2,8 +2,8 @@ import 'package:flashi/core/design_system/app_breakpoints.dart';
 import 'package:flashi/core/design_system/app_spacing.dart';
 import 'package:flashi/core/design_system/app_surface.dart';
 import 'package:flashi/core/design_system/responsive_content.dart';
-import 'package:flashi/presentation/widget/components/reviewer_settings_alert_content.dart';
-import 'package:flashi/presentation/widget/components/theme_selector_dropdown.dart';
+import 'package:flashi/features/reviewer/presentation/widgets/reviewer_settings_content.dart';
+import 'package:flashi/features/settings/presentation/widgets/theme_selector.dart';
 import 'package:flutter/material.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -24,7 +24,7 @@ class SettingsPage extends StatelessWidget {
               description: 'Configure how review sessions behave.',
             ),
             SizedBox(height: AppSpacing.sm),
-            AppSurface(child: ReviewerSettingsAlertContent()),
+            AppSurface(child: ReviewerSettingsContent()),
             SizedBox(height: AppSpacing.xl),
             _SectionHeader(
               title: 'Appearance',

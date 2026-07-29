@@ -1,11 +1,11 @@
 import 'package:flashi/shared/widgets/core/reusable_btn_core.dart';
 import 'package:flutter/material.dart';
 
-class CreateSetButtons extends StatelessWidget {
+class CreateQuizSetActions extends StatelessWidget {
   final Function()? createBtn;
   final String buttonName;
 
-  const CreateSetButtons(
+  const CreateQuizSetActions(
       {super.key, required this.createBtn, required this.buttonName});
 
   @override

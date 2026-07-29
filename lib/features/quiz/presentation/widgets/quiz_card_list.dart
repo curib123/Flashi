@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 /// A reusable widget for displaying a list of quiz cards with actions.
-class ReusableQuizCardList extends StatelessWidget {
+class QuizCardList extends StatelessWidget {
   final String name; // Name of the quiz set
   final Map<String, dynamic> card; // Quiz card data
   final Function(Map<String, dynamic> quizSet)?
@@ -18,7 +18,7 @@ class ReusableQuizCardList extends StatelessWidget {
   final Function(Map<String, dynamic> quizSet)?
       onRemoveKeyword; // Callback for removing keyword
 
-  const ReusableQuizCardList({
+  const QuizCardList({
     Key? key,
     required this.name,
     required this.card,

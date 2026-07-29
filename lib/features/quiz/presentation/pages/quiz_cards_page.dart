@@ -1,8 +1,8 @@
-import 'package:flashi/presentation/widget/reusable_widgets/reusable_create_set_button_position.dart';
-import 'package:flashi/presentation/widget/reusable_widgets/reusable_quiz_card_list.dart';
-import 'package:flashi/presentation/widget/reusable_widgets/reusable_rewarded_ads_button_position.dart';
-import 'package:flashi/presentation/widget/reusable_widgets/reusable_sort_and_see_all.dart';
-import 'package:flashi/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
+import 'package:flashi/features/quiz/presentation/widgets/create_quiz_set_button.dart';
+import 'package:flashi/features/quiz/presentation/widgets/quiz_card_list.dart';
+import 'package:flashi/core/ads/widgets/rewarded_ad_button.dart';
+import 'package:flashi/shared/widgets/sort_section_header.dart';
+import 'package:flashi/features/settings/presentation/widgets/theme_settings_button.dart';
 import 'package:flashi/features/ai/application/ai_credit_provider.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flashi/core/state/sort_provider.dart';
@@ -16,14 +16,14 @@ import 'package:flashi/util/helpers/widget/modals/create_card_bottom_modal.dart'
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class SeeAllQuizCard extends StatelessWidget {
+class QuizCardsPage extends StatelessWidget {
   final String name;
   final int index;
   final ColorScheme colorScheme;
   final Map<String, dynamic> card;
   final List<dynamic> cards;
 
-  const SeeAllQuizCard({
+  const QuizCardsPage({
     super.key,
     required this.name,
     required this.colorScheme,
@@ -73,7 +73,7 @@ class SeeAllQuizCard extends StatelessWidget {
           children: [
             ListView(
               children: [
-                ReusableSortAndSeeAll(
+                SortSectionHeader(
                   dropdownValue: sortProvider.dropdownValueCard,
                   sortOptions: sortProvider.sortOptionsCard,
                   onSortChanged: (newValue) {
@@ -100,7 +100,7 @@ class SeeAllQuizCard extends StatelessWidget {
                     : SizedBox(
                         width: MediaQuery.sizeOf(context).width,
                         height: MediaQuery.sizeOf(context).height * 0.68,
-                        child: ReusableQuizCardList(
+                        child: QuizCardList(
                           name: name,
                           card: card,
                           onRemove: (quizSet) {
@@ -168,7 +168,7 @@ class SeeAllQuizCard extends StatelessWidget {
             if (card['limitNumberOfQuiz'] -
                     quizProvider.getNumberOfCardsInSet(name) !=
                 0)
-              ReusableCreateSetButtonPosition(
+              CreateQuizSetButton(
                 icon: Icons.add_circle,
                 colorScheme: colorScheme,
                 name: 'Create Card',
@@ -185,7 +185,7 @@ class SeeAllQuizCard extends StatelessWidget {
               )
             else
               aiCreditProvider.credits > 0
-                  ? ReusableCreateSetButtonPosition(
+                  ? CreateQuizSetButton(
                       colorScheme: colorScheme,
                       name: "Add More Slot",
                       onTap: () {
@@ -197,11 +197,11 @@ class SeeAllQuizCard extends StatelessWidget {
                             });
                       },
                       icon: Icons.add_circle_rounded)
-                  : ReusableRewardedAdsButtonPosition(
+                  : RewardedAdButton(
                       colorScheme: colorScheme,
                       name: "Watch Ad Free 5 Credits",
                     ),
-            ReusableThemeSettingPosition(colorScheme: colorScheme),
+            ThemeSettingsButton(colorScheme: colorScheme),
           ],
         );
       },

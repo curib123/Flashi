@@ -5,12 +5,12 @@ import 'package:flashi/util/helpers/widget/other/highlight_keywords.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
-class TextInputReviewBasic extends StatefulWidget {
+class TextInputReview extends StatefulWidget {
   final String reviewer;
   final List<dynamic> cards;
   final String setname;
 
-  const TextInputReviewBasic({
+  const TextInputReview({
     super.key,
     required this.reviewer,
     required this.cards,
@@ -21,7 +21,7 @@ class TextInputReviewBasic extends StatefulWidget {
   _TextInputReviewState createState() => _TextInputReviewState();
 }
 
-class _TextInputReviewState extends State<TextInputReviewBasic> {
+class _TextInputReviewState extends State<TextInputReview> {
   late PageController _pageController;
   final TextEditingController _answerController = TextEditingController();
   int _score = 0;

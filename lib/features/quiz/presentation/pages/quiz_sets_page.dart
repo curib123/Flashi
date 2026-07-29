@@ -1,10 +1,10 @@
 import 'package:flashi/shared/widgets/core/reusable_search_bar_core.dart';
-import 'package:flashi/presentation/widget/reusable_widgets/reusable_create_set_button_position.dart';
-import 'package:flashi/presentation/widget/reusable_widgets/reusable_favorate_position.dart';
-import 'package:flashi/presentation/widget/reusable_widgets/reusable_import_position.dart';
-import 'package:flashi/presentation/widget/reusable_widgets/reusable_quiz_set_list.dart';
-import 'package:flashi/presentation/widget/reusable_widgets/reusable_sort_and_see_all.dart';
-import 'package:flashi/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
+import 'package:flashi/features/quiz/presentation/widgets/create_quiz_set_button.dart';
+import 'package:flashi/features/quiz/presentation/widgets/favorites_button.dart';
+import 'package:flashi/features/quiz/presentation/widgets/quiz_import_button.dart';
+import 'package:flashi/features/quiz/presentation/widgets/quiz_set_list.dart';
+import 'package:flashi/shared/widgets/sort_section_header.dart';
+import 'package:flashi/features/settings/presentation/widgets/theme_settings_button.dart';
 import 'package:flashi/features/ai/application/ai_credit_provider.dart';
 import 'package:flashi/features/ai/application/ai_generation_provider.dart';
 import 'package:flashi/features/ai/application/generation_config_provider.dart';
@@ -16,11 +16,11 @@ import 'package:flashi/util/helpers/widget/other/empty_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class SeeAllQuizSetList extends StatelessWidget {
+class QuizSetsPage extends StatelessWidget {
   final String name;
   final ColorScheme colorScheme;
 
-  const SeeAllQuizSetList({
+  const QuizSetsPage({
     super.key,
     required this.name,
     required this.colorScheme,
@@ -71,7 +71,7 @@ class SeeAllQuizSetList extends StatelessWidget {
           children: [
             ListView(
               children: [
-                ReusableSortAndSeeAll(
+                SortSectionHeader(
                   dropdownValue: sortProvider.dropdownValueSet,
                   sortOptions: sortProvider.sortOptionsSet,
                   onSortChanged: (newValue) {
@@ -104,7 +104,7 @@ class SeeAllQuizSetList extends StatelessWidget {
                         height: MediaQuery.sizeOf(context).height * 0.60,
                         child: SingleChildScrollView(
                           scrollDirection: Axis.vertical,
-                          child: ReusableQuizSetList(
+                          child: QuizSetList(
                             quizSets: filteredQuizSets,
                           ),
                         ),
@@ -112,7 +112,7 @@ class SeeAllQuizSetList extends StatelessWidget {
               ],
             ),
             // Create Button Position
-            ReusableCreateSetButtonPosition(
+            CreateQuizSetButton(
               icon: Icons.add_circle,
               colorScheme: colorScheme,
               name: 'Generate Quiz Set',
@@ -127,9 +127,9 @@ class SeeAllQuizSetList extends StatelessWidget {
               },
             ),
 
-            ReusableThemeSettingPosition(colorScheme: colorScheme),
-            ReusableImportPosition(colorScheme: colorScheme),
-            ReusableFavoratePosition(colorScheme: colorScheme),
+            ThemeSettingsButton(colorScheme: colorScheme),
+            QuizImportButton(colorScheme: colorScheme),
+            FavoritesButton(colorScheme: colorScheme),
           ],
         );
       },

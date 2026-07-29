@@ -1,9 +1,9 @@
 import 'package:flashi/features/favorites/presentation/pages/favorites_page.dart';
 import 'package:flutter/material.dart';
 
-class ReusableFavoratePosition extends StatelessWidget {
+class FavoritesButton extends StatelessWidget {
   final ColorScheme colorScheme;
-  const ReusableFavoratePosition({super.key, required this.colorScheme});
+  const FavoritesButton({super.key, required this.colorScheme});
 
   @override
   Widget build(BuildContext context) {

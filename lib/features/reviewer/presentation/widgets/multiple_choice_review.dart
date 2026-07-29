@@ -6,12 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:flashi/shared/widgets/core/reviewer_widgets_core/multiple_choice_core.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
-class MultipleChoiceReviewBasic extends StatefulWidget {
+class MultipleChoiceReview extends StatefulWidget {
   final String reviewer;
   final List<dynamic> cards;
   final String setname;
 
-  const MultipleChoiceReviewBasic({
+  const MultipleChoiceReview({
     super.key,
     required this.reviewer,
     required this.cards,
@@ -22,7 +22,7 @@ class MultipleChoiceReviewBasic extends StatefulWidget {
   _MultipleChoiceReviewState createState() => _MultipleChoiceReviewState();
 }
 
-class _MultipleChoiceReviewState extends State<MultipleChoiceReviewBasic> {
+class _MultipleChoiceReviewState extends State<MultipleChoiceReview> {
   late PageController _pageController;
   final Random _random = Random();
   late List<List<String>> _shuffledOptions;

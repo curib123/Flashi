@@ -2,7 +2,7 @@ import 'package:flashi/core/design_system/app_spacing.dart';
 import 'package:flashi/features/favorites/presentation/pages/favorites_page.dart';
 import 'package:flashi/features/history/presentation/pages/history_page.dart';
 import 'package:flashi/features/settings/presentation/pages/settings_page.dart';
-import 'package:flashi/presentation/widget/components/see_all_quiz_set_list.dart';
+import 'package:flashi/features/quiz/presentation/pages/quiz_sets_page.dart';
 import 'package:flashi/app/state/app_navigation_provider.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flashi/core/services/external_link_service.dart';
@@ -31,7 +31,7 @@ class AppMobileDrawer extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => SeeAllQuizSetList(
+                    builder: (context) => QuizSetsPage(
                       name: 'All Quiz Set',
                       colorScheme: Theme.of(context).colorScheme,
                     ),
@@ -119,7 +119,7 @@ class AppSideNavigation extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => SeeAllQuizSetList(
+        builder: (context) => QuizSetsPage(
           name: 'All Quiz Set',
           colorScheme: Theme.of(context).colorScheme,
         ),

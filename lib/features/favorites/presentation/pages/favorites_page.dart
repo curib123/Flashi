@@ -1,6 +1,6 @@
 import 'package:flashi/core/design_system/app_spacing.dart';
 import 'package:flashi/core/design_system/responsive_content.dart';
-import 'package:flashi/presentation/widget/components/see_all_quiz_card.dart';
+import 'package:flashi/features/quiz/presentation/pages/quiz_cards_page.dart';
 import 'package:flashi/shared/widgets/core/reusable_set_core.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flashi/core/ads/ad_manager.dart';
@@ -128,7 +128,7 @@ class FavoritesPage extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => SeeAllQuizCard(
+        builder: (context) => QuizCardsPage(
           name: name,
           colorScheme: Theme.of(context).colorScheme,
           card: set,

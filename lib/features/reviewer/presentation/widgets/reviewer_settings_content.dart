@@ -3,8 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:flashi/features/reviewer/application/reviewer_settings_provider.dart';
 import 'package:flip_card/flip_card.dart';
 
-class ReviewerSettingsAlertContent extends StatelessWidget {
-  const ReviewerSettingsAlertContent({Key? key}) : super(key: key);
+class ReviewerSettingsContent extends StatelessWidget {
+  const ReviewerSettingsContent({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

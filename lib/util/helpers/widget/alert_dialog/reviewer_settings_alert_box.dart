@@ -1,4 +1,4 @@
-import 'package:flashi/presentation/widget/components/reviewer_settings_alert_content.dart';
+import 'package:flashi/features/reviewer/presentation/widgets/reviewer_settings_content.dart';
 import 'package:flutter/material.dart';
 
 void reviewerSettingsAlertBox({
@@ -43,7 +43,7 @@ void reviewerSettingsAlertBox({
         ),
 
         // Dialog Content
-        content: const ReviewerSettingsAlertContent(),
+        content: const ReviewerSettingsContent(),
         scrollable: true,
 
         // Actions

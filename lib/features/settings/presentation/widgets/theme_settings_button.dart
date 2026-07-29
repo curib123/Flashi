@@ -1,9 +1,9 @@
 import 'package:flashi/util/helpers/widget/modals/theme_modal.dart';
 import 'package:flutter/material.dart';
 
-class ReusableThemeSettingPosition extends StatelessWidget {
+class ThemeSettingsButton extends StatelessWidget {
   final ColorScheme colorScheme;
-  const ReusableThemeSettingPosition({super.key, required this.colorScheme});
+  const ThemeSettingsButton({super.key, required this.colorScheme});
 
   @override
   Widget build(BuildContext context) {

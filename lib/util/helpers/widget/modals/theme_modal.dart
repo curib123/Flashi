@@ -1,4 +1,4 @@
-import 'package:flashi/presentation/widget/components/theme_selector_dropdown.dart';
+import 'package:flashi/features/settings/presentation/widgets/theme_selector.dart';
 import 'package:flutter/material.dart';
 
 void openThemeSelector(BuildContext context) {

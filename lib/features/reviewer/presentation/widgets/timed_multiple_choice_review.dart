@@ -6,13 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:flashi/shared/widgets/core/reviewer_widgets_core/multiple_choice_core.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
-class MultipleChoiceReviewTimer extends StatefulWidget {
+class TimedMultipleChoiceReview extends StatefulWidget {
   final String reviewer;
   final List<dynamic> cards;
   final String setname;
   final int timerDuration;
 
-  const MultipleChoiceReviewTimer({
+  const TimedMultipleChoiceReview({
     super.key,
     required this.reviewer,
     required this.cards,
@@ -24,7 +24,7 @@ class MultipleChoiceReviewTimer extends StatefulWidget {
   _MultipleChoiceReviewState createState() => _MultipleChoiceReviewState();
 }
 
-class _MultipleChoiceReviewState extends State<MultipleChoiceReviewTimer> {
+class _MultipleChoiceReviewState extends State<TimedMultipleChoiceReview> {
   late PageController _pageController;
   late ValueNotifier<int> _timerNotifier;
   late Timer _timer;

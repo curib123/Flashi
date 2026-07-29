@@ -1,4 +1,4 @@
-import 'package:flashi/presentation/widget/components/reviewer_page.dart';
+import 'package:flashi/features/reviewer/presentation/pages/reviewer_page.dart';
 import 'package:flashi/shared/widgets/core/reusable_reviewer_card_core.dart';
 import 'package:flutter/material.dart';
 

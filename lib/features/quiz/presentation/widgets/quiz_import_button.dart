@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:provider/provider.dart';
 
-class ReusableImportPosition extends StatelessWidget {
+class QuizImportButton extends StatelessWidget {
   final ColorScheme colorScheme;
-  const ReusableImportPosition({super.key, required this.colorScheme});
+  const QuizImportButton({super.key, required this.colorScheme});
 
   @override
   Widget build(BuildContext context) {

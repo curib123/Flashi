@@ -15,9 +15,9 @@ import 'package:flashi/features/favorites/presentation/pages/favorites_page.dart
 import 'package:flashi/features/history/application/history_provider.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flashi/features/settings/presentation/pages/settings_page.dart';
-import 'package:flashi/presentation/widget/components/see_all_quiz_set_list.dart';
+import 'package:flashi/features/quiz/presentation/pages/quiz_sets_page.dart';
 import 'package:flashi/shared/widgets/core/reusable_search_bar_core.dart';
-import 'package:flashi/presentation/widget/reusable_widgets/reusable_quiz_set_list.dart';
+import 'package:flashi/features/quiz/presentation/widgets/quiz_set_list.dart';
 import 'package:flashi/core/ads/ad_manager.dart';
 import 'package:flashi/core/ads/ad_unit_id.dart';
 import 'package:flashi/features/quiz/data/services/quiz_import_export_service.dart';
@@ -249,7 +249,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     if (quizSets.isEmpty)
                       noSetWidget(context)
                     else
-                      ReusableQuizSetList(quizSets: quizSets),
+                      QuizSetList(quizSets: quizSets),
                     const SizedBox(height: AppSpacing.xxl),
                   ],
                 ),
@@ -266,7 +266,7 @@ class _DashboardPageState extends State<DashboardPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => SeeAllQuizSetList(
+        builder: (_) => QuizSetsPage(
           name: 'All Quiz Set',
           colorScheme: Theme.of(context).colorScheme,
         ),

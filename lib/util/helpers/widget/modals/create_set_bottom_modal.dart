@@ -1,4 +1,4 @@
-import 'package:flashi/presentation/widget/components/create_set_buttons.dart';
+import 'package:flashi/features/quiz/presentation/widgets/create_quiz_set_actions.dart';
 import 'package:flashi/shared/widgets/core/reusable_textfield_core.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flutter/material.dart';
@@ -73,7 +73,7 @@ void CreateSetBottomModal({
                   ),
                   const SizedBox(height: 30),
                   // Button to Create Set
-                  CreateSetButtons(
+                  CreateQuizSetActions(
                     createBtn: () {
                       // Get the input data from the text controllers
                       final String name = quizProvider.nameController.text;

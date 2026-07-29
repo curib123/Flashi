@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class ReusableSortAndSeeAll extends StatelessWidget {
+class SortSectionHeader extends StatelessWidget {
   final String dropdownValue;
   final List<String> sortOptions;
   final ValueChanged<String?> onSortChanged;
@@ -9,7 +9,7 @@ class ReusableSortAndSeeAll extends StatelessWidget {
   final bool isShowReviewLink;
   final VoidCallback onShowReviewLink;
 
-  const ReusableSortAndSeeAll({
+  const SortSectionHeader({
     super.key,
     required this.dropdownValue,
     required this.sortOptions,
