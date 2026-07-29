@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer' as developer;
 import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:file_picker/file_picker.dart';
@@ -30,6 +31,7 @@ class QuizImportExportService {
       BuildContext context, Map<String, dynamic> sets) async {
     try {
       bool permissionGranted = await requestPermissions();
+      if (!context.mounted) return;
       if (!permissionGranted) {
         showSnack(context, "Permission Denied: Storage permission required.",
             Colors.red);
@@ -46,6 +48,7 @@ class QuizImportExportService {
       final file = File(filePath);
 
       await file.writeAsString(jsonEncode(convertTimestampsToString(sets)));
+      if (!context.mounted) return;
 
       showSnack(
           context,
@@ -54,7 +57,7 @@ class QuizImportExportService {
       convertStringsToTimestamps(sets); // restore original format if needed
     } catch (e) {
       showSnack(context, "Export Failed: $e", Colors.red);
-      print("Export Error: $e");
+      developer.log('Quiz export failed.', error: e);
     }
   }
 
@@ -62,6 +65,7 @@ class QuizImportExportService {
       BuildContext context, QuizProvider quizProvider) async {
     final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+    if (!context.mounted) return;
 
     try {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -69,10 +73,12 @@ class QuizImportExportService {
         allowedExtensions: ['json'],
         initialDirectory: androidInfo.version.sdkInt < 30 ? directory : null,
       );
+      if (!context.mounted) return;
 
       if (result != null && result.files.single.path != null) {
         final file = File(result.files.single.path!);
         final contents = await file.readAsString();
+        if (!context.mounted) return;
         Map<String, dynamic> importedData = jsonDecode(contents);
 
         bool isDuplicate = quizProvider.quizSets
@@ -89,8 +95,9 @@ class QuizImportExportService {
         showSnack(context, "Import Canceled: No file selected.", Colors.red);
       }
     } catch (e) {
+      if (!context.mounted) return;
       showSnack(context, "Import Failed: $e", Colors.red);
-      print("Import Error: $e");
+      developer.log('Quiz import failed.', error: e);
     }
   }
 

@@ -15,9 +15,8 @@ void showFreeCreditsDialog({
     barrierLabel: "",
     transitionDuration: const Duration(milliseconds: 300),
     pageBuilder: (context, animation, secondaryAnimation) {
-      return WillPopScope(
-        // Prevent closing when back button is pressed
-        onWillPop: () async => false,
+      return PopScope(
+        canPop: false,
         child: ScaleTransition(
           scale: CurvedAnimation(parent: animation, curve: Curves.easeOutBack),
           child: Dialog(

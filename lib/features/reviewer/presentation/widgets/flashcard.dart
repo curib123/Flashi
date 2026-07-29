@@ -17,7 +17,7 @@ class Flashcard extends StatefulWidget {
   });
 
   @override
-  _FlashcardState createState() => _FlashcardState();
+  State<Flashcard> createState() => _FlashcardState();
 }
 
 class _FlashcardState extends State<Flashcard> {

@@ -6,8 +6,8 @@ void showLoadingDialog(BuildContext context, {required String text}) {
     context: context,
     barrierDismissible: false,
     builder: (context) {
-      return WillPopScope(
-        onWillPop: () async => false,
+      return PopScope(
+        canPop: false,
         child: _LoadingDialog(text: text),
       );
     },
@@ -20,7 +20,7 @@ class _LoadingDialog extends StatefulWidget {
   const _LoadingDialog({required this.text});
 
   @override
-  _LoadingDialogState createState() => _LoadingDialogState();
+  State<_LoadingDialog> createState() => _LoadingDialogState();
 }
 
 class _LoadingDialogState extends State<_LoadingDialog>

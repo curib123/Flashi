@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer' as developer;
 import 'package:flashi/features/ai/data/services/api_key_storage.dart';
 import 'package:http/http.dart' as http;
 
@@ -8,7 +9,7 @@ class MistralAiService {
     String? apiKey = await getApiKey(); // Retrieve stored API key
 
     if (apiKey == null || apiKey.isEmpty) {
-      print("API Key not found!");
+      developer.log('API key not found.');
       return [];
     }
 
@@ -128,22 +129,21 @@ class MistralAiService {
               responseData['choices'][0]['message']?['content']?.trim() ?? "";
 
           if (aiResponse.isNotEmpty) {
-            print(aiResponse);
             return await parseTextQuestions(aiResponse);
           } else {
-            print("No valid content received from Mistral AI.");
+            developer.log('No valid content received from Mistral AI.');
             return [];
           }
         } else {
-          print("Unexpected API response structure: ${response.body}");
+          developer.log('Unexpected Mistral AI response structure.');
           return [];
         }
       } else {
-        print("Mistral API Error: ${response.statusCode} - ${response.body}");
+        developer.log('Mistral API request failed: ${response.statusCode}.');
         return [];
       }
     } catch (e) {
-      print("Error processing chunk with Mistral: $e");
+      developer.log('Error processing Mistral AI response.', error: e);
       return [];
     }
   }
@@ -215,7 +215,7 @@ Fake Choice 3: <plausible incorrect answer>
     String? apiKey = await getApiKey(); // Retrieve stored API key
 
     if (apiKey == null || apiKey.isEmpty) {
-      print("API Key not found!");
+      developer.log('API key not found.');
       return [];
     }
 
@@ -331,22 +331,21 @@ Answer: True
               responseData['choices'][0]['message']?['content']?.trim() ?? "";
 
           if (aiResponse.isNotEmpty) {
-            print(aiResponse);
             return await parseTextQuestions(aiResponse);
           } else {
-            print("No valid content received from Mistral AI.");
+            developer.log('No valid content received from Mistral AI.');
             return [];
           }
         } else {
-          print("Unexpected API response structure: ${response.body}");
+          developer.log('Unexpected Mistral AI response structure.');
           return [];
         }
       } else {
-        print("Mistral API Error: ${response.statusCode} - ${response.body}");
+        developer.log('Mistral API request failed: ${response.statusCode}.');
         return [];
       }
     } catch (e) {
-      print("Error processing chunk with Mistral: $e");
+      developer.log('Error processing Mistral AI response.', error: e);
       return [];
     }
   }

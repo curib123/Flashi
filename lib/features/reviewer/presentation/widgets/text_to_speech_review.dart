@@ -18,7 +18,7 @@ class TextToSpeechReview extends StatefulWidget {
   });
 
   @override
-  _TextToSpeechReviewState createState() => _TextToSpeechReviewState();
+  State<TextToSpeechReview> createState() => _TextToSpeechReviewState();
 }
 
 class _TextToSpeechReviewState extends State<TextToSpeechReview> {

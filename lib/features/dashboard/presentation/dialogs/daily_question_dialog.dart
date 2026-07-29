@@ -10,7 +10,7 @@ class DailyQuestionDialog extends StatefulWidget {
   const DailyQuestionDialog({super.key, required this.questions});
 
   @override
-  _DailyQuestionDialogState createState() => _DailyQuestionDialogState();
+  State<DailyQuestionDialog> createState() => _DailyQuestionDialogState();
 }
 
 class _DailyQuestionDialogState extends State<DailyQuestionDialog> {

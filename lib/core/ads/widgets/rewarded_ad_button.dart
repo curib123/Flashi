@@ -94,6 +94,7 @@ class RewardedAdButton extends StatelessWidget {
   Future<void> _handleAdTap(
       BuildContext context, AiCreditProvider aiCreditProvider) async {
     bool isConnected = await InternetConnection().hasInternetAccess;
+    if (!context.mounted) return;
 
     if (!isConnected) {
       _showDialog(
@@ -125,6 +126,7 @@ class RewardedAdButton extends StatelessWidget {
               text:
                   "Loading ads... Please wait.\nIf it doesn’t appear, try again.");
           Future.delayed(const Duration(seconds: 10), () {
+            if (!context.mounted) return;
             Navigator.of(context).pop();
             adManager.showRewarded(context, 'energy');
           });

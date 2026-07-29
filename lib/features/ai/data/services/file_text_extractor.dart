@@ -68,6 +68,7 @@ class FileTextExtractor {
     FileTextExtractor extractor = FileTextExtractor();
     bool hasPermission = await extractor.requestPermissions();
     if (!hasPermission) return null;
+    if (!context.mounted) return null;
 
     final ImagePicker picker = ImagePicker();
     ImageSource? source = await extractor.showImageSourceModal(context);

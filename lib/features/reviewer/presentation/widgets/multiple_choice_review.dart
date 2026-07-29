@@ -20,7 +20,7 @@ class MultipleChoiceReview extends StatefulWidget {
   });
 
   @override
-  _MultipleChoiceReviewState createState() => _MultipleChoiceReviewState();
+  State<MultipleChoiceReview> createState() => _MultipleChoiceReviewState();
 }
 
 class _MultipleChoiceReviewState extends State<MultipleChoiceReview> {

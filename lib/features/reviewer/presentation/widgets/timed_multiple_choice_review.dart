@@ -22,7 +22,8 @@ class TimedMultipleChoiceReview extends StatefulWidget {
   });
 
   @override
-  _MultipleChoiceReviewState createState() => _MultipleChoiceReviewState();
+  State<TimedMultipleChoiceReview> createState() =>
+      _MultipleChoiceReviewState();
 }
 
 class _MultipleChoiceReviewState extends State<TimedMultipleChoiceReview> {

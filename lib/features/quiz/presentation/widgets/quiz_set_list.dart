@@ -177,6 +177,7 @@ class QuizSetList extends StatelessWidget {
 
     // Wait before showing the Create Card modal
     await Future.delayed(const Duration(seconds: 1));
+    if (!context.mounted) return;
 
     showQuizCardFormSheet(
       context: context,

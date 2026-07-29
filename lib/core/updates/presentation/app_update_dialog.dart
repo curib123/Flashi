@@ -9,8 +9,8 @@ void showAppUpdateDialog(BuildContext context, String currentVersion,
     barrierDismissible: false,
     context: context,
     builder: (BuildContext context) {
-      return WillPopScope(
-        onWillPop: () async => false,
+      return PopScope(
+        canPop: false,
         child: AlertDialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),

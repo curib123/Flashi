@@ -149,6 +149,7 @@ void showTopicDialog(BuildContext context, {required Function()? onTap}) {
                                       bool isConnected =
                                           await InternetConnection()
                                               .hasInternetAccess;
+                                      if (!context.mounted) return;
 
                                       if (isConnected) {
                                         if (aiCreditProvider.watchAd()) {
@@ -166,6 +167,7 @@ void showTopicDialog(BuildContext context, {required Function()? onTap}) {
                                               Future.delayed(
                                                   const Duration(seconds: 10),
                                                   () {
+                                                if (!context.mounted) return;
                                                 Navigator.of(context).pop();
                                                 adManager.showRewarded(
                                                     context, 'energy');

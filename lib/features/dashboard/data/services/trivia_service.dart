@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer' as developer;
 import 'dart:math';
 import 'package:http/http.dart' as http;
 
@@ -38,11 +39,11 @@ class TriviaService {
 
         return triviaQuestions;
       } else {
-        print("Trivia API Error: ${response.statusCode} - ${response.body}");
+        developer.log('Trivia API request failed: ${response.statusCode}.');
         return [];
       }
     } catch (e) {
-      print("Error fetching trivia: $e");
+      developer.log('Error fetching trivia.', error: e);
       return [];
     }
   }

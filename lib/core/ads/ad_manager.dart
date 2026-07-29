@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 import 'package:flashi/features/ai/application/ai_credit_provider.dart';
 import 'package:flashi/core/ads/ad_unit_id.dart';
 import 'package:flutter/material.dart';
@@ -55,7 +57,7 @@ class AdManager {
             _appOpenAd = ad;
           },
           onAdFailedToLoad: (error) {
-            print('AppOpenAd failed to load: $error');
+            developer.log('AppOpenAd failed to load: $error');
             // Handle the error.
           },
         ));
@@ -68,17 +70,17 @@ class AdManager {
 
   void showAdIfAvailable() {
     if (!isAdAvailable) {
-      print('Tried to show ad before available.');
+      developer.log('Tried to show ad before available.');
       loadOpenAppAd(AdUnitId.appOpenAdUnitId);
       return;
     }
 
     if (_isShowingAd) {
-      print('Tried to show ad while already showing an ad.');
+      developer.log('Tried to show ad while already showing an ad.');
       return;
     }
     if (DateTime.now().subtract(maxCacheDuration).isAfter(_appOpenLoadTime!)) {
-      print('Maximum cache duration exceeded. Loading another ad.');
+      developer.log('Maximum cache duration exceeded. Loading another ad.');
       _appOpenAd!.dispose();
       _appOpenAd = null;
       loadOpenAppAd(AdUnitId.appOpenAdUnitId);
@@ -88,16 +90,16 @@ class AdManager {
     _appOpenAd!.fullScreenContentCallback = FullScreenContentCallback(
       onAdShowedFullScreenContent: (ad) {
         _isShowingAd = true;
-        print('$ad onAdShowedFullScreenContent');
+        developer.log('$ad onAdShowedFullScreenContent');
       },
       onAdFailedToShowFullScreenContent: (ad, error) {
-        print('$ad onAdFailedToShowFullScreenContent: $error');
+        developer.log('$ad onAdFailedToShowFullScreenContent: $error');
         _isShowingAd = false;
         ad.dispose();
         _appOpenAd = null;
       },
       onAdDismissedFullScreenContent: (ad) {
-        print('$ad onAdDismissedFullScreenContent');
+        developer.log('$ad onAdDismissedFullScreenContent');
         _isShowingAd = false;
         ad.dispose();
         _appOpenAd = null;
@@ -328,7 +330,7 @@ class AdManager {
           _interstitialAd = ad;
         },
         onAdFailedToLoad: (LoadAdError error) {
-          print('Interstitial ad failed to load: $error');
+          developer.log('Interstitial ad failed to load: $error');
         },
       ),
     );

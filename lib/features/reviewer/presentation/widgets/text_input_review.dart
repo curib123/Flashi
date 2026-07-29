@@ -18,7 +18,7 @@ class TextInputReview extends StatefulWidget {
   });
 
   @override
-  _TextInputReviewState createState() => _TextInputReviewState();
+  State<TextInputReview> createState() => _TextInputReviewState();
 }
 
 class _TextInputReviewState extends State<TextInputReview> {

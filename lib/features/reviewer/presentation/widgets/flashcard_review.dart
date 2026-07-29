@@ -20,7 +20,7 @@ class FlashcardReview extends StatefulWidget {
       required this.setname});
 
   @override
-  _FlashcardReviewState createState() => _FlashcardReviewState();
+  State<FlashcardReview> createState() => _FlashcardReviewState();
 }
 
 class _FlashcardReviewState extends State<FlashcardReview> {

@@ -11,7 +11,7 @@ class ContentSummaryTile extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
-  final isHistoryPage;
+  final bool isHistoryPage;
 
   const ContentSummaryTile({
     super.key,
