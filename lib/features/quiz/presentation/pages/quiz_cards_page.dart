@@ -1,210 +1,199 @@
-import 'package:flashi/features/quiz/presentation/widgets/create_quiz_set_button.dart';
-import 'package:flashi/features/quiz/presentation/widgets/quiz_card_list.dart';
-import 'package:flashi/core/ads/widgets/rewarded_ad_button.dart';
-import 'package:flashi/shared/widgets/sort_section_header.dart';
-import 'package:flashi/features/settings/presentation/widgets/theme_settings_button.dart';
-import 'package:flashi/features/ai/application/ai_credit_provider.dart';
-import 'package:flashi/features/quiz/application/quiz_provider.dart';
-import 'package:flashi/core/state/sort_provider.dart';
 import 'package:flashi/core/ads/ad_manager.dart';
+import 'package:flashi/core/ads/widgets/rewarded_ad_button.dart';
+import 'package:flashi/core/design_system/app_spacing.dart';
+import 'package:flashi/core/design_system/responsive_content.dart';
+import 'package:flashi/core/state/sort_provider.dart';
+import 'package:flashi/features/ai/application/ai_credit_provider.dart';
 import 'package:flashi/features/ai/presentation/dialogs/add_credit_slot_dialog.dart';
-import 'package:flashi/shared/dialogs/delete_confirmation_dialog.dart';
+import 'package:flashi/features/quiz/application/quiz_provider.dart';
+import 'package:flashi/features/quiz/presentation/dialogs/quiz_card_form_sheet.dart';
+import 'package:flashi/features/quiz/presentation/widgets/quiz_card_list.dart';
 import 'package:flashi/features/reviewer/presentation/dialogs/highlight_keyword_dialog.dart';
 import 'package:flashi/features/reviewer/presentation/dialogs/review_mode_dialog.dart';
+import 'package:flashi/shared/dialogs/delete_confirmation_dialog.dart';
+import 'package:flashi/shared/widgets/app_page_header.dart';
 import 'package:flashi/shared/widgets/empty_state_widgets.dart';
-import 'package:flashi/features/quiz/presentation/dialogs/quiz_card_form_sheet.dart';
+import 'package:flashi/shared/widgets/sort_section_header.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class QuizCardsPage extends StatelessWidget {
+  const QuizCardsPage({
+    required this.name,
+    required this.colorScheme,
+    required this.card,
+    required this.index,
+    required this.cards,
+    super.key,
+  });
+
   final String name;
   final int index;
   final ColorScheme colorScheme;
   final Map<String, dynamic> card;
   final List<dynamic> cards;
 
-  const QuizCardsPage({
-    super.key,
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      resizeToAvoidBottomInset: true,
+      body: SafeArea(
+        child: Column(
+          children: [
+            AppPageHeader(
+              title: name,
+              description: '${cards.length} cards in this quiz set',
+              leading: const BackButton(),
+              actions: [
+                IconButton(
+                  tooltip: 'Start review',
+                  onPressed: cards.isEmpty
+                      ? null
+                      : () => showReviewModeDialog(
+                            context: context,
+                            heading: name,
+                            cards: cards,
+                            setname: name,
+                          ),
+                  icon: const Icon(Icons.play_arrow_rounded),
+                ),
+              ],
+            ),
+            Expanded(
+              child: _CardLibrary(name: name, card: card, cards: cards),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _CardLibrary extends StatelessWidget {
+  const _CardLibrary({
     required this.name,
-    required this.colorScheme,
     required this.card,
-    required this.index,
     required this.cards,
   });
 
+  final String name;
+  final Map<String, dynamic> card;
+  final List<dynamic> cards;
+
   @override
   Widget build(BuildContext context) {
-    final quizProvider = Provider.of<QuizProvider>(context);
+    final quiz = context.watch<QuizProvider>();
+    final sort = context.watch<SortProvider>();
+    final credits = context.watch<AiCreditProvider>();
+    final limit = (card['limitNumberOfQuiz'] as int?) ?? 0;
+    final used = quiz.getNumberOfCardsInSet(name);
+    final slotsLeft = limit > 0 ? limit - used : 0;
+    final colors = Theme.of(context).colorScheme;
+    final adManager = AdManager();
 
-    return Scaffold(
-      resizeToAvoidBottomInset: true, // Prevents bottom overflow
-      appBar: AppBar(
-        foregroundColor: colorScheme.primary,
-        backgroundColor: colorScheme.onPrimary,
-        title: Text(
-          name,
-          style: TextStyle(
-              fontSize: 16,
-              color: colorScheme.primary,
-              fontWeight: FontWeight.bold),
-        ),
-        centerTitle: false,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(),
-        ),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: colorScheme.primary),
-          onPressed: () {
-            Navigator.pop(context);
-            quizProvider.searchController.text = quizProvider.searchQuery;
-          },
-        ),
-      ),
-      body: _body(context),
-    );
-  }
-
-  Widget _body(BuildContext context) {
-    AdManager adManager = AdManager();
-
-    return Consumer3<QuizProvider, SortProvider, AiCreditProvider>(
-      builder: (context, quizProvider, sortProvider, aiCreditProvider, child) {
-        return Stack(
-          children: [
-            ListView(
-              children: [
-                SortSectionHeader(
-                  dropdownValue: sortProvider.dropdownValueCard,
-                  sortOptions: sortProvider.sortOptionsCard,
-                  onSortChanged: (newValue) {
-                    if (newValue != null) {
-                      sortProvider.updateSortValueCard(newValue);
-                      quizProvider.toggleNewValueCard(newValue);
-                    }
-                  },
-                  isShowSeeAllLink: false,
-                  isShowReviewLink: true,
-                  onShowReviewLink: () {
-                    showReviewModeDialog(
-                      context: context,
-                      heading: name,
-                      cards: cards,
-                      setname: name,
-                    );
-                  },
-                  onSeeAllPressed: () {},
-                ),
-                adManager.getSixthBannerAdWidget(),
-                cards.isEmpty
-                    ? noCardWidget(context)
-                    : SizedBox(
-                        width: MediaQuery.sizeOf(context).width,
-                        height: MediaQuery.sizeOf(context).height * 0.68,
-                        child: QuizCardList(
-                          name: name,
-                          card: card,
-                          onRemove: (quizSet) {
-                            showDeleteConfirmationDialog(
-                              context: context,
-                              setName: name,
-                              onDelete: () =>
-                                  quizProvider.removeCardFromQuizSet(
-                                quizSetName: name,
-                                question: quizSet['question'],
-                              ),
-                            );
-                          },
-                          onEdit: (quizSet) {
-                            quizProvider.questionController.text =
-                                quizSet['question'];
-                            quizProvider.answerController.text =
-                                quizSet['answer'];
-                            showQuizCardFormSheet(
-                              name: name,
-                              context: context,
-                              buttonName: "Edit Card",
-                              isCreate: false,
-                              cardName: quizSet['question'],
-                              card: quizSet,
-                            );
-                          },
-                          onIgnore: (name, quizSet) {
-                            quizProvider.toggleIgnore(
-                              quizSetName: name,
-                              isIgnore: quizSet['isIgnore'],
-                              question: quizSet['question'],
-                            );
-                          },
-                          onKeyword: (quizSet) {
-                            showHighlightKeywordDialog(context, (keyword) {
-                              quizProvider.updateKeyWordInQuizSet(
-                                quizSetName: name,
-                                oldKeyWord: quizSet['keyword'],
-                                newKeyWord: keyword,
-                              );
-                            });
-                          },
-                          onRemoveKeyword: (quizSet) {
-                            quizProvider.updateKeyWordInQuizSet(
-                              quizSetName: name,
-                              oldKeyWord: quizSet['keyword'],
-                              newKeyWord: '',
-                            );
-                          },
-                        ),
-                      ),
-              ],
-            ),
-            Positioned(
-              bottom: 75,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: Text(
-                  '${card['limitNumberOfQuiz'] - quizProvider.getNumberOfCardsInSet(name)} slot free out of ${card['limitNumberOfQuiz']}',
-                ),
-              ),
-            ),
-            if (card['limitNumberOfQuiz'] -
-                    quizProvider.getNumberOfCardsInSet(name) !=
-                0)
-              CreateQuizSetButton(
-                icon: Icons.add_circle,
-                colorScheme: colorScheme,
-                name: 'Create Card',
-                onTap: () {
-                  showQuizCardFormSheet(
-                    context: context,
-                    buttonName: "Add Card",
-                    isCreate: true,
-                    cardName: '',
-                    card: card,
+    return ResponsiveContent(
+      child: Column(
+        children: [
+          SortSectionHeader(
+            dropdownValue: sort.dropdownValueCard,
+            sortOptions: sort.sortOptionsCard,
+            onSortChanged: (value) {
+              if (value == null) return;
+              sort.updateSortValueCard(value);
+              quiz.toggleNewValueCard(value);
+            },
+            isShowSeeAllLink: false,
+            isShowReviewLink: false,
+            onShowReviewLink: () {},
+            onSeeAllPressed: () {},
+          ),
+          adManager.getSixthBannerAdWidget(),
+          const SizedBox(height: AppSpacing.sm),
+          Expanded(
+            child: cards.isEmpty
+                ? noCardWidget(context)
+                : QuizCardList(
                     name: name,
-                  );
-                },
-              )
-            else
-              aiCreditProvider.credits > 0
-                  ? CreateQuizSetButton(
-                      colorScheme: colorScheme,
-                      name: "Add More Slot",
-                      onTap: () {
-                        showAddSlotAlertDialog(
-                            context: context,
-                            onConfirm: () {
-                              aiCreditProvider.useCredit(1);
-                              quizProvider.updateQuizSetLimit(2);
-                            });
-                      },
-                      icon: Icons.add_circle_rounded)
-                  : RewardedAdButton(
-                      colorScheme: colorScheme,
-                      name: "Watch Ad Free 5 Credits",
+                    card: card,
+                    onRemove: (item) => showDeleteConfirmationDialog(
+                      context: context,
+                      setName: name,
+                      onDelete: () => quiz.removeCardFromQuizSet(
+                        quizSetName: name,
+                        question: item['question'],
+                      ),
                     ),
-            ThemeSettingsButton(colorScheme: colorScheme),
-          ],
-        );
-      },
+                    onEdit: (item) {
+                      quiz.questionController.text = item['question'];
+                      quiz.answerController.text = item['answer'];
+                      showQuizCardFormSheet(
+                        name: name,
+                        context: context,
+                        buttonName: 'Edit card',
+                        isCreate: false,
+                        cardName: item['question'],
+                        card: item,
+                      );
+                    },
+                    onIgnore: (_, item) => quiz.toggleIgnore(
+                      quizSetName: name,
+                      isIgnore: item['isIgnore'],
+                      question: item['question'],
+                    ),
+                    onKeyword: (item) =>
+                        showHighlightKeywordDialog(context, (keyword) {
+                      quiz.updateKeyWordInQuizSet(
+                        quizSetName: name,
+                        oldKeyWord: item['keyword'],
+                        newKeyWord: keyword,
+                      );
+                    }),
+                    onRemoveKeyword: (item) => quiz.updateKeyWordInQuizSet(
+                      quizSetName: name,
+                      oldKeyWord: item['keyword'],
+                      newKeyWord: '',
+                    ),
+                  ),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          if (slotsLeft > 0)
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                onPressed: () => showQuizCardFormSheet(
+                  context: context,
+                  buttonName: 'Add card',
+                  isCreate: true,
+                  cardName: '',
+                  card: card,
+                  name: name,
+                ),
+                icon: const Icon(Icons.add),
+                label: Text('Add card · $slotsLeft slots left'),
+              ),
+            )
+          else if (credits.credits > 0)
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () => showAddSlotAlertDialog(
+                  context: context,
+                  onConfirm: () {
+                    credits.useCredit(1);
+                    quiz.updateQuizSetLimit(2);
+                  },
+                ),
+                icon: const Icon(Icons.add_card_outlined),
+                label: const Text('Add more slots'),
+              ),
+            )
+          else
+            RewardedAdButton(
+              colorScheme: colors,
+              name: 'Watch ad for 5 credits',
+            ),
+        ],
+      ),
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flashi/core/design_system/app_breakpoints.dart';
 import 'package:flashi/core/design_system/app_spacing.dart';
+import 'package:flashi/core/design_system/app_surface.dart';
 import 'package:flashi/core/design_system/responsive_content.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -68,22 +69,25 @@ class ContentEditorPage extends StatelessWidget {
               child: Divider(),
             ),
             Expanded(
-              child: TextField(
-                readOnly: readOnly,
-                controller: contentController,
-                expands: true,
-                maxLines: null,
-                minLines: null,
-                textAlignVertical: TextAlignVertical.top,
-                keyboardType: TextInputType.multiline,
-                textCapitalization: TextCapitalization.sentences,
-                decoration: const InputDecoration(
-                  hintText: 'Start writing…',
-                  filled: false,
-                  border: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  contentPadding: EdgeInsets.zero,
+              child: AppSurface(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                child: TextField(
+                  readOnly: readOnly,
+                  controller: contentController,
+                  expands: true,
+                  maxLines: null,
+                  minLines: null,
+                  textAlignVertical: TextAlignVertical.top,
+                  keyboardType: TextInputType.multiline,
+                  textCapitalization: TextCapitalization.sentences,
+                  decoration: const InputDecoration(
+                    hintText: 'Start writing…',
+                    filled: false,
+                    border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    contentPadding: EdgeInsets.zero,
+                  ),
                 ),
               ),
             ),
