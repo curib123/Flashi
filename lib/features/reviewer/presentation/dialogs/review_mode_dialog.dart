@@ -1,6 +1,6 @@
 import 'dart:developer' as developer;
 
-import 'package:flashi/features/reviewer/presentation/pages/reviewer_page.dart';
+import 'package:flashi/app/navigation/app_router.dart';
 import 'package:flashi/features/reviewer/presentation/widgets/review_mode_card.dart';
 import 'package:flutter/material.dart';
 
@@ -95,14 +95,13 @@ Map<String, dynamic> _createReviewerItem({
 void _handleTap(
     String title, BuildContext context, List<dynamic> cards, String setname) {
   developer.log('$title tapped');
-  Navigator.push(
+  Navigator.pushNamed(
     context,
-    MaterialPageRoute(
-      builder: (context) => ReviewerPage(
-        reviewer: title,
-        cards: cards,
-        setname: setname,
-      ),
+    AppRoutes.reviewer,
+    arguments: ReviewerArguments(
+      reviewer: title,
+      cards: cards,
+      setname: setname,
     ),
   );
 }

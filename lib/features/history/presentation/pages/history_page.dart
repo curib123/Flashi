@@ -1,8 +1,8 @@
+import 'package:flashi/app/navigation/app_router.dart';
 import 'package:flashi/core/design_system/app_breakpoints.dart';
 import 'package:flashi/core/design_system/app_spacing.dart';
 import 'package:flashi/core/design_system/responsive_content.dart';
 import 'package:flashi/features/history/application/history_provider.dart';
-import 'package:flashi/features/history/presentation/pages/history_editor_page.dart';
 import 'package:flashi/shared/widgets/content_summary_tile.dart';
 import 'package:flashi/core/ads/ad_manager.dart';
 import 'package:flashi/shared/widgets/empty_state_widgets.dart';
@@ -112,15 +112,14 @@ class _HistoryCard extends StatelessWidget {
   void _open(BuildContext context, {required bool isRead}) {
     provider.titleController.text = item['title'];
     provider.contentController.text = item['content'];
-    Navigator.push(
+    Navigator.pushNamed(
       context,
-      MaterialPageRoute(
-        builder: (_) => HistoryEditorPage(
-          isCreate: false,
-          title: item['title'],
-          isRead: isRead,
-          date: item['created_at'],
-        ),
+      AppRoutes.historyEditor,
+      arguments: HistoryEditorArguments(
+        isCreate: false,
+        title: item['title'],
+        isRead: isRead,
+        date: item['created_at'],
       ),
     );
   }

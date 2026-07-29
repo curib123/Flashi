@@ -1,10 +1,10 @@
 import 'package:flashi/app/app_shell.dart';
+import 'package:flashi/app/navigation/app_router.dart';
 import 'package:flashi/core/design_system/app_breakpoints.dart';
 import 'package:flashi/core/design_system/app_spacing.dart';
 import 'package:flashi/core/design_system/responsive_content.dart';
 import 'package:flashi/core/state/sort_provider.dart';
 import 'package:flashi/features/notes/application/notes_provider.dart';
-import 'package:flashi/features/notes/presentation/pages/note_editor_page.dart';
 import 'package:flashi/shared/widgets/content_summary_card.dart';
 import 'package:flashi/shared/widgets/content_summary_tile.dart';
 import 'package:flashi/core/ads/ad_manager.dart';
@@ -138,15 +138,14 @@ class _NotesPageState extends State<NotesPage> {
   void _openEditor(NotesProvider notes) {
     notes.titleController.clear();
     notes.contentController.clear();
-    Navigator.push(
+    Navigator.pushNamed(
       context,
-      MaterialPageRoute(
-        builder: (_) => NoteEditorPage(
-          isCreate: true,
-          title: '',
-          isRead: false,
-          date: DateTime.now(),
-        ),
+      AppRoutes.noteEditor,
+      arguments: NoteEditorArguments(
+        isCreate: true,
+        title: '',
+        isRead: false,
+        date: DateTime.now(),
       ),
     );
   }
@@ -260,15 +259,14 @@ class _NoteCard extends StatelessWidget {
   void _openNote(BuildContext context, {required bool isRead}) {
     provider.titleController.text = note['title'];
     provider.contentController.text = note['content'];
-    Navigator.push(
+    Navigator.pushNamed(
       context,
-      MaterialPageRoute(
-        builder: (_) => NoteEditorPage(
-          isCreate: false,
-          title: note['title'],
-          isRead: isRead,
-          date: note['created_at'],
-        ),
+      AppRoutes.noteEditor,
+      arguments: NoteEditorArguments(
+        isCreate: false,
+        title: note['title'],
+        isRead: isRead,
+        date: note['created_at'],
       ),
     );
   }

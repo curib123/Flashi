@@ -1,4 +1,4 @@
-import 'package:flashi/features/quiz/presentation/pages/quiz_cards_page.dart';
+import 'package:flashi/app/navigation/app_router.dart';
 import 'package:flashi/features/quiz/presentation/widgets/quiz_set_card.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flashi/shared/dialogs/message_dialog.dart';
@@ -144,16 +144,14 @@ class QuizSetList extends StatelessWidget {
   /// Navigate to the quiz card screen.
   void _navigateToQuizCards(BuildContext context, String name,
       Map<String, dynamic> set, int index, List<dynamic> cards) {
-    Navigator.push(
+    Navigator.pushNamed(
       context,
-      MaterialPageRoute(
-        builder: (context) => QuizCardsPage(
-          name: name,
-          colorScheme: Theme.of(context).colorScheme,
-          card: set,
-          index: index,
-          cards: cards,
-        ),
+      AppRoutes.quizCards,
+      arguments: QuizCardsArguments(
+        name: name,
+        card: set,
+        index: index,
+        cards: cards,
       ),
     );
   }
@@ -162,16 +160,14 @@ class QuizSetList extends StatelessWidget {
   Future<void> _addCard(BuildContext context, String name,
       Map<String, dynamic> set, int index, List<dynamic> cards) async {
     // Navigate to the Add Card List screen
-    Navigator.push(
+    Navigator.pushNamed(
       context,
-      MaterialPageRoute(
-        builder: (context) => QuizCardsPage(
-          name: name,
-          colorScheme: Theme.of(context).colorScheme,
-          card: set,
-          index: index,
-          cards: cards,
-        ),
+      AppRoutes.quizCards,
+      arguments: QuizCardsArguments(
+        name: name,
+        card: set,
+        index: index,
+        cards: cards,
       ),
     );
 
@@ -192,16 +188,14 @@ class QuizSetList extends StatelessWidget {
   /// Navigate to the Add Card List screen.
   void _navigateToQuizCardsPage(BuildContext context, String name,
       Map<String, dynamic> set, int index, List<dynamic> cards) {
-    Navigator.push(
+    Navigator.pushNamed(
       context,
-      MaterialPageRoute(
-        builder: (context) => QuizCardsPage(
-          name: name,
-          colorScheme: Theme.of(context).colorScheme,
-          card: set,
-          index: index,
-          cards: cards,
-        ),
+      AppRoutes.quizCards,
+      arguments: QuizCardsArguments(
+        name: name,
+        card: set,
+        index: index,
+        cards: cards,
       ),
     );
   }

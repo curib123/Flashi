@@ -1,3 +1,4 @@
+import 'package:flashi/app/navigation/app_router.dart';
 import 'package:flashi/features/reviewer/presentation/widgets/flashcard_review.dart';
 import 'package:flashi/features/reviewer/presentation/widgets/multiple_choice_review.dart';
 import 'package:flashi/features/reviewer/presentation/widgets/timed_multiple_choice_review.dart';
@@ -17,6 +18,14 @@ class ReviewerPage extends StatelessWidget {
       required this.reviewer,
       required this.cards,
       required this.setname});
+
+  factory ReviewerPage.fromArguments(ReviewerArguments arguments) {
+    return ReviewerPage(
+      reviewer: arguments.reviewer,
+      cards: arguments.cards,
+      setname: arguments.setname,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -1,3 +1,4 @@
+import 'package:flashi/app/navigation/app_router.dart';
 import 'package:flashi/features/notes/application/notes_provider.dart';
 import 'package:flashi/shared/widgets/content_editor_page.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,15 @@ class NoteEditorPage extends StatelessWidget {
     required this.date,
     super.key,
   });
+
+  factory NoteEditorPage.fromArguments(NoteEditorArguments arguments) {
+    return NoteEditorPage(
+      isCreate: arguments.isCreate,
+      title: arguments.title,
+      isRead: arguments.isRead,
+      date: arguments.date,
+    );
+  }
 
   final bool isCreate;
   final bool isRead;
@@ -31,16 +41,14 @@ class NoteEditorPage extends StatelessWidget {
       date: date,
       readOnly: isRead,
       onEdit: () {
-        Navigator.pop(context);
-        Navigator.push(
+        Navigator.pushReplacementNamed(
           context,
-          MaterialPageRoute(
-            builder: (_) => NoteEditorPage(
-              isCreate: false,
-              title: title,
-              isRead: false,
-              date: date,
-            ),
+          AppRoutes.noteEditor,
+          arguments: NoteEditorArguments(
+            isCreate: false,
+            title: title,
+            isRead: false,
+            date: date,
           ),
         );
       },

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flashi/app/app_shell.dart';
+import 'package:flashi/app/navigation/app_router.dart';
 import 'package:flashi/core/design_system/app_breakpoints.dart';
 import 'package:flashi/core/design_system/app_spacing.dart';
 import 'package:flashi/core/design_system/app_surface.dart';
@@ -12,11 +13,8 @@ import 'package:flashi/features/ai/application/ai_credit_provider.dart';
 import 'package:flashi/features/ai/application/ai_generation_provider.dart';
 import 'package:flashi/features/ai/application/generation_config_provider.dart';
 import 'package:flashi/features/dashboard/application/daily_question_provider.dart';
-import 'package:flashi/features/favorites/presentation/pages/favorites_page.dart';
 import 'package:flashi/features/history/application/history_provider.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
-import 'package:flashi/features/settings/presentation/pages/settings_page.dart';
-import 'package:flashi/features/quiz/presentation/pages/quiz_sets_page.dart';
 import 'package:flashi/shared/widgets/app_search_field.dart';
 import 'package:flashi/shared/widgets/app_page_header.dart';
 import 'package:flashi/features/quiz/presentation/widgets/quiz_set_list.dart';
@@ -160,9 +158,9 @@ class _DashboardPageState extends State<DashboardPage> {
               actions: [
                 IconButton(
                   tooltip: 'Settings',
-                  onPressed: () => Navigator.push(
+                  onPressed: () => Navigator.pushNamed(
                     context,
-                    MaterialPageRoute(builder: (_) => const SettingsPage()),
+                    AppRoutes.settings,
                   ),
                   icon: const Icon(Icons.settings_outlined),
                 ),
@@ -286,14 +284,10 @@ class _DashboardPageState extends State<DashboardPage> {
 
   void _openAllQuizSets(QuizProvider quiz) {
     quiz.searchController.text = quiz.searchQuery;
-    Navigator.push(
+    Navigator.pushNamed(
       context,
-      MaterialPageRoute(
-        builder: (_) => QuizSetsPage(
-          name: 'All Quiz Set',
-          colorScheme: Theme.of(context).colorScheme,
-        ),
-      ),
+      AppRoutes.quizSets,
+      arguments: 'All Quiz Set',
     );
   }
 }
@@ -327,9 +321,9 @@ class _QuickActions extends StatelessWidget {
               width: itemWidth,
               icon: Icons.favorite_border,
               label: 'Favorites',
-              onTap: () => Navigator.push(
+              onTap: () => Navigator.pushNamed(
                 context,
-                MaterialPageRoute(builder: (_) => const FavoritesPage()),
+                AppRoutes.favorites,
               ),
             ),
             _ActionCard(

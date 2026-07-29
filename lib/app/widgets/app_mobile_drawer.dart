@@ -1,8 +1,5 @@
+import 'package:flashi/app/navigation/app_router.dart';
 import 'package:flashi/core/design_system/app_spacing.dart';
-import 'package:flashi/features/favorites/presentation/pages/favorites_page.dart';
-import 'package:flashi/features/history/presentation/pages/history_page.dart';
-import 'package:flashi/features/settings/presentation/pages/settings_page.dart';
-import 'package:flashi/features/quiz/presentation/pages/quiz_sets_page.dart';
 import 'package:flashi/app/state/app_navigation_provider.dart';
 import 'package:flashi/core/config/app_environment.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
@@ -29,14 +26,10 @@ class AppMobileDrawer extends StatelessWidget {
               onQuizSets: () {
                 Navigator.pop(context);
                 quiz.searchController.text = quiz.searchQuery;
-                Navigator.push(
+                Navigator.pushNamed(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => QuizSetsPage(
-                      name: 'All Quiz Set',
-                      colorScheme: Theme.of(context).colorScheme,
-                    ),
-                  ),
+                  AppRoutes.quizSets,
+                  arguments: 'All Quiz Set',
                 );
               },
               closeBefore: (action) {
@@ -117,14 +110,10 @@ class AppSideNavigation extends StatelessWidget {
 
   void _openQuizSets(BuildContext context) {
     quizProvider.searchController.text = quizProvider.searchQuery;
-    Navigator.push(
+    Navigator.pushNamed(
       context,
-      MaterialPageRoute(
-        builder: (context) => QuizSetsPage(
-          name: 'All Quiz Set',
-          colorScheme: Theme.of(context).colorScheme,
-        ),
-      ),
+      AppRoutes.quizSets,
+      arguments: 'All Quiz Set',
     );
   }
 }
@@ -242,9 +231,9 @@ class _NavigationContent extends StatelessWidget {
           icon: Icons.favorite_border,
           label: 'Favorites',
           onTap: () => closeBefore(
-            () => Navigator.push(
+            () => Navigator.pushNamed(
               context,
-              MaterialPageRoute(builder: (_) => const FavoritesPage()),
+              AppRoutes.favorites,
             ),
           ),
         ),
@@ -252,9 +241,9 @@ class _NavigationContent extends StatelessWidget {
           icon: Icons.history,
           label: 'History',
           onTap: () => closeBefore(
-            () => Navigator.push(
+            () => Navigator.pushNamed(
               context,
-              MaterialPageRoute(builder: (_) => const HistoryPage()),
+              AppRoutes.history,
             ),
           ),
         ),
@@ -263,9 +252,9 @@ class _NavigationContent extends StatelessWidget {
           icon: Icons.settings_outlined,
           label: 'Settings',
           onTap: () => closeBefore(
-            () => Navigator.push(
+            () => Navigator.pushNamed(
               context,
-              MaterialPageRoute(builder: (_) => const SettingsPage()),
+              AppRoutes.settings,
             ),
           ),
         ),

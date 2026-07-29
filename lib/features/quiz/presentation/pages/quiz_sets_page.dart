@@ -1,3 +1,4 @@
+import 'package:flashi/app/navigation/app_router.dart';
 import 'package:flashi/core/ads/ad_manager.dart';
 import 'package:flashi/core/design_system/app_spacing.dart';
 import 'package:flashi/core/design_system/responsive_content.dart';
@@ -5,7 +6,6 @@ import 'package:flashi/core/state/sort_provider.dart';
 import 'package:flashi/features/ai/application/ai_credit_provider.dart';
 import 'package:flashi/features/ai/application/ai_generation_provider.dart';
 import 'package:flashi/features/ai/application/generation_config_provider.dart';
-import 'package:flashi/features/favorites/presentation/pages/favorites_page.dart';
 import 'package:flashi/features/history/application/history_provider.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flashi/features/quiz/data/services/quiz_import_export_service.dart';
@@ -47,11 +47,9 @@ class QuizSetsPage extends StatelessWidget {
               actions: [
                 IconButton(
                   tooltip: 'Favorites',
-                  onPressed: () => Navigator.push(
+                  onPressed: () => Navigator.pushNamed(
                     context,
-                    MaterialPageRoute(
-                      builder: (_) => const FavoritesPage(),
-                    ),
+                    AppRoutes.favorites,
                   ),
                   icon: const Icon(Icons.favorite_border),
                 ),

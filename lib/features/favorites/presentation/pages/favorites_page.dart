@@ -1,6 +1,6 @@
+import 'package:flashi/app/navigation/app_router.dart';
 import 'package:flashi/core/design_system/app_spacing.dart';
 import 'package:flashi/core/design_system/responsive_content.dart';
-import 'package:flashi/features/quiz/presentation/pages/quiz_cards_page.dart';
 import 'package:flashi/features/quiz/presentation/widgets/quiz_set_card.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flashi/core/ads/ad_manager.dart';
@@ -121,16 +121,14 @@ class FavoritesPage extends StatelessWidget {
   /// Combines navigation logic to avoid redundancy.
   void _navigateToQuizCards(BuildContext context, String name,
       Map<String, dynamic> set, int index, List<dynamic> cards) {
-    Navigator.push(
+    Navigator.pushNamed(
       context,
-      MaterialPageRoute(
-        builder: (context) => QuizCardsPage(
-          name: name,
-          colorScheme: Theme.of(context).colorScheme,
-          card: set,
-          index: index,
-          cards: cards,
-        ),
+      AppRoutes.quizCards,
+      arguments: QuizCardsArguments(
+        name: name,
+        card: set,
+        index: index,
+        cards: cards,
       ),
     );
   }

@@ -1,4 +1,4 @@
-import 'package:flashi/app/app_shell.dart';
+import 'package:flashi/app/navigation/app_router.dart';
 import 'package:flashi/app/state/app_navigation_provider.dart';
 import 'package:flashi/app/state/theme_provider.dart';
 import 'package:flashi/core/state/sort_provider.dart';
@@ -86,7 +86,8 @@ class Flashi extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: "Flashi Ai",
-      home: const AppShell(),
+      initialRoute: AppRoutes.home,
+      onGenerateRoute: AppRouter.onGenerateRoute,
       theme: themeProvider.lightTheme,
       darkTheme: themeProvider.darkTheme,
       themeMode: themeProvider.themeMode,

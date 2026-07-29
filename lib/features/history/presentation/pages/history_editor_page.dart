@@ -1,3 +1,4 @@
+import 'package:flashi/app/navigation/app_router.dart';
 import 'package:flashi/features/history/application/history_provider.dart';
 import 'package:flashi/shared/widgets/content_editor_page.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,15 @@ class HistoryEditorPage extends StatelessWidget {
     required this.date,
     super.key,
   });
+
+  factory HistoryEditorPage.fromArguments(HistoryEditorArguments arguments) {
+    return HistoryEditorPage(
+      isCreate: arguments.isCreate,
+      title: arguments.title,
+      isRead: arguments.isRead,
+      date: arguments.date,
+    );
+  }
 
   final bool isCreate;
   final bool isRead;
@@ -27,16 +37,14 @@ class HistoryEditorPage extends StatelessWidget {
       date: date,
       readOnly: isRead,
       onEdit: () {
-        Navigator.pop(context);
-        Navigator.push(
+        Navigator.pushReplacementNamed(
           context,
-          MaterialPageRoute(
-            builder: (_) => HistoryEditorPage(
-              isCreate: false,
-              title: title,
-              isRead: false,
-              date: date,
-            ),
+          AppRoutes.historyEditor,
+          arguments: HistoryEditorArguments(
+            isCreate: false,
+            title: title,
+            isRead: false,
+            date: date,
           ),
         );
       },
