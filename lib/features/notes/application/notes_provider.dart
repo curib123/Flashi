@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
-class NotesProvider with ChangeNotifier {
+class NotesProvider extends ChangeNotifier {
   // Box for storing notes
-  final Box _quizBox = Hive.box('notes');
+  final Box<dynamic> _notesBox = Hive.box('notes');
 
   // Initial sample data (use a regular variable instead of final)
   List<Map<String, dynamic>> _notes = [];
@@ -13,7 +13,7 @@ class NotesProvider with ChangeNotifier {
   final TextEditingController contentController = TextEditingController();
 
   // Getter for notes list
-  List<Map<String, dynamic>> get notes => _notes;
+  List<Map<String, dynamic>> get notes => List.unmodifiable(_notes);
 
   // Search query
   String _searchQuery = '';
@@ -22,13 +22,14 @@ class NotesProvider with ChangeNotifier {
 
   // Constructor
   NotesProvider() {
-    loadNotesHive();  // Load notes when the provider is initialized
+    loadNotesHive(); // Load notes when the provider is initialized
   }
 
   void updateNotes(List<Map<String, dynamic>> newNotes, {required bool merge}) {
     if (merge) {
       // Maintain a set to track unique entries based on both ID and title
-      Set<String> existingKeys = _notes.map((e) => "${e["id"]}-${e["title"]}").toSet();
+      Set<String> existingKeys =
+          _notes.map((e) => "${e["id"]}-${e["title"]}").toSet();
 
       for (var newNote in newNotes) {
         String key = "${newNote["id"]}-${newNote["title"]}";
@@ -46,10 +47,9 @@ class NotesProvider with ChangeNotifier {
     saveNotesHive();
   }
 
-
-
   // Method to handle search query change
   void onSearchChanged(String value) {
+    if (_searchQuery == value) return;
     _searchQuery = value;
     notifyListeners();
   }
@@ -58,30 +58,31 @@ class NotesProvider with ChangeNotifier {
     if (_searchQuery.isEmpty) {
       // Filter by timestamp when search query is empty
       return _notes
-          .where((note) => note['created_at'] != null) // Ensure the timestamp is not null
+          .where((note) =>
+              note['created_at'] != null) // Ensure the timestamp is not null
           .toList()
-        ..sort((a, b) => b['created_at'].compareTo(a['created_at'])); // Sort by timestamp in descending order
+        ..sort((a, b) => b['created_at'].compareTo(
+            a['created_at'])); // Sort by timestamp in descending order
     } else {
       // Filter by title when search query is not empty
       return _notes
-          .where((note) => note['title'].toLowerCase().contains(_searchQuery.toLowerCase()))
+          .where((note) =>
+              note['title'].toLowerCase().contains(_searchQuery.toLowerCase()))
           .toList();
     }
   }
 
-
-
   List<Map<String, dynamic>> filterFavorate() {
     return _notes.where((note) {
-      return note['favorite'] == true; // Check if the note is marked as favorite
+      return note['favorite'] ==
+          true; // Check if the note is marked as favorite
     }).toList();
   }
-
 
   // Add a new note
   void addNote(Map<String, dynamic> note) {
     _notes.add(note);
-    saveNotesHive();  // Save to Hive after adding a note
+    saveNotesHive(); // Save to Hive after adding a note
     notifyListeners();
   }
 
@@ -90,7 +91,7 @@ class NotesProvider with ChangeNotifier {
     final index = _notes.indexWhere((note) => note['title'] == title);
     if (index != -1) {
       _notes[index] = updatedNote;
-      saveNotesHive();  // Save to Hive after editing a note
+      saveNotesHive(); // Save to Hive after editing a note
       notifyListeners();
     }
   }
@@ -100,7 +101,7 @@ class NotesProvider with ChangeNotifier {
     final index = _notes.indexWhere((note) => note['title'] == title);
     if (index != -1) {
       _notes[index]['favorite'] = !_notes[index]['favorite'];
-      saveNotesHive();  // Save to Hive after toggling favorite status
+      saveNotesHive(); // Save to Hive after toggling favorite status
       notifyListeners();
     }
   }
@@ -110,7 +111,7 @@ class NotesProvider with ChangeNotifier {
     final index = _notes.indexWhere((note) => note['title'] == title);
     if (index != -1) {
       _notes.removeAt(index);
-      saveNotesHive();  // Save to Hive after deleting a note
+      saveNotesHive(); // Save to Hive after deleting a note
       notifyListeners();
     }
   }
@@ -124,7 +125,7 @@ class NotesProvider with ChangeNotifier {
 
   // Load notes from Hive storage
   void loadNotesHive() {
-    var notesFromStorage = _quizBox.get('notes', defaultValue: []);
+    final notesFromStorage = _notesBox.get('notes', defaultValue: []);
 
     if (notesFromStorage is List) {
       _notes = List<Map<String, dynamic>>.from(
@@ -144,7 +145,14 @@ class NotesProvider with ChangeNotifier {
 
   // Save the current notes list to Hive storage
   void saveNotesHive() {
-    _quizBox.put('notes', _notes);  // Save the entire list to Hive
-    loadNotesHive();
+    _notesBox.put('notes', _notes);
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    titleController.dispose();
+    contentController.dispose();
+    super.dispose();
   }
 }

@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:flashi/provider/ai_credits_provider.dart';
 import 'package:flashi/provider/fetch_data_from_json_provider.dart';
-import 'package:flashi/provider/history_provider.dart';
+import 'package:flashi/features/history/application/history_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flashi/util/helpers/classes/api/ai/core/ai_question_generator.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/auth_dialog.dart';
@@ -25,7 +25,6 @@ class AiModelLogicProvider extends ChangeNotifier {
   bool isFetchData = false;
   bool isTimeOut = false;
 
-
   void updateTopicAndDescription(String newTopic, String newDescription) {
     topic = newTopic;
     description = newDescription;
@@ -33,8 +32,8 @@ class AiModelLogicProvider extends ChangeNotifier {
   }
 
   Future<void> fetchLatestVersion() async {
-    final response = await http.get(
-        Uri.parse('https://curib123.github.io/flashi_/flashi.json'));
+    final response = await http
+        .get(Uri.parse('https://curib123.github.io/flashi_/flashi.json'));
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       // Extract the AI models data
@@ -48,12 +47,13 @@ class AiModelLogicProvider extends ChangeNotifier {
     }
   }
 
-
-  Future<void> pickFileAndGenerate(BuildContext context,
-      QuizProvider quizProvider,
-      FetchDataFromJsonProvider fetchDataFromJsonProvider,
-      AiCreditProvider aiCreditProvider,
-      Future<String> pickAndExtractText(),) async {
+  Future<void> pickFileAndGenerate(
+    BuildContext context,
+    QuizProvider quizProvider,
+    FetchDataFromJsonProvider fetchDataFromJsonProvider,
+    AiCreditProvider aiCreditProvider,
+    Future<String> pickAndExtractText(),
+  ) async {
     showLoadingDialog(context, text: "Please wait...");
     extractedText = await pickAndExtractText();
 
@@ -66,8 +66,8 @@ class AiModelLogicProvider extends ChangeNotifier {
       );
 
       var random = Random();
-      int randomNumber = 30 +
-          random.nextInt(31); // Generates a number between 30 and 60
+      int randomNumber =
+          30 + random.nextInt(31); // Generates a number between 30 and 60
 
       Future.delayed(Duration(seconds: randomNumber), () {
         isTimeOut = true;
@@ -75,10 +75,10 @@ class AiModelLogicProvider extends ChangeNotifier {
       });
 
       Future.delayed(Duration(seconds: 10), () {
-        if (questions.isNotEmpty && !isTimeOut ) {
-
-          final quizSetName = quizProvider.nameController.text.isEmpty ? "Newly Created ${quizProvider.quizSets.length}" : quizProvider.nameController.text;
-
+        if (questions.isNotEmpty && !isTimeOut) {
+          final quizSetName = quizProvider.nameController.text.isEmpty
+              ? "Newly Created ${quizProvider.quizSets.length}"
+              : quizProvider.nameController.text;
 
           quizProvider.addQuizSet({
             'name': quizSetName,
@@ -104,38 +104,37 @@ class AiModelLogicProvider extends ChangeNotifier {
           }
 
           String formatQuestions(questions) {
-            return questions.map((q) => 'Q: ${q['question']}\nA: ${q['answer']}').join('\n\n');
+            return questions
+                .map((q) => 'Q: ${q['question']}\nA: ${q['answer']}')
+                .join('\n\n');
           }
 
           String formattedText = formatQuestions(questions);
 
-          Provider.of<HistoryProvider>(context,listen: false).addHistory(
-            {
-              'title': quizSetName,
-              'content': formattedText,
-              'created_at': DateTime.now(),
-              'favorite': false,
-            }
-
-          );
+          Provider.of<HistoryProvider>(context, listen: false).addHistory({
+            'title': quizSetName,
+            'content': formattedText,
+            'created_at': DateTime.now(),
+            'favorite': false,
+          });
           Navigator.pop(context);
           Navigator.pop(context);
           Navigator.pop(context);
 
-          for (int i = 0; i <
-              fetchDataFromJsonProvider.listOfMaxLength.length; i++) {
+          for (int i = 0;
+              i < fetchDataFromJsonProvider.listOfMaxLength.length;
+              i++) {
             if (fetchDataFromJsonProvider.listOfMaxLength[i] ==
                 fetchDataFromJsonProvider
                     .ListOfMaxLength) // Check if value matches maxLength
-                {
+            {
               int creditAmount = i + 1; // Use index +1 as credit amount
               aiCreditProvider.useCredit(creditAmount);
             }
           }
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(
-                  "Successfully Created Generated Quiz "),
+              content: Text("Successfully Created Generated Quiz "),
               backgroundColor: Colors.green,
             ),
           );
@@ -155,12 +154,12 @@ class AiModelLogicProvider extends ChangeNotifier {
       });
     }
 
-
     isTimeOut = false;
     notifyListeners();
   }
 
-  Future<void> GenerateFlashCardFromCustomTopic(BuildContext context,
+  Future<void> GenerateFlashCardFromCustomTopic(
+      BuildContext context,
       QuizProvider quizProvider,
       FetchDataFromJsonProvider fetchDataFromJsonProvider,
       AiCreditProvider aiCreditProvider) async {
@@ -186,21 +185,19 @@ class AiModelLogicProvider extends ChangeNotifier {
 
     print(questions);
     var random = Random();
-    int randomNumber = 30 +
-        random.nextInt(15); // Generates a number between 30 and 60
+    int randomNumber =
+        30 + random.nextInt(15); // Generates a number between 30 and 60
 
     Future.delayed(Duration(seconds: randomNumber), () {
       isTimeOut = true;
       notifyListeners();
     });
 
-
     Future.delayed(Duration(seconds: 10), () {
       if (questions.isNotEmpty && !isTimeOut) {
-
-
-        final quizSetName = quizProvider.nameController.text.isEmpty ? "Newly Created ${quizProvider.quizSets.length}" : quizProvider.nameController.text;
-
+        final quizSetName = quizProvider.nameController.text.isEmpty
+            ? "Newly Created ${quizProvider.quizSets.length}"
+            : quizProvider.nameController.text;
 
         quizProvider.addQuizSet({
           'name': quizSetName,
@@ -226,40 +223,39 @@ class AiModelLogicProvider extends ChangeNotifier {
         }
 
         String formatQuestions(questions) {
-          return questions.map((q) => 'Q: ${q['question']}\nA: ${q['answer']}').join('\n\n');
+          return questions
+              .map((q) => 'Q: ${q['question']}\nA: ${q['answer']}')
+              .join('\n\n');
         }
 
         String formattedText = formatQuestions(questions);
 
-        Provider.of<HistoryProvider>(context,listen: false).addHistory(
-            {
-              'title': quizSetName,
-              'content': formattedText,
-              'created_at': DateTime.now(),
-              'favorite': false,
-            }
-
-        );
+        Provider.of<HistoryProvider>(context, listen: false).addHistory({
+          'title': quizSetName,
+          'content': formattedText,
+          'created_at': DateTime.now(),
+          'favorite': false,
+        });
 
         Navigator.pop(context);
         Navigator.pop(context);
         Navigator.pop(context);
         Navigator.pop(context);
 
-        for (int i = 0; i <
-            fetchDataFromJsonProvider.listOfMaxLength.length; i++) {
+        for (int i = 0;
+            i < fetchDataFromJsonProvider.listOfMaxLength.length;
+            i++) {
           if (fetchDataFromJsonProvider.listOfMaxLength[i] ==
               fetchDataFromJsonProvider
                   .ListOfMaxLength) // Check if value matches maxLength
-              {
+          {
             int creditAmount = i + 1; // Use index +1 as credit amount
             aiCreditProvider.useCredit(creditAmount);
           }
         }
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-                "Successfully Created AI Generated Quiz "),
+            content: Text("Successfully Created AI Generated Quiz "),
             backgroundColor: Colors.green,
           ),
         );
@@ -273,7 +269,10 @@ class AiModelLogicProvider extends ChangeNotifier {
             backgroundColor: Colors.red,
           ),
         );
-        showAuthDialog(context,type: "error", "Error",
+        showAuthDialog(
+            context,
+            type: "error",
+            "Error",
             "It seems there’s no internet connection. Please try again or choose another model.");
       }
     });
@@ -282,7 +281,8 @@ class AiModelLogicProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> showFlashcardDialog(BuildContext context,
+  Future<void> showFlashcardDialog(
+      BuildContext context,
       QuizProvider quizProvider,
       ColorScheme colorScheme,
       FetchDataFromJsonProvider fetchDataFromJsonProvider,
@@ -375,9 +375,12 @@ class AiModelLogicProvider extends ChangeNotifier {
                       ],
                       onPressed: () async {
                         bool isConnected =
-                        await InternetConnection().hasInternetAccess;
+                            await InternetConnection().hasInternetAccess;
                         if (!isConnected && !isFetchData) {
-                          showAuthDialog(context,type: "error", "Error",
+                          showAuthDialog(
+                              context,
+                              type: "error",
+                              "Error",
                               "Please connect to the internet to generate a Quiz.");
 
                           return;
@@ -388,16 +391,19 @@ class AiModelLogicProvider extends ChangeNotifier {
                           ModelSelectionDialog.show(
                             context,
                             true,
-                            onTap: () =>
-                                showTopicDialog(context, onTap: () {
-                                  GenerateFlashCardFromCustomTopic(
-                                      context, quizProvider,
-                                      fetchDataFromJsonProvider,
-                                      aiCreditProvider);
-                                }),
+                            onTap: () => showTopicDialog(context, onTap: () {
+                              GenerateFlashCardFromCustomTopic(
+                                  context,
+                                  quizProvider,
+                                  fetchDataFromJsonProvider,
+                                  aiCreditProvider);
+                            }),
                           );
                         } else {
-                          showAuthDialog(context,type: "error", "Error",
+                          showAuthDialog(
+                              context,
+                              type: "error",
+                              "Error",
                               "Under Maintenance \n  reasonMaintenance");
                         }
                       },
@@ -412,9 +418,12 @@ class AiModelLogicProvider extends ChangeNotifier {
                       ],
                       onPressed: () async {
                         bool isConnected =
-                        await InternetConnection().hasInternetAccess;
+                            await InternetConnection().hasInternetAccess;
                         if (!isConnected && !isFetchData) {
-                          showAuthDialog(context,type: "error", "Error",
+                          showAuthDialog(
+                              context,
+                              type: "error",
+                              "Error",
                               "Please connect to the internet to generate a Quiz.");
                           return;
                         } else {
@@ -430,20 +439,22 @@ class AiModelLogicProvider extends ChangeNotifier {
                                 quizProvider,
                                 fetchDataFromJsonProvider,
                                 aiCreditProvider,
-                                    () async {
+                                () async {
                                   return await FileTextExtractor
                                       .pickAndExtractText();
                                 },
                               );
                             },
-
                           );
                         } else {
-                          showAuthDialog(context, type: "error","Error", "Under Maintenance");
+                          showAuthDialog(
+                              context,
+                              type: "error",
+                              "Error",
+                              "Under Maintenance");
                         }
                       },
                     ),
-
                     _buildDialogButton(
                       icon: Icons.picture_in_picture,
                       context,
@@ -454,9 +465,12 @@ class AiModelLogicProvider extends ChangeNotifier {
                       ],
                       onPressed: () async {
                         bool isConnected =
-                        await InternetConnection().hasInternetAccess;
+                            await InternetConnection().hasInternetAccess;
                         if (!isConnected && !isFetchData) {
-                          showAuthDialog(context,type: "error", "Error",
+                          showAuthDialog(
+                              context,
+                              type: "error",
+                              "Error",
                               "Please connect to the internet to generate a Quiz.");
 
                           return;
@@ -473,17 +487,21 @@ class AiModelLogicProvider extends ChangeNotifier {
                                 quizProvider,
                                 fetchDataFromJsonProvider,
                                 aiCreditProvider,
-                                    () async {
+                                () async {
                                   return await AIQuestionGenerator.analyzeImage(
                                       FileTextExtractor.pickOrCaptureImage(
-                                          context), "Get the text in image");
+                                          context),
+                                      "Get the text in image");
                                 },
                               );
                             },
-
                           );
                         } else {
-                          showAuthDialog(context,type: "error", "Error", "Under Maintenance");
+                          showAuthDialog(
+                              context,
+                              type: "error",
+                              "Error",
+                              "Under Maintenance");
                         }
                       },
                     ),
@@ -497,7 +515,8 @@ class AiModelLogicProvider extends ChangeNotifier {
     );
   }
 
-  Widget _buildDialogButton(BuildContext context, {
+  Widget _buildDialogButton(
+    BuildContext context, {
     required String label,
     required List<Color> gradientColors,
     required VoidCallback onPressed,
@@ -560,6 +579,7 @@ class AiModelLogicProvider extends ChangeNotifier {
     );
   }
 }
+
 bool handleExtractedTextError(BuildContext context, String extractedText) {
   final Map<String, Map<String, String>> errorMessages = {
     "Invalid file": {
@@ -574,7 +594,8 @@ bool handleExtractedTextError(BuildContext context, String extractedText) {
     },
     "Unsupported file format": {
       "title": "Unsupported file format",
-      "message": "Unsupported file format. Only PDF and DOCX files are allowed. Please try again.",
+      "message":
+          "Unsupported file format. Only PDF and DOCX files are allowed. Please try again.",
       "snackbar": "Unsupported file format"
     },
     "No file selected": {
@@ -596,7 +617,11 @@ bool handleExtractedTextError(BuildContext context, String extractedText) {
 
   if (errorMessages.containsKey(extractedText)) {
     Navigator.pop(context);
-    showAuthDialog(type: "warning",context, "warning", errorMessages[extractedText]!["snackbar"]!);
+    showAuthDialog(
+        type: "warning",
+        context,
+        "warning",
+        errorMessages[extractedText]!["snackbar"]!);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(errorMessages[extractedText]!["snackbar"]!),

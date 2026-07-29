@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:flashi/util/helpers/classes/api/ai/core/chatbot_api.dart';
+import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-class ChatBotProvider extends ChangeNotifier {
+class ChatProvider extends ChangeNotifier {
   // Box for storing chat messages
   final Box _chatBox = Hive.box('chatMessages');
 
@@ -16,23 +16,25 @@ class ChatBotProvider extends ChangeNotifier {
   List<Map<String, String>> get messages => List.unmodifiable(_messages);
   bool get isTyping => _isTyping;
 
-  ChatBotProvider() {
+  ChatProvider() {
     load(); // Load messages on initialization
   }
 
   void setTyping(bool value) {
+    if (_isTyping == value) return;
     _isTyping = value;
     notifyListeners();
   }
 
   void updateMessages(List<Map<String, String>> newMessages) {
-    _messages = newMessages;
+    _messages = newMessages.map(Map<String, String>.from).toList();
     notifyListeners();
     save();
   }
 
   void save() {
-    _chatBox.put('messages', _messages.map((msg) => Map<String, String>.from(msg)).toList());
+    _chatBox.put('messages',
+        _messages.map((msg) => Map<String, String>.from(msg)).toList());
   }
 
   void load() {
@@ -45,7 +47,8 @@ class ChatBotProvider extends ChangeNotifier {
       ];
       save();
     } else {
-      _messages = savedMessages.map((msg) => Map<String, String>.from(msg)).toList();
+      _messages =
+          savedMessages.map((msg) => Map<String, String>.from(msg)).toList();
     }
 
     notifyListeners();
@@ -64,11 +67,8 @@ class ChatBotProvider extends ChangeNotifier {
     notifyListeners();
     save(); // Save chat after adding user message
 
-    print("User Message: $text");
-
     try {
-      String aiResponse = await ChatbotApi.sendMessage(_messages);
-      print("Bot Response: $aiResponse");
+      final aiResponse = await ChatbotApi.sendMessage(_messages);
 
       _messages.add({'text': aiResponse, 'sender': 'bot'});
 
@@ -77,9 +77,11 @@ class ChatBotProvider extends ChangeNotifier {
       }
 
       save(); // Save chat after adding bot response
-    } catch (e) {
-      print("Error: $e");
-      _messages.add({'text': 'Sorry, something went wrong. Please try again.', 'sender': 'bot'});
+    } catch (_) {
+      _messages.add({
+        'text': 'Sorry, something went wrong. Please try again.',
+        'sender': 'bot'
+      });
 
       if (_messages.length > 100) {
         _messages.removeRange(0, 20);

@@ -3,7 +3,7 @@ import 'package:elegant_notification/resources/arrays.dart';
 import 'package:elegant_notification/resources/stacked_options.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_create_set_button_position.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
-import 'package:flashi/provider/notes_provider.dart';
+import 'package:flashi/features/notes/application/notes_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';

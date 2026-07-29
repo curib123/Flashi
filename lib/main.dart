@@ -7,11 +7,11 @@ import 'package:flashi/features/onboarding/application/onboarding_provider.dart'
 import 'package:flashi/features/reviewer/application/reviewer_settings_provider.dart';
 import 'package:flashi/provider/ai_credits_provider.dart';
 import 'package:flashi/provider/ai_model_logic_provider.dart';
-import 'package:flashi/provider/chatbot_provider.dart';
+import 'package:flashi/features/chat/application/chat_provider.dart';
 import 'package:flashi/provider/fetch_data_from_json_provider.dart';
 import 'package:flashi/provider/check_version_provider.dart';
-import 'package:flashi/provider/history_provider.dart';
-import 'package:flashi/provider/notes_provider.dart';
+import 'package:flashi/features/history/application/history_provider.dart';
+import 'package:flashi/features/notes/application/notes_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flashi/util/helpers/classes/api/ai/core/api_key_secure_storage.dart';
 import 'package:flutter/material.dart';
@@ -60,8 +60,7 @@ Future<void> main() async {
             create: (_) => AiModelLogicProvider()), // Add AiModelLogicProvider
         ChangeNotifierProvider(
             create: (_) => CheckVersionProvider()), // Add CheckVersionProvider
-        ChangeNotifierProvider(
-            create: (_) => ChatBotProvider()), // Add CheckVersionProvider
+        ChangeNotifierProvider(create: (_) => ChatProvider()),
         ChangeNotifierProvider(
             create: (_) => AiCreditProvider()), // Add CheckVersionProvider
         ChangeNotifierProvider(

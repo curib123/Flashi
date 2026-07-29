@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
-class HistoryProvider with ChangeNotifier {
+class HistoryProvider extends ChangeNotifier {
   // Box for storing history
-  final Box _quizBox = Hive.box('history');
+  final Box<dynamic> _historyBox = Hive.box('history');
 
   // Initial sample data (use a regular variable instead of final)
   List<Map<String, dynamic>> _history = [];
@@ -13,7 +13,7 @@ class HistoryProvider with ChangeNotifier {
   final TextEditingController contentController = TextEditingController();
 
   // Getter for history list
-  List<Map<String, dynamic>> get history => _history;
+  List<Map<String, dynamic>> get history => List.unmodifiable(_history);
 
   // Search query
   String _searchQuery = '';
@@ -22,13 +22,15 @@ class HistoryProvider with ChangeNotifier {
 
   // Constructor
   HistoryProvider() {
-    loadHistoryHive();  // Load history when the provider is initialized
+    loadHistoryHive(); // Load history when the provider is initialized
   }
 
-  void updateHistory(List<Map<String, dynamic>> newHistory, {required bool merge}) {
+  void updateHistory(List<Map<String, dynamic>> newHistory,
+      {required bool merge}) {
     if (merge) {
       // Maintain a set to track unique entries based on both ID and title
-      Set<String> existingKeys = _history.map((e) => "${e["id"]}-${e["title"]}").toSet();
+      Set<String> existingKeys =
+          _history.map((e) => "${e["id"]}-${e["title"]}").toSet();
 
       for (var newHistoryItem in newHistory) {
         String key = "${newHistoryItem["id"]}-${newHistoryItem["title"]}";
@@ -48,6 +50,7 @@ class HistoryProvider with ChangeNotifier {
 
   // Method to handle search query change
   void onSearchChanged(String value) {
+    if (_searchQuery == value) return;
     _searchQuery = value;
     notifyListeners();
   }
@@ -56,56 +59,66 @@ class HistoryProvider with ChangeNotifier {
     if (_searchQuery.isEmpty) {
       // Filter by timestamp when search query is empty
       return _history
-          .where((historyItem) => historyItem['created_at'] != null) // Ensure the timestamp is not null
+          .where((historyItem) =>
+              historyItem['created_at'] !=
+              null) // Ensure the timestamp is not null
           .toList()
-        ..sort((a, b) => b['created_at'].compareTo(a['created_at'])); // Sort by timestamp in descending order
+        ..sort((a, b) => b['created_at'].compareTo(
+            a['created_at'])); // Sort by timestamp in descending order
     } else {
       // Filter by title when search query is not empty
       return _history
-          .where((historyItem) => historyItem['title'].toLowerCase().contains(_searchQuery.toLowerCase()))
+          .where((historyItem) => historyItem['title']
+              .toLowerCase()
+              .contains(_searchQuery.toLowerCase()))
           .toList();
     }
   }
 
   List<Map<String, dynamic>> filterFavorite() {
     return _history.where((historyItem) {
-      return historyItem['favorite'] == true; // Check if the history item is marked as favorite
+      return historyItem['favorite'] ==
+          true; // Check if the history item is marked as favorite
     }).toList();
   }
 
   // Add a new history item
   void addHistory(Map<String, dynamic> historyItem) {
     _history.add(historyItem);
-    saveHistoryHive();  // Save to Hive after adding a history item
+    saveHistoryHive(); // Save to Hive after adding a history item
     notifyListeners();
   }
 
   // Edit a history item by title
-  void editHistoryByTitle(String title, Map<String, dynamic> updatedHistoryItem) {
-    final index = _history.indexWhere((historyItem) => historyItem['title'] == title);
+  void editHistoryByTitle(
+      String title, Map<String, dynamic> updatedHistoryItem) {
+    final index =
+        _history.indexWhere((historyItem) => historyItem['title'] == title);
     if (index != -1) {
       _history[index] = updatedHistoryItem;
-      saveHistoryHive();  // Save to Hive after editing a history item
+      saveHistoryHive(); // Save to Hive after editing a history item
       notifyListeners();
     }
   }
 
   // Toggle favorite status of a history item by title
   void toggleFavoriteByTitle(String title) {
-    final index = _history.indexWhere((historyItem) => historyItem['title'] == title);
+    final index =
+        _history.indexWhere((historyItem) => historyItem['title'] == title);
     if (index != -1) {
       _history[index]['favorite'] = !_history[index]['favorite'];
-      saveHistoryHive();  // Save to Hive after toggling favorite status
+      saveHistoryHive(); // Save to Hive after toggling favorite status
       notifyListeners();
     }
   }
 
   // Delete a history item by title
   void deleteHistoryByTitle(String title) {
-    final index = _history.indexWhere((historyItem) => historyItem['title'] == title);
+    final index =
+        _history.indexWhere((historyItem) => historyItem['title'] == title);
     if (index != -1) {
       _history.removeAt(index);
-      saveHistoryHive();  // Save to Hive after deleting a history item
+      saveHistoryHive(); // Save to Hive after deleting a history item
       notifyListeners();
     }
   }
@@ -119,7 +132,7 @@ class HistoryProvider with ChangeNotifier {
 
   // Load history from Hive storage
   void loadHistoryHive() {
-    var historyFromStorage = _quizBox.get('history', defaultValue: []);
+    final historyFromStorage = _historyBox.get('history', defaultValue: []);
 
     if (historyFromStorage is List) {
       _history = List<Map<String, dynamic>>.from(
@@ -139,7 +152,14 @@ class HistoryProvider with ChangeNotifier {
 
   // Save the current history list to Hive storage
   void saveHistoryHive() {
-    _quizBox.put('history', _history);  // Save the entire list to Hive
-    loadHistoryHive();
+    _historyBox.put('history', _history);
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    titleController.dispose();
+    contentController.dispose();
+    super.dispose();
   }
 }

@@ -4,7 +4,7 @@ import 'package:flashi/core/design_system/app_radii.dart';
 import 'package:flashi/core/design_system/app_spacing.dart';
 import 'package:flashi/core/design_system/responsive_content.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_typing_animation_core.dart';
-import 'package:flashi/provider/chatbot_provider.dart';
+import 'package:flashi/features/chat/application/chat_provider.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -57,7 +57,7 @@ class _ChatPageState extends State<ChatPage> {
             ? const IconButton(
                 tooltip: 'Open navigation',
                 onPressed: AppShell.openNavigation,
-                icon: const Icon(Icons.menu),
+                icon: Icon(Icons.menu),
               )
             : null,
         title: const Column(
@@ -77,7 +77,7 @@ class _ChatPageState extends State<ChatPage> {
         child: Column(
           children: [
             Expanded(
-              child: Consumer<ChatBotProvider>(
+              child: Consumer<ChatProvider>(
                 builder: (context, chatProvider, child) {
                   WidgetsBinding.instance.addPostFrameCallback(
                     (_) => _scrollToBottom(),
@@ -130,7 +130,7 @@ class _ChatPageState extends State<ChatPage> {
     if (message.isEmpty) return;
 
     _scrollToBottom();
-    final chatProvider = context.read<ChatBotProvider>();
+    final chatProvider = context.read<ChatProvider>();
     chatProvider.setTyping(true);
     chatProvider.sendMessage(message).then((_) {
       chatProvider.setTyping(false);

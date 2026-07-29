@@ -4,7 +4,7 @@ import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusa
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_create_set_button_position.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_sort_and_see_all.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
-import 'package:flashi/provider/notes_provider.dart';
+import 'package:flashi/features/notes/application/notes_provider.dart';
 import 'package:flashi/presentation/widget/components/create_note_screen.dart';
 import 'package:flashi/core/state/sort_provider.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
