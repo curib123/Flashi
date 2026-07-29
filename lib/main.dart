@@ -83,8 +83,8 @@ class Flashi extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: "Flashi Ai",
       home: const AppShell(),
-      theme: themeProvider.getLightTheme(),
-      darkTheme: themeProvider.getDarkTheme(),
+      theme: themeProvider.lightTheme,
+      darkTheme: themeProvider.darkTheme,
       themeMode: themeProvider.themeMode,
     );
   }

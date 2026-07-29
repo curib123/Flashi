@@ -1,48 +1,38 @@
 import 'package:flip_card/flip_card.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class ReviewerSettingsProvider extends ChangeNotifier {
-  final Box<dynamic> _settingsBox = Hive.box('reviewer_settings');
+  ReviewerSettingsProvider({Box<dynamic>? box})
+      : _box = box ?? Hive.box<dynamic>('reviewer_settings') {
+    final directionIndex =
+        _box.get('flashCardFlippingDirection', defaultValue: 1);
+    _flipDirection = directionIndex is int &&
+            directionIndex >= 0 &&
+            directionIndex < FlipDirection.values.length
+        ? FlipDirection.values[directionIndex]
+        : FlipDirection.VERTICAL;
+    _timeDuration = _box.get('timeDuration', defaultValue: 10) as int;
+  }
 
-  // Default values
-  FlipDirection _flashCardFlippingDirection = FlipDirection.HORIZONTAL;
-  int _timeDuration = 10;
+  final Box<dynamic> _box;
+  late FlipDirection _flipDirection;
+  late int _timeDuration;
 
-  // Getters for values
-  FlipDirection get flashCardFlippingDirection => _flashCardFlippingDirection;
+  FlipDirection get flashCardFlippingDirection => _flipDirection;
   int get timeDuration => _timeDuration;
 
-  // Constructor to load settings from Hive
-  ReviewerSettingsProvider() {
-    _loadSettings();
-  }
-
-  // Load settings from Hive
-  void _loadSettings() {
-    // Load flashCardFlippingDirection from Hive (0: HORIZONTAL, 1: VERTICAL)
-    int savedDirection =
-        _settingsBox.get('flashCardFlippingDirection', defaultValue: 1);
-    _flashCardFlippingDirection = FlipDirection.values[savedDirection];
-
-    // Load timeDuration from Hive
-    _timeDuration = _settingsBox.get('timeDuration', defaultValue: 10);
-  }
-
-  // Update flash card flipping direction and save to Hive
-  void updateFlashCardFlippingDirection(FlipDirection newDirection) {
-    if (_flashCardFlippingDirection == newDirection) return;
-    _flashCardFlippingDirection = newDirection;
-    // Save the integer value of the enum to Hive
-    _settingsBox.put('flashCardFlippingDirection', newDirection.index);
+  void updateFlashCardFlippingDirection(FlipDirection direction) {
+    if (_flipDirection == direction) return;
+    _flipDirection = direction;
+    _box.put('flashCardFlippingDirection', direction.index);
     notifyListeners();
   }
 
-  // Update time duration and save to Hive
-  void updateTimeDuration(int newTimeDuration) {
-    if (_timeDuration == newTimeDuration) return;
-    _timeDuration = newTimeDuration;
-    _settingsBox.put('timeDuration', newTimeDuration);
+  void updateTimeDuration(int duration) {
+    if (duration <= 0 || _timeDuration == duration) return;
+    _timeDuration = duration;
+    _box.put('timeDuration', duration);
     notifyListeners();
   }
 }

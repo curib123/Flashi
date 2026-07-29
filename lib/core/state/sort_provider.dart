@@ -1,107 +1,87 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class SortProvider extends ChangeNotifier {
-  String _dropdownValueSet = 'Newest'; // Default value
-  String _dropdownValueCard = 'Newest'; // Default value
-  String _dropdownValueNote = 'Blocks'; // Default value
-  String _dropdownValueTask = 'Tiles'; // Default value
-  String _dropdownValuePdf = 'Blocks'; // Default value
+  SortProvider({Box<dynamic>? box}) : _box = box ?? Hive.box<dynamic>('sort') {
+    _setSort = _readString('selectedSortSet', 'Newest');
+    _cardSort = _readString('selectedSortCard', 'Newest');
+    _noteLayout = _readString('selectedSortNote', 'Blocks');
+    _taskLayout = _readString('dropdownValueTask', 'Tiles');
+    _pdfLayout = _readString(
+      'selectedSortPdf',
+      _readString('dropdownValuePdf', 'Blocks'),
+    );
+  }
 
-  // Box for storing the selected sort value
-  final Box<dynamic> _sortBox = Hive.box('sort');
-
-  final List<String> _sortOptionsSet = [
+  static const List<String> setSortOptions = [
     'Newest',
     'Oldest',
     'Alphabetical',
     'Reverse Alphabetical',
     'Number of Quizzes',
   ];
-
-  final List<String> _sortOptionsNote = [
-    'Tiles',
-    'Blocks',
-  ];
-  final List<String> _sortOptionsTask = [
-    'Tiles',
-    'Blocks',
-  ];
-  final List<String> _sortOptionsPdf = [
-    'Tiles',
-    'Blocks',
-  ];
-
-  final List<String> _sortOptionsCard = [
+  static const List<String> cardSortOptions = [
     'Newest',
     'Oldest',
     'Alphabetical',
     'Reverse Alphabetical',
   ];
+  static const List<String> layoutOptions = ['Tiles', 'Blocks'];
 
-  // Getter for dropdownValue
-  String get dropdownValueSet => _dropdownValueSet;
-  String get dropdownValueCard => _dropdownValueCard;
-  String get dropdownValueNote => _dropdownValueNote;
-  String get dropdownValueTask => _dropdownValueTask;
-  String get dropdownValuePdf => _dropdownValuePdf;
+  final Box<dynamic> _box;
+  late String _setSort;
+  late String _cardSort;
+  late String _noteLayout;
+  late String _taskLayout;
+  late String _pdfLayout;
 
-  // Getter for sortOptions
-  List<String> get sortOptionsSet => List.unmodifiable(_sortOptionsSet);
-  List<String> get sortOptionsCard => List.unmodifiable(_sortOptionsCard);
-  List<String> get sortOptionsNote => List.unmodifiable(_sortOptionsNote);
-  List<String> get sortOptionsTask => List.unmodifiable(_sortOptionsTask);
-  List<String> get sortOptionsPdf => List.unmodifiable(_sortOptionsPdf);
+  String get dropdownValueSet => _setSort;
+  String get dropdownValueCard => _cardSort;
+  String get dropdownValueNote => _noteLayout;
+  String get dropdownValueTask => _taskLayout;
+  String get dropdownValuePdf => _pdfLayout;
 
-  SortProvider() {
-    // Load saved sort value or use default
-    _dropdownValueSet =
-        _sortBox.get('selectedSortSet', defaultValue: 'Newest')!;
-    _dropdownValueCard =
-        _sortBox.get('selectedSortCard', defaultValue: 'Newest')!;
-    _dropdownValueNote =
-        _sortBox.get('selectedSortNote', defaultValue: 'Blocks')!;
-    _dropdownValueTask =
-        _sortBox.get('dropdownValueTask', defaultValue: 'Tiles')!;
-    _dropdownValuePdf =
-        _sortBox.get('dropdownValuePdf', defaultValue: 'Blocks')!;
+  List<String> get sortOptionsSet => setSortOptions;
+  List<String> get sortOptionsCard => cardSortOptions;
+  List<String> get sortOptionsNote => layoutOptions;
+  List<String> get sortOptionsTask => layoutOptions;
+  List<String> get sortOptionsPdf => layoutOptions;
+
+  void updateSortValueSet(String value) {
+    if (_setSort == value) return;
+    _setSort = value;
+    _persist('selectedSortSet', value);
   }
 
-  // Update sort value and save it to Hive
-  void updateSortValueSet(String newValue) {
-    if (_dropdownValueSet == newValue) return;
-    _dropdownValueSet = newValue;
-    _sortBox.put('selectedSortSet', newValue); // Save to Hive
-    notifyListeners();
+  void updateSortValueCard(String value) {
+    if (_cardSort == value) return;
+    _cardSort = value;
+    _persist('selectedSortCard', value);
   }
 
-  // Update sort value and save it to Hive
-  void updateSortValueNote(String newValue) {
-    if (_dropdownValueNote == newValue) return;
-    _dropdownValueNote = newValue;
-    _sortBox.put('selectedSortNote', newValue); // Save to Hive
-    notifyListeners();
+  void updateSortValueNote(String value) {
+    if (_noteLayout == value) return;
+    _noteLayout = value;
+    _persist('selectedSortNote', value);
   }
 
-  // Update sort value and save it to Hive
-  void updateSortValueTask(String newValue) {
-    if (_dropdownValueTask == newValue) return;
-    _dropdownValueTask = newValue;
-    _sortBox.put('dropdownValueTask', newValue); // Save to Hive
-    notifyListeners();
+  void updateSortValueTask(String value) {
+    if (_taskLayout == value) return;
+    _taskLayout = value;
+    _persist('dropdownValueTask', value);
   }
 
-  void updateSortValueCard(String newValue) {
-    if (_dropdownValueCard == newValue) return;
-    _dropdownValueCard = newValue;
-    _sortBox.put('selectedSortCard', newValue); // Save to Hive
-    notifyListeners();
+  void updateSortValuePdf(String value) {
+    if (_pdfLayout == value) return;
+    _pdfLayout = value;
+    _persist('selectedSortPdf', value);
   }
 
-  void updateSortValuePdf(String newValue) {
-    if (_dropdownValuePdf == newValue) return;
-    _dropdownValuePdf = newValue;
-    _sortBox.put('selectedSortPdf', newValue); // Save to Hive
+  String _readString(String key, String fallback) =>
+      _box.get(key, defaultValue: fallback) as String;
+
+  void _persist(String key, String value) {
+    _box.put(key, value);
     notifyListeners();
   }
 }

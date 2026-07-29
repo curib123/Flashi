@@ -2,105 +2,80 @@ import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flashi/core/design_system/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 
 class ThemeProvider extends ChangeNotifier {
-  // Default theme settings
-  FlexScheme _currentScheme = FlexScheme.tealM3; // Default to purpleM3
-  ThemeMode _themeMode = ThemeMode.light;
-  String _currentFont = 'Inter';
-  double _fontScale = 0.8; // Default system font scale
-
-  final Box _settingsBox = Hive.box('theme');
-
-  ThemeProvider() {
-    // Load saved theme values from Hive or use defaults
-    _currentScheme = FlexScheme.values[_settingsBox.get('currentScheme',
-        defaultValue: FlexScheme.tealM3.index)];
-    _themeMode = ThemeMode.values[
-        _settingsBox.get('themeMode', defaultValue: ThemeMode.light.index)];
-    _currentFont = _settingsBox.get('currentFont', defaultValue: 'Inter');
-    _fontScale = _settingsBox.get('fontSize', defaultValue: 1.0);
+  ThemeProvider({Box<dynamic>? box})
+      : _box = box ?? Hive.box<dynamic>('theme') {
+    _scheme = _readEnum(
+      FlexScheme.values,
+      'currentScheme',
+      FlexScheme.tealM3,
+    );
+    _themeMode = _readEnum(
+      ThemeMode.values,
+      'themeMode',
+      ThemeMode.light,
+    );
+    _font = _box.get('currentFont', defaultValue: 'Inter') as String;
+    _fontScale = (_box.get('fontSize', defaultValue: 1.0) as num)
+        .toDouble()
+        .clamp(0.5, 1.0)
+        .toDouble();
   }
 
-  // Getters for current theme properties
-  FlexScheme get currentScheme => _currentScheme;
+  final Box<dynamic> _box;
+  late FlexScheme _scheme;
+  late ThemeMode _themeMode;
+  late String _font;
+  late double _fontScale;
 
+  FlexScheme get currentScheme => _scheme;
   ThemeMode get themeMode => _themeMode;
-
-  String get currentFont => _currentFont;
-
+  String get currentFont => _font;
   double get fontScale => _fontScale;
+  ThemeData get lightTheme => AppTheme.light(_scheme, _font);
+  ThemeData get darkTheme => AppTheme.dark(_scheme, _font);
 
-  Future<bool> isConnected() async {
-    return InternetConnection().hasInternetAccess;
-  }
-
-  // Method to update the color scheme
   void setScheme(FlexScheme scheme) {
-    if (_currentScheme == scheme) return;
-    _currentScheme = scheme;
-    _settingsBox.put('currentScheme', scheme.index); // Save to Hive
-    notifyListeners();
-  }
-  // Method to update the color scheme
-
-  void updateFontSize(double value) {
-    if (_fontScale == value) return;
-    _fontScale = value;
-    _settingsBox.put('fontSize', _fontScale); // Save to Hive
-    notifyListeners();
+    if (_scheme == scheme) return;
+    _scheme = scheme;
+    _persist('currentScheme', scheme.index);
   }
 
-  // Method to toggle between light and dark theme modes
+  void setThemeMode(ThemeMode mode) {
+    if (_themeMode == mode) return;
+    _themeMode = mode;
+    _persist('themeMode', mode.index);
+  }
+
   void toggleThemeMode() {
     setThemeMode(
       _themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light,
     );
   }
 
-  void setThemeMode(ThemeMode mode) {
-    if (_themeMode == mode) return;
-    _themeMode = mode;
-    _settingsBox.put('themeMode', _themeMode.index); // Save to Hive
-    notifyListeners();
-  }
-
-  // Method to set a new font and save it to Hive
   void setFont(String font) {
-    if (_currentFont == font) return;
-    _currentFont = font;
-    _settingsBox.put('currentFont', font); // Save to Hive
+    final normalizedFont = font.trim();
+    if (normalizedFont.isEmpty || _font == normalizedFont) return;
+    _font = normalizedFont;
+    _persist('currentFont', normalizedFont);
+  }
+
+  void updateFontSize(double value) {
+    final normalizedValue = value.clamp(0.5, 1.0).toDouble();
+    if (_fontScale == normalizedValue) return;
+    _fontScale = normalizedValue;
+    _persist('fontSize', normalizedValue);
+  }
+
+  T _readEnum<T>(List<T> values, String key, T fallback) {
+    final index = _box.get(key, defaultValue: values.indexOf(fallback));
+    if (index is! int || index < 0 || index >= values.length) return fallback;
+    return values[index];
+  }
+
+  void _persist(String key, Object value) {
+    _box.put(key, value);
     notifyListeners();
-  }
-
-  // Store the internet connection status synchronously
-  bool _isConnected = false;
-
-// Method to check the internet connection and set the value of _isConnected
-  void checkConnectionStatus() {
-    isConnected().then((connectionStatus) {
-      if (_isConnected == connectionStatus) return;
-      _isConnected = connectionStatus;
-      notifyListeners();
-    });
-  }
-
-// Method to get the light theme with the selected scheme and font
-  ThemeData getLightTheme() {
-    return AppTheme.light(
-      _currentScheme,
-      _currentFont,
-      useBundledFont: !_isConnected,
-    );
-  }
-
-// Method to get the dark theme with the selected scheme and font
-  ThemeData getDarkTheme() {
-    return AppTheme.dark(
-      _currentScheme,
-      _currentFont,
-      useBundledFont: !_isConnected,
-    );
   }
 }

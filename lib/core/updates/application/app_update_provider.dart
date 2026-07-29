@@ -1,58 +1,104 @@
 import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:flashi/util/helpers/widget/alert_dialog/show_update_dialog_alert_box.dart';
-import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+typedef PackageInfoLoader = Future<PackageInfo> Function();
+
 class AppUpdateProvider extends ChangeNotifier {
-  String currentVersion = "";
-  String latestVersion = ""; // Will be fetched from API
-  String downloadLink = "";
-  String patchNote = "";
+  AppUpdateProvider({
+    http.Client? client,
+    PackageInfoLoader? packageInfoLoader,
+  })  : _client = client ?? http.Client(),
+        _ownsClient = client == null,
+        _packageInfoLoader = packageInfoLoader ?? PackageInfo.fromPlatform;
 
-  // Function to get the current version of the app
-  Future<void> checkAppVersion(BuildContext context) async {
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    currentVersion = packageInfo.version;
+  static final Uri _releaseInfoUri =
+      Uri.parse('https://curib123.github.io/flashi_/flashi.json');
 
-    // Fetch latest version from API
-    await fetchLatestVersion();
+  final http.Client _client;
+  final bool _ownsClient;
+  final PackageInfoLoader _packageInfoLoader;
 
-    if (!context.mounted) return;
-    if (_isLatestVersionLower(currentVersion, latestVersion)) {
-      showUpdateDialog(
-          context, currentVersion, latestVersion, downloadLink, patchNote);
+  String _currentVersion = '';
+  String _latestVersion = '';
+  String _downloadLink = '';
+  String _patchNote = '';
+  bool _isChecking = false;
+  Object? _lastError;
+
+  String get currentVersion => _currentVersion;
+  String get latestVersion => _latestVersion;
+  String get downloadLink => _downloadLink;
+  String get patchNote => _patchNote;
+  bool get isChecking => _isChecking;
+  Object? get lastError => _lastError;
+  bool get updateAvailable =>
+      _isNewerVersion(current: _currentVersion, latest: _latestVersion);
+
+  Future<bool> checkAppVersion() async {
+    if (_isChecking) return updateAvailable;
+    _isChecking = true;
+    _lastError = null;
+    notifyListeners();
+
+    try {
+      final packageInfo = await _packageInfoLoader();
+      _currentVersion = packageInfo.version;
+      await fetchLatestVersion();
+      return updateAvailable;
+    } catch (error) {
+      _lastError = error;
+      _latestVersion = _currentVersion;
+      return false;
+    } finally {
+      _isChecking = false;
+      notifyListeners();
     }
   }
 
   Future<void> fetchLatestVersion() async {
-    final response = await http
-        .get(Uri.parse('https://curib123.github.io/flashi_/flashi.json'));
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      latestVersion = data['latest_version'];
-      downloadLink = data['download_link'];
-      patchNote = data['patch_note'];
-    } else {
-      latestVersion = currentVersion;
+    final response = await _client.get(_releaseInfoUri);
+    if (response.statusCode != 200) {
+      throw http.ClientException(
+        'Unable to load release information (${response.statusCode})',
+        _releaseInfoUri,
+      );
     }
+
+    final data = jsonDecode(response.body) as Map<String, dynamic>;
+    _latestVersion = data['latest_version']?.toString() ?? _currentVersion;
+    _downloadLink = data['download_link']?.toString() ?? '';
+    _patchNote = data['patch_note']?.toString() ?? '';
   }
 
-  bool _isLatestVersionLower(String current, String latest) {
-    List<int> currentParts = current.split('.').map(int.parse).toList();
-    List<int> latestParts = latest.split('.').map(int.parse).toList();
+  bool _isNewerVersion({
+    required String current,
+    required String latest,
+  }) {
+    final currentParts = _parseVersion(current);
+    final latestParts = _parseVersion(latest);
+    final length = currentParts.length > latestParts.length
+        ? currentParts.length
+        : latestParts.length;
 
-    for (int i = 0; i < currentParts.length; i++) {
-      if (i >= latestParts.length) {
-        return false;
-      }
-      if (latestParts[i] < currentParts[i]) {
-        return false;
-      }
-      if (latestParts[i] > currentParts[i]) {
-        return true;
-      }
+    for (var index = 0; index < length; index++) {
+      final currentPart = index < currentParts.length ? currentParts[index] : 0;
+      final latestPart = index < latestParts.length ? latestParts[index] : 0;
+      if (latestPart != currentPart) return latestPart > currentPart;
     }
-    return false; // Versions are equal
+    return false;
+  }
+
+  List<int> _parseVersion(String value) => value
+      .split('.')
+      .map((part) => int.tryParse(part.split('-').first) ?? 0)
+      .toList(growable: false);
+
+  @override
+  void dispose() {
+    if (_ownsClient) _client.close();
+    super.dispose();
   }
 }

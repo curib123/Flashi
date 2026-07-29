@@ -1,122 +1,59 @@
+import 'package:flashi/core/design_system/app_spacing.dart';
 import 'package:flashi/core/updates/application/app_update_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-void main() {
-  runApp(
-    ChangeNotifierProvider(
-      create: (context) => ThemeProvider(),
-      child: MyApp(),
-    ),
-  );
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<ThemeProvider>(
-      builder: (context, themeProvider, child) {
-        return MaterialApp(
-          debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: Colors.blue,
-              brightness: Brightness.light,
-            ),
-          ),
-          darkTheme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: Colors.blue,
-              brightness: Brightness.dark,
-            ),
-          ),
-          themeMode: themeProvider.themeMode,
-          home: HomeScreen(),
-        );
-      },
-    );
-  }
-}
-
-class HomeScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Animated About Dialog"),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.brightness_6),
-            onPressed: () => Provider.of<ThemeProvider>(context, listen: false)
-                .toggleTheme(),
-          ),
-        ],
-      ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () => showAnimatedAboutDialog(context),
-          child: Text("Show About"),
-        ),
-      ),
-    );
-  }
-}
-
 void showAnimatedAboutDialog(BuildContext context) {
-  final colorScheme = Theme.of(context).colorScheme;
-  final checkVersionProvider =
-      Provider.of<AppUpdateProvider>(context, listen: false);
+  final updates = context.read<AppUpdateProvider>();
 
-  showGeneralDialog(
+  showGeneralDialog<void>(
     context: context,
     barrierDismissible: true,
-    barrierLabel: "",
-    transitionDuration: Duration(milliseconds: 400),
-    pageBuilder: (context, anim1, anim2) => SizedBox(),
-    transitionBuilder: (context, anim1, anim2, child) {
+    barrierLabel: 'Close about dialog',
+    transitionDuration: const Duration(milliseconds: 250),
+    pageBuilder: (context, animation, secondaryAnimation) {
+      return const SizedBox.shrink();
+    },
+    transitionBuilder: (context, animation, secondaryAnimation, child) {
       return FadeTransition(
-        opacity: anim1,
+        opacity: animation,
         child: ScaleTransition(
-          scale: Tween<double>(begin: 0.9, end: 1.0).animate(anim1),
+          scale: Tween<double>(begin: 0.96, end: 1).animate(animation),
           child: Dialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            backgroundColor: colorScheme.surface,
             child: Padding(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(AppSpacing.lg),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    "Flashi : Quiz Maker & Learner",
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.normal,
-                      color: colorScheme.primary,
-                    ),
+                    'Flashi',
+                    style: Theme.of(context).textTheme.headlineSmall,
                   ),
-                  SizedBox(height: 5),
-                  Divider(color: colorScheme.outline),
-                  _buildInfoTile(context, Icons.rocket_launch, "Version",
-                      checkVersionProvider.currentVersion),
-                  _buildInfoTile(
-                      context, Icons.person, "Developer", "Curib Tech"),
-                  SizedBox(height: 10),
-                  ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: colorScheme.primary,
-                      foregroundColor: colorScheme.onPrimary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    icon: Icon(
-                      Icons.check,
-                      color: colorScheme.onPrimary,
-                    ),
-                    label: Text("Got It!"),
+                  const SizedBox(height: AppSpacing.xxs),
+                  Text(
+                    'Quiz Maker & Learner',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+                  _AboutItem(
+                    icon: Icons.rocket_launch_outlined,
+                    label: 'Version',
+                    value: updates.currentVersion.isEmpty
+                        ? 'Unknown'
+                        : updates.currentVersion,
+                  ),
+                  const _AboutItem(
+                    icon: Icons.code_outlined,
+                    label: 'Developer',
+                    value: 'Curib Tech',
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+                  FilledButton(
                     onPressed: () => Navigator.pop(context),
+                    child: const Text('Done'),
                   ),
                 ],
               ),
@@ -128,29 +65,24 @@ void showAnimatedAboutDialog(BuildContext context) {
   );
 }
 
-Widget _buildInfoTile(
-    BuildContext context, IconData icon, String title, String subtitle) {
-  final colorScheme = Theme.of(context).colorScheme;
-  return ListTile(
-    leading: Icon(icon, color: colorScheme.primary),
-    title: Text(title,
-        style:
-            TextStyle(fontWeight: FontWeight.bold, color: colorScheme.primary)),
-    subtitle: Text(subtitle,
-        style: TextStyle(color: colorScheme.primary.withOpacity(0.8))),
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-    tileColor: colorScheme.surfaceVariant.withOpacity(0.2),
-    contentPadding: EdgeInsets.symmetric(horizontal: 20),
-  );
-}
+class _AboutItem extends StatelessWidget {
+  const _AboutItem({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
 
-class ThemeProvider extends ChangeNotifier {
-  ThemeMode _themeMode = ThemeMode.system;
-  ThemeMode get themeMode => _themeMode;
+  final IconData icon;
+  final String label;
+  final String value;
 
-  void toggleTheme() {
-    _themeMode =
-        (_themeMode == ThemeMode.dark) ? ThemeMode.light : ThemeMode.dark;
-    notifyListeners();
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: Icon(icon),
+      title: Text(label),
+      subtitle: Text(value),
+    );
   }
 }

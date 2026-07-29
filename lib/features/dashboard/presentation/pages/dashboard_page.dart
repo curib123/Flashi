@@ -22,6 +22,7 @@ import 'package:flashi/util/helpers/classes/ads/ad_unit_id.dart';
 import 'package:flashi/util/helpers/classes/other/import_export_helper_class.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/daily_question_dialog.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/show_free_credits_dialog.dart';
+import 'package:flashi/util/helpers/widget/alert_dialog/show_update_dialog_alert_box.dart';
 import 'package:flashi/util/helpers/widget/modals/theme_modal.dart';
 import 'package:flashi/util/helpers/widget/other/empty_widgets.dart';
 import 'package:flutter/material.dart';
@@ -52,7 +53,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
     config.fetchLatestVersion();
     generation.fetchLatestVersion();
-    updates.checkAppVersion(context);
+    _checkForUpdates(updates);
     dailyQuestions.updateFunFacts();
 
     Future.delayed(const Duration(seconds: 5), () {
@@ -62,6 +63,18 @@ class _DashboardPageState extends State<DashboardPage> {
         dailyQuestions,
       );
     });
+  }
+
+  Future<void> _checkForUpdates(AppUpdateProvider updates) async {
+    final hasUpdate = await updates.checkAppVersion();
+    if (!mounted || !hasUpdate) return;
+    showUpdateDialog(
+      context,
+      updates.currentVersion,
+      updates.latestVersion,
+      updates.downloadLink,
+      updates.patchNote,
+    );
   }
 
   Future<void> _showDailyRewards(

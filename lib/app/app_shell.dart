@@ -3,6 +3,9 @@ import 'package:flashi/app/state/theme_provider.dart';
 import 'package:flashi/app/widgets/app_bottom_navigation.dart';
 import 'package:flashi/app/widgets/app_mobile_drawer.dart';
 import 'package:flashi/core/design_system/app_breakpoints.dart';
+import 'package:flashi/features/chat/presentation/pages/chat_page.dart';
+import 'package:flashi/features/dashboard/presentation/pages/dashboard_page.dart';
+import 'package:flashi/features/notes/presentation/pages/notes_page.dart';
 import 'package:flashi/features/onboarding/presentation/pages/onboarding_page.dart';
 import 'package:flashi/features/onboarding/application/onboarding_provider.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
@@ -26,6 +29,12 @@ class AppShell extends StatefulWidget {
 }
 
 class _AppShellState extends State<AppShell> {
+  static const _destinations = <Widget>[
+    ChatPage(),
+    DashboardPage(),
+    NotesPage(),
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -66,7 +75,7 @@ class _AppShellState extends State<AppShell> {
                         quizProvider: quiz,
                         extended: extendSidebar,
                       ),
-                      Expanded(child: navigation.getScreen()),
+                      Expanded(child: _destinations[navigation.currentIndex]),
                     ],
                   ),
                 );
@@ -74,7 +83,7 @@ class _AppShellState extends State<AppShell> {
 
               return Scaffold(
                 key: AppShell.scaffoldKey,
-                body: navigation.getScreen(),
+                body: _destinations[navigation.currentIndex],
                 drawer: const AppMobileDrawer(),
                 bottomNavigationBar: AppBottomNavigation(
                   currentIndex: navigation.currentIndex,
