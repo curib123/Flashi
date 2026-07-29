@@ -9,8 +9,6 @@ import 'package:flashi/features/notes/presentation/pages/notes_page.dart';
 import 'package:flashi/features/onboarding/presentation/pages/onboarding_page.dart';
 import 'package:flashi/features/onboarding/application/onboarding_provider.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
-import 'package:flashi/core/ads/ad_manager.dart';
-import 'package:flashi/core/ads/ad_unit_id.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -34,14 +32,6 @@ class _AppShellState extends State<AppShell> {
     DashboardPage(),
     NotesPage(),
   ];
-
-  @override
-  void initState() {
-    super.initState();
-    // Load Google ads here
-    AdManager adManager = AdManager();
-    adManager.loadBannerAd(AdUnitId.bannerAdUnitId);
-  }
 
   @override
   Widget build(BuildContext context) {

@@ -28,7 +28,6 @@ class AdManager {
   BannerAd? _bannerAd5;
   BannerAd? _bannerAd6;
   BannerAd? _bannerAd7;
-  double _bannerHeight = 150;
   bool _isBannerAd1Loaded = false;
   bool _isBannerAd2Loaded = false;
   bool _isBannerAd3Loaded = false;
@@ -43,8 +42,6 @@ class AdManager {
 
   AppOpenAd? _appOpenAd;
   bool _isShowingAd = false;
-
-  double get bannerHeight => _bannerHeight;
 
   /// Load an AppOpenAd.
   void loadOpenAppAd(String adUnitId) {
@@ -108,18 +105,16 @@ class AdManager {
     );
   }
 
-  void loadBannerAd(String id) {
+  void loadBannerAds(String id) {
     _bannerAd1 = BannerAd(
       adUnitId: id,
       size: AdSize.banner,
       request: const AdRequest(),
       listener: BannerAdListener(
         onAdLoaded: (Ad ad) {
-          _bannerHeight = 180;
           _isBannerAd1Loaded = true;
         },
         onAdFailedToLoad: (Ad ad, LoadAdError error) {
-          _bannerHeight = 150;
           _isBannerAd1Loaded = false;
         },
       ),
@@ -131,11 +126,9 @@ class AdManager {
       request: const AdRequest(),
       listener: BannerAdListener(
         onAdLoaded: (Ad ad) {
-          _bannerHeight = 180;
           _isBannerAd2Loaded = true;
         },
         onAdFailedToLoad: (Ad ad, LoadAdError error) {
-          _bannerHeight = 150;
           _isBannerAd2Loaded = false;
         },
       ),
@@ -147,11 +140,9 @@ class AdManager {
       request: const AdRequest(),
       listener: BannerAdListener(
         onAdLoaded: (Ad ad) {
-          _bannerHeight = 180;
           _isBannerAd3Loaded = true;
         },
         onAdFailedToLoad: (Ad ad, LoadAdError error) {
-          _bannerHeight = 150;
           _isBannerAd3Loaded = false;
         },
       ),
@@ -163,11 +154,9 @@ class AdManager {
       request: const AdRequest(),
       listener: BannerAdListener(
         onAdLoaded: (Ad ad) {
-          _bannerHeight = 180;
           _isBannerAd4Loaded = true;
         },
         onAdFailedToLoad: (Ad ad, LoadAdError error) {
-          _bannerHeight = 150;
           _isBannerAd4Loaded = false;
         },
       ),
@@ -179,11 +168,9 @@ class AdManager {
       request: const AdRequest(),
       listener: BannerAdListener(
         onAdLoaded: (Ad ad) {
-          _bannerHeight = 180;
           _isBannerAd5Loaded = true;
         },
         onAdFailedToLoad: (Ad ad, LoadAdError error) {
-          _bannerHeight = 150;
           _isBannerAd5Loaded = false;
         },
       ),
@@ -194,11 +181,9 @@ class AdManager {
       request: const AdRequest(),
       listener: BannerAdListener(
         onAdLoaded: (Ad ad) {
-          _bannerHeight = 180;
           _isBannerAd6Loaded = true;
         },
         onAdFailedToLoad: (Ad ad, LoadAdError error) {
-          _bannerHeight = 150;
           _isBannerAd6Loaded = false;
         },
       ),
@@ -209,11 +194,9 @@ class AdManager {
       request: const AdRequest(),
       listener: BannerAdListener(
         onAdLoaded: (Ad ad) {
-          _bannerHeight = 180;
           _isBannerAd7Loaded = true;
         },
         onAdFailedToLoad: (Ad ad, LoadAdError error) {
-          _bannerHeight = 150;
           _isBannerAd7Loaded = false;
         },
       ),
@@ -398,7 +381,13 @@ class AdManager {
   void dispose() {
     _bannerAd1?.dispose();
     _bannerAd2?.dispose();
+    _bannerAd3?.dispose();
+    _bannerAd4?.dispose();
+    _bannerAd5?.dispose();
+    _bannerAd6?.dispose();
+    _bannerAd7?.dispose();
     _interstitialAd?.dispose();
     _rewardedAd?.dispose();
+    _appOpenAd?.dispose();
   }
 }

@@ -1,31 +1,18 @@
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'app_radii.dart';
 import 'app_spacing.dart';
 import 'app_colors.dart';
 
 abstract final class AppTheme {
-  static ThemeData light(
-    FlexScheme scheme,
-    String font, {
-    bool useBundledFont = false,
-  }) =>
-      _build(Brightness.light, scheme, font, useBundledFont);
+  static ThemeData light(FlexScheme scheme) => _build(Brightness.light, scheme);
 
-  static ThemeData dark(
-    FlexScheme scheme,
-    String font, {
-    bool useBundledFont = false,
-  }) =>
-      _build(Brightness.dark, scheme, font, useBundledFont);
+  static ThemeData dark(FlexScheme scheme) => _build(Brightness.dark, scheme);
 
   static ThemeData _build(
     Brightness brightness,
     FlexScheme scheme,
-    String font,
-    bool useBundledFont,
   ) {
     final isDark = brightness == Brightness.dark;
     final source = isDark
@@ -61,7 +48,7 @@ abstract final class AppTheme {
       inverseSurface: foreground,
       onInverseSurface: background,
     );
-    final baseText = GoogleFonts.getTextTheme(font);
+    const baseText = TextTheme();
     final textTheme = baseText.copyWith(
       headlineLarge: baseText.headlineLarge?.copyWith(
         color: foreground,
@@ -102,7 +89,7 @@ abstract final class AppTheme {
       colorScheme: colors,
       scaffoldBackgroundColor: background,
       canvasColor: background,
-      fontFamily: useBundledFont ? 'Montserrat' : null,
+      fontFamily: 'Montserrat',
       textTheme: textTheme,
       appBarTheme: AppBarThemeData(
         elevation: 0,

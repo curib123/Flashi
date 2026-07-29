@@ -9,8 +9,8 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   testWidgets('design system renders in light and dark modes', (tester) async {
     for (final theme in [
-      AppTheme.light(FlexScheme.tealM3, 'Montserrat'),
-      AppTheme.dark(FlexScheme.tealM3, 'Montserrat'),
+      AppTheme.light(FlexScheme.tealM3),
+      AppTheme.dark(FlexScheme.tealM3),
     ]) {
       await tester.pumpWidget(
         MaterialApp(

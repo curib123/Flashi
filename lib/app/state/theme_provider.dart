@@ -16,7 +16,6 @@ class ThemeProvider extends ChangeNotifier {
       'themeMode',
       ThemeMode.light,
     );
-    _font = _box.get('currentFont', defaultValue: 'Inter') as String;
     _fontScale = (_box.get('fontSize', defaultValue: 1.0) as num)
         .toDouble()
         .clamp(0.5, 1.0)
@@ -26,15 +25,13 @@ class ThemeProvider extends ChangeNotifier {
   final Box<dynamic> _box;
   late FlexScheme _scheme;
   late ThemeMode _themeMode;
-  late String _font;
   late double _fontScale;
 
   FlexScheme get currentScheme => _scheme;
   ThemeMode get themeMode => _themeMode;
-  String get currentFont => _font;
   double get fontScale => _fontScale;
-  ThemeData get lightTheme => AppTheme.light(_scheme, _font);
-  ThemeData get darkTheme => AppTheme.dark(_scheme, _font);
+  ThemeData get lightTheme => AppTheme.light(_scheme);
+  ThemeData get darkTheme => AppTheme.dark(_scheme);
 
   void setScheme(FlexScheme scheme) {
     if (_scheme == scheme) return;
@@ -52,13 +49,6 @@ class ThemeProvider extends ChangeNotifier {
     setThemeMode(
       _themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light,
     );
-  }
-
-  void setFont(String font) {
-    final normalizedFont = font.trim();
-    if (normalizedFont.isEmpty || _font == normalizedFont) return;
-    _font = normalizedFont;
-    _persist('currentFont', normalizedFont);
   }
 
   void updateFontSize(double value) {

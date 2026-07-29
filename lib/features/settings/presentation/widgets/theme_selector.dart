@@ -17,23 +17,6 @@ class ThemeSelector extends StatelessWidget {
     const schemes = FlexScheme.values;
     const themeModes = ThemeMode.values;
 
-    final aestheticFonts = [
-      {'name': 'Inter', 'description': 'Neutral, modern, and highly readable.'},
-      {'name': 'Roboto', 'description': 'Versatile, clean, and readable.'},
-      {'name': 'Poppins', 'description': 'Modern with rounded edges.'},
-      {'name': 'Lato', 'description': 'Friendly and warm.'},
-      {'name': 'Montserrat', 'description': 'Bold and impactful.'},
-      {'name': 'Nunito', 'description': 'Balanced and rounded.'},
-      {'name': 'Raleway', 'description': 'Elegant and clean.'},
-      {'name': 'Merriweather', 'description': 'Classic and readable.'},
-      {'name': 'Fira Sans', 'description': 'Clear and versatile.'},
-      {
-        'name': 'Playfair Display',
-        'description': 'Elegant serif with a modern twist.'
-      },
-      {'name': 'Bebas Neue', 'description': 'Strong and timeless.'},
-    ];
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -116,37 +99,6 @@ class ThemeSelector extends StatelessWidget {
 
         const SizedBox(height: 10),
 
-        // Section for selecting a font
-        const Text("Select Font",
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-        const Text("Need Internet",
-            style: TextStyle(fontSize: 10, fontWeight: FontWeight.normal)),
-        const SizedBox(height: 10),
-        DropdownButton<String>(
-          value: themeProvider.currentFont,
-          isExpanded: true,
-          items: aestheticFonts.map((font) {
-            return DropdownMenuItem(
-              value: font['name'],
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(font['name']!,
-                      style: TextStyle(fontFamily: font['name'])),
-                  Text(font['description']!,
-                      style: const TextStyle(fontSize: 12, color: Colors.grey)),
-                ],
-              ),
-            );
-          }).toList(),
-          onChanged: (newFont) {
-            if (newFont != null) {
-              themeProvider.setFont(newFont);
-            }
-          },
-        ),
-
-        const SizedBox(height: 10),
         const Text("Adjust Font Size",
             style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
         Slider(

@@ -73,12 +73,10 @@ void main() {
       provider
         ..setScheme(FlexScheme.greyLaw)
         ..setThemeMode(ThemeMode.dark)
-        ..setFont('  Inter  ')
         ..updateFontSize(4);
 
       expect(provider.currentScheme, FlexScheme.greyLaw);
       expect(provider.themeMode, ThemeMode.dark);
-      expect(provider.currentFont, 'Inter');
       expect(provider.fontScale, 1);
       expect(box.get('themeMode'), ThemeMode.dark.index);
       expect(notifications, 2);
