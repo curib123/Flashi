@@ -6,7 +6,7 @@ import 'package:flashi/presentation/widget/reusable_widgets/reusable_quiz_set_li
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_sort_and_see_all.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
 import 'package:flashi/features/ai/application/ai_credit_provider.dart';
-import 'package:flashi/provider/ai_model_logic_provider.dart';
+import 'package:flashi/features/ai/application/ai_generation_provider.dart';
 import 'package:flashi/features/ai/application/generation_config_provider.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flashi/core/state/sort_provider.dart';
@@ -60,7 +60,7 @@ class SeeAllQuizSetList extends StatelessWidget {
     AdManager adManager = AdManager();
 
     return Consumer5<QuizProvider, SortProvider, GenerationConfigProvider,
-        AiModelLogicProvider, AiCreditProvider>(
+        AiGenerationProvider, AiCreditProvider>(
       builder: (context, quizProvider, sortProvider, fetchDataFromJsonProvider,
           aiModelLogicProvider, aiCreditProvider, child) {
         final filteredQuizSets =

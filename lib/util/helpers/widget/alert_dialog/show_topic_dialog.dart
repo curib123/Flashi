@@ -1,6 +1,6 @@
 import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_credits_info_core.dart';
 import 'package:flashi/features/ai/application/ai_credit_provider.dart';
-import 'package:flashi/provider/ai_model_logic_provider.dart';
+import 'package:flashi/features/ai/application/ai_generation_provider.dart';
 import 'package:flashi/features/ai/application/generation_config_provider.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_unit_id.dart';
@@ -101,7 +101,7 @@ void showTopicDialog(BuildContext context, {required Function()? onTap}) {
                               ),
                               child: const Text("Cancel"),
                             ),
-                            Consumer2<AiModelLogicProvider,
+                            Consumer2<AiGenerationProvider,
                                 GenerationConfigProvider>(
                               builder: (context, aiModelLogicProvider,
                                   fetchDataFromJsonProvider, _) {

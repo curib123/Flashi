@@ -6,7 +6,7 @@ import 'package:flashi/features/dashboard/application/daily_question_provider.da
 import 'package:flashi/features/onboarding/application/onboarding_provider.dart';
 import 'package:flashi/features/reviewer/application/reviewer_settings_provider.dart';
 import 'package:flashi/features/ai/application/ai_credit_provider.dart';
-import 'package:flashi/provider/ai_model_logic_provider.dart';
+import 'package:flashi/features/ai/application/ai_generation_provider.dart';
 import 'package:flashi/features/chat/application/chat_provider.dart';
 import 'package:flashi/features/ai/application/generation_config_provider.dart';
 import 'package:flashi/core/updates/application/app_update_provider.dart';
@@ -54,8 +54,7 @@ Future<void> main() async {
         ChangeNotifierProvider(
             create: (_) => OnboardingProvider()), // Add OnboardingProvider
         ChangeNotifierProvider(create: (_) => GenerationConfigProvider()),
-        ChangeNotifierProvider(
-            create: (_) => AiModelLogicProvider()), // Add AiModelLogicProvider
+        ChangeNotifierProvider(create: (_) => AiGenerationProvider()),
         ChangeNotifierProvider(create: (_) => AppUpdateProvider()),
         ChangeNotifierProvider(create: (_) => ChatProvider()),
         ChangeNotifierProvider(

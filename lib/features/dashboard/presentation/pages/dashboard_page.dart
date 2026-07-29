@@ -13,7 +13,7 @@ import 'package:flashi/presentation/widget/reusable_widgets/reusable_title_conte
 import 'package:flashi/core/state/sort_provider.dart';
 import 'package:flashi/features/dashboard/application/daily_question_provider.dart';
 import 'package:flashi/features/ai/application/ai_credit_provider.dart';
-import 'package:flashi/provider/ai_model_logic_provider.dart';
+import 'package:flashi/features/ai/application/ai_generation_provider.dart';
 import 'package:flashi/features/ai/application/generation_config_provider.dart';
 import 'package:flashi/core/updates/application/app_update_provider.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
@@ -50,7 +50,7 @@ class _DashboardPageState extends State<DashboardPage> {
     final fetchDataFromJsonProvider =
         Provider.of<GenerationConfigProvider>(context, listen: false);
     final aiModelLogicProvider =
-        Provider.of<AiModelLogicProvider>(context, listen: false);
+        Provider.of<AiGenerationProvider>(context, listen: false);
     final checkVersionProvider =
         Provider.of<AppUpdateProvider>(context, listen: false);
     final aiCreditProvider =
@@ -139,7 +139,7 @@ class _DashboardPageState extends State<DashboardPage> {
     final fetchDataFromJsonProvider =
         Provider.of<GenerationConfigProvider>(context);
     final sortProvider = Provider.of<SortProvider>(context);
-    final aiModelLogicProvider = Provider.of<AiModelLogicProvider>(context);
+    final aiModelLogicProvider = Provider.of<AiGenerationProvider>(context);
     final aiCreditProvider = Provider.of<AiCreditProvider>(context);
 
     // Reverse the filtered quiz sets for display

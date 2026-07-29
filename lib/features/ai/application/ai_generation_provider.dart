@@ -16,7 +16,7 @@ import 'package:http/http.dart' as http;
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:provider/provider.dart';
 
-class AiModelLogicProvider extends ChangeNotifier {
+class AiGenerationProvider extends ChangeNotifier {
   String extractedText = "";
   String topic = "";
   String description = "";
@@ -158,7 +158,7 @@ class AiModelLogicProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> GenerateFlashCardFromCustomTopic(
+  Future<void> generateFlashCardsFromCustomTopic(
       BuildContext context,
       QuizProvider quizProvider,
       GenerationConfigProvider fetchDataFromJsonProvider,
@@ -392,7 +392,7 @@ class AiModelLogicProvider extends ChangeNotifier {
                             context,
                             true,
                             onTap: () => showTopicDialog(context, onTap: () {
-                              GenerateFlashCardFromCustomTopic(
+                              generateFlashCardsFromCustomTopic(
                                   context,
                                   quizProvider,
                                   fetchDataFromJsonProvider,
