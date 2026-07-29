@@ -54,8 +54,14 @@ class ThemeProvider extends ChangeNotifier {
 
   // Method to toggle between light and dark theme modes
   void toggleThemeMode() {
-    _themeMode =
-        (_themeMode == ThemeMode.light) ? ThemeMode.dark : ThemeMode.light;
+    setThemeMode(
+      _themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light,
+    );
+  }
+
+  void setThemeMode(ThemeMode mode) {
+    if (_themeMode == mode) return;
+    _themeMode = mode;
     _settingsBox.put('themeMode', _themeMode.index); // Save to Hive
     notifyListeners();
   }

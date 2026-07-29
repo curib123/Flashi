@@ -7,45 +7,61 @@ class SettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
     return Scaffold(
       appBar: AppBar(
-        leading: GestureDetector(
-          onTap: () => Navigator.pop(context),
-          child: Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: colorScheme.primary,
-          ),
-        ),
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(),
-        ),
-        backgroundColor: colorScheme.onPrimary,
-        foregroundColor: colorScheme.primary,
-        title: Text(
-          "Settings",
-          style: TextStyle(color: colorScheme.primary),
-        ),
-        centerTitle: true,
+        title: const Text('Settings'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        child: _settings(context),
+      body: ResponsiveContent(
+        maxWidth: AppBreakpoints.readingMaxWidth,
+        child: ListView(
+          children: const [
+            _SectionHeader(
+              title: 'Study preferences',
+              description: 'Configure how review sessions behave.',
+            ),
+            SizedBox(height: AppSpacing.sm),
+            AppSurface(child: ReviewerSettingsAlertContent()),
+            SizedBox(height: AppSpacing.xl),
+            _SectionHeader(
+              title: 'Appearance',
+              description: 'Choose the theme, typeface, and text size.',
+            ),
+            SizedBox(height: AppSpacing.sm),
+            AppSurface(
+              child: ThemeSelector(isShowCloseBtn: false),
+            ),
+            SizedBox(height: AppSpacing.xxl),
+          ],
+        ),
       ),
     );
   }
+}
 
-  Widget _settings(BuildContext context) {
-    return ListView(
+class _SectionHeader extends StatelessWidget {
+  const _SectionHeader({required this.title, required this.description});
+
+  final String title;
+  final String description;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 30),
-        const ReviewerSettingsAlertContent(),
-        const SizedBox(height: 50),
-        const ThemeSelector(
-          isShowCloseBtn: false,
+        Text(title, style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(height: AppSpacing.xxs),
+        Text(
+          description,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
         ),
       ],
     );
   }
 }
+import 'package:flashi/core/design_system/app_breakpoints.dart';
+import 'package:flashi/core/design_system/app_spacing.dart';
+import 'package:flashi/core/design_system/app_surface.dart';
+import 'package:flashi/core/design_system/responsive_content.dart';

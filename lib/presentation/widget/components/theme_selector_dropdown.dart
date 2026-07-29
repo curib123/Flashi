@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 class ThemeSelector extends StatelessWidget {
   final bool isShowCloseBtn;
 
-  const ThemeSelector({super.key, required, required this.isShowCloseBtn});
+  const ThemeSelector({super.key, required this.isShowCloseBtn});
 
   @override
   Widget build(BuildContext context) {
@@ -18,6 +18,7 @@ class ThemeSelector extends StatelessWidget {
     const themeModes = ThemeMode.values;
 
     final aestheticFonts = [
+      {'name': 'Inter', 'description': 'Neutral, modern, and highly readable.'},
       {'name': 'Roboto', 'description': 'Versatile, clean, and readable.'},
       {'name': 'Poppins', 'description': 'Modern with rounded edges.'},
       {'name': 'Lato', 'description': 'Friendly and warm.'},
@@ -108,7 +109,7 @@ class ThemeSelector extends StatelessWidget {
           }).toList(),
           onChanged: (newMode) {
             if (newMode != null) {
-              themeProvider.toggleThemeMode();
+              themeProvider.setThemeMode(newMode);
             }
           },
         ),
