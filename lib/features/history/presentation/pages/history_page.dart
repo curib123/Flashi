@@ -6,6 +6,7 @@ import 'package:flashi/features/history/presentation/pages/history_editor_page.d
 import 'package:flashi/shared/widgets/content_summary_tile.dart';
 import 'package:flashi/core/ads/ad_manager.dart';
 import 'package:flashi/shared/widgets/empty_state_widgets.dart';
+import 'package:flashi/shared/widgets/app_page_header.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -31,51 +32,53 @@ class _HistoryPageState extends State<HistoryPage> {
     final results = history.filterHistory();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Generation history'),
-            Text(
-              'Review previously generated content',
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
-            ),
-          ],
-        ),
-      ),
-      body: ResponsiveContent(
-        maxWidth: AppBreakpoints.readingMaxWidth,
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.md,
-          AppSpacing.md,
-          AppSpacing.md,
-          0,
-        ),
+      body: SafeArea(
         child: Column(
           children: [
-            TextField(
-              controller: history.searchController,
-              onChanged: history.onSearchChanged,
-              decoration: const InputDecoration(
-                hintText: 'Search generation history',
-                prefixIcon: Icon(Icons.search),
-              ),
+            const AppPageHeader(
+              title: 'Generation history',
+              description: 'Revisit content created with the assistant.',
+              leading: BackButton(),
             ),
-            _adManager.getSevenBannerAdWidget(),
-            const SizedBox(height: AppSpacing.md),
             Expanded(
-              child: results.isEmpty
-                  ? noHistoryWidget(context)
-                  : ListView.separated(
-                      padding: const EdgeInsets.only(bottom: AppSpacing.xxl),
-                      itemCount: results.length,
-                      separatorBuilder: (_, __) =>
-                          const SizedBox(height: AppSpacing.sm),
-                      itemBuilder: (context, index) => _HistoryCard(
-                        item: results[index],
-                        provider: history,
+              child: ResponsiveContent(
+                maxWidth: AppBreakpoints.readingMaxWidth,
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.md,
+                  AppSpacing.xs,
+                  AppSpacing.md,
+                  0,
+                ),
+                child: Column(
+                  children: [
+                    TextField(
+                      controller: history.searchController,
+                      onChanged: history.onSearchChanged,
+                      decoration: const InputDecoration(
+                        hintText: 'Search generation history',
+                        prefixIcon: Icon(Icons.search),
                       ),
                     ),
+                    _adManager.getSevenBannerAdWidget(),
+                    const SizedBox(height: AppSpacing.md),
+                    Expanded(
+                      child: results.isEmpty
+                          ? noHistoryWidget(context)
+                          : ListView.separated(
+                              padding:
+                                  const EdgeInsets.only(bottom: AppSpacing.xxl),
+                              itemCount: results.length,
+                              separatorBuilder: (_, __) =>
+                                  const SizedBox(height: AppSpacing.sm),
+                              itemBuilder: (context, index) => _HistoryCard(
+                                item: results[index],
+                                provider: history,
+                              ),
+                            ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ],
         ),

@@ -1,138 +1,151 @@
-import 'package:flashi/shared/widgets/app_search_field.dart';
-import 'package:flashi/features/quiz/presentation/widgets/create_quiz_set_button.dart';
-import 'package:flashi/features/quiz/presentation/widgets/favorites_button.dart';
-import 'package:flashi/features/quiz/presentation/widgets/quiz_import_button.dart';
-import 'package:flashi/features/quiz/presentation/widgets/quiz_set_list.dart';
-import 'package:flashi/shared/widgets/sort_section_header.dart';
-import 'package:flashi/features/settings/presentation/widgets/theme_settings_button.dart';
+import 'package:flashi/core/ads/ad_manager.dart';
+import 'package:flashi/core/design_system/app_spacing.dart';
+import 'package:flashi/core/design_system/responsive_content.dart';
+import 'package:flashi/core/state/sort_provider.dart';
 import 'package:flashi/features/ai/application/ai_credit_provider.dart';
 import 'package:flashi/features/ai/application/ai_generation_provider.dart';
 import 'package:flashi/features/ai/application/generation_config_provider.dart';
-import 'package:flashi/features/quiz/application/quiz_provider.dart';
+import 'package:flashi/features/favorites/presentation/pages/favorites_page.dart';
 import 'package:flashi/features/history/application/history_provider.dart';
-import 'package:flashi/core/state/sort_provider.dart';
-import 'package:flashi/core/ads/ad_manager.dart';
+import 'package:flashi/features/quiz/application/quiz_provider.dart';
+import 'package:flashi/features/quiz/data/services/quiz_import_export_service.dart';
+import 'package:flashi/features/quiz/presentation/widgets/quiz_set_list.dart';
+import 'package:flashi/features/settings/presentation/dialogs/theme_dialog.dart';
+import 'package:flashi/shared/widgets/app_page_header.dart';
+import 'package:flashi/shared/widgets/app_search_field.dart';
 import 'package:flashi/shared/widgets/empty_state_widgets.dart';
+import 'package:flashi/shared/widgets/sort_section_header.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class QuizSetsPage extends StatelessWidget {
+  const QuizSetsPage({
+    required this.name,
+    required this.colorScheme,
+    super.key,
+  });
+
   final String name;
   final ColorScheme colorScheme;
 
-  const QuizSetsPage({
-    super.key,
-    required this.name,
-    required this.colorScheme,
-  });
+  @override
+  Widget build(BuildContext context) {
+    final quiz = context.read<QuizProvider>();
+    return Scaffold(
+      body: SafeArea(
+        child: Column(
+          children: [
+            AppPageHeader(
+              title: name,
+              description: 'Search, organize, and manage your quiz library.',
+              leading: BackButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  quiz.searchController.text = quiz.searchQuery;
+                },
+              ),
+              actions: [
+                IconButton(
+                  tooltip: 'Favorites',
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const FavoritesPage(),
+                    ),
+                  ),
+                  icon: const Icon(Icons.favorite_border),
+                ),
+                IconButton(
+                  tooltip: 'Appearance',
+                  onPressed: () => openThemeSelector(context),
+                  icon: const Icon(Icons.contrast_outlined),
+                ),
+              ],
+            ),
+            const Expanded(child: _QuizLibrary()),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _QuizLibrary extends StatelessWidget {
+  const _QuizLibrary();
 
   @override
   Widget build(BuildContext context) {
-    // Access both providers directly
-    final quizProvider = Provider.of<QuizProvider>(context);
+    final quiz = context.watch<QuizProvider>();
+    final sort = context.watch<SortProvider>();
+    final config = context.watch<GenerationConfigProvider>();
+    final generation = context.read<AiGenerationProvider>();
+    final credits = context.watch<AiCreditProvider>();
+    final history = context.read<HistoryProvider>();
+    final quizSets = quiz.filteredQuizSets.reversed.toList();
+    final colors = Theme.of(context).colorScheme;
+    final adManager = AdManager();
 
-    return Scaffold(
-      appBar: AppBar(
-        foregroundColor: colorScheme.primary, // For text and icons color
-        backgroundColor:
-            colorScheme.onPrimary, // Background color of the app bar
-        title: Text(name),
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(),
-        ),
-        // Custom Back Arrow Icon
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios_new, // Custom Icon (back arrow)
-            color: colorScheme.primary, // Custom color for the icon
+    return ResponsiveContent(
+      child: Column(
+        children: [
+          AppSearchField(
+            colorScheme: colors,
+            hintText: 'Search quiz sets',
+            onChanged: quiz.updateSearchQuery,
+            controller: quiz.searchController,
           ),
-          onPressed: () {
-            Navigator.pop(context); // Go back to the previous screen
-            quizProvider.searchController.text = quizProvider.searchQuery;
-          },
-        ),
-      ),
-      body: _body(context),
-    );
-  }
-
-  Widget _body(BuildContext context) {
-    AdManager adManager = AdManager();
-    final historyProvider = context.read<HistoryProvider>();
-
-    return Consumer5<QuizProvider, SortProvider, GenerationConfigProvider,
-        AiGenerationProvider, AiCreditProvider>(
-      builder: (context, quizProvider, sortProvider, fetchDataFromJsonProvider,
-          aiModelLogicProvider, aiCreditProvider, child) {
-        final filteredQuizSets =
-            quizProvider.filteredQuizSets.reversed.toList();
-
-        return Stack(
-          children: [
-            ListView(
-              children: [
-                SortSectionHeader(
-                  dropdownValue: sortProvider.dropdownValueSet,
-                  sortOptions: sortProvider.sortOptionsSet,
-                  onSortChanged: (newValue) {
-                    if (newValue != null) {
-                      sortProvider.updateSortValueSet(newValue);
-                      quizProvider.sortQuizSets(
-                          newValue); // Trigger sorting in the provider
-                    }
-                  },
-                  onSeeAllPressed: () {
-                    // Optional functionality if required
-                  },
-                  isShowSeeAllLink: false,
-                  isShowReviewLink: false,
-                  onShowReviewLink: () {},
-                ),
-                adManager.getFifthBannerAdWidget(),
-                AppSearchField(
-                  colorScheme: colorScheme,
-                  hintText: 'Search Quiz Set ',
-                  onChanged: (value) {
-                    quizProvider.updateSearchQuery(value);
-                  },
-                  controller: quizProvider.searchController,
-                ),
-                filteredQuizSets.isEmpty
-                    ? noSetWidget(context)
-                    : SizedBox(
-                        width: MediaQuery.sizeOf(context).width,
-                        height: MediaQuery.sizeOf(context).height * 0.60,
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.vertical,
-                          child: QuizSetList(
-                            quizSets: filteredQuizSets,
-                          ),
-                        ),
-                      ),
-              ],
-            ),
-            // Create Button Position
-            CreateQuizSetButton(
-              icon: Icons.add_circle,
-              colorScheme: colorScheme,
-              name: 'Generate Quiz Set',
-              onTap: () {
-                aiModelLogicProvider.showFlashcardDialog(
+          const SizedBox(height: AppSpacing.sm),
+          Row(
+            children: [
+              Expanded(
+                child: FilledButton.icon(
+                  onPressed: () => generation.showFlashcardDialog(
                     context,
-                    quizProvider,
-                    colorScheme,
-                    fetchDataFromJsonProvider,
-                    aiCreditProvider,
-                    historyProvider);
-              },
-            ),
-
-            ThemeSettingsButton(colorScheme: colorScheme),
-            QuizImportButton(colorScheme: colorScheme),
-            FavoritesButton(colorScheme: colorScheme),
-          ],
-        );
-      },
+                    quiz,
+                    colors,
+                    config,
+                    credits,
+                    history,
+                  ),
+                  icon: const Icon(Icons.auto_awesome),
+                  label: const Text('Generate quiz'),
+                ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              IconButton.outlined(
+                tooltip: 'Import quiz sets',
+                onPressed: () =>
+                    QuizImportExportService().importList(context, quiz),
+                icon: const Icon(Icons.file_upload_outlined),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.md),
+          SortSectionHeader(
+            dropdownValue: sort.dropdownValueSet,
+            sortOptions: sort.sortOptionsSet,
+            onSortChanged: (value) {
+              if (value == null) return;
+              sort.updateSortValueSet(value);
+              quiz.sortQuizSets(value);
+            },
+            onSeeAllPressed: () {},
+            isShowSeeAllLink: false,
+            isShowReviewLink: false,
+            onShowReviewLink: () {},
+          ),
+          adManager.getFifthBannerAdWidget(),
+          const SizedBox(height: AppSpacing.sm),
+          Expanded(
+            child: quizSets.isEmpty
+                ? noSetWidget(context)
+                : SingleChildScrollView(
+                    padding: const EdgeInsets.only(bottom: AppSpacing.xxl),
+                    child: QuizSetList(quizSets: quizSets),
+                  ),
+          ),
+        ],
+      ),
     );
   }
 }
