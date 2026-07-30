@@ -229,9 +229,10 @@ class _DashboardPageState extends State<DashboardPage> {
                                   const SizedBox(height: AppSpacing.md),
                                   AppSearchField(
                                     colorScheme: Theme.of(context).colorScheme,
-                                    hintText: 'Search quiz sets',
+                                    hintText: 'Search your quiz library',
                                     onChanged: quiz.updateSearchQuery,
                                     controller: quiz.searchController,
+                                    prominent: true,
                                   ),
                                   const SizedBox(height: AppSpacing.md),
                                   SizedBox(
