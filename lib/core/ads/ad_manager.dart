@@ -146,6 +146,8 @@ class AdManager {
 
     _rewardedAd = null;
     _isShowingFullScreenAd = true;
+    final credits =
+        rewardType == 'energy' ? context.read<AiCreditProvider>() : null;
     ad.fullScreenContentCallback = FullScreenContentCallback(
       onAdDismissedFullScreenContent: _finishRewarded,
       onAdFailedToShowFullScreenContent: (ad, error) {
@@ -154,11 +156,19 @@ class AdManager {
       },
     );
     ad.show(
-      onUserEarnedReward: (ad, reward) {
-        if (rewardType != 'energy' || !context.mounted) return;
-        final credits = context.read<AiCreditProvider>();
-        credits.addCredits(5);
-        credits.addAdsWatched();
+      onUserEarnedReward: (ad, reward) async {
+        if (credits == null) return;
+        final awarded = await credits.claimRewardedAdEnergy();
+        if (!context.mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              awarded
+                  ? '${AiCreditProvider.rewardedAdEnergy} energy added.'
+                  : 'Energy could not be added. Please try again.',
+            ),
+          ),
+        );
       },
     );
     return true;

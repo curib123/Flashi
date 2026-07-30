@@ -24,7 +24,8 @@ class AiCreditProvider extends ChangeNotifier {
     ready = _initialize();
   }
 
-  static const int _defaultCredits = 10;
+  static const int _defaultCredits = 0;
+  static const int rewardedAdEnergy = 5;
   static const int _maxAdsPerDay = 10;
   static const int _maxCooldownSeconds = 60;
 
@@ -38,7 +39,6 @@ class AiCreditProvider extends ChangeNotifier {
   int _credits = 0;
   int _adsWatchedToday = 0;
   int _cooldownSeconds = 0;
-  int _addedCredits = 0;
   DateTime? _lastUpdated;
   Timer? _countdownTimer;
   bool _isInitialized = false;
@@ -46,7 +46,6 @@ class AiCreditProvider extends ChangeNotifier {
   Object? _lastError;
 
   int get credits => _credits;
-  int get addedCredits => _addedCredits;
   int get defaultCredits => _defaultCredits;
   int get adsWatchedToday => _adsWatchedToday;
   int get maxAdsPerDay => _maxAdsPerDay;
@@ -79,6 +78,7 @@ class AiCreditProvider extends ChangeNotifier {
     _lastUpdated = lastUpdatedValue == null
         ? await getNetworkTime()
         : DateTime.tryParse(lastUpdatedValue);
+    await _resetDailyAdCountIfNeeded();
   }
 
   Future<DateTime> getNetworkTime() async {
@@ -90,20 +90,6 @@ class AiCreditProvider extends ChangeNotifier {
   }
 
   Future<bool> hasInternet() => _internetChecker();
-
-  Future<void> handleDataChange({DateTime? now}) async {
-    _credits += _addedCredits;
-    _adsWatchedToday = 0;
-    if (now != null) _lastUpdated = now;
-    await _saveCredits();
-    _notifyIfActive();
-  }
-
-  void updateAddedCredits(int value) {
-    if (value < 0 || _addedCredits == value) return;
-    _addedCredits = value;
-    _notifyIfActive();
-  }
 
   Future<void> updateCredits(int value) async {
     if (value < 0 || _credits == value) return;
@@ -141,12 +127,48 @@ class AiCreditProvider extends ChangeNotifier {
 
   bool watchAd() => _adsWatchedToday < _maxAdsPerDay && _cooldownSeconds == 0;
 
-  void addAdsWatched() {
-    if (!watchAd()) return;
+  Future<bool> claimRewardedAdEnergy({DateTime? now}) async {
+    await ready;
+    await _resetDailyAdCountIfNeeded(now: now);
+    if (!watchAd()) return false;
+
+    final previousCredits = _credits;
+    final previousAdsWatched = _adsWatchedToday;
+    final previousLastUpdated = _lastUpdated;
+    _credits += rewardedAdEnergy;
     _adsWatchedToday++;
+    _lastUpdated = now ?? await getNetworkTime();
     _cooldownSeconds = _maxCooldownSeconds;
-    _startCooldownTimer();
-    _notifyIfActive();
+    try {
+      await _saveCredits();
+      _startCooldownTimer();
+      _notifyIfActive();
+      return true;
+    } catch (error) {
+      _credits = previousCredits;
+      _adsWatchedToday = previousAdsWatched;
+      _lastUpdated = previousLastUpdated;
+      _cooldownSeconds = 0;
+      _lastError = error;
+      _notifyIfActive();
+      return false;
+    }
+  }
+
+  Future<void> _resetDailyAdCountIfNeeded({DateTime? now}) async {
+    final current = now ?? await getNetworkTime();
+    final last = _lastUpdated;
+    if (last == null || !_isSameUtcDay(last, current)) {
+      _adsWatchedToday = 0;
+      _lastUpdated = current;
+      await _saveCredits();
+    }
+  }
+
+  static bool _isSameUtcDay(DateTime first, DateTime second) {
+    final a = first.toUtc();
+    final b = second.toUtc();
+    return a.year == b.year && a.month == b.month && a.day == b.day;
   }
 
   Future<void> _saveCredits() async {

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:flashi/app/app_shell.dart';
 import 'package:flashi/app/navigation/app_router.dart';
@@ -23,7 +22,6 @@ import 'package:flashi/features/quiz/presentation/dialogs/quiz_set_form_sheet.da
 import 'package:flashi/core/ads/ad_manager.dart';
 import 'package:flashi/features/quiz/data/services/quiz_import_export_service.dart';
 import 'package:flashi/features/dashboard/presentation/dialogs/daily_question_dialog.dart';
-import 'package:flashi/features/ai/presentation/dialogs/free_credits_dialog.dart';
 import 'package:flashi/core/updates/presentation/app_update_dialog.dart';
 import 'package:flashi/shared/widgets/empty_state_widgets.dart';
 import 'package:flutter/material.dart';
@@ -68,10 +66,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
     _dailyRewardTimer = Timer(const Duration(seconds: 5), () {
       if (!mounted) return;
-      _showDailyRewards(
-        context.read<AiCreditProvider>(),
-        dailyQuestions,
-      );
+      _showDailyQuestion(dailyQuestions);
     });
   }
 
@@ -92,11 +87,9 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  Future<void> _showDailyRewards(
-    AiCreditProvider credits,
+  Future<void> _showDailyQuestion(
     DailyQuestionProvider dailyQuestions,
   ) async {
-    await _handleFreeCredits(credits);
     if (!mounted ||
         dailyQuestions.funFacts.isEmpty ||
         dailyQuestions.isAlreadyShow) {
@@ -109,30 +102,6 @@ class _DashboardPageState extends State<DashboardPage> {
       ),
     );
     dailyQuestions.toggleFunFacts();
-  }
-
-  Future<void> _handleFreeCredits(AiCreditProvider credits) async {
-    if (!await credits.hasInternet()) return;
-    final now = await credits.getNetworkTime();
-    if (!mounted) return;
-
-    final random = Random();
-    if (credits.credits <= 10) {
-      credits.updateAddedCredits(random.nextInt(4) + 4);
-    } else if (credits.credits <= 15) {
-      credits.updateAddedCredits(random.nextInt(3) + 3);
-    } else {
-      credits.updateAddedCredits(1);
-    }
-
-    if (credits.lastUpdated == null ||
-        now.difference(credits.lastUpdated!).inDays > 0) {
-      showFreeCreditsDialog(
-        context: context,
-        rewardText: 'You have free ${credits.addedCredits} energy',
-        onClaim: () => credits.handleDataChange(now: now),
-      );
-    }
   }
 
   @override

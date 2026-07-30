@@ -25,7 +25,7 @@ class CreditSummary extends StatelessWidget {
             ),
           ),
           Text(
-            "Don’t forget to claim your daily free energy!",
+            "Need more? Watch a rewarded ad to earn 5 energy.",
             style: TextStyle(
               fontSize: 8,
               fontWeight: FontWeight.w500,
@@ -53,7 +53,7 @@ class CreditSummary extends StatelessWidget {
                         color: colorScheme.secondary,
                       ),
                     ),
-                    const TextSpan(text: " free energy left"),
+                    const TextSpan(text: " energy available"),
                   ],
                 ),
               ),

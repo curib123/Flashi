@@ -231,14 +231,13 @@ void main() {
 
       expect(await provider.spendCredits(50), isFalse);
       expect(provider.credits, provider.defaultCredits);
+      expect(await provider.spendCredits(3), isFalse);
+      expect(await provider.claimRewardedAdEnergy(now: now), isTrue);
       expect(await provider.spendCredits(3), isTrue);
-      await provider.addCredits(5);
-      provider.updateAddedCredits(2);
-      await provider.handleDataChange(now: now.add(const Duration(days: 1)));
 
-      expect(provider.credits, 14);
-      expect(provider.adsWatchedToday, 0);
-      expect(provider.lastUpdated, now.add(const Duration(days: 1)));
+      expect(provider.credits, 2);
+      expect(provider.adsWatchedToday, 1);
+      expect(provider.lastUpdated, now);
       provider.dispose();
     });
 

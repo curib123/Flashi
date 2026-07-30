@@ -54,7 +54,8 @@ class RewardedAdButton extends StatelessWidget {
                   const SizedBox(width: 8),
                   Flexible(
                     child: Text(
-                      aiCreditProvider.adsWatchedToday < 3
+                      aiCreditProvider.adsWatchedToday <
+                              aiCreditProvider.maxAdsPerDay
                           ? name
                           : 'Ad Limit Reached',
                       style: TextStyle(
