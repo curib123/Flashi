@@ -7,13 +7,12 @@ import 'package:flashi/core/design_system/responsive_content.dart';
 import 'package:flashi/core/state/sort_provider.dart';
 import 'package:flashi/features/notes/application/notes_provider.dart';
 import 'package:flashi/shared/dialogs/app_modal.dart';
-import 'package:flashi/shared/widgets/content_summary_card.dart';
-import 'package:flashi/shared/widgets/content_summary_tile.dart';
 import 'package:flashi/core/ads/ad_manager.dart';
 import 'package:flashi/shared/widgets/empty_state_widgets.dart';
 import 'package:flashi/shared/widgets/app_page_header.dart';
 import 'package:flashi/shared/widgets/app_search_field.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class NotesPage extends StatefulWidget {
@@ -51,13 +50,7 @@ class _NotesPageState extends State<NotesPage> {
                       icon: Icon(Icons.menu),
                     )
                   : null,
-              actions: [
-                IconButton(
-                  tooltip: 'Create note',
-                  onPressed: () => _openEditor(notes),
-                  icon: const Icon(Icons.note_add_outlined),
-                ),
-              ],
+              actions: const [],
             ),
             Expanded(
               child: ResponsiveContent(
@@ -166,7 +159,7 @@ class _NotesPageState extends State<NotesPage> {
                         ),
                       ],
                     ),
-                    if (filteredNotes.isNotEmpty)
+                    if (filteredNotes.length >= 3)
                       _adManager.getThirdBannerAdWidget(),
                     const SizedBox(height: AppSpacing.sm),
                     Expanded(
@@ -269,7 +262,7 @@ class _NotesCollection extends StatelessWidget {
             crossAxisCount: columns,
             crossAxisSpacing: AppSpacing.sm,
             mainAxisSpacing: AppSpacing.sm,
-            childAspectRatio: columns == 1 ? 2.1 : 1,
+            mainAxisExtent: columns == 1 ? 190 : 220,
           ),
           itemCount: notes.length,
           itemBuilder: (context, index) => _NoteCard(
@@ -300,32 +293,84 @@ class _NoteCard extends StatelessWidget {
     void onEdit() => _openNote(context, isRead: false);
     void onFavorite() => provider.toggleFavoriteByTitle(note['title']);
     void onDelete() => _confirmDelete(context);
+    final colors = Theme.of(context).colorScheme;
+    final title = (note['title'] ?? 'Untitled').toString();
+    final content = (note['content'] ?? '').toString().trim();
+    final isFavorite = note['favorite'] == true;
+    final rawTimestamp = note['updated_at'] ?? note['created_at'];
+    final timestamp = rawTimestamp is DateTime
+        ? rawTimestamp
+        : DateTime.fromMillisecondsSinceEpoch(0);
+    final words = content.isEmpty ? 0 : content.split(RegExp(r'\s+')).length;
 
-    if (useList) {
-      return ContentSummaryTile(
-        isNote: true,
-        title: note['title'],
-        content: note['content'],
-        timestamp: note['created_at'],
-        isFavorite: note['favorite'],
+    return Material(
+      color: isFavorite
+          ? colors.primaryContainer.withValues(alpha: 0.28)
+          : colors.surfaceContainerLow,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18),
+        side: BorderSide(
+          color: isFavorite ? colors.primary : colors.outlineVariant,
+          width: isFavorite ? 1.25 : 1,
+        ),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
         onTap: onRead,
-        onFavorite: onFavorite,
-        onEdit: onEdit,
-        onDelete: onDelete,
-        isHistoryPage: false,
-      );
-    }
-
-    return ContentSummaryCard(
-      isNote: true,
-      title: note['title'],
-      content: note['content'],
-      timestamp: note['created_at'],
-      isFavorite: note['favorite'],
-      onTap: onRead,
-      onFavorite: onFavorite,
-      onEdit: onEdit,
-      onDelete: onDelete,
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          child: useList
+              ? Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _NoteLeading(isFavorite: isFavorite),
+                    const SizedBox(width: AppSpacing.md),
+                    Expanded(
+                      child: _NotePreview(
+                        title: title,
+                        content: content,
+                        timestamp: timestamp,
+                        words: words,
+                        compact: true,
+                      ),
+                    ),
+                    _NoteActions(
+                      isFavorite: isFavorite,
+                      onFavorite: onFavorite,
+                      onEdit: onEdit,
+                      onDelete: onDelete,
+                    ),
+                  ],
+                )
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        _NoteLeading(isFavorite: isFavorite),
+                        const Spacer(),
+                        _NoteActions(
+                          isFavorite: isFavorite,
+                          onFavorite: onFavorite,
+                          onEdit: onEdit,
+                          onDelete: onDelete,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    Expanded(
+                      child: _NotePreview(
+                        title: title,
+                        content: content,
+                        timestamp: timestamp,
+                        words: words,
+                        compact: false,
+                      ),
+                    ),
+                  ],
+                ),
+        ),
+      ),
     );
   }
 
@@ -376,6 +421,140 @@ class _NoteCard extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+}
+
+class _NoteLeading extends StatelessWidget {
+  const _NoteLeading({required this.isFavorite});
+
+  final bool isFavorite;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Container(
+      width: 42,
+      height: 42,
+      decoration: BoxDecoration(
+        color: isFavorite ? colors.primary : colors.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(13),
+      ),
+      child: Icon(
+        isFavorite ? Icons.star_rounded : Icons.notes_rounded,
+        size: 20,
+        color: isFavorite ? colors.onPrimary : colors.onSurfaceVariant,
+      ),
+    );
+  }
+}
+
+class _NotePreview extends StatelessWidget {
+  const _NotePreview({
+    required this.title,
+    required this.content,
+    required this.timestamp,
+    required this.words,
+    required this.compact,
+  });
+
+  final String title;
+  final String content;
+  final DateTime timestamp;
+  final int words;
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          maxLines: compact ? 1 : 2,
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
+        ),
+        const SizedBox(height: AppSpacing.xs),
+        Text(
+          content.isEmpty ? 'No additional text' : content,
+          maxLines: compact ? 2 : 3,
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: colors.onSurfaceVariant,
+                height: 1.4,
+              ),
+        ),
+        if (!compact) const Spacer(),
+        const SizedBox(height: AppSpacing.xs),
+        Text(
+          '${DateFormat('MMM d').format(timestamp)}  ·  $words ${words == 1 ? 'word' : 'words'}',
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                color: colors.onSurfaceVariant,
+              ),
+        ),
+      ],
+    );
+  }
+}
+
+class _NoteActions extends StatelessWidget {
+  const _NoteActions({
+    required this.isFavorite,
+    required this.onFavorite,
+    required this.onEdit,
+    required this.onDelete,
+  });
+
+  final bool isFavorite;
+  final VoidCallback onFavorite;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          tooltip: isFavorite ? 'Remove from favorites' : 'Add to favorites',
+          onPressed: onFavorite,
+          visualDensity: VisualDensity.compact,
+          icon: Icon(
+            isFavorite ? Icons.star_rounded : Icons.star_border_rounded,
+            size: 21,
+          ),
+        ),
+        PopupMenuButton<String>(
+          tooltip: 'Note actions',
+          icon: const Icon(Icons.more_horiz_rounded, size: 21),
+          onSelected: (value) {
+            if (value == 'edit') onEdit();
+            if (value == 'delete') onDelete();
+          },
+          itemBuilder: (context) => const [
+            PopupMenuItem(
+              value: 'edit',
+              child: ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: Icon(Icons.edit_outlined),
+                title: Text('Edit note'),
+              ),
+            ),
+            PopupMenuItem(
+              value: 'delete',
+              child: ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: Icon(Icons.delete_outline_rounded),
+                title: Text('Delete note'),
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
