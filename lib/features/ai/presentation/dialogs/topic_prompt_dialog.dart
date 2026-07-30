@@ -131,17 +131,8 @@ void showTopicDialog(BuildContext context, {required Function()? onTap}) {
                                             cancelText: "Maybe Later",
                                             confirmText: "Watch Ad",
                                             onWatchAd: () {
-                                              showLoadingDialog(context,
-                                                  text:
-                                                      "Loading ads... Please wait.\nIf it doesn’t appear, try again.");
-                                              Future.delayed(
-                                                  const Duration(seconds: 10),
-                                                  () {
-                                                if (!context.mounted) return;
-                                                Navigator.of(context).pop();
-                                                adManager.showRewarded(
-                                                    context, 'energy');
-                                              });
+                                              adManager.showRewardedOrNotify(
+                                                  context, 'energy');
                                             },
                                           );
                                         } else {

@@ -132,7 +132,7 @@ class _QuizLibrary extends StatelessWidget {
             isShowReviewLink: false,
             onShowReviewLink: () {},
           ),
-          adManager.getFifthBannerAdWidget(),
+          if (quizSets.isNotEmpty) adManager.getFifthBannerAdWidget(),
           const SizedBox(height: AppSpacing.sm),
           Expanded(
             child: quizSets.isEmpty

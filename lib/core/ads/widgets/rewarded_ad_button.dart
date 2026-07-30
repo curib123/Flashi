@@ -1,7 +1,6 @@
 import 'package:flashi/features/ai/application/ai_credit_provider.dart';
 import 'package:flashi/core/ads/ad_manager.dart';
 import 'package:flashi/core/ads/ad_unit_id.dart';
-import 'package:flashi/shared/dialogs/loading_dialog.dart';
 import 'package:flashi/core/ads/widgets/watch_ad_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flashi/shared/dialogs/app_modal.dart';
@@ -123,14 +122,7 @@ class RewardedAdButton extends StatelessWidget {
         cancelText: "Maybe Later",
         confirmText: "Watch Ads",
         onWatchAd: () {
-          showLoadingDialog(context,
-              text:
-                  "Loading ads... Please wait.\nIf it doesn’t appear, try again.");
-          Future.delayed(const Duration(seconds: 10), () {
-            if (!context.mounted) return;
-            Navigator.of(context).pop();
-            adManager.showRewarded(context, 'energy');
-          });
+          adManager.showRewardedOrNotify(context, 'energy');
         },
       );
     } else {

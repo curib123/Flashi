@@ -19,7 +19,6 @@ import 'package:flashi/shared/widgets/app_search_field.dart';
 import 'package:flashi/shared/widgets/app_page_header.dart';
 import 'package:flashi/features/quiz/presentation/widgets/quiz_set_list.dart';
 import 'package:flashi/core/ads/ad_manager.dart';
-import 'package:flashi/core/ads/ad_unit_id.dart';
 import 'package:flashi/features/quiz/data/services/quiz_import_export_service.dart';
 import 'package:flashi/features/dashboard/presentation/dialogs/daily_question_dialog.dart';
 import 'package:flashi/features/ai/presentation/dialogs/free_credits_dialog.dart';
@@ -39,16 +38,13 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage> {
   final AdManager _adManager = AdManager();
-  Timer? _adPreloadTimer;
   Timer? _dailyRewardTimer;
 
   @override
   void initState() {
     super.initState();
-    _adManager.loadOpenAppAd(AdUnitId.appOpenAdUnitId);
-    _adPreloadTimer = Timer(const Duration(seconds: 20), () {
-      _adManager.loadInterstitialAd(AdUnitId.interstitialAdUnitId);
-    });
+    _adManager.loadInterstitialAd();
+    _adManager.loadRewardedAd();
 
     final config = context.read<GenerationConfigProvider>();
     final generation = context.read<AiGenerationProvider>();
@@ -126,7 +122,6 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   void dispose() {
-    _adPreloadTimer?.cancel();
     _dailyRewardTimer?.cancel();
     super.dispose();
   }
@@ -261,7 +256,8 @@ class _DashboardPageState extends State<DashboardPage> {
                                 ),
                               ],
                             ),
-                            _adManager.getFirstBannerAdWidget(),
+                            if (quizSets.isNotEmpty)
+                              _adManager.getFirstBannerAdWidget(),
                             const SizedBox(height: AppSpacing.md),
                             if (quizSets.isEmpty)
                               noSetWidget(context)

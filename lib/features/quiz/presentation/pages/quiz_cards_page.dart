@@ -107,7 +107,7 @@ class _CardLibrary extends StatelessWidget {
             onShowReviewLink: () {},
             onSeeAllPressed: () {},
           ),
-          adManager.getSixthBannerAdWidget(),
+          if (cards.isNotEmpty) adManager.getSixthBannerAdWidget(),
           const SizedBox(height: AppSpacing.sm),
           Expanded(
             child: cards.isEmpty

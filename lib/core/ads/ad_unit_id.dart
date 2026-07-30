@@ -4,6 +4,7 @@ import 'package:flashi/core/config/app_environment.dart';
 
 class AdUnitId {
   static bool isTest = AppEnvironment.useTestAds;
+  static bool get isSupportedPlatform => Platform.isAndroid || Platform.isIOS;
 
   static String get bannerAdUnitId {
     if (Platform.isAndroid) {

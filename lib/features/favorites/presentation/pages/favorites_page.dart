@@ -49,11 +49,17 @@ class FavoritesPage extends StatelessWidget {
                     ? _buildEmptyState(context)
                     : ListView.separated(
                         padding: const EdgeInsets.only(bottom: AppSpacing.xxl),
-                        itemCount: quizSets.length,
+                        itemCount: quizSets.length + 1,
                         separatorBuilder: (_, __) =>
                             const SizedBox(height: AppSpacing.sm),
                         itemBuilder: (context, index) {
-                          final set = quizSets[index];
+                          final adIndex =
+                              quizSets.length < 2 ? quizSets.length : 2;
+                          if (index == adIndex) {
+                            return adManager.getSecondBannerAdWidget();
+                          }
+                          final setIndex = index > adIndex ? index - 1 : index;
+                          final set = quizSets[setIndex];
                           final String name = set['name'] ?? 'Unnamed Set';
                           final String description = set['description'] ?? '';
                           final List cards = set['cards'] ?? [];
@@ -61,43 +67,36 @@ class FavoritesPage extends StatelessWidget {
                           final DateTime timestamp =
                               set['timestamp'] ?? DateTime.now();
 
-                          return Column(
-                            children: [
-                              adManager.getSecondBannerAdWidget(),
-                              QuizSetCard(
-                                name: name,
-                                description: description,
-                                numberOfQuiz: cards.length,
-                                isFavorate: favorite,
-                                timestamp: timestamp,
-                                onTap: () => _navigateToQuizCards(
-                                    context, name, set, index, cards),
-                                onAddCard: () =>
-                                    _addCard(context, name, set, index, cards),
-                                onReview: () => showReviewModeDialog(
-                                  context: context,
-                                  heading: name,
-                                  cards: cards,
-                                  setname: name,
-                                ),
-                                onDelete: () => showDeleteConfirmationDialog(
-                                  context: context,
-                                  setName: name,
-                                  onDelete: () =>
-                                      quizProvider.removeQuizSet(set),
-                                ),
-                                onEdit: () => _showEditSetModal(
-                                    context, quizProvider, name, description),
-                                onFavorate: () =>
-                                    quizProvider.toggleFavorite(set),
-                                onViewAllCards: () => _navigateToQuizCards(
-                                    context, name, set, index, cards),
-                                onShare: () {},
-                                onExport: () {
-                                  helper.exportList(context, set);
-                                },
-                              ),
-                            ],
+                          return QuizSetCard(
+                            name: name,
+                            description: description,
+                            numberOfQuiz: cards.length,
+                            isFavorate: favorite,
+                            timestamp: timestamp,
+                            onTap: () => _navigateToQuizCards(
+                                context, name, set, setIndex, cards),
+                            onAddCard: () =>
+                                _addCard(context, name, set, setIndex, cards),
+                            onReview: () => showReviewModeDialog(
+                              context: context,
+                              heading: name,
+                              cards: cards,
+                              setname: name,
+                            ),
+                            onDelete: () => showDeleteConfirmationDialog(
+                              context: context,
+                              setName: name,
+                              onDelete: () => quizProvider.removeQuizSet(set),
+                            ),
+                            onEdit: () => _showEditSetModal(
+                                context, quizProvider, name, description),
+                            onFavorate: () => quizProvider.toggleFavorite(set),
+                            onViewAllCards: () => _navigateToQuizCards(
+                                context, name, set, setIndex, cards),
+                            onShare: () {},
+                            onExport: () {
+                              helper.exportList(context, set);
+                            },
                           );
                         },
                       ),

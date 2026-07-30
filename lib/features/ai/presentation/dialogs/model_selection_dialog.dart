@@ -6,7 +6,6 @@ import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flashi/core/ads/ad_manager.dart';
 import 'package:flashi/core/ads/ad_unit_id.dart';
 import 'package:flashi/shared/dialogs/message_dialog.dart';
-import 'package:flashi/shared/dialogs/loading_dialog.dart';
 import 'package:flashi/core/ads/widgets/watch_ad_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
@@ -134,17 +133,8 @@ class ModelSelectionDialog {
                                               cancelText: "Maybe Later",
                                               confirmText: "Watch Ad",
                                               onWatchAd: () {
-                                                showLoadingDialog(context,
-                                                    text:
-                                                        "Loading ads... Please wait.\nIf it doesn’t appear, try again.");
-                                                Future.delayed(
-                                                    const Duration(seconds: 10),
-                                                    () {
-                                                  if (!context.mounted) return;
-                                                  Navigator.of(context).pop();
-                                                  adManager.showRewarded(
-                                                      context, 'energy');
-                                                });
+                                                adManager.showRewardedOrNotify(
+                                                    context, 'energy');
                                               },
                                             );
                                           } else {

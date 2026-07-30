@@ -1,10 +1,6 @@
-import 'dart:async';
-
 import 'package:flashi/features/reviewer/presentation/widgets/flashcard.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flashi/features/reviewer/application/reviewer_settings_provider.dart';
-import 'package:flashi/core/ads/ad_manager.dart';
-import 'package:flashi/core/ads/ad_unit_id.dart';
 import 'package:flashi/features/quiz/presentation/dialogs/quiz_card_form_sheet.dart';
 import 'package:flashi/shared/widgets/highlighted_text.dart';
 import 'package:flutter/material.dart';
@@ -28,23 +24,16 @@ class FlashcardReview extends StatefulWidget {
 class _FlashcardReviewState extends State<FlashcardReview> {
   late PageController _pageController;
   int _currentPage = 0;
-  AdManager adManager = AdManager();
-  Timer? _adPreloadTimer;
 
   @override
   void initState() {
     super.initState();
-
-    _adPreloadTimer = Timer(const Duration(minutes: 5), () {
-      adManager.loadInterstitialAd(AdUnitId.interstitialAdUnitId);
-    });
 
     _pageController = PageController();
   }
 
   @override
   void dispose() {
-    _adPreloadTimer?.cancel();
     _pageController.dispose();
     super.dispose();
   }

@@ -1,7 +1,3 @@
-import 'dart:async';
-
-import 'package:flashi/core/ads/ad_manager.dart';
-import 'package:flashi/core/ads/ad_unit_id.dart';
 import 'package:flashi/shared/widgets/highlighted_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -28,17 +24,11 @@ class _TextToSpeechReviewState extends State<TextToSpeechReview> {
   late final PageController _pageController; // Controller for PageView
   bool _isSpeaking = false; // Track if TTS is speaking
   int _currentIndex = 0; // Track current page index
-  AdManager adManager = AdManager();
-  Timer? _adPreloadTimer;
   int _speechRevision = 0;
 
   @override
   void initState() {
     super.initState();
-
-    _adPreloadTimer = Timer(const Duration(minutes: 5), () {
-      adManager.loadInterstitialAd(AdUnitId.interstitialAdUnitId);
-    });
 
     _pageController =
         PageController(initialPage: _currentIndex); // Start at the first card
@@ -47,7 +37,6 @@ class _TextToSpeechReviewState extends State<TextToSpeechReview> {
   @override
   void dispose() {
     _speechRevision++;
-    _adPreloadTimer?.cancel();
     _flutterTts.stop(); // Stop TTS when widget is disposed
     _pageController.dispose(); // Dispose PageController
     super.dispose();

@@ -1,9 +1,6 @@
-import 'dart:async';
-
 import 'package:flashi/app/navigation/app_router.dart';
 import 'package:flashi/app/state/app_navigation_provider.dart';
 import 'package:flashi/app/state/theme_provider.dart';
-import 'package:flashi/core/ads/ad_manager.dart';
 import 'package:flashi/core/ads/ad_unit_id.dart';
 import 'package:flashi/core/state/sort_provider.dart';
 import 'package:flashi/features/dashboard/application/daily_question_provider.dart';
@@ -25,7 +22,9 @@ import 'package:provider/provider.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
-  final adsInitialization = MobileAds.instance.initialize();
+  if (AdUnitId.isSupportedPlatform) {
+    await MobileAds.instance.initialize();
+  }
 
   await Future.wait<Object?>([
     for (final boxName in const [
@@ -76,12 +75,6 @@ Future<void> main() async {
                     .dropdownValueCard)), // Add QuizProvider
       ],
       child: const Flashi(),
-    ),
-  );
-
-  unawaited(
-    adsInitialization.then(
-      (_) => AdManager().loadBannerAds(AdUnitId.bannerAdUnitId),
     ),
   );
 }

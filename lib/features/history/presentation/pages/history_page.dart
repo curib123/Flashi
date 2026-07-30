@@ -53,7 +53,7 @@ class _HistoryPageState extends State<HistoryPage> {
                         prefixIcon: Icon(Icons.search),
                       ),
                     ),
-                    _adManager.getSevenBannerAdWidget(),
+                    if (results.isNotEmpty) _adManager.getSevenBannerAdWidget(),
                     const SizedBox(height: AppSpacing.md),
                     Expanded(
                       child: results.isEmpty

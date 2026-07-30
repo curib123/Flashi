@@ -1,258 +1,237 @@
 import 'dart:developer' as developer;
 
-import 'package:flashi/features/ai/application/ai_credit_provider.dart';
 import 'package:flashi/core/ads/ad_unit_id.dart';
+import 'package:flashi/core/design_system/app_radii.dart';
+import 'package:flashi/core/design_system/app_spacing.dart';
+import 'package:flashi/features/ai/application/ai_credit_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
-import 'package:flashi/core/design_system/app_radii.dart';
-import 'package:flashi/core/design_system/app_spacing.dart';
 
 class AdManager {
+  factory AdManager() => _instance;
+
+  AdManager._internal();
+
   static final AdManager _instance = AdManager._internal();
 
-  factory AdManager() {
-    return _instance;
-  }
-
-  AdManager._internal(); // Private constructor for singleton
-
-  /// Maximum duration allowed between loading and showing the ad.
-  static const Duration maxCacheDuration = Duration(hours: 1);
-
-  /// Keep track of load time so we don't show an expired ad.
-  DateTime? _appOpenLoadTime;
-
-  BannerAd? _bannerAd1;
-  BannerAd? _bannerAd2;
-  BannerAd? _bannerAd3;
-  BannerAd? _bannerAd4;
-  BannerAd? _bannerAd5;
-  BannerAd? _bannerAd6;
-  BannerAd? _bannerAd7;
-  bool _isBannerAd1Loaded = false;
-  bool _isBannerAd2Loaded = false;
-  bool _isBannerAd3Loaded = false;
-  bool _isBannerAd4Loaded = false;
-  bool _isBannerAd5Loaded = false;
-  bool _isBannerAd6Loaded = false;
-  bool _isBannerAd7Loaded = false;
-
-  InterstitialAd? _interstitialAd;
-  DateTime? _lastInterstitialShownAt;
   static const Duration interstitialCooldown = Duration(minutes: 3);
 
+  InterstitialAd? _interstitialAd;
   RewardedAd? _rewardedAd;
+  DateTime? _lastInterstitialShownAt;
+  bool _isInterstitialLoading = false;
+  bool _isRewardedLoading = false;
+  bool _isShowingFullScreenAd = false;
 
-  AppOpenAd? _appOpenAd;
-  bool _isShowingAd = false;
+  bool get isRewardedReady => _rewardedAd != null;
 
-  /// Load an AppOpenAd.
-  void loadOpenAppAd(String adUnitId) {
-    AppOpenAd.load(
-        adUnitId: adUnitId,
-        request: const AdRequest(),
-        adLoadCallback: AppOpenAdLoadCallback(
-          onAdLoaded: (ad) {
-            _appOpenLoadTime = DateTime.now();
-            _appOpenAd = ad;
-          },
-          onAdFailedToLoad: (error) {
-            developer.log('AppOpenAd failed to load: $error');
-            // Handle the error.
-          },
-        ));
+  static bool canShowInterstitial({
+    required DateTime now,
+    DateTime? lastShownAt,
+  }) {
+    return lastShownAt == null ||
+        now.difference(lastShownAt) >= interstitialCooldown;
   }
 
-  /// Whether an ad is available to be shown.
-  bool get isAdAvailable {
-    return _appOpenAd != null;
+  Widget getFirstBannerAdWidget() =>
+      const AdBannerSlot(placement: 'dashboard-library');
+
+  Widget getSecondBannerAdWidget() =>
+      const AdBannerSlot(placement: 'favorites-library');
+
+  Widget getThirdBannerAdWidget() =>
+      const AdBannerSlot(placement: 'notes-library');
+
+  Widget getFourthBannerAdWidget() => const AdBannerSlot(placement: 'reserved');
+
+  Widget getFifthBannerAdWidget() =>
+      const AdBannerSlot(placement: 'quiz-library');
+
+  Widget getSixthBannerAdWidget() =>
+      const AdBannerSlot(placement: 'quiz-cards');
+
+  Widget getSevenBannerAdWidget() =>
+      const AdBannerSlot(placement: 'generation-history');
+
+  void loadInterstitialAd([String? adUnitId]) {
+    if (!AdUnitId.isSupportedPlatform ||
+        _interstitialAd != null ||
+        _isInterstitialLoading) {
+      return;
+    }
+    _isInterstitialLoading = true;
+    InterstitialAd.load(
+      adUnitId: adUnitId ?? AdUnitId.interstitialAdUnitId,
+      request: const AdRequest(),
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (ad) {
+          _isInterstitialLoading = false;
+          _interstitialAd = ad;
+        },
+        onAdFailedToLoad: (error) {
+          _isInterstitialLoading = false;
+          developer.log('Interstitial ad failed to load: $error');
+        },
+      ),
+    );
   }
 
-  void showAdIfAvailable() {
-    if (!isAdAvailable) {
-      developer.log('Tried to show ad before available.');
-      loadOpenAppAd(AdUnitId.appOpenAdUnitId);
-      return;
+  bool showInterstitialAd() {
+    final now = DateTime.now();
+    if (_isShowingFullScreenAd ||
+        !canShowInterstitial(
+          now: now,
+          lastShownAt: _lastInterstitialShownAt,
+        )) {
+      return false;
     }
 
-    if (_isShowingAd) {
-      developer.log('Tried to show ad while already showing an ad.');
-      return;
+    final ad = _interstitialAd;
+    if (ad == null) {
+      loadInterstitialAd();
+      return false;
     }
-    if (DateTime.now().subtract(maxCacheDuration).isAfter(_appOpenLoadTime!)) {
-      developer.log('Maximum cache duration exceeded. Loading another ad.');
-      _appOpenAd!.dispose();
-      _appOpenAd = null;
-      loadOpenAppAd(AdUnitId.appOpenAdUnitId);
-      return;
-    }
-    // Set the fullScreenContentCallback and show the ad.
-    _appOpenAd!.fullScreenContentCallback = FullScreenContentCallback(
-      onAdShowedFullScreenContent: (ad) {
-        _isShowingAd = true;
-        developer.log('$ad onAdShowedFullScreenContent');
-      },
+
+    _interstitialAd = null;
+    _isShowingFullScreenAd = true;
+    _lastInterstitialShownAt = now;
+    ad.fullScreenContentCallback = FullScreenContentCallback(
+      onAdDismissedFullScreenContent: _finishInterstitial,
       onAdFailedToShowFullScreenContent: (ad, error) {
-        developer.log('$ad onAdFailedToShowFullScreenContent: $error');
-        _isShowingAd = false;
-        ad.dispose();
-        _appOpenAd = null;
-      },
-      onAdDismissedFullScreenContent: (ad) {
-        developer.log('$ad onAdDismissedFullScreenContent');
-        _isShowingAd = false;
-        ad.dispose();
-        _appOpenAd = null;
-        loadOpenAppAd(AdUnitId.appOpenAdUnitId);
+        developer.log('Interstitial ad failed to show: $error');
+        _finishInterstitial(ad);
       },
     );
+    ad.show();
+    return true;
   }
 
-  void loadBannerAds(String id) {
-    _bannerAd1 = BannerAd(
-      adUnitId: id,
-      size: AdSize.banner,
+  void _finishInterstitial(InterstitialAd ad) {
+    ad.dispose();
+    _isShowingFullScreenAd = false;
+    loadInterstitialAd();
+  }
+
+  void loadRewardedAd([String? adUnitId]) {
+    if (!AdUnitId.isSupportedPlatform ||
+        _rewardedAd != null ||
+        _isRewardedLoading) {
+      return;
+    }
+    _isRewardedLoading = true;
+    RewardedAd.load(
+      adUnitId: adUnitId ?? AdUnitId.rewardedAdUnitId,
       request: const AdRequest(),
-      listener: BannerAdListener(
-        onAdLoaded: (Ad ad) {
-          _isBannerAd1Loaded = true;
+      rewardedAdLoadCallback: RewardedAdLoadCallback(
+        onAdLoaded: (ad) {
+          _isRewardedLoading = false;
+          _rewardedAd = ad;
         },
-        onAdFailedToLoad: (Ad ad, LoadAdError error) {
-          _isBannerAd1Loaded = false;
+        onAdFailedToLoad: (error) {
+          _isRewardedLoading = false;
+          developer.log('Rewarded ad failed to load: $error');
         },
       ),
     );
+  }
 
-    _bannerAd2 = BannerAd(
-      adUnitId: id,
-      size: AdSize.banner,
-      request: const AdRequest(),
-      listener: BannerAdListener(
-        onAdLoaded: (Ad ad) {
-          _isBannerAd2Loaded = true;
-        },
-        onAdFailedToLoad: (Ad ad, LoadAdError error) {
-          _isBannerAd2Loaded = false;
-        },
+  bool showRewarded(BuildContext context, String rewardType) {
+    if (_isShowingFullScreenAd) return false;
+    final ad = _rewardedAd;
+    if (ad == null) {
+      loadRewardedAd();
+      return false;
+    }
+
+    _rewardedAd = null;
+    _isShowingFullScreenAd = true;
+    ad.fullScreenContentCallback = FullScreenContentCallback(
+      onAdDismissedFullScreenContent: _finishRewarded,
+      onAdFailedToShowFullScreenContent: (ad, error) {
+        developer.log('Rewarded ad failed to show: $error');
+        _finishRewarded(ad);
+      },
+    );
+    ad.show(
+      onUserEarnedReward: (ad, reward) {
+        if (rewardType != 'energy' || !context.mounted) return;
+        final credits = context.read<AiCreditProvider>();
+        credits.addCredits(5);
+        credits.addAdsWatched();
+      },
+    );
+    return true;
+  }
+
+  void showRewardedOrNotify(BuildContext context, String rewardType) {
+    if (showRewarded(context, rewardType)) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Row(
+          children: [
+            Icon(Icons.info_outline_rounded),
+            SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: Text('The reward ad is still loading. Try again shortly.'),
+            ),
+          ],
+        ),
       ),
     );
-
-    _bannerAd3 = BannerAd(
-      adUnitId: id,
-      size: AdSize.banner,
-      request: const AdRequest(),
-      listener: BannerAdListener(
-        onAdLoaded: (Ad ad) {
-          _isBannerAd3Loaded = true;
-        },
-        onAdFailedToLoad: (Ad ad, LoadAdError error) {
-          _isBannerAd3Loaded = false;
-        },
-      ),
-    );
-
-    _bannerAd4 = BannerAd(
-      adUnitId: id,
-      size: AdSize.banner,
-      request: const AdRequest(),
-      listener: BannerAdListener(
-        onAdLoaded: (Ad ad) {
-          _isBannerAd4Loaded = true;
-        },
-        onAdFailedToLoad: (Ad ad, LoadAdError error) {
-          _isBannerAd4Loaded = false;
-        },
-      ),
-    );
-
-    _bannerAd5 = BannerAd(
-      adUnitId: id,
-      size: AdSize.banner,
-      request: const AdRequest(),
-      listener: BannerAdListener(
-        onAdLoaded: (Ad ad) {
-          _isBannerAd5Loaded = true;
-        },
-        onAdFailedToLoad: (Ad ad, LoadAdError error) {
-          _isBannerAd5Loaded = false;
-        },
-      ),
-    );
-    _bannerAd6 = BannerAd(
-      adUnitId: id,
-      size: AdSize.banner,
-      request: const AdRequest(),
-      listener: BannerAdListener(
-        onAdLoaded: (Ad ad) {
-          _isBannerAd6Loaded = true;
-        },
-        onAdFailedToLoad: (Ad ad, LoadAdError error) {
-          _isBannerAd6Loaded = false;
-        },
-      ),
-    );
-    _bannerAd7 = BannerAd(
-      adUnitId: id,
-      size: AdSize.banner,
-      request: const AdRequest(),
-      listener: BannerAdListener(
-        onAdLoaded: (Ad ad) {
-          _isBannerAd7Loaded = true;
-        },
-        onAdFailedToLoad: (Ad ad, LoadAdError error) {
-          _isBannerAd7Loaded = false;
-        },
-      ),
-    );
-
-    _bannerAd1?.load();
-    _bannerAd2?.load();
-    _bannerAd3?.load();
-    _bannerAd4?.load();
-    _bannerAd5?.load();
-    _bannerAd6?.load();
-    _bannerAd7?.load();
   }
 
-  Widget getFirstBannerAdWidget() {
-    return _bannerWidget(_bannerAd1, _isBannerAd1Loaded);
+  void _finishRewarded(RewardedAd ad) {
+    ad.dispose();
+    _isShowingFullScreenAd = false;
+    loadRewardedAd();
   }
 
-  Widget getSecondBannerAdWidget() {
-    return _bannerWidget(_bannerAd2, _isBannerAd2Loaded);
+  void dispose() {
+    _interstitialAd?.dispose();
+    _rewardedAd?.dispose();
+    _interstitialAd = null;
+    _rewardedAd = null;
   }
+}
 
-  Widget getThirdBannerAdWidget() {
-    return _bannerWidget(_bannerAd3, _isBannerAd3Loaded);
-  }
+class AdBannerSlot extends StatefulWidget {
+  const AdBannerSlot({
+    required this.placement,
+    super.key,
+  });
 
-  Widget getFourthBannerAdWidget() {
-    return _bannerWidget(_bannerAd4, _isBannerAd4Loaded);
-  }
+  final String placement;
 
-  Widget getFifthBannerAdWidget() {
-    return _bannerWidget(_bannerAd5, _isBannerAd5Loaded);
-  }
+  @override
+  State<AdBannerSlot> createState() => _AdBannerSlotState();
+}
 
-  Widget getSixthBannerAdWidget() {
-    return _bannerWidget(_bannerAd6, _isBannerAd6Loaded);
-  }
+class _AdBannerSlotState extends State<AdBannerSlot> {
+  BannerAd? _ad;
+  int? _requestedWidth;
+  bool _isLoading = false;
 
-  Widget getSevenBannerAdWidget() {
-    return _bannerWidget(_bannerAd7, _isBannerAd7Loaded);
-  }
+  @override
+  Widget build(BuildContext context) {
+    if (!AdUnitId.isSupportedPlatform) return const SizedBox.shrink();
 
-  Widget _bannerWidget(BannerAd? ad, bool isLoaded) {
-    if (ad == null || !isLoaded) return const SizedBox.shrink();
-    return Builder(
-      builder: (context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = constraints.maxWidth.floor().clamp(320, 1200);
+        if (_requestedWidth != width && !_isLoading) {
+          WidgetsBinding.instance.addPostFrameCallback((_) => _load(width));
+        }
+        final ad = _ad;
+        if (ad == null) return const SizedBox.shrink();
+
         final colors = Theme.of(context).colorScheme;
         return Semantics(
           label: 'Sponsored advertisement',
+          container: true,
           child: Container(
             width: double.infinity,
-            margin: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+            margin: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
             padding: const EdgeInsets.fromLTRB(
               AppSpacing.sm,
               AppSpacing.xs,
@@ -291,110 +270,48 @@ class AdManager {
     );
   }
 
-  // Preload interstitial ad
-  void loadInterstitialAd(String adUnitId) {
-    if (_interstitialAd != null) return;
+  Future<void> _load(int width) async {
+    if (!mounted || _isLoading || _requestedWidth == width) return;
+    _isLoading = true;
+    _requestedWidth = width;
+    final size = await AdSize.getLargeAnchoredAdaptiveBannerAdSize(width);
+    if (!mounted || size == null) {
+      _isLoading = false;
+      return;
+    }
 
-    InterstitialAd.load(
-      adUnitId: adUnitId,
+    final previous = _ad;
+    final ad = BannerAd(
+      adUnitId: AdUnitId.bannerAdUnitId,
+      size: size,
       request: const AdRequest(),
-      adLoadCallback: InterstitialAdLoadCallback(
-        onAdLoaded: (InterstitialAd ad) {
-          _interstitialAd = ad;
+      listener: BannerAdListener(
+        onAdLoaded: (loadedAd) {
+          if (!mounted) {
+            loadedAd.dispose();
+            return;
+          }
+          previous?.dispose();
+          setState(() {
+            _ad = loadedAd as BannerAd;
+            _isLoading = false;
+          });
         },
-        onAdFailedToLoad: (LoadAdError error) {
-          developer.log('Interstitial ad failed to load: $error');
+        onAdFailedToLoad: (failedAd, error) {
+          failedAd.dispose();
+          developer.log(
+            'Banner ${widget.placement} failed to load: $error',
+          );
+          if (mounted) setState(() => _isLoading = false);
         },
       ),
     );
+    ad.load();
   }
 
-  // Show interstitial ad
-  bool showInterstitialAd() {
-    final now = DateTime.now();
-    final lastShown = _lastInterstitialShownAt;
-    if (lastShown != null && now.difference(lastShown) < interstitialCooldown) {
-      return false;
-    }
-    final ad = _interstitialAd;
-    if (ad == null) return false;
-    _lastInterstitialShownAt = now;
-    ad.fullScreenContentCallback = FullScreenContentCallback(
-      onAdDismissedFullScreenContent: (ad) {
-        ad.dispose();
-        loadInterstitialAd(AdUnitId.interstitialAdUnitId);
-      },
-      onAdFailedToShowFullScreenContent: (ad, error) {
-        ad.dispose();
-        loadInterstitialAd(AdUnitId.interstitialAdUnitId);
-      },
-    );
-    _interstitialAd = null;
-    ad.show();
-    return true;
-  }
-
-  /// Loads a rewarded ad.
-  void loadRewardedAd(String adUnitId) {
-    RewardedAd.load(
-        adUnitId: adUnitId,
-        request: const AdRequest(),
-        rewardedAdLoadCallback: RewardedAdLoadCallback(
-          // Called when an ad is successfully received.
-          onAdLoaded: (ad) {
-            ad.fullScreenContentCallback = FullScreenContentCallback(
-                // Called when the ad showed the full screen content.
-                onAdShowedFullScreenContent: (ad) {},
-                // Called when an impression occurs on the ad.
-                onAdImpression: (ad) {},
-                // Called when the ad failed to show full screen content.
-                onAdFailedToShowFullScreenContent: (ad, err) {
-                  // Dispose the ad here to free resources.
-                  ad.dispose();
-                },
-                // Called when the ad dismissed full screen content.
-                onAdDismissedFullScreenContent: (ad) {
-                  // Dispose the ad here to free resources.
-                  ad.dispose();
-                },
-                // Called when a click is recorded for an ad.
-                onAdClicked: (ad) {});
-
-            debugPrint('$ad loaded.');
-            // Keep a reference to the ad so you can show it later.
-            _rewardedAd = ad;
-          },
-          // Called when an ad request failed.
-          onAdFailedToLoad: (LoadAdError error) {
-            debugPrint('RewardedAd failed to load: $error');
-          },
-        ));
-  }
-
-  void showRewarded(BuildContext context, String whatRewards) {
-    // Access the QuizProvider and SortProvider from the context
-    final aiCreditProvider =
-        Provider.of<AiCreditProvider>(context, listen: false);
-
-    _rewardedAd?.show(
-        onUserEarnedReward: (AdWithoutView ad, RewardItem rewardItem) {
-      if (whatRewards == "energy") {
-        aiCreditProvider.addCredits(5);
-        aiCreditProvider.addAdsWatched();
-      }
-    });
-  }
-
+  @override
   void dispose() {
-    _bannerAd1?.dispose();
-    _bannerAd2?.dispose();
-    _bannerAd3?.dispose();
-    _bannerAd4?.dispose();
-    _bannerAd5?.dispose();
-    _bannerAd6?.dispose();
-    _bannerAd7?.dispose();
-    _interstitialAd?.dispose();
-    _rewardedAd?.dispose();
-    _appOpenAd?.dispose();
+    _ad?.dispose();
+    super.dispose();
   }
 }

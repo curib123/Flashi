@@ -102,7 +102,8 @@ class _NotesPageState extends State<NotesPage> {
                         ),
                       ],
                     ),
-                    _adManager.getThirdBannerAdWidget(),
+                    if (filteredNotes.isNotEmpty)
+                      _adManager.getThirdBannerAdWidget(),
                     const SizedBox(height: AppSpacing.sm),
                     Expanded(
                       child: filteredNotes.isEmpty
