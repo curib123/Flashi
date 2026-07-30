@@ -28,12 +28,12 @@ Use the same configuration for release builds:
 flutter build apk --dart-define-from-file=.env
 ```
 
-The `.env` file is ignored by Git and is not bundled as a Flutter asset.
-Values passed through `dart-define` are compiled into the application, so they
-must be treated as public configuration rather than secure server secrets.
-The user's Mistral key remains in platform secure storage. Secrets that must
-not be recoverable from the installed application belong behind a server-side
-API and must never be added to `.env`.
+The `.env` file is ignored by Git and is not bundled as a Flutter asset. The
+app reads `MISTRAL_API_KEY` from this file when built with
+`--dart-define-from-file=.env`, unless a user key exists in platform secure
+storage. Values passed through `dart-define` are compiled into the application
+and can be recovered from an installed build, so use a restricted development
+key here and keep production secrets behind a server-side API.
 
 ## License
 This project is proprietary, and all rights are reserved by the author.

@@ -1,4 +1,8 @@
 abstract final class AppEnvironment {
+  static const mistralApiKey = String.fromEnvironment(
+    'MISTRAL_API_KEY',
+    defaultValue: '',
+  );
   static const mistralApiUrl = String.fromEnvironment(
     'MISTRAL_API_URL',
     defaultValue: 'https://api.mistral.ai/v1/chat/completions',
