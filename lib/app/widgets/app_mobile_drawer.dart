@@ -366,15 +366,15 @@ class _BrandMark extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     return ClipRRect(
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(14),
       child: Container(
-        width: 36,
-        height: 36,
+        width: 52,
+        height: 52,
         decoration: BoxDecoration(
           color: Colors.white,
           border: Border.all(color: colorScheme.outlineVariant),
         ),
-        padding: const EdgeInsets.all(2),
+        padding: const EdgeInsets.all(3),
         child: Image.asset(
           'asset/icon/logo.png',
           fit: BoxFit.cover,
