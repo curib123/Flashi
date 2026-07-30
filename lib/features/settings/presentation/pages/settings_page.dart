@@ -3,7 +3,6 @@ import 'package:flashi/core/design_system/app_spacing.dart';
 import 'package:flashi/core/design_system/app_surface.dart';
 import 'package:flashi/core/design_system/responsive_content.dart';
 import 'package:flashi/features/reviewer/presentation/widgets/reviewer_settings_content.dart';
-import 'package:flashi/features/settings/presentation/widgets/theme_selector.dart';
 import 'package:flashi/shared/widgets/app_page_header.dart';
 import 'package:flutter/material.dart';
 
@@ -16,52 +15,27 @@ class SettingsPage extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            const AppPageHeader(
+            AppPageHeader(
               title: 'Settings',
               description: 'Make Flashi feel and work the way you prefer.',
+              leading: IconButton(
+                tooltip: 'Back',
+                onPressed: () => Navigator.maybePop(context),
+                icon: const Icon(Icons.arrow_back_rounded),
+              ),
             ),
             Expanded(
               child: ResponsiveContent(
                 maxWidth: AppBreakpoints.expanded,
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    final wide = constraints.maxWidth >= AppBreakpoints.medium;
-                    final sections = [
-                      const _SettingsSection(
-                        icon: Icons.school_outlined,
-                        title: 'Study preferences',
-                        description: 'Configure how review sessions behave.',
-                        child: ReviewerSettingsContent(),
-                      ),
-                      const _SettingsSection(
-                        icon: Icons.contrast_outlined,
-                        title: 'Appearance',
-                        description:
-                            'Choose your theme, typeface, and text size.',
-                        child: ThemeSelector(isShowCloseBtn: false),
-                      ),
-                    ];
-                    if (!wide) {
-                      return ListView.separated(
-                        itemCount: sections.length,
-                        separatorBuilder: (_, __) =>
-                            const SizedBox(height: AppSpacing.xl),
-                        itemBuilder: (_, index) => sections[index],
-                      );
-                    }
-                    return Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        for (var index = 0;
-                            index < sections.length;
-                            index++) ...[
-                          Expanded(child: sections[index]),
-                          if (index != sections.length - 1)
-                            const SizedBox(width: AppSpacing.lg),
-                        ],
-                      ],
-                    );
-                  },
+                child: ListView(
+                  children: const [
+                    _SettingsSection(
+                      icon: Icons.school_outlined,
+                      title: 'Study preferences',
+                      description: 'Configure how review sessions behave.',
+                      child: ReviewerSettingsContent(),
+                    ),
+                  ],
                 ),
               ),
             ),
