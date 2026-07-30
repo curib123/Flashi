@@ -6,13 +6,23 @@ param(
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent $PSScriptRoot
 $symbolDirectory = Join-Path $projectRoot 'build\symbols'
+$environmentFile = Join-Path $projectRoot '.env'
 
 Push-Location $projectRoot
 try {
-    flutter build apk `
-        --release `
-        --target-platform $TargetPlatform `
-        --split-debug-info $symbolDirectory
+    $buildArguments = @(
+        'build'
+        'apk'
+        '--release'
+        '--target-platform'
+        $TargetPlatform
+        '--split-debug-info'
+        $symbolDirectory
+    )
+    if (Test-Path -LiteralPath $environmentFile) {
+        $buildArguments += "--dart-define-from-file=$environmentFile"
+    }
+    flutter @buildArguments
 }
 finally {
     Pop-Location
