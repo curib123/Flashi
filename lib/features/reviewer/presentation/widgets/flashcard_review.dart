@@ -39,7 +39,6 @@ class _FlashcardReviewState extends State<FlashcardReview> {
       adManager.loadInterstitialAd(AdUnitId.interstitialAdUnitId);
     });
 
-    adManager.showInterstitialAd();
     _pageController = PageController();
   }
 
@@ -90,7 +89,7 @@ class _FlashcardReviewState extends State<FlashcardReview> {
                         keyword: card['keyword'],
                         text: card['question'],
                         fontSize: 20,
-                        fontColor: Theme.of(context).colorScheme.onPrimary,
+                        fontColor: Theme.of(context).colorScheme.onSurface,
                         fontSizeKeyword: 15,
                         isCenter: true),
                     answer: card['answer'],

@@ -318,7 +318,7 @@ class _MultipleChoiceReviewState extends State<TimedMultipleChoiceReview> {
                   keyword: card['keyword'],
                   text: card['question'],
                   fontSize: 22,
-                  fontColor: Theme.of(context).colorScheme.onPrimary,
+                  fontColor: Theme.of(context).colorScheme.onSurface,
                   fontSizeKeyword: 17,
                   isCenter: true),
               optionA: options[0],

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'app_radii.dart';
 import 'app_spacing.dart';
 import 'app_colors.dart';
+import 'app_motion.dart';
 
 abstract final class AppTheme {
   static ThemeData light() => _build(Brightness.light);
@@ -104,6 +105,15 @@ abstract final class AppTheme {
           side: BorderSide(color: outline),
         ),
       ),
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: PredictiveBackPageTransitionsBuilder(),
+          TargetPlatform.iOS: FadeForwardsPageTransitionsBuilder(),
+          TargetPlatform.macOS: FadeForwardsPageTransitionsBuilder(),
+          TargetPlatform.windows: FadeForwardsPageTransitionsBuilder(),
+          TargetPlatform.linux: FadeForwardsPageTransitionsBuilder(),
+        },
+      ),
       listTileTheme: ListTileThemeData(
         minTileHeight: 48,
         contentPadding: const EdgeInsets.symmetric(
@@ -197,6 +207,13 @@ abstract final class AppTheme {
         foregroundColor: background,
         shape: const RoundedRectangleBorder(borderRadius: AppRadii.medium),
       ),
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        elevation: 0,
+        backgroundColor: foreground,
+        contentTextStyle: textTheme.bodyMedium?.copyWith(color: background),
+        shape: const RoundedRectangleBorder(borderRadius: AppRadii.medium),
+      ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           minimumSize: const Size(48, 48),
@@ -266,14 +283,23 @@ abstract final class AppTheme {
         linearTrackColor: panel,
         circularTrackColor: panel,
       ),
-      snackBarTheme: SnackBarThemeData(
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: foreground,
-        contentTextStyle: TextStyle(color: background),
-        shape: const RoundedRectangleBorder(
-          borderRadius: AppRadii.medium,
-        ),
-      ),
+      splashFactory: InkSparkle.splashFactory,
+      visualDensity: VisualDensity.standard,
+      extensions: const <ThemeExtension<dynamic>>[
+        _MotionTheme(),
+      ],
     );
   }
+}
+
+class _MotionTheme extends ThemeExtension<_MotionTheme> {
+  const _MotionTheme();
+
+  Duration get standard => AppMotion.standard;
+
+  @override
+  _MotionTheme copyWith() => this;
+
+  @override
+  _MotionTheme lerp(covariant _MotionTheme? other, double t) => this;
 }

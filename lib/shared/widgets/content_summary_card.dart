@@ -1,17 +1,9 @@
+import 'package:flashi/core/design_system/app_radii.dart';
+import 'package:flashi/core/design_system/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class ContentSummaryCard extends StatelessWidget {
-  final String title;
-  final String content;
-  final bool isNote;
-  final DateTime timestamp;
-  final bool isFavorite;
-  final VoidCallback onFavorite;
-  final VoidCallback onTap;
-  final VoidCallback onEdit;
-  final VoidCallback onDelete;
-
   const ContentSummaryCard({
     super.key,
     required this.title,
@@ -25,154 +17,116 @@ class ContentSummaryCard extends StatelessWidget {
     required this.isNote,
   });
 
+  final String title;
+  final String content;
+  final bool isNote;
+  final DateTime timestamp;
+  final bool isFavorite;
+  final VoidCallback onFavorite;
+  final VoidCallback onTap;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
+
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
+    final date = DateFormat('MMM d, yyyy').format(timestamp);
 
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.all(5),
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        decoration: _buildContainerDecoration(colorScheme),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildFavoriteButton(colorScheme),
-            const Spacer(),
-            _buildTitle(colorScheme),
-            const SizedBox(height: 8),
-            _buildSubtitle(colorScheme),
-            const Spacer(),
-          ],
+    return Card(
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: AppRadii.large,
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: colors.surfaceContainerHighest,
+                      borderRadius: AppRadii.small,
+                    ),
+                    child: Icon(
+                      isNote
+                          ? Icons.notes_rounded
+                          : Icons.auto_awesome_outlined,
+                      size: 18,
+                    ),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    tooltip: isFavorite
+                        ? 'Remove from favorites'
+                        : 'Add to favorites',
+                    onPressed: onFavorite,
+                    icon: Icon(
+                      isFavorite
+                          ? Icons.star_rounded
+                          : Icons.star_border_rounded,
+                    ),
+                  ),
+                  _ActionsMenu(onEdit: onEdit, onDelete: onDelete),
+                ],
+              ),
+              const Spacer(),
+              Text(
+                title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: AppSpacing.xs),
+              Text(
+                content,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: colors.onSurfaceVariant,
+                    ),
+              ),
+              const Spacer(),
+              Text(date, style: Theme.of(context).textTheme.bodySmall),
+            ],
+          ),
         ),
       ),
     );
   }
+}
 
-  BoxDecoration _buildContainerDecoration(ColorScheme colorScheme) {
-    return BoxDecoration(
-      gradient: LinearGradient(
-        colors: isNote
-            ? [
-                colorScheme.secondaryContainer.withValues(alpha: 0.2),
-                colorScheme.primaryContainer,
-              ]
-            : [
-                colorScheme.tertiaryContainer.withValues(alpha: 0.2),
-                colorScheme.secondaryContainer,
-              ], // Fallback gradient colors
-        begin: Alignment.bottomCenter,
-        end: Alignment.topLeft,
-      ),
-      borderRadius: BorderRadius.circular(15),
-    );
-  }
+class _ActionsMenu extends StatelessWidget {
+  const _ActionsMenu({required this.onEdit, required this.onDelete});
 
-  Row _buildFavoriteButton(ColorScheme colorScheme) {
-    return Row(
-      children: [
-        IconButton(
-          icon: Icon(
-            isFavorite ? Icons.star_rounded : Icons.star_border_rounded,
-            color: colorScheme.primary,
-          ),
-          onPressed: onFavorite,
-          padding: EdgeInsets.zero,
-          constraints: const BoxConstraints(),
-        ),
-        const Spacer(),
-        _buildPopupMenuButton(colorScheme)
-      ],
-    );
-  }
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
 
-  Text _buildTitle(ColorScheme colorScheme) {
-    return Text(
-      title,
-      style: TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.bold,
-        color: colorScheme.primary,
-        overflow: TextOverflow.ellipsis,
-      ),
-    );
-  }
-
-  Column _buildSubtitle(ColorScheme colorScheme) {
-    // Formatting date and time to 12-hour format
-    String formattedDate =
-        DateFormat('MMM dd, yyyy - hh:mm a').format(timestamp);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          content,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            fontSize: 14,
-            color: colorScheme.secondary,
-          ),
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        Text(
-          formattedDate,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            fontSize: 8,
-            color: colorScheme.secondary,
-          ),
-        ),
-      ],
-    );
-  }
-
-  PopupMenuButton<String> _buildPopupMenuButton(ColorScheme colorScheme) {
+  @override
+  Widget build(BuildContext context) {
     return PopupMenuButton<String>(
-      onSelected: (value) {
-        if (value == 'edit') {
-          onEdit();
-        } else if (value == 'delete') {
-          onDelete();
-        }
-      },
-      icon: Icon(
-        Icons.more_vert_rounded,
-        color: colorScheme.primary,
-      ),
-      itemBuilder: (context) => [
-        PopupMenuItem<String>(
+      tooltip: 'More actions',
+      icon: const Icon(Icons.more_horiz_rounded),
+      onSelected: (value) => value == 'edit' ? onEdit() : onDelete(),
+      itemBuilder: (context) => const [
+        PopupMenuItem(
           value: 'edit',
-          child: _buildPopupMenuItem(
-            icon: Icons.edit,
-            color: colorScheme.primary,
-            text: 'Edit',
+          child: ListTile(
+            leading: Icon(Icons.edit_outlined),
+            title: Text('Edit'),
+            contentPadding: EdgeInsets.zero,
           ),
         ),
-        PopupMenuItem<String>(
+        PopupMenuItem(
           value: 'delete',
-          child: _buildPopupMenuItem(
-            icon: Icons.delete,
-            color: colorScheme.error,
-            text: 'Delete',
+          child: ListTile(
+            leading: Icon(Icons.delete_outline),
+            title: Text('Delete'),
+            contentPadding: EdgeInsets.zero,
           ),
         ),
-      ],
-    );
-  }
-
-  Row _buildPopupMenuItem(
-      {required IconData icon, required Color color, required String text}) {
-    return Row(
-      children: [
-        Icon(icon, color: color),
-        const SizedBox(width: 8),
-        Text(text),
       ],
     );
   }

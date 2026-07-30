@@ -5,7 +5,6 @@ import 'package:flashi/core/design_system/app_spacing.dart';
 import 'package:flashi/core/design_system/responsive_content.dart';
 import 'package:flashi/features/chat/presentation/widgets/typing_indicator.dart';
 import 'package:flashi/features/chat/application/chat_provider.dart';
-import 'package:flashi/core/ads/ad_manager.dart';
 import 'package:flashi/shared/widgets/app_page_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -21,7 +20,6 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   late final ScrollController _scrollController;
   final TextEditingController _messageController = TextEditingController();
-  final AdManager _adManager = AdManager();
 
   @override
   void initState() {
@@ -46,7 +44,6 @@ class _ChatPageState extends State<ChatPage> {
   void dispose() {
     _scrollController.dispose();
     _messageController.dispose();
-    _adManager.showInterstitialAd();
     super.dispose();
   }
 

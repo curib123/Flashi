@@ -45,7 +45,7 @@ class _DashboardPageState extends State<DashboardPage> {
   void initState() {
     super.initState();
     _adManager.loadOpenAppAd(AdUnitId.appOpenAdUnitId);
-    _adPreloadTimer = Timer(const Duration(minutes: 5), () {
+    _adPreloadTimer = Timer(const Duration(seconds: 20), () {
       _adManager.loadInterstitialAd(AdUnitId.interstitialAdUnitId);
     });
 
@@ -127,7 +127,6 @@ class _DashboardPageState extends State<DashboardPage> {
   void dispose() {
     _adPreloadTimer?.cancel();
     _dailyRewardTimer?.cancel();
-    _adManager.showInterstitialAd();
     super.dispose();
   }
 

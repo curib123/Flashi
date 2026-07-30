@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:flashi/core/design_system/app_breakpoints.dart';
+import 'package:flashi/core/design_system/app_radii.dart';
+import 'package:flashi/core/design_system/app_spacing.dart';
 
 class Flashcard extends StatefulWidget {
   final Widget question;
@@ -49,11 +52,10 @@ class _FlashcardState extends State<Flashcard> {
             child: Text(
               widget.answer,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
           ),
           isFront: false,
@@ -64,38 +66,35 @@ class _FlashcardState extends State<Flashcard> {
 
   Widget _buildCardSide(BuildContext context,
       {required Widget content, required bool isFront}) {
-    final size = MediaQuery.of(context).size;
     final colorScheme = Theme.of(context).colorScheme;
 
     return Stack(
       children: [
-        Container(
-          width: size.width * 0.90,
-          height: size.height * 0.80,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            gradient: LinearGradient(
-              colors: isFront
-                  ? [
-                      colorScheme.primary.withValues(alpha: 0.8),
-                      colorScheme.primary.withValues(alpha: 0.5),
-                    ]
-                  : [
-                      colorScheme.primary.withValues(alpha: 0.5),
-                      colorScheme.primary.withValues(alpha: 0.8),
-                    ],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
+        ConstrainedBox(
+          constraints: const BoxConstraints(
+            maxWidth: AppBreakpoints.readingMaxWidth,
+            minHeight: 420,
+            maxHeight: 620,
           ),
-          padding: const EdgeInsets.all(20),
-          child: Center(child: content),
+          child: Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: isFront
+                  ? colorScheme.surfaceContainerLow
+                  : colorScheme.surfaceContainerHigh,
+              borderRadius: AppRadii.large,
+              border: Border.all(color: colorScheme.outlineVariant),
+            ),
+            padding: const EdgeInsets.all(AppSpacing.xl),
+            child: Center(child: content),
+          ),
         ),
         Positioned(
           top: 12,
           left: 12,
           child: IconButton(
-            icon: const Icon(Icons.edit, color: Colors.white, size: 26),
+            tooltip: 'Edit card',
+            icon: const Icon(Icons.edit_outlined),
             onPressed: widget.onEdit,
           ),
         ),
@@ -104,20 +103,19 @@ class _FlashcardState extends State<Flashcard> {
             top: 12,
             right: 12,
             child: IconButton(
-              icon: const Icon(Icons.volume_up, color: Colors.white, size: 26),
+              tooltip: 'Read answer',
+              icon: const Icon(Icons.volume_up_outlined),
               onPressed: () => _speak(widget.answer),
             ),
           ),
         Positioned(
           bottom: 16,
-          left: size.width * 0.45,
-          child: Transform.translate(
-            offset: const Offset(-14, 0),
-            child: Icon(
-              isFront ? Icons.flip : Icons.flip,
-              color: Colors.white,
-              size: 36,
-            ),
+          left: 0,
+          right: 0,
+          child: Icon(
+            Icons.flip_rounded,
+            color: colorScheme.onSurfaceVariant,
+            size: 28,
           ),
         ),
       ],

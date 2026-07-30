@@ -25,12 +25,6 @@ class _NotesPageState extends State<NotesPage> {
   final AdManager _adManager = AdManager();
 
   @override
-  void dispose() {
-    _adManager.showInterstitialAd();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final notes = context.watch<NotesProvider>();
     final sort = context.watch<SortProvider>();

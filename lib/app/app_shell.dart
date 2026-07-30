@@ -11,6 +11,7 @@ import 'package:flashi/features/onboarding/application/onboarding_provider.dart'
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flashi/core/design_system/app_motion.dart';
 
 class AppShell extends StatefulWidget {
   const AppShell({super.key});
@@ -65,7 +66,11 @@ class _AppShellState extends State<AppShell> {
                         quizProvider: quiz,
                         extended: extendSidebar,
                       ),
-                      Expanded(child: _destinations[navigation.currentIndex]),
+                      Expanded(
+                        child: _AnimatedDestination(
+                          index: navigation.currentIndex,
+                        ),
+                      ),
                     ],
                   ),
                 );
@@ -73,7 +78,7 @@ class _AppShellState extends State<AppShell> {
 
               return Scaffold(
                 key: AppShell.scaffoldKey,
-                body: _destinations[navigation.currentIndex],
+                body: _AnimatedDestination(index: navigation.currentIndex),
                 drawer: const AppMobileDrawer(),
                 bottomNavigationBar: AppBottomNavigation(
                   currentIndex: navigation.currentIndex,
@@ -83,6 +88,35 @@ class _AppShellState extends State<AppShell> {
             },
           );
         },
+      ),
+    );
+  }
+}
+
+class _AnimatedDestination extends StatelessWidget {
+  const _AnimatedDestination({required this.index});
+
+  final int index;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedSwitcher(
+      duration: AppMotion.standard,
+      switchInCurve: AppMotion.entranceCurve,
+      switchOutCurve: AppMotion.exitCurve,
+      transitionBuilder: (child, animation) => FadeTransition(
+        opacity: animation,
+        child: SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(0, .015),
+            end: Offset.zero,
+          ).animate(animation),
+          child: child,
+        ),
+      ),
+      child: KeyedSubtree(
+        key: ValueKey(index),
+        child: _AppShellState._destinations[index],
       ),
     );
   }

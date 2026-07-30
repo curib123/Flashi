@@ -34,7 +34,6 @@ class _TextInputReviewState extends State<TextInputReview> {
   void initState() {
     super.initState();
     adManager.loadInterstitialAd(AdUnitId.interstitialAdUnitId);
-    adManager.showInterstitialAd();
     _pageController = PageController();
   }
 
@@ -261,7 +260,7 @@ class _TextInputReviewState extends State<TextInputReview> {
                         keyword: card['keyword'],
                         text: card['question'],
                         fontSize: 22,
-                        fontColor: Theme.of(context).colorScheme.onPrimary,
+                        fontColor: Theme.of(context).colorScheme.onSurface,
                         fontSizeKeyword: 17,
                         isCenter: true,
                       ),

@@ -21,12 +21,6 @@ class _HistoryPageState extends State<HistoryPage> {
   final AdManager _adManager = AdManager();
 
   @override
-  void dispose() {
-    _adManager.showInterstitialAd();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final history = context.watch<HistoryProvider>();
     final results = history.filterHistory();

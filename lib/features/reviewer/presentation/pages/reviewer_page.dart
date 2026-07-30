@@ -37,43 +37,25 @@ class ReviewerPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(),
-        ),
-        backgroundColor: Theme.of(context).colorScheme.onPrimary,
-        foregroundColor: Theme.of(context).colorScheme.primary,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Flexible(
-              child: Text(
-                reviewer,
-                style:
-                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                overflow:
-                    TextOverflow.ellipsis, // Adds ellipsis for text overflow
-              ),
-            ),
-            GestureDetector(
-              onTap: () => showReviewerSettingsDialog(context: context),
-              child: Icon(
-                Icons.edit_rounded,
-                color: Theme.of(context).colorScheme.primary,
-              ),
+            Text(reviewer, overflow: TextOverflow.ellipsis),
+            Text(
+              setname,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodySmall,
             ),
           ],
         ),
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios_new, // Custom icon (back arrow)
-            color: Theme.of(context)
-                .colorScheme
-                .primary, // Custom color for the icon
+        actions: [
+          IconButton(
+            tooltip: 'Study settings',
+            onPressed: () => showReviewerSettingsDialog(context: context),
+            icon: const Icon(Icons.tune_rounded),
           ),
-          onPressed: () {
-            Navigator.pop(context); // Navigate back when pressed
-          },
-        ),
+          const SizedBox(width: 8),
+        ],
       ),
       body: reviewerCheck(context, filteredCardsIsIgnore),
     );
@@ -82,12 +64,14 @@ class ReviewerPage extends StatelessWidget {
   Widget reviewerCheck(
       BuildContext context, List<dynamic> filteredCardsIsIgnore) {
     switch (reviewer) {
+      case 'Flashcards':
       case 'Flashcard Review':
         return FlashcardReview(
           reviewer: reviewer,
           cards: filteredCardsIsIgnore,
           setname: setname,
         ); // Assuming this is the correct widget to display for this review type
+      case 'Multiple choice':
       case 'Multiple Choice (Basic)':
         // Return the widget for multiple choice
         return MultipleChoiceReview(
@@ -95,6 +79,7 @@ class ReviewerPage extends StatelessWidget {
           cards: filteredCardsIsIgnore,
           setname: setname,
         ); // Replace with the actual widget
+      case 'Timed challenge':
       case 'Multiple Choice (Timer)':
         // Return the widget for multiple choice
         return TimedMultipleChoiceReview(
@@ -104,12 +89,14 @@ class ReviewerPage extends StatelessWidget {
           timerDuration:
               Provider.of<ReviewerSettingsProvider>(context).timeDuration,
         ); // Replace with the actual widget
+      case 'Listen and answer':
       case 'Text-to-Speech Review':
         // Return the widget for text-to-speech review
         return TextToSpeechReview(
             reviewer: reviewer,
             cards: filteredCardsIsIgnore,
             setname: setname); // Replace with the actual widget
+      case 'Written answers':
       case 'Text Input Basic Review':
         // Return the widget for text-to-speech review
         return TextInputReview(
@@ -119,10 +106,7 @@ class ReviewerPage extends StatelessWidget {
 
       default:
         return const Center(
-          child: Text(
-            'Review type not implemented',
-            style: TextStyle(fontSize: 20, color: Colors.black),
-          ),
+          child: Text('This study mode is not available.'),
         );
     }
   }

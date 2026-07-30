@@ -5,6 +5,8 @@ import 'package:flashi/core/ads/ad_unit_id.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
+import 'package:flashi/core/design_system/app_radii.dart';
+import 'package:flashi/core/design_system/app_spacing.dart';
 
 class AdManager {
   static final AdManager _instance = AdManager._internal();
@@ -37,6 +39,8 @@ class AdManager {
   bool _isBannerAd7Loaded = false;
 
   InterstitialAd? _interstitialAd;
+  DateTime? _lastInterstitialShownAt;
+  static const Duration interstitialCooldown = Duration(minutes: 3);
 
   RewardedAd? _rewardedAd;
 
@@ -212,93 +216,79 @@ class AdManager {
   }
 
   Widget getFirstBannerAdWidget() {
-    if (_bannerAd1 != null && _isBannerAd1Loaded) {
-      return Container(
-        margin: const EdgeInsets.symmetric(vertical: 5),
-        width: _bannerAd1!.size.width.toDouble(),
-        height: _bannerAd1!.size.height.toDouble(),
-        child: AdWidget(ad: _bannerAd1!),
-      );
-    } else {
-      return const SizedBox.shrink();
-    }
+    return _bannerWidget(_bannerAd1, _isBannerAd1Loaded);
   }
 
   Widget getSecondBannerAdWidget() {
-    if (_bannerAd2 != null && _isBannerAd2Loaded) {
-      return Container(
-        margin: const EdgeInsets.symmetric(vertical: 5),
-        width: _bannerAd2!.size.width.toDouble(),
-        height: _bannerAd2!.size.height.toDouble(),
-        child: AdWidget(ad: _bannerAd2!),
-      );
-    } else {
-      return const SizedBox.shrink();
-    }
+    return _bannerWidget(_bannerAd2, _isBannerAd2Loaded);
   }
 
   Widget getThirdBannerAdWidget() {
-    if (_bannerAd3 != null && _isBannerAd3Loaded) {
-      return Container(
-        margin: const EdgeInsets.symmetric(vertical: 5),
-        width: _bannerAd3!.size.width.toDouble(),
-        height: _bannerAd3!.size.height.toDouble(),
-        child: AdWidget(ad: _bannerAd3!),
-      );
-    } else {
-      return const SizedBox.shrink();
-    }
+    return _bannerWidget(_bannerAd3, _isBannerAd3Loaded);
   }
 
   Widget getFourthBannerAdWidget() {
-    if (_bannerAd4 != null && _isBannerAd4Loaded) {
-      return Container(
-        margin: const EdgeInsets.symmetric(vertical: 5),
-        width: _bannerAd4!.size.width.toDouble(),
-        height: _bannerAd4!.size.height.toDouble(),
-        child: AdWidget(ad: _bannerAd4!),
-      );
-    } else {
-      return const SizedBox.shrink();
-    }
+    return _bannerWidget(_bannerAd4, _isBannerAd4Loaded);
   }
 
   Widget getFifthBannerAdWidget() {
-    if (_bannerAd5 != null && _isBannerAd5Loaded) {
-      return Container(
-        margin: const EdgeInsets.symmetric(vertical: 5),
-        width: _bannerAd5!.size.width.toDouble(),
-        height: _bannerAd5!.size.height.toDouble(),
-        child: AdWidget(ad: _bannerAd5!),
-      );
-    } else {
-      return const SizedBox.shrink();
-    }
+    return _bannerWidget(_bannerAd5, _isBannerAd5Loaded);
   }
 
   Widget getSixthBannerAdWidget() {
-    if (_bannerAd6 != null && _isBannerAd6Loaded) {
-      return Container(
-        margin: const EdgeInsets.symmetric(vertical: 5),
-        width: _bannerAd6!.size.width.toDouble(),
-        height: _bannerAd6!.size.height.toDouble(),
-        child: AdWidget(ad: _bannerAd6!),
-      );
-    } else {
-      return const SizedBox.shrink();
-    }
+    return _bannerWidget(_bannerAd6, _isBannerAd6Loaded);
   }
 
   Widget getSevenBannerAdWidget() {
-    if (_bannerAd7 != null && _isBannerAd7Loaded) {
-      return SizedBox(
-        width: _bannerAd7!.size.width.toDouble(),
-        height: _bannerAd7!.size.height.toDouble(),
-        child: AdWidget(ad: _bannerAd7!),
-      );
-    } else {
-      return const SizedBox.shrink();
-    }
+    return _bannerWidget(_bannerAd7, _isBannerAd7Loaded);
+  }
+
+  Widget _bannerWidget(BannerAd? ad, bool isLoaded) {
+    if (ad == null || !isLoaded) return const SizedBox.shrink();
+    return Builder(
+      builder: (context) {
+        final colors = Theme.of(context).colorScheme;
+        return Semantics(
+          label: 'Sponsored advertisement',
+          child: Container(
+            width: double.infinity,
+            margin: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.sm,
+              AppSpacing.xs,
+              AppSpacing.sm,
+              AppSpacing.sm,
+            ),
+            decoration: BoxDecoration(
+              color: colors.surfaceContainerLow,
+              borderRadius: AppRadii.medium,
+              border: Border.all(color: colors.outlineVariant),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'SPONSORED',
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: colors.onSurfaceVariant,
+                          letterSpacing: 1.1,
+                        ),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                SizedBox(
+                  width: ad.size.width.toDouble(),
+                  height: ad.size.height.toDouble(),
+                  child: AdWidget(ad: ad),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   // Preload interstitial ad
@@ -320,11 +310,28 @@ class AdManager {
   }
 
   // Show interstitial ad
-  void showInterstitialAd() {
-    if (_interstitialAd != null) {
-      _interstitialAd!.show();
-      _interstitialAd = null; // Dispose of the ad after showing
+  bool showInterstitialAd() {
+    final now = DateTime.now();
+    final lastShown = _lastInterstitialShownAt;
+    if (lastShown != null && now.difference(lastShown) < interstitialCooldown) {
+      return false;
     }
+    final ad = _interstitialAd;
+    if (ad == null) return false;
+    _lastInterstitialShownAt = now;
+    ad.fullScreenContentCallback = FullScreenContentCallback(
+      onAdDismissedFullScreenContent: (ad) {
+        ad.dispose();
+        loadInterstitialAd(AdUnitId.interstitialAdUnitId);
+      },
+      onAdFailedToShowFullScreenContent: (ad, error) {
+        ad.dispose();
+        loadInterstitialAd(AdUnitId.interstitialAdUnitId);
+      },
+    );
+    _interstitialAd = null;
+    ad.show();
+    return true;
   }
 
   /// Loads a rewarded ad.

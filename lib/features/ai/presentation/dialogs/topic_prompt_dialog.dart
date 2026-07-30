@@ -23,37 +23,9 @@ void showTopicDialog(BuildContext context, {required Function()? onTap}) {
     context: context,
     builder: (context) {
       return AlertDialog(
-        backgroundColor: colorScheme.onPrimary,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15.0),
-        ),
-        titlePadding: EdgeInsets.zero,
-        contentPadding: const EdgeInsets.all(10),
-        title: Container(
-          decoration: BoxDecoration(
-            color: colorScheme.primary,
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(15),
-              topRight: Radius.circular(15),
-              bottomLeft: Radius.circular(20.0),
-              bottomRight: Radius.circular(20.0),
-            ),
-          ),
-          padding: const EdgeInsets.symmetric(vertical: 15.0),
-          child: Center(
-            child: Text(
-              "Generate from a topic",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-                color: colorScheme.onPrimary,
-              ),
-            ),
-          ),
-        ),
-        content: Padding(
-          padding: const EdgeInsets.all(10.0),
+        title: const Text("Generate from a topic"),
+        content: SizedBox(
+          width: 480,
           child: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -61,11 +33,7 @@ void showTopicDialog(BuildContext context, {required Function()? onTap}) {
               children: [
                 Text(
                   "Add a clear topic. Optional instructions can narrow the level, scope, or learning goal.",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: Colors.grey[700],
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 const SizedBox(height: 20),
                 _buildTextField(
@@ -141,7 +109,6 @@ void showTopicDialog(BuildContext context, {required Function()? onTap}) {
                                           const SnackBar(
                                             content: Text(
                                                 "Enter a topic to continue."),
-                                            backgroundColor: Colors.redAccent,
                                           ),
                                         );
                                       }

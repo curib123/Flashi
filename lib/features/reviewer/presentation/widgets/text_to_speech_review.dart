@@ -40,7 +40,6 @@ class _TextToSpeechReviewState extends State<TextToSpeechReview> {
       adManager.loadInterstitialAd(AdUnitId.interstitialAdUnitId);
     });
 
-    adManager.showInterstitialAd();
     _pageController =
         PageController(initialPage: _currentIndex); // Start at the first card
   }
@@ -126,7 +125,7 @@ class _TextToSpeechReviewState extends State<TextToSpeechReview> {
                     keyword: card['keyword'],
                     text: card['question'],
                     fontSize: 22,
-                    fontColor: Theme.of(context).colorScheme.onPrimary,
+                    fontColor: Theme.of(context).colorScheme.onSurface,
                     fontSizeKeyword: 17,
                     isCenter: true),
                 answer: card['answer'] ?? 'No answer available',

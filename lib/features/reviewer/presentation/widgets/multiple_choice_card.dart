@@ -1,17 +1,10 @@
+import 'package:flashi/core/design_system/app_breakpoints.dart';
+import 'package:flashi/core/design_system/app_motion.dart';
+import 'package:flashi/core/design_system/app_radii.dart';
+import 'package:flashi/core/design_system/app_spacing.dart';
 import 'package:flutter/material.dart';
 
 class MultipleChoiceCard extends StatefulWidget {
-  final Widget question;
-  final String answer;
-  final String optionA;
-  final String optionB;
-  final String optionC;
-  final String optionD;
-  final String timer;
-  final String score;
-  final String totalScore;
-  final ValueChanged<String> onAnswerSelected;
-
   const MultipleChoiceCard({
     super.key,
     required this.question,
@@ -26,6 +19,17 @@ class MultipleChoiceCard extends StatefulWidget {
     required this.totalScore,
   });
 
+  final Widget question;
+  final String answer;
+  final String optionA;
+  final String optionB;
+  final String optionC;
+  final String optionD;
+  final String timer;
+  final String score;
+  final String totalScore;
+  final ValueChanged<String> onAnswerSelected;
+
   @override
   State<MultipleChoiceCard> createState() => _MultipleChoiceCardState();
 }
@@ -36,168 +40,184 @@ class _MultipleChoiceCardState extends State<MultipleChoiceCard> {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            colorScheme.surface,
-            colorScheme.surface.withValues(alpha: 0.9),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(
+          maxWidth: AppBreakpoints.readingMaxWidth,
         ),
-      ),
-      child: ListView(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _buildInfoCard("Score", "${widget.score}/${widget.totalScore}",
-                  Icons.star, colorScheme.primary),
-              _buildInfoCard(
-                  "Timer", widget.timer, Icons.timer, colorScheme.secondary),
-            ],
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.md,
+            AppSpacing.sm,
+            AppSpacing.md,
+            AppSpacing.xxl,
           ),
-          const SizedBox(height: 24),
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: colorScheme.shadow.withValues(alpha: 0.1),
-                  blurRadius: 20,
-                  offset: const Offset(0, 8),
-                )
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: _Metric(
+                    label: 'Score',
+                    value: '${widget.score}/${widget.totalScore}',
+                    icon: Icons.stars_outlined,
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: _Metric(
+                    label: 'Time',
+                    value: widget.timer,
+                    icon: Icons.timer_outlined,
+                  ),
+                ),
               ],
-              gradient: LinearGradient(
-                colors: [
-                  colorScheme.primary.withValues(alpha: 0.8),
-                  colorScheme.primary.withValues(alpha: 0.4)
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.lg,
+                  vertical: AppSpacing.xl,
+                ),
+                child: widget.question,
               ),
             ),
-            child: widget.question,
-          ),
-          const SizedBox(height: 30),
-          Column(
-            children: [
-              buildOptionTile(widget.optionA, colorScheme),
-              const SizedBox(height: 15),
-              buildOptionTile(widget.optionB, colorScheme),
-              const SizedBox(height: 15),
-              buildOptionTile(widget.optionC, colorScheme),
-              const SizedBox(height: 15),
-              buildOptionTile(widget.optionD, colorScheme),
+            const SizedBox(height: AppSpacing.lg),
+            Text('Choose one answer',
+                style: Theme.of(context).textTheme.titleSmall),
+            const SizedBox(height: AppSpacing.sm),
+            for (final option in [
+              widget.optionA,
+              widget.optionB,
+              widget.optionC,
+              widget.optionD,
+            ]) ...[
+              _OptionTile(
+                option: option,
+                answer: widget.answer,
+                selectedOption: selectedOption,
+                hasAnswered: hasAnswered,
+                onTap: () => _select(option),
+              ),
+              const SizedBox(height: AppSpacing.xs),
             ],
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildInfoCard(
-      String label, String value, IconData icon, Color bgColor) {
+  void _select(String option) {
+    if (hasAnswered) return;
+    setState(() {
+      selectedOption = option;
+      hasAnswered = true;
+    });
+    widget.onAnswerSelected(option);
+  }
+}
+
+class _Metric extends StatelessWidget {
+  const _Metric({
+    required this.label,
+    required this.value,
+    required this.icon,
+  });
+
+  final String label;
+  final String value;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+      padding: const EdgeInsets.all(AppSpacing.sm),
       decoration: BoxDecoration(
-        color: bgColor.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(16),
+        color: colors.surfaceContainerLow,
+        borderRadius: AppRadii.medium,
+        border: Border.all(color: colors.outlineVariant),
       ),
       child: Row(
         children: [
-          Icon(icon, color: bgColor),
-          const SizedBox(width: 8),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(label,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: bgColor.withValues(alpha: 0.8),
-                    fontWeight: FontWeight.w500,
-                  )),
-              Text(value,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: bgColor,
-                    fontWeight: FontWeight.bold,
-                  )),
-            ],
-          )
+          Icon(icon, size: 20, color: colors.onSurfaceVariant),
+          const SizedBox(width: AppSpacing.xs),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(label, style: Theme.of(context).textTheme.bodySmall),
+                Text(value, style: Theme.of(context).textTheme.titleSmall),
+              ],
+            ),
+          ),
         ],
       ),
     );
   }
+}
 
-  Widget buildOptionTile(String option, ColorScheme colorScheme) {
-    final isCorrect = widget.answer == option;
+class _OptionTile extends StatelessWidget {
+  const _OptionTile({
+    required this.option,
+    required this.answer,
+    required this.selectedOption,
+    required this.hasAnswered,
+    required this.onTap,
+  });
+
+  final String option;
+  final String answer;
+  final String? selectedOption;
+  final bool hasAnswered;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final isCorrect = answer == option;
     final isSelected = selectedOption == option;
-
-    Icon leadingIcon;
-    if (isSelected) {
-      leadingIcon = Icon(
-        isCorrect ? Icons.check_circle_rounded : Icons.cancel_rounded,
-        color: colorScheme.onPrimary,
-      );
-    } else if (hasAnswered && isCorrect) {
-      leadingIcon = Icon(
-        Icons.check_circle_outline,
-        color: colorScheme.onPrimary,
-      );
-    } else {
-      leadingIcon = Icon(
-        Icons.circle_outlined,
-        color: colorScheme.onPrimary,
-      );
-    }
-
-    Color tileColor;
-    if (isSelected) {
-      tileColor = isCorrect ? Colors.green : Colors.red;
-    } else if (hasAnswered && isCorrect) {
-      tileColor = Colors.green.withValues(alpha: 0.8);
-    } else {
-      tileColor = colorScheme.primary.withValues(alpha: 0.5);
-    }
+    final showCorrect = hasAnswered && isCorrect;
+    final showIncorrect = hasAnswered && isSelected && !isCorrect;
+    final background = showCorrect
+        ? colors.primaryContainer
+        : showIncorrect
+            ? colors.errorContainer
+            : colors.surfaceContainerLow;
+    final foreground = showCorrect
+        ? colors.onPrimaryContainer
+        : showIncorrect
+            ? colors.onErrorContainer
+            : colors.onSurface;
 
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
+      duration: AppMotion.fast,
       decoration: BoxDecoration(
-        color: tileColor,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          if (isSelected)
-            BoxShadow(
-              color: tileColor.withValues(alpha: 0.4),
-              blurRadius: 12,
-              offset: const Offset(0, 6),
-            )
-        ],
+        color: background,
+        borderRadius: AppRadii.medium,
+        border: Border.all(
+          color: showCorrect || showIncorrect
+              ? foreground.withValues(alpha: .35)
+              : colors.outlineVariant,
+        ),
       ),
       child: ListTile(
-        onTap: hasAnswered
-            ? null
-            : () {
-                setState(() {
-                  selectedOption = option;
-                  hasAnswered = true;
-                });
-                widget.onAnswerSelected(option);
-              },
-        leading: leadingIcon,
+        enabled: !hasAnswered,
+        onTap: onTap,
+        leading: Icon(
+          showCorrect
+              ? Icons.check_circle_rounded
+              : showIncorrect
+                  ? Icons.cancel_rounded
+                  : Icons.radio_button_unchecked_rounded,
+          color: foreground,
+        ),
         title: Text(
           option,
-          style: TextStyle(
-            color: colorScheme.onPrimary,
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                color: foreground,
+                fontWeight: FontWeight.w600,
+              ),
         ),
       ),
     );

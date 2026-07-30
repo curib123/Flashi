@@ -8,6 +8,7 @@ import 'package:flashi/features/quiz/presentation/pages/quiz_sets_page.dart';
 import 'package:flashi/features/reviewer/presentation/pages/reviewer_page.dart';
 import 'package:flashi/features/settings/presentation/pages/settings_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flashi/core/design_system/app_motion.dart';
 
 abstract final class AppRoutes {
   static const home = '/';
@@ -74,13 +75,32 @@ abstract final class AppRouter {
     };
   }
 
-  static MaterialPageRoute<dynamic> _page(
+  static PageRouteBuilder<dynamic> _page(
     RouteSettings settings,
     Widget page,
   ) {
-    return MaterialPageRoute<dynamic>(
+    return PageRouteBuilder<dynamic>(
       settings: settings,
-      builder: (_) => page,
+      transitionDuration: AppMotion.standard,
+      reverseTransitionDuration: AppMotion.fast,
+      pageBuilder: (_, animation, secondaryAnimation) => page,
+      transitionsBuilder: (_, animation, secondaryAnimation, child) {
+        final curved = CurvedAnimation(
+          parent: animation,
+          curve: AppMotion.entranceCurve,
+          reverseCurve: AppMotion.exitCurve,
+        );
+        return FadeTransition(
+          opacity: curved,
+          child: SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(0.025, 0),
+              end: Offset.zero,
+            ).animate(curved),
+            child: child,
+          ),
+        );
+      },
     );
   }
 
