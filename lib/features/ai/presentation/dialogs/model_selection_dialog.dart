@@ -11,11 +11,12 @@ import 'package:flashi/core/ads/widgets/watch_ad_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:provider/provider.dart';
+import 'package:flashi/shared/dialogs/app_modal.dart';
 
 class ModelSelectionDialog {
   static Future<void> show(BuildContext context, bool isCustomPrompt,
       {VoidCallback? onTap}) async {
-    return await showDialog<void>(
+    return await showAppDialog<void>(
       context: context,
       builder: (context) {
         AdManager adManager = AdManager();

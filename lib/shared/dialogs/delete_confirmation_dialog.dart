@@ -1,83 +1,57 @@
+import 'package:flashi/core/design_system/app_spacing.dart';
+import 'package:flashi/shared/dialogs/app_modal.dart';
 import 'package:flutter/material.dart';
 
-void showDeleteConfirmationDialog(
-    {required BuildContext context,
-    required String setName,
-    required Function() onDelete}) {
-  showDialog(
+void showDeleteConfirmationDialog({
+  required BuildContext context,
+  required String setName,
+  required Function() onDelete,
+}) {
+  showAppDialog<void>(
     context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        shape: const RoundedRectangleBorder(
-          borderRadius:
-              BorderRadius.all(Radius.circular(16.0)), // Rounded corners
-        ),
-        title: Row(
+    builder: (context) {
+      final colors = Theme.of(context).colorScheme;
+      return AppDialog(
+        icon: Icons.delete_outline_rounded,
+        title: 'Delete quiz set?',
+        description: 'This action cannot be undone.',
+        body: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(Icons.warning,
-                color: Theme.of(context).colorScheme.error,
-                size: 30), // Warning icon
-            const SizedBox(width: 10),
-            Text(
-              'Delete quiz set?',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.error,
+            Icon(Icons.warning_amber_rounded, color: colors.error),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: Text(
+                '“$setName” and all of its cards will be permanently removed.',
               ),
             ),
           ],
         ),
-        content: Text(
-          'This permanently removes “$setName” and all of its cards.',
-          style: TextStyle(
-              fontSize: 16, color: Theme.of(context).colorScheme.primary),
-        ),
-        actions: <Widget>[
-          // No button with style and color
-          TextButton(
-            style: TextButton.styleFrom(
-              foregroundColor: Theme.of(context).colorScheme.onSurface,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-            ),
-            child: const Text('Cancel', style: TextStyle(fontSize: 16)),
-            onPressed: () {
-              Navigator.of(context).pop(); // Close the dialog without deleting
-            },
+        actions: [
+          OutlinedButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
           ),
-          // Yes button with style and color
-          TextButton(
-            style: TextButton.styleFrom(
-              foregroundColor: Theme.of(context).colorScheme.onError,
-              backgroundColor: Theme.of(context).colorScheme.error,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8.0),
-              ),
+          FilledButton.icon(
+            style: FilledButton.styleFrom(
+              backgroundColor: colors.error,
+              foregroundColor: colors.onError,
             ),
-            child: const Text('Delete', style: TextStyle(fontSize: 16)),
             onPressed: () {
-              Navigator.of(context).pop(); // Close the dialog
-              // Add your deletion logic here
+              Navigator.pop(context);
               onDelete();
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  backgroundColor: Theme.of(context).colorScheme.errorContainer,
+                  backgroundColor: colors.errorContainer,
                   content: Row(
                     children: [
-                      Icon(
-                        Icons.delete_rounded,
-                        color: Theme.of(context).colorScheme.onErrorContainer,
-                      ),
-                      const SizedBox(width: 12),
+                      Icon(Icons.delete_rounded,
+                          color: colors.onErrorContainer),
+                      const SizedBox(width: AppSpacing.sm),
                       Expanded(
                         child: Text(
                           '$setName deleted',
-                          style: TextStyle(
-                            color:
-                                Theme.of(context).colorScheme.onErrorContainer,
-                          ),
+                          style: TextStyle(color: colors.onErrorContainer),
                         ),
                       ),
                     ],
@@ -85,6 +59,8 @@ void showDeleteConfirmationDialog(
                 ),
               );
             },
+            icon: const Icon(Icons.delete_rounded),
+            label: const Text('Delete'),
           ),
         ],
       );

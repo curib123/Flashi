@@ -1,68 +1,33 @@
+import 'package:flashi/shared/dialogs/app_modal.dart';
 import 'package:flutter/material.dart';
 
 void showAddSlotAlertDialog({
   required BuildContext context,
   required VoidCallback onConfirm,
 }) {
-  showGeneralDialog(
+  showAppDialog<void>(
     context: context,
-    barrierDismissible: true,
-    barrierLabel: "Dialog",
-    transitionDuration: const Duration(milliseconds: 300),
-    pageBuilder: (context, anim1, anim2) {
-      return AlertDialog(
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-        title: Center(
-          child: Text(
-            "Add More Slots",
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.onSurface,
-              fontWeight: FontWeight.bold,
-            ),
-            textAlign: TextAlign.center,
-          ),
+    builder: (context) => AppDialog(
+      icon: Icons.add_card_outlined,
+      title: 'Add two card slots?',
+      description: 'This uses 1 energy from your balance.',
+      body: const Text(
+        'The additional slots are added to this quiz set immediately.',
+      ),
+      actions: [
+        OutlinedButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
         ),
-        content: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: Text(
-            "Unlock 2 slots for just 1 energy.\nWould you like to proceed?",
-            style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurfaceVariant),
-            textAlign: TextAlign.center,
-          ),
+        FilledButton.icon(
+          onPressed: () {
+            Navigator.pop(context);
+            onConfirm();
+          },
+          icon: const Icon(Icons.bolt_rounded),
+          label: const Text('Use 1 energy'),
         ),
-        actionsAlignment: MainAxisAlignment.center,
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text("Cancel",
-                style: TextStyle(color: Theme.of(context).colorScheme.error)),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              onConfirm();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              foregroundColor: Theme.of(context).colorScheme.onPrimary,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)),
-            ),
-            child: const Text("Confirm"),
-          ),
-        ],
-      );
-    },
-    transitionBuilder: (context, anim1, anim2, child) {
-      return FadeTransition(
-        opacity: anim1,
-        child: ScaleTransition(
-          scale: CurvedAnimation(parent: anim1, curve: Curves.easeInOut),
-          child: child,
-        ),
-      );
-    },
+      ],
+    ),
   );
 }

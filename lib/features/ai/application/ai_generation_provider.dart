@@ -15,6 +15,7 @@ import 'package:flashi/features/quiz/presentation/dialogs/quiz_set_form_sheet.da
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
+import 'package:flashi/shared/dialogs/app_modal.dart';
 
 class AiGenerationProvider extends ChangeNotifier {
   AiGenerationProvider({http.Client? httpClient})
@@ -285,7 +286,7 @@ class AiGenerationProvider extends ChangeNotifier {
       GenerationConfigProvider fetchDataFromJsonProvider,
       AiCreditProvider aiCreditProvider,
       HistoryProvider historyProvider) async {
-    showDialog(
+    showAppDialog<void>(
       barrierDismissible: true,
       context: context,
       builder: (BuildContext context) {

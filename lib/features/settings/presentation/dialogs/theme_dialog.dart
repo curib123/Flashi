@@ -1,20 +1,26 @@
 import 'package:flashi/features/settings/presentation/widgets/theme_selector.dart';
 import 'package:flutter/material.dart';
+import 'package:flashi/shared/dialogs/app_modal.dart';
 
 void openThemeSelector(BuildContext context) {
-  showModalBottomSheet(
+  showAppBottomSheet<void>(
     context: context,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-    ),
     builder: (context) {
-      return ListView(
-        padding: const EdgeInsets.all(16.0),
-        children: const [
-          ThemeSelector(
-            isShowCloseBtn: true,
+      return const Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          AppSheetHeader(
+            title: 'Appearance',
+            description: 'Choose how Flashi looks on this device.',
           ),
-        ], // Add the ThemeSelector here
+          Flexible(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.fromLTRB(16, 0, 16, 24),
+              child: ThemeSelector(isShowCloseBtn: true),
+            ),
+          ),
+        ],
       );
     },
   );

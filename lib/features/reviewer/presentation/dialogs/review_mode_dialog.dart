@@ -3,7 +3,7 @@ import 'dart:developer' as developer;
 import 'package:flashi/app/navigation/app_router.dart';
 import 'package:flashi/features/reviewer/presentation/widgets/review_mode_card.dart';
 import 'package:flutter/material.dart';
-import 'package:flashi/core/design_system/app_spacing.dart';
+import 'package:flashi/shared/dialogs/app_modal.dart';
 
 void showReviewModeDialog({
   required BuildContext context,
@@ -54,19 +54,15 @@ void showReviewModeDialog({
     ),
   ];
 
-  showDialog(
+  showAppDialog<void>(
     context: context,
-    barrierDismissible: true,
     builder: (BuildContext context) {
-      return Dialog(
-        insetPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _DialogHeader(heading: heading),
-            _ReviewerSelectionScrollView(reviewerList: reviewerList),
-          ],
-        ),
+      return AppDialog(
+        icon: Icons.school_outlined,
+        title: 'Choose a study mode',
+        description: heading,
+        maxWidth: 560,
+        body: _ReviewerSelectionScrollView(reviewerList: reviewerList),
       );
     },
   );
@@ -102,60 +98,6 @@ void _handleTap(
   );
 }
 
-class _DialogHeader extends StatelessWidget {
-  final String heading;
-
-  const _DialogHeader({required this.heading});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(
-          AppSpacing.lg, AppSpacing.lg, AppSpacing.sm, AppSpacing.sm),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Choose a study mode',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                ),
-                Align(
-                  alignment: Alignment.topLeft,
-                  child: Text(
-                    heading,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      fontSize: 13,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          IconButton(
-            icon: Icon(
-              Icons.close,
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _ReviewerSelectionScrollView extends StatelessWidget {
   final List<Map<String, dynamic>> reviewerList;
 
@@ -170,8 +112,7 @@ class _ReviewerSelectionScrollView extends StatelessWidget {
       ),
       child: ListView(
         shrinkWrap: true,
-        padding: const EdgeInsets.fromLTRB(
-            AppSpacing.md, AppSpacing.xs, AppSpacing.md, AppSpacing.md),
+        padding: EdgeInsets.zero,
         children: List.generate(reviewerList.length, (index) {
           final reviewer = reviewerList[index];
           return TweenAnimationBuilder<double>(

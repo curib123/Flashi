@@ -3,6 +3,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:flashi/core/design_system/app_radii.dart';
 import 'package:flashi/core/design_system/app_spacing.dart';
 import 'package:flashi/shared/widgets/highlighted_text.dart';
+import 'package:flashi/shared/dialogs/app_modal.dart';
 
 class QuizCard extends StatelessWidget {
   final String question;
@@ -113,21 +114,26 @@ class QuizCard extends StatelessWidget {
   }
 
   void _showPopupMenu(BuildContext context, ColorScheme colorScheme) {
-    showModalBottomSheet(
+    showAppBottomSheet<void>(
       context: context,
-      shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (context) => Wrap(
+      builder: (context) => Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          _buildMenuItem(context, colorScheme, 'Edit', Icons.edit, onEdit),
+          const AppSheetHeader(
+            title: 'Card actions',
+            description: 'Edit, organize, or change review visibility.',
+          ),
+          _buildMenuItem(
+              context, colorScheme, 'Edit card', Icons.edit_outlined, onEdit),
           _buildMenuItem(context, colorScheme, 'Remove', Icons.delete, onRemove,
               isDestructive: true),
-          _buildMenuItem(
-              context, colorScheme, 'Highlight keyword', Icons.key, onKeyword),
-          _buildMenuItem(context, colorScheme, 'Remove keyword', Icons.key_off,
-              onRemoveKeyword),
+          _buildMenuItem(context, colorScheme, 'Highlight keyword',
+              Icons.highlight_alt_rounded, onKeyword),
+          _buildMenuItem(context, colorScheme, 'Remove highlight',
+              Icons.format_color_reset_rounded, onRemoveKeyword),
           _buildMenuItem(context, colorScheme, isIgnore ? 'Unignore' : 'Ignore',
               Icons.visibility, onIgnore),
+          const SizedBox(height: 16),
         ],
       ),
     );

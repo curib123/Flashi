@@ -3,6 +3,7 @@ import 'package:flashi/shared/widgets/app_text_field.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flashi/shared/dialogs/app_modal.dart';
 
 void showQuizCardFormSheet(
     {required BuildContext context,
@@ -13,10 +14,9 @@ void showQuizCardFormSheet(
     required Map<String, dynamic> card}) {
   final colorScheme = Theme.of(context).colorScheme;
 
-  showModalBottomSheet(
+  showAppBottomSheet<void>(
     context: context,
-    showDragHandle: true,
-    isScrollControlled: true, // Allows controlling the modal's height
+    avoidKeyboard: false,
     builder: (BuildContext context) {
       // Determine the keyboard height to adjust the modal content
       double keyboardHeight = MediaQuery.of(context).viewInsets.bottom;

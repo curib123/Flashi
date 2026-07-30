@@ -28,6 +28,7 @@ import 'package:flashi/features/settings/presentation/dialogs/theme_dialog.dart'
 import 'package:flashi/shared/widgets/empty_state_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flashi/shared/dialogs/app_modal.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -90,7 +91,7 @@ class _DashboardPageState extends State<DashboardPage> {
         dailyQuestions.isAlreadyShow) {
       return;
     }
-    await showDialog<void>(
+    await showAppDialog<void>(
       context: context,
       builder: (_) => DailyQuestionDialog(
         questions: dailyQuestions.funFacts,
@@ -332,7 +333,7 @@ class _QuickActions extends StatelessWidget {
               onTap: () {
                 final questions =
                     context.read<DailyQuestionProvider>().funFacts;
-                showDialog<void>(
+                showAppDialog<void>(
                   context: context,
                   builder: (_) => DailyQuestionDialog(questions: questions),
                 );

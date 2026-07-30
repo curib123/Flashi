@@ -4,6 +4,7 @@ import 'package:flashi/core/ads/ad_unit_id.dart';
 import 'package:flashi/shared/widgets/highlighted_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flashi/shared/dialogs/app_modal.dart';
 
 class TextInputReview extends StatefulWidget {
   final String reviewer;
@@ -91,7 +92,7 @@ class _TextInputReviewState extends State<TextInputReview> {
   }
 
   void showCongratulationDialog(BuildContext context) {
-    showDialog(
+    showAppDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (context) {

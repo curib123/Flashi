@@ -1,107 +1,29 @@
+import 'package:flashi/core/design_system/app_spacing.dart';
+import 'package:flashi/shared/dialogs/app_modal.dart';
 import 'package:flutter/material.dart';
-import 'dart:ui';
 
 void showLoadingDialog(BuildContext context, {required String text}) {
-  showDialog(
+  showAppDialog<void>(
     context: context,
     barrierDismissible: false,
-    builder: (context) {
-      return PopScope(
-        canPop: false,
-        child: _LoadingDialog(text: text),
-      );
-    },
-  );
-}
-
-class _LoadingDialog extends StatefulWidget {
-  final String text;
-
-  const _LoadingDialog({required this.text});
-
-  @override
-  State<_LoadingDialog> createState() => _LoadingDialogState();
-}
-
-class _LoadingDialogState extends State<_LoadingDialog>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 1),
-    )..repeat(reverse: true);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final backgroundColor = theme.colorScheme.surface.withValues(alpha: 0.9);
-    final textColor = theme.colorScheme.onSurface;
-
-    return Dialog(
-      backgroundColor: Colors.transparent,
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
-        child: Container(
-          padding: const EdgeInsets.all(20.0),
-          decoration: BoxDecoration(
-            color: backgroundColor,
-            borderRadius: BorderRadius.circular(10),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.2),
-                blurRadius: 5,
-                spreadRadius: 2,
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              RotationTransition(
-                turns: _controller,
-                child: Icon(
-                  Icons.smart_toy_rounded,
-                  size: 65,
-                  color: theme.colorScheme.primary,
-                ),
-              ),
-              const SizedBox(height: 20),
-              TweenAnimationBuilder<double>(
-                tween: Tween(begin: -0.2, end: 0.2),
-                duration: const Duration(seconds: 1),
-                curve: Curves.easeInOut,
-                builder: (context, value, child) {
-                  return Transform.translate(
-                    offset: Offset(0, value * 10),
-                    child: Text(
-                      widget.text,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                        color: textColor,
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
+    builder: (context) => PopScope(
+      canPop: false,
+      child: AppDialog(
+        icon: Icons.auto_awesome_rounded,
+        title: 'Working on it',
+        canClose: false,
+        body: Row(
+          children: [
+            const SizedBox(
+              width: 28,
+              height: 28,
+              child: CircularProgressIndicator(strokeWidth: 2.5),
+            ),
+            const SizedBox(width: AppSpacing.md),
+            Expanded(child: Text(text)),
+          ],
         ),
       ),
-    );
-  }
+    ),
+  );
 }

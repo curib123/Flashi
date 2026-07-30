@@ -10,6 +10,7 @@ import 'package:flashi/core/ads/widgets/watch_ad_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:provider/provider.dart';
+import 'package:flashi/shared/dialogs/app_modal.dart';
 
 void showTopicDialog(BuildContext context, {required Function()? onTap}) {
   final ColorScheme colorScheme = Theme.of(context).colorScheme;
@@ -19,7 +20,7 @@ void showTopicDialog(BuildContext context, {required Function()? onTap}) {
   AdManager adManager = AdManager();
   adManager.loadRewardedAd(AdUnitId.rewardedAdUnitId);
 
-  showDialog(
+  showAppDialog<void>(
     context: context,
     builder: (context) {
       return AlertDialog(

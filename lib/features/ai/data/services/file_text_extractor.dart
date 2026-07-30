@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flashi/shared/dialogs/app_modal.dart';
 import 'package:flutter_pdf_text/flutter_pdf_text.dart';
 import 'package:docx_to_text/docx_to_text.dart';
 import 'package:image_picker/image_picker.dart';
@@ -52,68 +53,39 @@ class FileTextExtractor {
 
   /// Modal bottom sheet to choose image source
   Future<ImageSource?> showImageSourceModal(BuildContext context) async {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return showModalBottomSheet<ImageSource>(
+    return showAppBottomSheet<ImageSource>(
       context: context,
-      backgroundColor: Colors.transparent,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
       builder: (context) {
-        return Container(
-          width: MediaQuery.sizeOf(context).width,
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-          decoration: BoxDecoration(
-            color: colorScheme.surface,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
-                blurRadius: 10,
-                offset: const Offset(0, -4),
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const AppSheetHeader(
+              title: 'Add an image',
+              description: 'Take a new photo or choose one from your library.',
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+              child: Column(
+                children: [
+                  _buildOption(
+                    context,
+                    icon: Icons.camera_alt_outlined,
+                    text: 'Use camera',
+                    source: ImageSource.camera,
+                    primary: true,
+                  ),
+                  const SizedBox(height: 12),
+                  _buildOption(
+                    context,
+                    icon: Icons.photo_library_outlined,
+                    text: 'Choose from library',
+                    source: ImageSource.gallery,
+                  ),
+                ],
               ),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 40,
-                height: 4,
-                margin: const EdgeInsets.only(bottom: 15),
-                decoration: BoxDecoration(
-                  color: Colors.grey[400],
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              const Text(
-                "Select Image Source",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0.5,
-                ),
-              ),
-              const SizedBox(height: 15),
-              _buildOption(
-                context,
-                icon: Icons.camera_alt_rounded,
-                text: "Open Camera",
-                color: colorScheme.primary,
-                source: ImageSource.camera,
-              ),
-              const SizedBox(height: 12),
-              _buildOption(
-                context,
-                icon: Icons.image_rounded,
-                text: "Open Gallery",
-                color: colorScheme.secondary,
-                source: ImageSource.gallery,
-              ),
-              const SizedBox(height: 10),
-            ],
-          ),
+            ),
+          ],
         );
       },
     );
@@ -124,21 +96,16 @@ class FileTextExtractor {
     BuildContext context, {
     required IconData icon,
     required String text,
-    required Color color,
     required ImageSource source,
+    bool primary = false,
   }) {
-    return ElevatedButton.icon(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: color,
-        foregroundColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-      ),
-      onPressed: () => Navigator.pop(context, source),
-      icon: Icon(icon, size: 24, color: Colors.white),
-      label: Text(
-        text,
-        style: const TextStyle(fontSize: 16, color: Colors.white),
+    final button = primary ? FilledButton.icon : OutlinedButton.icon;
+    return SizedBox(
+      width: double.infinity,
+      child: button(
+        onPressed: () => Navigator.pop(context, source),
+        icon: Icon(icon),
+        label: Text(text),
       ),
     );
   }

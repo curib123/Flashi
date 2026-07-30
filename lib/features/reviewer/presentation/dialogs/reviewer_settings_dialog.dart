@@ -1,18 +1,20 @@
 import 'package:flashi/features/reviewer/presentation/widgets/reviewer_settings_content.dart';
 import 'package:flutter/material.dart';
+import 'package:flashi/shared/dialogs/app_modal.dart';
 
 void showReviewerSettingsDialog({
   required BuildContext context,
 }) {
-  showDialog(
+  showAppDialog<void>(
     context: context,
     builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text("Study settings"),
-        content: const ReviewerSettingsContent(),
-        scrollable: true,
+      return AppDialog(
+        icon: Icons.tune_rounded,
+        title: 'Study settings',
+        description: 'Adjust timing, direction, and review behavior.',
+        body: const ReviewerSettingsContent(),
         actions: [
-          TextButton(
+          OutlinedButton(
             onPressed: () => Navigator.of(context).pop(),
             child: const Text('Cancel'),
           ),

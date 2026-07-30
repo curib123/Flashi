@@ -1,105 +1,53 @@
+import 'package:flashi/core/design_system/app_radii.dart';
+import 'package:flashi/core/design_system/app_spacing.dart';
 import 'package:flashi/core/services/external_link_service.dart';
+import 'package:flashi/shared/dialogs/app_modal.dart';
 import 'package:flutter/material.dart';
 
-void showAppUpdateDialog(BuildContext context, String currentVersion,
-    String latestVersion, String downloadLink, String patchNote) {
-  final colorScheme = Theme.of(context).colorScheme;
-
-  showDialog(
-    barrierDismissible: false,
+void showAppUpdateDialog(
+  BuildContext context,
+  String currentVersion,
+  String latestVersion,
+  String downloadLink,
+  String patchNote,
+) {
+  showAppDialog<void>(
     context: context,
-    builder: (BuildContext context) {
-      return PopScope(
-        canPop: false,
-        child: AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          backgroundColor: colorScheme.surface,
-          titlePadding: const EdgeInsets.all(10),
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          actionsPadding: const EdgeInsets.only(bottom: 15, right: 15),
-          title: Row(
-            children: [
-              Icon(Icons.update_rounded, color: colorScheme.primary, size: 28),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  "Update Required",
-                  style: TextStyle(
-                    color: colorScheme.primary,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
+    barrierDismissible: false,
+    builder: (context) => PopScope(
+      canPop: false,
+      child: AppDialog(
+        icon: Icons.system_update_alt_rounded,
+        title: 'Update required',
+        description: 'Version $latestVersion is ready to install.',
+        canClose: false,
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("What's new", style: Theme.of(context).textTheme.titleSmall),
+            const SizedBox(height: AppSpacing.xs),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(AppSpacing.md),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceContainerLow,
+                borderRadius: AppRadii.medium,
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.outlineVariant,
                 ),
               ),
-            ],
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "What's New",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: colorScheme.primary,
-                  fontSize: 13,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Container(
-                constraints: const BoxConstraints(maxHeight: 150),
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: colorScheme.onSurface.withValues(alpha: 0.05),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: SingleChildScrollView(
-                  child: Text(
-                    patchNote,
-                    style: TextStyle(
-                      color: colorScheme.onSurface,
-                      fontSize: 14,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: colorScheme.primary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 10),
-                  ),
-                  onPressed: () {
-                    ExternalLinkService(downloadLink).launch();
-                  },
-                  child: Text(
-                    "Update Now",
-                    style: TextStyle(
-                      color: colorScheme.onPrimary,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13,
-                    ),
-                  ),
-                ),
-              ],
+              child: Text(patchNote),
             ),
           ],
         ),
-      );
-    },
+        actions: [
+          FilledButton.icon(
+            onPressed: () => ExternalLinkService(downloadLink).launch(),
+            icon: const Icon(Icons.download_rounded),
+            label: const Text('Update now'),
+          ),
+        ],
+      ),
+    ),
   );
 }

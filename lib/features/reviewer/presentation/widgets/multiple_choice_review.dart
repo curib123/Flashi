@@ -7,6 +7,7 @@ import 'package:flashi/shared/widgets/highlighted_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flashi/features/reviewer/presentation/widgets/multiple_choice_card.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flashi/shared/dialogs/app_modal.dart';
 
 class MultipleChoiceReview extends StatefulWidget {
   final String reviewer;
@@ -81,7 +82,7 @@ class _MultipleChoiceReviewState extends State<MultipleChoiceReview> {
   }
 
   void showCongratulationDialog(BuildContext context) {
-    showDialog(
+    showAppDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (context) {

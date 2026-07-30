@@ -4,6 +4,7 @@ import 'package:flashi/core/ads/ad_unit_id.dart';
 import 'package:flashi/shared/dialogs/loading_dialog.dart';
 import 'package:flashi/core/ads/widgets/watch_ad_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flashi/shared/dialogs/app_modal.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:provider/provider.dart';
 
@@ -154,7 +155,7 @@ class RewardedAdButton extends StatelessWidget {
     required String message,
     required List<Widget> actions,
   }) {
-    showDialog(
+    showAppDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(
