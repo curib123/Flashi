@@ -4,6 +4,7 @@ import 'app_radii.dart';
 import 'app_spacing.dart';
 import 'app_colors.dart';
 import 'app_motion.dart';
+import 'app_semantic_colors.dart';
 
 abstract final class AppTheme {
   static ThemeData light() => _build(Brightness.light);
@@ -19,7 +20,26 @@ abstract final class AppTheme {
     final raised = isDark ? AppColors.darkRaised : AppColors.lightRaised;
     final muted = isDark ? AppColors.darkMutedText : AppColors.lightMutedText;
     final outline = isDark ? AppColors.darkBorder : AppColors.lightBorder;
-    final accent = foreground;
+    final accent = isDark ? AppColors.darkAccent : AppColors.lightAccent;
+    final semantic = AppSemanticColors(
+      success: isDark ? const Color(0xFF67D49A) : AppColors.success,
+      onSuccess: isDark ? const Color(0xFF092E1C) : Colors.white,
+      successContainer:
+          isDark ? const Color(0xFF123D29) : AppColors.successContainer,
+      onSuccessContainer:
+          isDark ? const Color(0xFFB9F6D2) : AppColors.onSuccessContainer,
+      warning: isDark ? const Color(0xFFFFC65A) : AppColors.warning,
+      onWarning: isDark ? const Color(0xFF3D2900) : Colors.white,
+      warningContainer:
+          isDark ? const Color(0xFF493500) : AppColors.warningContainer,
+      onWarningContainer:
+          isDark ? const Color(0xFFFFE3A3) : AppColors.onWarningContainer,
+      info: isDark ? const Color(0xFF8AB4FF) : AppColors.info,
+      onInfo: isDark ? const Color(0xFF082B63) : Colors.white,
+      infoContainer: isDark ? const Color(0xFF15345E) : AppColors.infoContainer,
+      onInfoContainer:
+          isDark ? const Color(0xFFC8DCFF) : AppColors.onInfoContainer,
+    );
     final colors = ColorScheme.fromSeed(
       seedColor: accent,
       brightness: brightness,
@@ -28,10 +48,26 @@ abstract final class AppTheme {
     ).copyWith(
       primary: foreground,
       onPrimary: background,
+      primaryContainer: panel,
+      onPrimaryContainer: foreground,
       secondary: muted,
       onSecondary: background,
+      secondaryContainer: raised,
+      onSecondaryContainer: foreground,
       tertiary: accent,
+      onTertiary: isDark ? const Color(0xFF082B63) : Colors.white,
+      tertiaryContainer:
+          isDark ? const Color(0xFF15345E) : AppColors.infoContainer,
+      onTertiaryContainer:
+          isDark ? const Color(0xFFC8DCFF) : AppColors.onInfoContainer,
+      error: isDark ? const Color(0xFFFF8A80) : AppColors.error,
+      onError: isDark ? const Color(0xFF5C100A) : Colors.white,
+      errorContainer:
+          isDark ? const Color(0xFF581813) : AppColors.errorContainer,
+      onErrorContainer:
+          isDark ? const Color(0xFFFFDAD6) : AppColors.onErrorContainer,
       onSurface: foreground,
+      onSurfaceVariant: muted,
       outline: outline,
       outlineVariant: outline,
       surfaceContainerLowest: background,
@@ -285,8 +321,10 @@ abstract final class AppTheme {
       ),
       splashFactory: InkSparkle.splashFactory,
       visualDensity: VisualDensity.standard,
-      extensions: const <ThemeExtension<dynamic>>[
-        _MotionTheme(),
+    ).copyWith(
+      extensions: <ThemeExtension<dynamic>>[
+        const _MotionTheme(),
+        semantic,
       ],
     );
   }

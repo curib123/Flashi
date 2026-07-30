@@ -3,6 +3,7 @@ import 'package:flashi/core/design_system/app_motion.dart';
 import 'package:flashi/core/design_system/app_radii.dart';
 import 'package:flashi/core/design_system/app_spacing.dart';
 import 'package:flutter/material.dart';
+import 'package:flashi/core/design_system/app_semantic_colors.dart';
 
 class MultipleChoiceCard extends StatefulWidget {
   const MultipleChoiceCard({
@@ -175,17 +176,18 @@ class _OptionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final semantic = Theme.of(context).extension<AppSemanticColors>()!;
     final isCorrect = answer == option;
     final isSelected = selectedOption == option;
     final showCorrect = hasAnswered && isCorrect;
     final showIncorrect = hasAnswered && isSelected && !isCorrect;
     final background = showCorrect
-        ? colors.primaryContainer
+        ? semantic.successContainer
         : showIncorrect
             ? colors.errorContainer
             : colors.surfaceContainerLow;
     final foreground = showCorrect
-        ? colors.onPrimaryContainer
+        ? semantic.onSuccessContainer
         : showIncorrect
             ? colors.onErrorContainer
             : colors.onSurface;
@@ -219,6 +221,11 @@ class _OptionTile extends StatelessWidget {
                 fontWeight: FontWeight.w600,
               ),
         ),
+        trailing: showCorrect
+            ? const Text('Correct')
+            : showIncorrect
+                ? const Text('Incorrect')
+                : null,
       ),
     );
   }

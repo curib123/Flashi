@@ -6,6 +6,7 @@ import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
+import 'package:flashi/core/design_system/app_semantic_colors.dart';
 
 class QuizImportExportService {
   Future<void> exportList(
@@ -25,14 +26,15 @@ class QuizImportExportService {
       if (!context.mounted) return;
 
       if (savedPath == null) {
-        showSnack(context, 'Export canceled.', Colors.orange);
+        _showSnack(context, 'Export canceled.', _FeedbackKind.warning);
         return;
       }
-      showSnack(context, 'Quiz set exported successfully.', Colors.green);
+      _showSnack(
+          context, 'Quiz set exported successfully.', _FeedbackKind.success);
     } catch (e) {
       if (!context.mounted) return;
-      showSnack(context, 'Export failed. Please choose another location.',
-          Colors.red);
+      _showSnack(context, 'Export failed. Please choose another location.',
+          _FeedbackKind.error);
       developer.log('Quiz export failed.', error: e);
     }
   }
@@ -68,19 +70,20 @@ class QuizImportExportService {
             .any((set) => set['name'] == importedData['name']);
 
         if (isDuplicate) {
-          showSnack(context, "Oops! This set already exists!", Colors.orange);
+          _showSnack(
+              context, 'This quiz set already exists.', _FeedbackKind.warning);
         } else {
           Map<String, dynamic> sets = _convertTimestamps(importedData);
           quizProvider.addQuizSet(sets);
-          showSnack(context, "Import Successful!", Colors.green);
+          _showSnack(context, 'Quiz set imported.', _FeedbackKind.success);
         }
       } else {
-        showSnack(context, 'Import canceled.', Colors.orange);
+        _showSnack(context, 'Import canceled.', _FeedbackKind.warning);
       }
     } catch (e) {
       if (!context.mounted) return;
-      showSnack(context, 'Import failed. Select a valid Flashi JSON file.',
-          Colors.red);
+      _showSnack(context, 'Import failed. Select a valid Flashi JSON file.',
+          _FeedbackKind.error);
       developer.log('Quiz import failed.', error: e);
     }
   }
@@ -141,12 +144,51 @@ class QuizImportExportService {
     return data;
   }
 
-  void showSnack(BuildContext context, String message, Color color) {
+  void _showSnack(
+    BuildContext context,
+    String message,
+    _FeedbackKind kind,
+  ) {
+    final theme = Theme.of(context);
+    final semantic = theme.extension<AppSemanticColors>()!;
+    final (icon, background, foreground, label) = switch (kind) {
+      _FeedbackKind.success => (
+          Icons.check_circle_rounded,
+          semantic.successContainer,
+          semantic.onSuccessContainer,
+          'Success',
+        ),
+      _FeedbackKind.warning => (
+          Icons.warning_amber_rounded,
+          semantic.warningContainer,
+          semantic.onWarningContainer,
+          'Warning',
+        ),
+      _FeedbackKind.error => (
+          Icons.error_rounded,
+          theme.colorScheme.errorContainer,
+          theme.colorScheme.onErrorContainer,
+          'Error',
+        ),
+    };
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
-        backgroundColor: color,
+        backgroundColor: background,
+        content: Row(
+          children: [
+            Icon(icon, color: foreground),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                '$label: $message',
+                style: TextStyle(color: foreground),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
+
+enum _FeedbackKind { success, warning, error }

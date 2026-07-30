@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flashi/core/design_system/app_semantic_colors.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'dart:async';
@@ -129,6 +130,7 @@ class _DailyQuestionDialogState extends State<DailyQuestionDialog> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final semantic = theme.extension<AppSemanticColors>()!;
     final questionData = questions[currentIndex];
 
     return Dialog(
@@ -169,8 +171,25 @@ class _DailyQuestionDialogState extends State<DailyQuestionDialog> {
               ),
             ),
             const SizedBox(height: 10),
-            Text("Time Left: $timeLeft s",
-                style: const TextStyle(color: Colors.red, fontSize: 16)),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.timer_outlined,
+                  size: 18,
+                  color: timeLeft <= 5
+                      ? theme.colorScheme.error
+                      : theme.colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  '$timeLeft seconds remaining',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: timeLeft <= 5 ? FontWeight.w700 : null,
+                  ),
+                ),
+              ],
+            ),
             const SizedBox(height: 20),
             Wrap(
               spacing: 10,
@@ -178,11 +197,20 @@ class _DailyQuestionDialogState extends State<DailyQuestionDialog> {
               alignment: WrapAlignment.center,
               children: choices.map((choice) {
                 Color buttonColor = theme.colorScheme.primary;
+                Color contentColor = theme.colorScheme.onPrimary;
+                IconData? feedbackIcon;
+                String? feedbackLabel;
                 if (isAnswered) {
                   if (choice == questionData["correct_answer"]) {
-                    buttonColor = Colors.green;
+                    buttonColor = semantic.successContainer;
+                    contentColor = semantic.onSuccessContainer;
+                    feedbackIcon = Icons.check_circle_rounded;
+                    feedbackLabel = 'Correct';
                   } else if (choice == selectedAnswer) {
-                    buttonColor = Colors.red;
+                    buttonColor = theme.colorScheme.errorContainer;
+                    contentColor = theme.colorScheme.onErrorContainer;
+                    feedbackIcon = Icons.cancel_rounded;
+                    feedbackLabel = 'Incorrect';
                   }
                 }
 
@@ -197,6 +225,8 @@ class _DailyQuestionDialogState extends State<DailyQuestionDialog> {
                         }
                         return theme.colorScheme.primary;
                       }),
+                      foregroundColor:
+                          WidgetStatePropertyAll<Color>(contentColor),
                       shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                         RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12)),
@@ -205,15 +235,38 @@ class _DailyQuestionDialogState extends State<DailyQuestionDialog> {
                           const EdgeInsets.symmetric(vertical: 14)),
                     ),
                     onPressed: isAnswered ? null : () => _selectAnswer(choice),
-                    child: Text(
-                      choice,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: choice.length > 20
-                            ? 12
-                            : (choice.length > 10 ? 14 : 16),
-                      ),
-                      textAlign: TextAlign.center,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          choice,
+                          style: TextStyle(
+                            color: contentColor,
+                            fontSize: choice.length > 20
+                                ? 12
+                                : (choice.length > 10 ? 14 : 16),
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        if (feedbackIcon != null) ...[
+                          const SizedBox(height: 4),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(feedbackIcon, size: 16, color: contentColor),
+                              const SizedBox(width: 4),
+                              Text(
+                                feedbackLabel!,
+                                style: TextStyle(
+                                  color: contentColor,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 11,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ],
                     ),
                   ),
                 );
