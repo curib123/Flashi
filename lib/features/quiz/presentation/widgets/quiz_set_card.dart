@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:flashi/core/design_system/app_radii.dart';
+import 'package:flashi/core/design_system/app_spacing.dart';
 
 class QuizSetCard extends StatelessWidget {
   final String name;
@@ -39,55 +41,34 @@ class QuizSetCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final String formattedTimestamp =
-        DateFormat('yyyy-MM-dd HH:mm').format(timestamp);
+        DateFormat('MMM d, yyyy').format(timestamp);
 
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          bottomRight: Radius.circular(20),
-        ),
-        gradient: LinearGradient(
-          colors: [
-            colorScheme.primaryContainer.withValues(alpha: 0.9),
-            colorScheme.primaryContainer.withValues(alpha: 0.1),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 12.0,
-            offset: const Offset(4, 4),
-          ),
-        ],
-      ),
-      margin: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+    return Card(
+      margin: const EdgeInsets.only(bottom: AppSpacing.sm),
       child: InkWell(
-        borderRadius: BorderRadius.circular(18.0),
+        borderRadius: AppRadii.large,
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(AppSpacing.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
                   Container(
-                    width: 60,
-                    height: 60,
+                    width: 48,
+                    height: 48,
                     decoration: BoxDecoration(
-                      color: colorScheme.primary.withValues(alpha: 0.15),
-                      shape: BoxShape.circle,
+                      color: colorScheme.surfaceContainerHighest,
+                      borderRadius: AppRadii.medium,
                     ),
                     child: Center(
                       child: Text(
                         numberOfQuiz.toString(),
                         style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: colorScheme.primary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: colorScheme.onSurface,
                         ),
                       ),
                     ),
@@ -97,31 +78,24 @@ class QuizSetCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Text(name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.titleMedium),
                         Text(
-                          name,
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: colorScheme.primary,
-                          ),
-                        ),
-                        Text(
-                          'Last Updated: $formattedTimestamp',
-                          style: TextStyle(
-                            fontSize: 10,
-                            fontStyle: FontStyle.italic,
-                            color: colorScheme.secondary,
-                          ),
-                        ),
-                        Text(
-                          description,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
+                          '$numberOfQuiz ${numberOfQuiz == 1 ? 'card' : 'cards'} · Updated $formattedTimestamp',
                           style: TextStyle(
                             fontSize: 12,
-                            color: colorScheme.tertiary,
+                            color: colorScheme.onSurfaceVariant,
                           ),
                         ),
+                        if (description.trim().isNotEmpty) ...[
+                          const SizedBox(height: AppSpacing.xxs),
+                          Text(description,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context).textTheme.bodySmall),
+                        ],
                       ],
                     ),
                   ),
@@ -129,8 +103,8 @@ class QuizSetCard extends StatelessWidget {
                     padding: EdgeInsets.zero,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12)),
-                    color: colorScheme.surface,
-                    icon: Icon(Icons.more_vert, color: colorScheme.primary),
+                    color: colorScheme.surfaceContainerHigh,
+                    icon: const Icon(Icons.more_horiz_rounded),
                     onSelected: (String value) {
                       switch (value) {
                         case 'favorate':
@@ -155,32 +129,43 @@ class QuizSetCard extends StatelessWidget {
                     },
                     itemBuilder: (context) => [
                       _buildPopupMenuItem(
-                          'Favorate',
+                          isFavorate ? 'Remove favorite' : 'Add to favorites',
                           isFavorate ? Icons.favorite : Icons.favorite_border,
                           'favorate',
-                          colorScheme.error),
+                          colorScheme.onSurface),
+                      _buildPopupMenuItem('Edit', Icons.edit_outlined, 'edit',
+                          colorScheme.onSurface),
                       _buildPopupMenuItem(
-                          'Edit', Icons.edit, 'edit', colorScheme.primary),
-                      _buildPopupMenuItem('View All Pairs', Icons.view_agenda,
-                          'view_all', colorScheme.primary),
-                      _buildPopupMenuItem('Save in Folder', Icons.save,
-                          'export', colorScheme.primary),
+                          'View cards',
+                          Icons.view_agenda_outlined,
+                          'view_all',
+                          colorScheme.onSurface),
+                      _buildPopupMenuItem('Export', Icons.download_outlined,
+                          'export', colorScheme.onSurface),
                       _buildPopupMenuItem(
                           'Delete', Icons.delete, 'delete', colorScheme.error),
                     ],
                   ),
                 ],
               ),
-              Divider(
-                  height: 20.0,
-                  color: colorScheme.primary.withValues(alpha: 0.6)),
+              const SizedBox(height: AppSpacing.sm),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _buildActionButton('Add Pairs', Icons.add_circle, onAddCard,
-                      colorScheme.primary),
-                  _buildActionButton('Quiz Mode', Icons.rate_review, onReview,
-                      colorScheme.secondary),
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: onAddCard,
+                      icon: const Icon(Icons.add_rounded, size: 18),
+                      label: const Text('Add card'),
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.xs),
+                  Expanded(
+                    child: FilledButton.icon(
+                      onPressed: onReview,
+                      icon: const Icon(Icons.play_arrow_rounded, size: 20),
+                      label: const Text('Study'),
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -200,19 +185,6 @@ class QuizSetCard extends StatelessWidget {
           const SizedBox(width: 10),
           Text(text, style: TextStyle(color: iconColor)),
         ],
-      ),
-    );
-  }
-
-  TextButton _buildActionButton(
-      String label, IconData icon, VoidCallback onPressed, Color color) {
-    return TextButton.icon(
-      onPressed: onPressed,
-      icon: Icon(icon, color: color),
-      label: Text(label, style: TextStyle(color: color, fontSize: 15)),
-      style: TextButton.styleFrom(
-        backgroundColor: color.withValues(alpha: 0.1),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
   }

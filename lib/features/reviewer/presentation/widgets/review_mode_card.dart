@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flashi/core/design_system/app_radii.dart';
+import 'package:flashi/core/design_system/app_spacing.dart';
 
 class ReviewModeCard extends StatelessWidget {
   final IconData iconData;
@@ -15,35 +17,29 @@ class ReviewModeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      onTap: onTap,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-      leading: CircleAvatar(
-        backgroundColor: Theme.of(context)
-            .colorScheme
-            .primaryContainer
-            .withValues(alpha: .3),
-        radius: 30,
-        child: Icon(
-          iconData,
-          size: 30,
-          color: Theme.of(context).colorScheme.primary,
+    final colors = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+      child: ListTile(
+        onTap: onTap,
+        shape: const RoundedRectangleBorder(borderRadius: AppRadii.medium),
+        tileColor: colors.surfaceContainerLow,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.xs,
         ),
-      ),
-      title: Text(
-        title,
-        style: TextStyle(
-            color: Theme.of(context).colorScheme.primary,
-            fontSize: 15,
-            fontWeight: FontWeight.bold),
-      ),
-      subtitle: Text(
-        subtitle,
-        style: TextStyle(
-            color: Theme.of(context).colorScheme.tertiary,
-            fontSize: 10,
-            fontWeight: FontWeight.normal),
+        leading: Container(
+          width: 44,
+          height: 44,
+          decoration: BoxDecoration(
+            color: colors.surfaceContainerHighest,
+            borderRadius: AppRadii.medium,
+          ),
+          child: Icon(iconData, size: 22, color: colors.onSurface),
+        ),
+        title: Text(title, style: Theme.of(context).textTheme.titleSmall),
+        subtitle: Text(subtitle),
+        trailing: const Icon(Icons.arrow_forward_rounded, size: 20),
       ),
     );
   }

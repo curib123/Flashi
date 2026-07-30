@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:flashi/core/design_system/app_radii.dart';
+import 'package:flashi/core/design_system/app_spacing.dart';
 import 'package:flashi/shared/widgets/highlighted_text.dart';
 
 class QuizCard extends StatelessWidget {
@@ -36,36 +38,27 @@ class QuizCard extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-      elevation: 10,
-      shadowColor: colorScheme.shadow.withValues(alpha: 0.3),
+      margin: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
       child: InkWell(
-        borderRadius: BorderRadius.circular(18),
-        onTap: () {},
+        borderRadius: AppRadii.large,
         child: Container(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(AppSpacing.md),
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                colorScheme.primaryContainer.withValues(alpha: 0.9),
-                colorScheme.primaryContainer.withValues(alpha: 0.1),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(18),
+            color: isIgnore
+                ? colorScheme.surfaceContainerLow
+                : colorScheme.surfaceContainerHigh,
+            borderRadius: AppRadii.large,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (isIgnore)
                 Text(
-                  "This card is hidden.",
+                  "Hidden from review",
                   style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: colorScheme.primary.withValues(alpha: 0.5)),
+                      color: colorScheme.onSurfaceVariant),
                 )
               else ...[
                 highlightKeywords(
@@ -73,7 +66,7 @@ class QuizCard extends StatelessWidget {
                   keyword: keyword,
                   text: question,
                   fontSize: 14,
-                  fontColor: colorScheme.primary,
+                  fontColor: colorScheme.onSurface,
                   fontSizeKeyword: 12,
                   isCenter: false,
                 ),
@@ -83,7 +76,7 @@ class QuizCard extends StatelessWidget {
                   style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: colorScheme.secondary),
+                      color: colorScheme.onSurfaceVariant),
                 ),
                 //  const SizedBox(height: 10),
                 // Text(
@@ -97,16 +90,16 @@ class QuizCard extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
-                      icon: Icon(Icons.volume_up_rounded,
-                          color: colorScheme.primary),
+                      tooltip: 'Read question and answer',
+                      icon: const Icon(Icons.volume_up_outlined),
                       onPressed: () async {
                         await flutterTts.speak(
                             'The question: $question The answer: $answer');
                       },
                     ),
                     IconButton(
-                      icon: Icon(Icons.more_vert_rounded,
-                          color: colorScheme.primary),
+                      tooltip: 'Card actions',
+                      icon: const Icon(Icons.more_horiz_rounded),
                       onPressed: () => _showPopupMenu(context, colorScheme),
                     ),
                   ],

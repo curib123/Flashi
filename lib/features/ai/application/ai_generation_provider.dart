@@ -331,12 +331,9 @@ class AiGenerationProvider extends ChangeNotifier {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      "Choose a source. You can build manually or generate from a topic, document, or image.",
+                      "Start with the material you already have.",
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: Colors.grey[700],
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ],
                 ),
@@ -349,10 +346,7 @@ class AiGenerationProvider extends ChangeNotifier {
                       icon: Icons.style_rounded,
                       context,
                       label: "Create manually",
-                      gradientColors: [
-                        colorScheme.primary,
-                        colorScheme.primary.withValues(alpha: 0.5)
-                      ],
+                      description: "Write your own questions and answers.",
                       onPressed: () {
                         Navigator.pop(context);
                         showQuizSetFormSheet(
@@ -367,10 +361,8 @@ class AiGenerationProvider extends ChangeNotifier {
                       icon: Icons.auto_awesome,
                       context,
                       label: "Generate from topic",
-                      gradientColors: [
-                        colorScheme.secondary,
-                        colorScheme.secondary.withValues(alpha: 0.5)
-                      ],
+                      description:
+                          "Describe a subject and let Flashi draft the quiz.",
                       onPressed: () async {
                         bool isConnected =
                             await InternetConnection().hasInternetAccess;
@@ -411,11 +403,8 @@ class AiGenerationProvider extends ChangeNotifier {
                     _buildDialogButton(
                       icon: Icons.file_copy_rounded,
                       context,
-                      label: "Generate from PDF or DOCX",
-                      gradientColors: [
-                        colorScheme.tertiary,
-                        colorScheme.tertiary.withValues(alpha: 0.5)
-                      ],
+                      label: "Import a document",
+                      description: "Generate from a PDF or DOCX file.",
                       onPressed: () async {
                         bool isConnected =
                             await InternetConnection().hasInternetAccess;
@@ -458,13 +447,11 @@ class AiGenerationProvider extends ChangeNotifier {
                       },
                     ),
                     _buildDialogButton(
-                      icon: Icons.picture_in_picture,
+                      icon: Icons.image_outlined,
                       context,
-                      label: "Generate from image",
-                      gradientColors: [
-                        colorScheme.tertiary,
-                        colorScheme.tertiary.withValues(alpha: 0.5)
-                      ],
+                      label: "Scan an image",
+                      description:
+                          "Use a photo, screenshot, or camera capture.",
                       onPressed: () async {
                         bool isConnected =
                             await InternetConnection().hasInternetAccess;
@@ -522,7 +509,7 @@ class AiGenerationProvider extends ChangeNotifier {
   Widget _buildDialogButton(
     BuildContext context, {
     required String label,
-    required List<Color> gradientColors,
+    required String description,
     required VoidCallback onPressed,
     IconData? icon,
   }) {
@@ -530,51 +517,39 @@ class AiGenerationProvider extends ChangeNotifier {
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: SizedBox(
         width: double.infinity,
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: gradientColors,
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.2),
-                blurRadius: 6,
-                offset: const Offset(0, 3),
-              ),
-            ],
+        child: Material(
+          color: Theme.of(context).colorScheme.surfaceContainerLow,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: BorderSide(color: Theme.of(context).colorScheme.outline),
           ),
-          child: Material(
-            color: Colors.transparent,
-            borderRadius: BorderRadius.circular(16),
-            child: InkWell(
-              onTap: onPressed,
-              borderRadius: BorderRadius.circular(16),
-              splashColor: Colors.white.withValues(alpha: 0.2),
-              highlightColor: Colors.white.withValues(alpha: 0.1),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    if (icon != null) ...[
-                      Icon(icon, color: Colors.white, size: 22),
-                      const SizedBox(width: 12),
-                    ],
-                    Text(
-                      label,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
+          child: InkWell(
+            onTap: onPressed,
+            borderRadius: BorderRadius.circular(12),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  if (icon != null) ...[
+                    Icon(icon,
+                        color: Theme.of(context).colorScheme.onSurface,
+                        size: 22),
+                    const SizedBox(width: 12),
                   ],
-                ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(label,
+                            style: Theme.of(context).textTheme.titleSmall),
+                        const SizedBox(height: 2),
+                        Text(description,
+                            style: Theme.of(context).textTheme.bodySmall),
+                      ],
+                    ),
+                  ),
+                  const Icon(Icons.arrow_forward_rounded, size: 20),
+                ],
               ),
             ),
           ),

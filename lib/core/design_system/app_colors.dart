@@ -8,10 +8,10 @@ abstract final class AppColors {
   static const lightMutedText = Color(0xFF6B6B6B);
   static const lightBorder = Color(0xFFE5E5E5);
 
-  static const darkBackground = Color(0xFF171717);
-  static const darkPanel = Color(0xFF212121);
-  static const darkRaised = Color(0xFF2F2F2F);
-  static const darkText = Color(0xFFECECEC);
-  static const darkMutedText = Color(0xFFB4B4B4);
-  static const darkBorder = Color(0xFF2F2F2F);
+  static const darkBackground = Color(0xFF111316);
+  static const darkPanel = Color(0xFF191C20);
+  static const darkRaised = Color(0xFF22262B);
+  static const darkText = Color(0xFFF4F5F6);
+  static const darkMutedText = Color(0xFFA9AFB7);
+  static const darkBorder = Color(0xFF30353B);
 }

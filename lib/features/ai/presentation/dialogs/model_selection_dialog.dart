@@ -23,37 +23,9 @@ class ModelSelectionDialog {
         ColorScheme colorScheme = Theme.of(context).colorScheme;
 
         return AlertDialog(
-          backgroundColor: colorScheme.onPrimary,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15.0),
-          ),
-          titlePadding: EdgeInsets.zero,
-          contentPadding: const EdgeInsets.all(10),
-          title: Container(
-            decoration: BoxDecoration(
-              color: colorScheme.primary,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(15),
-                topRight: Radius.circular(15),
-                bottomLeft: Radius.circular(20.0),
-                bottomRight: Radius.circular(20.0),
-              ),
-            ),
-            padding: const EdgeInsets.symmetric(vertical: 15.0),
-            child: Center(
-              child: Text(
-                "Customize Prompt",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                  color: colorScheme.onPrimary,
-                ),
-              ),
-            ),
-          ),
-          content: Padding(
-            padding: const EdgeInsets.all(10.0),
+          title: const Text("Quiz generation settings"),
+          content: SizedBox(
+            width: 460,
             child: SingleChildScrollView(
               child: Consumer2<GenerationConfigProvider, QuizProvider>(
                 builder: (context, fetchDataProvider, quizProvider, _) {
@@ -66,17 +38,13 @@ class ModelSelectionDialog {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Select best model, max length, and quiz type for your flashcard.",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: Colors.grey[700],
-                        ),
+                        "Choose the output before selecting your source.",
+                        style: Theme.of(context).textTheme.bodyMedium,
                       ),
                       const SizedBox(height: 20),
                       _buildDropdown<int>(
                         context,
-                        label: "How Many Question and Answer?",
+                        label: "Quiz length",
                         value: selectedMaxLength,
                         items: fetchDataProvider.listOfMaxLength,
                         onChanged: (newValue) {
@@ -103,7 +71,7 @@ class ModelSelectionDialog {
                       const SizedBox(height: 20),
                       _buildDropdown<String>(
                         context,
-                        label: "Select Quiz Type",
+                        label: "Question style",
                         value: selectedQuizType,
                         items: fetchDataProvider.listOfQuizQuestionTypes,
                         onChanged: (newValue) {
@@ -218,12 +186,12 @@ class ModelSelectionDialog {
                                         const SizedBox(width: 10),
                                         Text(
                                           isCustomPrompt
-                                              ? "Next"
+                                              ? "Continue"
                                               : aiCreditProvider.credits >=
                                                       fetchDataProvider
                                                           .creditsPerLength
-                                                  ? "Upload File"
-                                                  : "Watch Ads",
+                                                  ? "Choose file"
+                                                  : "Earn energy",
                                           style: const TextStyle(fontSize: 16),
                                         ),
                                       ],
@@ -260,15 +228,15 @@ class ModelSelectionDialog {
     return DropdownButtonFormField<T>(
       decoration: _inputDecoration(colorScheme, label),
       initialValue: value,
-      dropdownColor: colorScheme.onPrimary,
-      style: TextStyle(color: colorScheme.primary),
+      dropdownColor: colorScheme.surfaceContainerHigh,
+      style: TextStyle(color: colorScheme.onSurface),
       items: items.map((item) {
         String itemText = item.toString();
 
         // Check if item is an integer and get credits dynamically
         if (item is int && getCredits != null) {
           int credits = getCredits(item);
-          itemText = "$item Pairs - Spend $credits Energy";
+          itemText = "$item cards · $credits energy";
         }
 
         return DropdownMenuItem(
@@ -286,13 +254,6 @@ class ModelSelectionDialog {
       ColorScheme colorScheme, String label) {
     return InputDecoration(
       labelText: label,
-      labelStyle: TextStyle(color: colorScheme.primary),
-      filled: true,
-      fillColor: colorScheme.primary.withValues(alpha: 0.1),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: BorderSide.none,
-      ),
       contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
     );
   }
