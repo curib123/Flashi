@@ -87,26 +87,23 @@ class _NoteEditorPageState extends State<NoteEditorPage> {
               onPressed: _openEditMode,
               icon: const Icon(Icons.edit_outlined),
             )
-          else
-            ...[
-              IconButton(
-                tooltip: 'Writing assistant',
-                onPressed: _hasContent && !_isAssisting
-                    ? _openAssistant
-                    : null,
-                icon: _isAssisting
-                    ? const SizedBox.square(
-                        dimension: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.auto_awesome_outlined),
-              ),
-              TextButton.icon(
-                onPressed: _canSave ? _save : null,
-                icon: const Icon(Icons.check_rounded),
-                label: const Text('Save'),
-              ),
-            ],
+          else ...[
+            IconButton(
+              tooltip: 'Writing assistant',
+              onPressed: _hasContent && !_isAssisting ? _openAssistant : null,
+              icon: _isAssisting
+                  ? const SizedBox.square(
+                      dimension: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.auto_awesome_outlined),
+            ),
+            TextButton.icon(
+              onPressed: _canSave ? _save : null,
+              icon: const Icon(Icons.check_rounded),
+              label: const Text('Save'),
+            ),
+          ],
           const SizedBox(width: AppSpacing.xs),
         ],
       ),
@@ -294,9 +291,8 @@ class _NoteEditorPageState extends State<NoteEditorPage> {
             TextButton(
               onPressed: () {
                 final current = _notes.contentController.text.trimRight();
-                _notes.contentController.text = current.isEmpty
-                    ? result
-                    : '$current\n\n$result';
+                _notes.contentController.text =
+                    current.isEmpty ? result : '$current\n\n$result';
                 Navigator.pop(dialogContext);
               },
               child: const Text('Add below'),
@@ -476,8 +472,7 @@ class _AssistantAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      contentPadding:
-          const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+      contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
       leading: Icon(icon),
       title: Text(title),
       subtitle: Text(description),
