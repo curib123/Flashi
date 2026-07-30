@@ -36,11 +36,22 @@ class GenerationConfigProvider extends ChangeNotifier {
   int get maxLength => _maxLength;
   int get creditsPerLength => _creditsPerLength;
   String get quizQuestionType => _quizQuestionType;
-  List<String> get listOfModels => _models;
-  List<String> get listOfQuizQuestionTypes => _quizQuestionTypes;
-  List<int> get listOfMaxLength => _maxLengths;
+  List<String> get listOfModels =>
+      _withCurrentValue(_models, _model, (value) => value);
+  List<String> get listOfQuizQuestionTypes => _withCurrentValue(
+        _quizQuestionTypes,
+        _quizQuestionType,
+        (value) => value,
+      );
+  List<int> get listOfMaxLength =>
+      _withCurrentValue(_maxLengths, _maxLength, (value) => value);
   bool get isLoading => _isLoading;
   Object? get lastError => _lastError;
+
+  static int energyCostForLength(int length) {
+    if (length <= 0) return 1;
+    return (length / 10).ceil().clamp(1, 100);
+  }
 
   void updateCreditsPerLength(int value) {
     if (_creditsPerLength == value) return;
@@ -125,9 +136,19 @@ class GenerationConfigProvider extends ChangeNotifier {
   }
 
   int _calculateEnergyCost(int length) {
-    final configuredIndex = _maxLengths.indexOf(length);
-    if (configuredIndex >= 0) return configuredIndex + 1;
-    return (length / 10).ceil().clamp(1, 100);
+    return energyCostForLength(length);
+  }
+
+  List<T> _withCurrentValue<T, K>(
+    List<T> values,
+    T current,
+    K Function(T value) keyOf,
+  ) {
+    final result = <T>[...values];
+    if (!result.any((value) => keyOf(value) == keyOf(current))) {
+      result.insert(0, current);
+    }
+    return List<T>.unmodifiable(result);
   }
 
   void _persistAndNotify() {

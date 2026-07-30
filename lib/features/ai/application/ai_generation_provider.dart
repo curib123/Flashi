@@ -72,7 +72,23 @@ class AiGenerationProvider extends ChangeNotifier {
     HistoryProvider historyProvider,
     Future<String> Function() pickAndExtractText,
   ) async {
-    final int revision = _beginGeneration();
+    final request = _GenerationRequest.from(fetchDataFromJsonProvider);
+    final revision = _beginGeneration();
+    if (revision == null) {
+      _showAlreadyGenerating(context);
+      return;
+    }
+    await aiCreditProvider.ready;
+    if (!context.mounted) {
+      _finishGeneration(revision);
+      return;
+    }
+    if (aiCreditProvider.credits < request.energyCost) {
+      _finishGeneration(revision);
+      _showInsufficientEnergy(context, request.energyCost);
+      return;
+    }
+
     extractedText = await pickAndExtractText();
     if (revision != _generationRevision || !context.mounted) return;
 
@@ -85,23 +101,30 @@ class AiGenerationProvider extends ChangeNotifier {
     try {
       final questions = await AiQuestionGenerator.generateQuestionsFromFile(
         extractedText,
-        fetchDataFromJsonProvider.model,
-        fetchDataFromJsonProvider.quizQuestionType,
-        fetchDataFromJsonProvider.maxLength,
+        request.model,
+        request.questionType,
+        request.maxLength,
       ).timeout(_generationTimeout);
       if (revision != _generationRevision || !context.mounted) return;
       if (questions.isEmpty) {
         throw const FormatException('No valid questions were generated.');
       }
 
-      final quizSetName = _saveGeneratedQuiz(
+      final quizSetName = await _chargeAndSave(
         quizProvider: quizProvider,
         historyProvider: historyProvider,
-        config: fetchDataFromJsonProvider,
+        credits: aiCreditProvider,
+        request: request,
         questions: questions,
         sourceDescription: 'Generated quiz from file',
       );
-      aiCreditProvider.useCredit(fetchDataFromJsonProvider.creditsPerLength);
+      if (quizSetName == null) {
+        if (context.mounted) {
+          _showInsufficientEnergy(context, request.energyCost);
+        }
+        return;
+      }
+      if (!context.mounted) return;
       _closeGenerationDialogs(context);
       _showSuccess(context, quizSetName);
     } on TimeoutException {
@@ -129,7 +152,26 @@ class AiGenerationProvider extends ChangeNotifier {
       GenerationConfigProvider fetchDataFromJsonProvider,
       AiCreditProvider aiCreditProvider,
       HistoryProvider historyProvider) async {
-    final int revision = _beginGeneration();
+    final request = _GenerationRequest.from(fetchDataFromJsonProvider);
+    final revision = _beginGeneration();
+    if (revision == null) {
+      _showAlreadyGenerating(context);
+      return;
+    }
+    await aiCreditProvider.ready;
+    if (!context.mounted) {
+      _finishGeneration(revision);
+      return;
+    }
+    if (aiCreditProvider.credits < request.energyCost) {
+      _finishGeneration(revision);
+      _showGenerationError(
+        context,
+        'You need ${request.energyCost} energy to generate this quiz.',
+      );
+      return;
+    }
+
     if (topic.isEmpty) {
       _finishGeneration(revision);
       Navigator.pop(context);
@@ -146,23 +188,30 @@ class AiGenerationProvider extends ChangeNotifier {
       final questions = await AiQuestionGenerator.generateQuestionsFromCustom(
         topic,
         description,
-        fetchDataFromJsonProvider.model,
-        fetchDataFromJsonProvider.quizQuestionType,
-        fetchDataFromJsonProvider.maxLength,
+        request.model,
+        request.questionType,
+        request.maxLength,
       ).timeout(_generationTimeout);
       if (revision != _generationRevision || !context.mounted) return;
       if (questions.isEmpty) {
         throw const FormatException('No valid questions were generated.');
       }
 
-      final quizSetName = _saveGeneratedQuiz(
+      final quizSetName = await _chargeAndSave(
         quizProvider: quizProvider,
         historyProvider: historyProvider,
-        config: fetchDataFromJsonProvider,
+        credits: aiCreditProvider,
+        request: request,
         questions: questions,
         sourceDescription: 'AI-generated quiz',
       );
-      aiCreditProvider.useCredit(fetchDataFromJsonProvider.creditsPerLength);
+      if (quizSetName == null) {
+        if (context.mounted) {
+          _showInsufficientEnergy(context, request.energyCost);
+        }
+        return;
+      }
+      if (!context.mounted) return;
       _closeGenerationDialogs(context);
       _showSuccess(context, quizSetName);
     } on TimeoutException {
@@ -184,7 +233,8 @@ class AiGenerationProvider extends ChangeNotifier {
     }
   }
 
-  int _beginGeneration() {
+  int? _beginGeneration() {
+    if (isGenerating) return null;
     final int revision = ++_generationRevision;
     isGenerating = true;
     errorMessage = null;
@@ -198,10 +248,35 @@ class AiGenerationProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<String?> _chargeAndSave({
+    required QuizProvider quizProvider,
+    required HistoryProvider historyProvider,
+    required AiCreditProvider credits,
+    required _GenerationRequest request,
+    required List<Map<String, String>> questions,
+    required String sourceDescription,
+  }) async {
+    final spent = await credits.spendCredits(request.energyCost);
+    if (!spent) return null;
+
+    try {
+      return _saveGeneratedQuiz(
+        quizProvider: quizProvider,
+        historyProvider: historyProvider,
+        maxLength: request.maxLength,
+        questions: questions,
+        sourceDescription: sourceDescription,
+      );
+    } catch (_) {
+      await credits.addCredits(request.energyCost);
+      rethrow;
+    }
+  }
+
   String _saveGeneratedQuiz({
     required QuizProvider quizProvider,
     required HistoryProvider historyProvider,
-    required GenerationConfigProvider config,
+    required int maxLength,
     required List<Map<String, String>> questions,
     required String sourceDescription,
   }) {
@@ -229,7 +304,7 @@ class AiGenerationProvider extends ChangeNotifier {
       'description': sourceDescription,
       'cards': cards,
       'numberOfQuiz': cards.length,
-      'limitNumberOfQuiz': config.maxLength,
+      'limitNumberOfQuiz': maxLength,
     });
     historyProvider.addHistory({
       'title': quizSetName,
@@ -268,6 +343,24 @@ class AiGenerationProvider extends ChangeNotifier {
       SnackBar(
         content: Text('$quizSetName created successfully.'),
         backgroundColor: Colors.green,
+      ),
+    );
+  }
+
+  void _showAlreadyGenerating(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('A quiz is already being generated.'),
+      ),
+    );
+  }
+
+  void _showInsufficientEnergy(BuildContext context, int requiredEnergy) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'You need $requiredEnergy energy to generate this quiz.',
+        ),
       ),
     );
   }
@@ -540,6 +633,30 @@ class AiGenerationProvider extends ChangeNotifier {
     if (_ownsHttpClient) _httpClient.close();
     super.dispose();
   }
+}
+
+class _GenerationRequest {
+  const _GenerationRequest({
+    required this.model,
+    required this.questionType,
+    required this.maxLength,
+    required this.energyCost,
+  });
+
+  factory _GenerationRequest.from(GenerationConfigProvider config) {
+    return _GenerationRequest(
+      model: config.model,
+      questionType: config.quizQuestionType,
+      maxLength: config.maxLength,
+      energyCost:
+          GenerationConfigProvider.energyCostForLength(config.maxLength),
+    );
+  }
+
+  final String model;
+  final String questionType;
+  final int maxLength;
+  final int energyCost;
 }
 
 bool handleExtractedTextError(BuildContext context, String extractedText) {

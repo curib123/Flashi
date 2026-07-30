@@ -112,11 +112,24 @@ class AiCreditProvider extends ChangeNotifier {
     _notifyIfActive();
   }
 
-  Future<void> useCredit(int amount) async {
-    if (amount <= 0 || _credits < amount) return;
+  Future<bool> spendCredits(int amount) async {
+    await ready;
+    if (amount <= 0 || _credits < amount) return false;
     _credits -= amount;
-    await _saveCredits();
-    _notifyIfActive();
+    try {
+      await _saveCredits();
+      _notifyIfActive();
+      return true;
+    } catch (error) {
+      _credits += amount;
+      _lastError = error;
+      _notifyIfActive();
+      return false;
+    }
+  }
+
+  Future<void> useCredit(int amount) async {
+    await spendCredits(amount);
   }
 
   Future<void> addCredits(int amount) async {

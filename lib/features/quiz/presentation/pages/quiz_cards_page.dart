@@ -178,8 +178,17 @@ class _CardLibrary extends StatelessWidget {
               child: OutlinedButton.icon(
                 onPressed: () => showAddSlotAlertDialog(
                   context: context,
-                  onConfirm: () {
-                    credits.useCredit(1);
+                  onConfirm: () async {
+                    final spent = await credits.spendCredits(1);
+                    if (!context.mounted) return;
+                    if (!spent) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Not enough energy to add more slots.'),
+                        ),
+                      );
+                      return;
+                    }
                     quiz.updateQuizSetLimit(2);
                   },
                 ),

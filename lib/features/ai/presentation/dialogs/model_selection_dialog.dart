@@ -29,10 +29,6 @@ class ModelSelectionDialog {
             child: SingleChildScrollView(
               child: Consumer2<GenerationConfigProvider, QuizProvider>(
                 builder: (context, fetchDataProvider, quizProvider, _) {
-                  String selectedModel = fetchDataProvider.model;
-                  int selectedMaxLength = fetchDataProvider.maxLength;
-                  String selectedQuizType = fetchDataProvider.quizQuestionType;
-
                   return Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -45,37 +41,38 @@ class ModelSelectionDialog {
                       _buildDropdown<int>(
                         context,
                         label: "Quiz length",
-                        value: selectedMaxLength,
+                        value: fetchDataProvider.maxLength,
                         items: fetchDataProvider.listOfMaxLength,
                         onChanged: (newValue) {
-                          if (newValue != null) selectedMaxLength = newValue;
-
-                          fetchDataProvider.updateListOfMaxLength(newValue!);
-
-                          for (int i = 0;
-                              i < fetchDataProvider.listOfMaxLength.length;
-                              i++) {
-                            if (fetchDataProvider.listOfMaxLength[i] ==
-                                fetchDataProvider
-                                    .maxLength) // Check if value matches maxLength
-                            {
-                              int creditAmount =
-                                  i + 1; // Use index +1 as credit amount
-                              fetchDataProvider
-                                  .updateCreditsPerLength(creditAmount);
-                            }
+                          if (newValue == null) return;
+                          fetchDataProvider.updateListOfMaxLength(newValue);
+                        },
+                        getCredits:
+                            GenerationConfigProvider.energyCostForLength,
+                      ),
+                      const SizedBox(height: 20),
+                      _buildDropdown<String>(
+                        context,
+                        label: "AI model",
+                        value: fetchDataProvider.model,
+                        items: fetchDataProvider.listOfModels,
+                        onChanged: (newValue) {
+                          if (newValue != null) {
+                            fetchDataProvider.updateModel(newValue);
                           }
                         },
-                        getCredits: (item) => item ~/ 10,
+                        getCredits: null,
                       ),
                       const SizedBox(height: 20),
                       _buildDropdown<String>(
                         context,
                         label: "Question style",
-                        value: selectedQuizType,
+                        value: fetchDataProvider.quizQuestionType,
                         items: fetchDataProvider.listOfQuizQuestionTypes,
                         onChanged: (newValue) {
-                          if (newValue != null) selectedQuizType = newValue;
+                          if (newValue != null) {
+                            fetchDataProvider.updateQuizQuestionType(newValue);
+                          }
                         },
                         getCredits: null,
                       ),
@@ -106,10 +103,6 @@ class ModelSelectionDialog {
                                   ),
                                   ElevatedButton(
                                     onPressed: () async {
-                                      fetchDataProvider
-                                          .updateModel(selectedModel);
-                                      fetchDataProvider.updateQuizQuestionType(
-                                          selectedQuizType);
                                       if (isCustomPrompt) {
                                         onTap?.call();
                                       } else if (aiCreditProvider.credits >=
@@ -227,7 +220,7 @@ class ModelSelectionDialog {
         // Check if item is an integer and get credits dynamically
         if (item is int && getCredits != null) {
           int credits = getCredits(item);
-          itemText = "$item cards · $credits energy";
+          itemText = '$item cards · $credits energy';
         }
 
         return DropdownMenuItem(

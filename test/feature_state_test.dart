@@ -181,6 +181,13 @@ void main() {
         ),
       );
 
+      expect(provider.listOfModels, contains(provider.model));
+      expect(
+        provider.listOfQuizQuestionTypes,
+        contains(provider.quizQuestionType),
+      );
+      expect(provider.listOfMaxLength, contains(provider.maxLength));
+
       await provider.fetchLatestVersion();
       provider
         ..updateModel('fast')
@@ -199,6 +206,14 @@ void main() {
       provider.dispose();
     });
 
+    test('quiz energy cost is predictable and never zero', () {
+      expect(GenerationConfigProvider.energyCostForLength(0), 1);
+      expect(GenerationConfigProvider.energyCostForLength(5), 1);
+      expect(GenerationConfigProvider.energyCostForLength(10), 1);
+      expect(GenerationConfigProvider.energyCostForLength(11), 2);
+      expect(GenerationConfigProvider.energyCostForLength(30), 3);
+    });
+
     test('AI credits initialize and mutate through injected platform services',
         () async {
       final now = DateTime.utc(2026, 7, 29);
@@ -214,7 +229,9 @@ void main() {
       expect(provider.lastUpdated, now);
       expect(await provider.hasInternet(), isTrue);
 
-      await provider.useCredit(3);
+      expect(await provider.spendCredits(50), isFalse);
+      expect(provider.credits, provider.defaultCredits);
+      expect(await provider.spendCredits(3), isTrue);
       await provider.addCredits(5);
       provider.updateAddedCredits(2);
       await provider.handleDataChange(now: now.add(const Duration(days: 1)));
