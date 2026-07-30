@@ -2,15 +2,17 @@ import 'package:flashi/app/app_shell.dart';
 import 'package:flashi/app/navigation/app_router.dart';
 import 'package:flashi/core/design_system/app_breakpoints.dart';
 import 'package:flashi/core/design_system/app_spacing.dart';
+import 'package:flashi/core/design_system/app_surface.dart';
 import 'package:flashi/core/design_system/responsive_content.dart';
 import 'package:flashi/core/state/sort_provider.dart';
 import 'package:flashi/features/notes/application/notes_provider.dart';
+import 'package:flashi/shared/dialogs/app_modal.dart';
 import 'package:flashi/shared/widgets/content_summary_card.dart';
 import 'package:flashi/shared/widgets/content_summary_tile.dart';
 import 'package:flashi/core/ads/ad_manager.dart';
-import 'package:flashi/features/settings/presentation/dialogs/theme_dialog.dart';
 import 'package:flashi/shared/widgets/empty_state_widgets.dart';
 import 'package:flashi/shared/widgets/app_page_header.dart';
+import 'package:flashi/shared/widgets/app_search_field.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -23,12 +25,16 @@ class NotesPage extends StatefulWidget {
 
 class _NotesPageState extends State<NotesPage> {
   final AdManager _adManager = AdManager();
+  _NoteFilter _filter = _NoteFilter.all;
 
   @override
   Widget build(BuildContext context) {
     final notes = context.watch<NotesProvider>();
     final sort = context.watch<SortProvider>();
-    final filteredNotes = notes.filterNotes();
+    final searchedNotes = notes.filterNotes();
+    final filteredNotes = _filter == _NoteFilter.favorites
+        ? searchedNotes.where((note) => note['favorite'] == true).toList()
+        : searchedNotes;
     final useList = sort.dropdownValueNote == 'Tiles';
 
     return Scaffold(
@@ -47,9 +53,9 @@ class _NotesPageState extends State<NotesPage> {
                   : null,
               actions: [
                 IconButton(
-                  tooltip: 'Appearance',
-                  onPressed: () => openThemeSelector(context),
-                  icon: const Icon(Icons.contrast_outlined),
+                  tooltip: 'Create note',
+                  onPressed: () => _openEditor(notes),
+                  icon: const Icon(Icons.note_add_outlined),
                 ),
               ],
             ),
@@ -63,37 +69,95 @@ class _NotesPageState extends State<NotesPage> {
                 ),
                 child: Column(
                   children: [
-                    TextField(
+                    AppSurface(
+                      emphasized: true,
+                      padding: const EdgeInsets.all(AppSpacing.md),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 48,
+                            height: 48,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .surfaceContainerHighest,
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            child: const Icon(Icons.edit_note_rounded),
+                          ),
+                          const SizedBox(width: AppSpacing.md),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '${notes.notes.length} ${notes.notes.length == 1 ? 'note' : 'notes'} saved offline',
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium,
+                                ),
+                                const SizedBox(height: AppSpacing.xxs),
+                                Text(
+                                  '${notes.filterFavorite().length} favorites · Search titles and content',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodySmall
+                                      ?.copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurfaceVariant,
+                                      ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    AppSearchField(
+                      colorScheme: Theme.of(context).colorScheme,
                       controller: notes.searchController,
                       onChanged: notes.onSearchChanged,
-                      decoration: const InputDecoration(
-                        hintText: 'Search notes',
-                        prefixIcon: Icon(Icons.search),
-                      ),
+                      hintText: 'Search your notes',
+                      prominent: true,
                     ),
                     const SizedBox(height: AppSpacing.sm),
                     Row(
                       children: [
                         Expanded(
-                          child: Text(
-                            filteredNotes.isEmpty
-                                ? 'Your notes'
-                                : '${filteredNotes.length} notes',
-                            style: Theme.of(context).textTheme.titleMedium,
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: SegmentedButton<_NoteFilter>(
+                              showSelectedIcon: false,
+                              segments: const [
+                                ButtonSegment(
+                                  value: _NoteFilter.all,
+                                  icon: Icon(Icons.notes_rounded),
+                                  label: Text('All'),
+                                ),
+                                ButtonSegment(
+                                  value: _NoteFilter.favorites,
+                                  icon: Icon(Icons.star_outline_rounded),
+                                  label: Text('Favorites'),
+                                ),
+                              ],
+                              selected: {_filter},
+                              onSelectionChanged: (selection) =>
+                                  setState(() => _filter = selection.first),
+                            ),
                           ),
                         ),
+                        const SizedBox(width: AppSpacing.sm),
                         SegmentedButton<String>(
                           showSelectedIcon: false,
                           segments: const [
                             ButtonSegment(
                               value: 'Tiles',
                               icon: Icon(Icons.view_agenda_outlined),
-                              label: Text('List'),
                             ),
                             ButtonSegment(
                               value: 'Blocks',
                               icon: Icon(Icons.grid_view_outlined),
-                              label: Text('Grid'),
                             ),
                           ],
                           selected: {sort.dropdownValueNote},
@@ -107,7 +171,19 @@ class _NotesPageState extends State<NotesPage> {
                     const SizedBox(height: AppSpacing.sm),
                     Expanded(
                       child: filteredNotes.isEmpty
-                          ? noNotesWidget(context)
+                          ? AppEmptyState(
+                              icon: _filter == _NoteFilter.favorites
+                                  ? Icons.star_outline_rounded
+                                  : Icons.search_off_rounded,
+                              title: notes.searchQuery.isNotEmpty
+                                  ? 'No matching notes'
+                                  : _filter == _NoteFilter.favorites
+                                      ? 'No favorite notes'
+                                      : 'No notes yet',
+                              description: notes.searchQuery.isNotEmpty
+                                  ? 'Try a different title or phrase.'
+                                  : 'Create a note to capture your first idea.',
+                            )
                           : _NotesCollection(
                               notes: filteredNotes,
                               useList: useList,
@@ -145,6 +221,8 @@ class _NotesPageState extends State<NotesPage> {
     );
   }
 }
+
+enum _NoteFilter { all, favorites }
 
 class _NotesCollection extends StatelessWidget {
   const _NotesCollection({
@@ -221,7 +299,7 @@ class _NoteCard extends StatelessWidget {
     void onRead() => _openNote(context, isRead: true);
     void onEdit() => _openNote(context, isRead: false);
     void onFavorite() => provider.toggleFavoriteByTitle(note['title']);
-    void onDelete() => provider.deleteNoteByTitle(note['title']);
+    void onDelete() => _confirmDelete(context);
 
     if (useList) {
       return ContentSummaryTile(
@@ -263,6 +341,41 @@ class _NoteCard extends StatelessWidget {
         isRead: isRead,
         date: note['created_at'],
       ),
+    );
+  }
+
+  void _confirmDelete(BuildContext context) {
+    showAppDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        final colors = Theme.of(dialogContext).colorScheme;
+        return AppDialog(
+          icon: Icons.delete_outline_rounded,
+          title: 'Delete note?',
+          description: 'This action cannot be undone.',
+          body: Text(
+            '“${note['title']}” will be permanently removed from this device.',
+          ),
+          actions: [
+            OutlinedButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Cancel'),
+            ),
+            FilledButton.icon(
+              style: FilledButton.styleFrom(
+                backgroundColor: colors.error,
+                foregroundColor: colors.onError,
+              ),
+              onPressed: () {
+                Navigator.pop(dialogContext);
+                provider.deleteNoteByTitle(note['title']);
+              },
+              icon: const Icon(Icons.delete_outline_rounded),
+              label: const Text('Delete'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
