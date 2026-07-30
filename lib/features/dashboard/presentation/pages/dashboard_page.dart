@@ -11,7 +11,6 @@ import 'package:flashi/core/updates/application/app_update_provider.dart';
 import 'package:flashi/features/ai/application/ai_credit_provider.dart';
 import 'package:flashi/features/ai/application/ai_generation_provider.dart';
 import 'package:flashi/features/ai/application/generation_config_provider.dart';
-import 'package:flashi/features/dashboard/application/daily_question_provider.dart';
 import 'package:flashi/features/history/application/history_provider.dart';
 import 'package:flashi/features/notes/application/notes_provider.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
@@ -21,13 +20,11 @@ import 'package:flashi/features/quiz/presentation/widgets/quiz_set_list.dart';
 import 'package:flashi/features/quiz/presentation/dialogs/quiz_set_form_sheet.dart';
 import 'package:flashi/core/ads/ad_manager.dart';
 import 'package:flashi/features/quiz/data/services/quiz_import_export_service.dart';
-import 'package:flashi/features/dashboard/presentation/dialogs/daily_question_dialog.dart';
 import 'package:flashi/core/updates/presentation/app_update_dialog.dart';
 import 'package:flashi/shared/widgets/empty_state_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:provider/provider.dart';
-import 'package:flashi/shared/dialogs/app_modal.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -38,7 +35,6 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage> {
   final AdManager _adManager = AdManager();
-  Timer? _dailyRewardTimer;
   StreamSubscription<InternetStatus>? _connectionSubscription;
   bool _isOnline = true;
 
@@ -57,17 +53,10 @@ class _DashboardPageState extends State<DashboardPage> {
     final config = context.read<GenerationConfigProvider>();
     final generation = context.read<AiGenerationProvider>();
     final updates = context.read<AppUpdateProvider>();
-    final dailyQuestions = context.read<DailyQuestionProvider>();
 
     config.fetchLatestVersion();
     generation.fetchLatestVersion();
     _checkForUpdates(updates);
-    dailyQuestions.updateFunFacts();
-
-    _dailyRewardTimer = Timer(const Duration(seconds: 5), () {
-      if (!mounted) return;
-      _showDailyQuestion(dailyQuestions);
-    });
   }
 
   Future<void> _checkConnection() async {
@@ -87,26 +76,8 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  Future<void> _showDailyQuestion(
-    DailyQuestionProvider dailyQuestions,
-  ) async {
-    if (!mounted ||
-        dailyQuestions.funFacts.isEmpty ||
-        dailyQuestions.isAlreadyShow) {
-      return;
-    }
-    await showAppDialog<void>(
-      context: context,
-      builder: (_) => DailyQuestionDialog(
-        questions: dailyQuestions.funFacts,
-      ),
-    );
-    dailyQuestions.toggleFunFacts();
-  }
-
   @override
   void dispose() {
-    _dailyRewardTimer?.cancel();
     _connectionSubscription?.cancel();
     super.dispose();
   }
@@ -121,7 +92,10 @@ class _DashboardPageState extends State<DashboardPage> {
     final history = context.read<HistoryProvider>();
     final notes = context.watch<NotesProvider>();
     final historyItems = context.watch<HistoryProvider>().history;
-    final quizSets = quiz.filteredQuizSets.reversed.toList();
+    final allMatches = quiz.filteredQuizSets.reversed.toList();
+    final quizSets = allMatches
+        .take(quiz.searchQuery.trim().isEmpty ? 3 : 8)
+        .toList(growable: false);
     final totalCards = quiz.quizSets.fold<int>(
       0,
       (total, set) => total + ((set['numberOfQuiz'] as num?)?.toInt() ?? 0),
@@ -132,9 +106,8 @@ class _DashboardPageState extends State<DashboardPage> {
         child: Column(
           children: [
             AppPageHeader(
-              title: 'AI learning hub',
-              description:
-                  'Create, memorize, and review faster—with or without internet.',
+              title: 'Home',
+              description: 'Pick up where you left off.',
               leading: MediaQuery.sizeOf(context).width < AppBreakpoints.medium
                   ? const IconButton(
                       tooltip: 'Open navigation',
@@ -172,7 +145,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                     children: [
                                       Expanded(
                                         child: Text(
-                                          'Turn anything into a study session',
+                                          'What do you want to learn?',
                                           style: Theme.of(context)
                                               .textTheme
                                               .titleLarge,
@@ -184,8 +157,8 @@ class _DashboardPageState extends State<DashboardPage> {
                                   const SizedBox(height: AppSpacing.xs),
                                   Text(
                                     _isOnline
-                                        ? 'AI can build a quiz from a topic, document, or image. Everything you save stays available offline.'
-                                        : 'You are offline. Your saved quizzes, notes, and review modes are still ready to use.',
+                                        ? 'Create a focused quiz from a topic, document, or image.'
+                                        : 'Your saved quizzes and notes are ready offline.',
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodyMedium
@@ -195,43 +168,41 @@ class _DashboardPageState extends State<DashboardPage> {
                                               .onSurfaceVariant,
                                         ),
                                   ),
-                                  const SizedBox(height: AppSpacing.md),
-                                  AppSearchField(
-                                    colorScheme: Theme.of(context).colorScheme,
-                                    hintText: 'Search your quiz library',
-                                    onChanged: quiz.updateSearchQuery,
-                                    controller: quiz.searchController,
-                                    prominent: true,
-                                  ),
-                                  const SizedBox(height: AppSpacing.md),
-                                  SizedBox(
-                                    width: double.infinity,
-                                    child: FilledButton.icon(
-                                      onPressed: _isOnline
-                                          ? () =>
-                                              generation.showFlashcardDialog(
-                                                context,
-                                                quiz,
-                                                Theme.of(context).colorScheme,
-                                                config,
-                                                credits,
-                                                history,
-                                              )
-                                          : null,
-                                      icon: const Icon(Icons.auto_awesome),
-                                      label: Text(
-                                        _isOnline
-                                            ? 'Create with AI'
-                                            : 'AI creation needs internet',
+                                  const SizedBox(height: AppSpacing.lg),
+                                  Wrap(
+                                    spacing: AppSpacing.sm,
+                                    runSpacing: AppSpacing.sm,
+                                    children: [
+                                      FilledButton.icon(
+                                        onPressed: _isOnline
+                                            ? () =>
+                                                generation.showFlashcardDialog(
+                                                  context,
+                                                  quiz,
+                                                  Theme.of(context).colorScheme,
+                                                  config,
+                                                  credits,
+                                                  history,
+                                                )
+                                            : null,
+                                        icon: const Icon(Icons.auto_awesome),
+                                        label: Text(
+                                          _isOnline
+                                              ? 'Create with AI'
+                                              : 'AI creation needs internet',
+                                        ),
                                       ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: AppSpacing.sm),
-                                  Text(
-                                    'Topic  •  PDF or document  •  Image or photo',
-                                    textAlign: TextAlign.center,
-                                    style:
-                                        Theme.of(context).textTheme.labelMedium,
+                                      OutlinedButton.icon(
+                                        onPressed: () => showQuizSetFormSheet(
+                                          context: context,
+                                          buttonName: 'Save',
+                                          isCreate: true,
+                                          setName: '',
+                                        ),
+                                        icon: const Icon(Icons.edit_outlined),
+                                        label: const Text('Create manually'),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
@@ -243,8 +214,6 @@ class _DashboardPageState extends State<DashboardPage> {
                               notes: notes.notes.length,
                               sessions: historyItems.length,
                             ),
-                            const SizedBox(height: AppSpacing.lg),
-                            _QuickActions(quizProvider: quiz),
                             const SizedBox(height: AppSpacing.xl),
                             Row(
                               children: [
@@ -279,13 +248,22 @@ class _DashboardPageState extends State<DashboardPage> {
                                 ),
                               ],
                             ),
-                            if (quizSets.isNotEmpty)
-                              _adManager.getFirstBannerAdWidget(),
+                            const SizedBox(height: AppSpacing.sm),
+                            AppSearchField(
+                              colorScheme: Theme.of(context).colorScheme,
+                              hintText: 'Search quiz sets',
+                              onChanged: quiz.updateSearchQuery,
+                              controller: quiz.searchController,
+                            ),
+                            const SizedBox(height: AppSpacing.sm),
+                            _LibraryActions(quizProvider: quiz),
                             const SizedBox(height: AppSpacing.md),
                             if (quizSets.isEmpty)
                               noSetWidget(context)
                             else
                               QuizSetList(quizSets: quizSets),
+                            if (quizSets.isNotEmpty)
+                              _adManager.getFirstBannerAdWidget(),
                             const SizedBox(height: AppSpacing.xxl),
                           ],
                         ),
@@ -363,29 +341,19 @@ class _LearningOverview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppSurface(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm,
+        vertical: AppSpacing.md,
+      ),
+      child: Row(
         children: [
-          Text('Your offline library',
-              style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: AppSpacing.xs),
-          Text(
-            'Saved on this device and ready whenever you study.',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          Wrap(
-            spacing: AppSpacing.sm,
-            runSpacing: AppSpacing.sm,
-            children: [
-              _Stat(label: 'Quiz sets', value: quizSets),
-              _Stat(label: 'Study cards', value: cards),
-              _Stat(label: 'Notes', value: notes),
-              _Stat(label: 'Sessions', value: sessions),
-            ],
-          ),
+          Expanded(child: _Stat(label: 'Sets', value: quizSets)),
+          const _StatDivider(),
+          Expanded(child: _Stat(label: 'Cards', value: cards)),
+          const _StatDivider(),
+          Expanded(child: _Stat(label: 'Notes', value: notes)),
+          const _StatDivider(),
+          Expanded(child: _Stat(label: 'Sessions', value: sessions)),
         ],
       ),
     );
@@ -400,122 +368,58 @@ class _Stat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return Container(
-      constraints: const BoxConstraints(minWidth: 112),
-      padding: const EdgeInsets.all(AppSpacing.sm),
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: colors.outlineVariant),
-      ),
+    return Semantics(
+      label: '$value $label',
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Text('$value', style: Theme.of(context).textTheme.titleLarge),
-          Text(label, style: Theme.of(context).textTheme.labelMedium),
+          Text('$value', style: Theme.of(context).textTheme.titleMedium),
+          Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.labelSmall,
+          ),
         ],
       ),
     );
   }
 }
 
-class _QuickActions extends StatelessWidget {
-  const _QuickActions({required this.quizProvider});
+class _StatDivider extends StatelessWidget {
+  const _StatDivider();
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 34,
+      child:
+          VerticalDivider(color: Theme.of(context).colorScheme.outlineVariant),
+    );
+  }
+}
+
+class _LibraryActions extends StatelessWidget {
+  const _LibraryActions({required this.quizProvider});
 
   final QuizProvider quizProvider;
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final width = constraints.maxWidth;
-        final columns = width >= 720 ? 4 : 2;
-        final itemWidth = (width - (AppSpacing.sm * (columns - 1))) / columns;
-        return Wrap(
-          spacing: AppSpacing.sm,
-          runSpacing: AppSpacing.sm,
-          children: [
-            _ActionCard(
-              width: itemWidth,
-              icon: Icons.add_box_outlined,
-              label: 'Create manually',
-              onTap: () => showQuizSetFormSheet(
-                context: context,
-                buttonName: 'Save',
-                isCreate: true,
-                setName: '',
-              ),
-            ),
-            _ActionCard(
-              width: itemWidth,
-              icon: Icons.import_export_outlined,
-              label: 'Import backup',
-              onTap: () => QuizImportExportService().importList(
-                context,
-                quizProvider,
-              ),
-            ),
-            _ActionCard(
-              width: itemWidth,
-              icon: Icons.favorite_border,
-              label: 'Favorites',
-              onTap: () => Navigator.pushNamed(
-                context,
-                AppRoutes.favorites,
-              ),
-            ),
-            _ActionCard(
-              width: itemWidth,
-              icon: Icons.lightbulb_outline,
-              label: 'Daily question',
-              onTap: () {
-                final questions =
-                    context.read<DailyQuestionProvider>().funFacts;
-                showAppDialog<void>(
-                  context: context,
-                  builder: (_) => DailyQuestionDialog(questions: questions),
-                );
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-}
-
-class _ActionCard extends StatelessWidget {
-  const _ActionCard({
-    required this.width,
-    required this.icon,
-    required this.label,
-    required this.onTap,
-  });
-
-  final double width;
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: width,
-      child: OutlinedButton(
-        onPressed: onTap,
-        style: OutlinedButton.styleFrom(
-          alignment: Alignment.centerLeft,
-          padding: const EdgeInsets.all(AppSpacing.md),
+    return Row(
+      children: [
+        TextButton.icon(
+          onPressed: () => Navigator.pushNamed(context, AppRoutes.favorites),
+          icon: const Icon(Icons.favorite_border_rounded),
+          label: const Text('Favorites'),
         ),
-        child: Row(
-          children: [
-            Icon(icon, size: 20),
-            const SizedBox(width: AppSpacing.sm),
-            Expanded(child: Text(label)),
-          ],
+        TextButton.icon(
+          onPressed: () =>
+              QuizImportExportService().importList(context, quizProvider),
+          icon: const Icon(Icons.file_download_outlined),
+          label: const Text('Import'),
         ),
-      ),
+      ],
     );
   }
 }
