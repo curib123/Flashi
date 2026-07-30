@@ -298,34 +298,12 @@ class AiGenerationProvider extends ChangeNotifier {
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
-              backgroundColor: colorScheme.onPrimary,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15.0),
-              ),
-              titlePadding: EdgeInsets.zero,
-              contentPadding: const EdgeInsets.all(10),
-              title: Container(
-                decoration: BoxDecoration(
-                  color: colorScheme.primary,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(15),
-                    topRight: Radius.circular(15),
-                    bottomLeft: Radius.circular(20.0),
-                    bottomRight: Radius.circular(20.0),
-                  ),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 15.0),
-                child: Center(
-                  child: Text(
-                    "Create a quiz",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      color: colorScheme.onPrimary,
-                    ),
-                  ),
-                ),
+              title: const Row(
+                children: [
+                  Icon(Icons.auto_awesome_outlined),
+                  SizedBox(width: 12),
+                  Expanded(child: Text('Create a quiz')),
+                ],
               ),
               content: SingleChildScrollView(
                 child: Column(
@@ -368,17 +346,16 @@ class AiGenerationProvider extends ChangeNotifier {
                         bool isConnected =
                             await InternetConnection().hasInternetAccess;
                         if (!context.mounted) return;
-                        if (!isConnected && !isFetchData) {
+                        if (!isConnected) {
                           showMessageDialog(
                               context,
                               type: "error",
-                              "Error",
-                              "Please connect to the internet to generate a Quiz.");
+                              "AI is offline",
+                              "Connect to generate with AI. Your saved quizzes and manual creation remain available offline.");
 
                           return;
-                        } else {
-                          fetchConfiguration();
                         }
+                        fetchConfiguration();
                         if (!isUnderMaintenance) {
                           ModelSelectionDialog.show(
                             context,
@@ -410,16 +387,15 @@ class AiGenerationProvider extends ChangeNotifier {
                         bool isConnected =
                             await InternetConnection().hasInternetAccess;
                         if (!context.mounted) return;
-                        if (!isConnected && !isFetchData) {
+                        if (!isConnected) {
                           showMessageDialog(
                               context,
                               type: "error",
-                              "Error",
-                              "Please connect to the internet to generate a Quiz.");
+                              "AI is offline",
+                              "Connect to generate from a document. Your saved study library remains available offline.");
                           return;
-                        } else {
-                          fetchConfiguration();
                         }
+                        fetchConfiguration();
                         if (!isUnderMaintenance) {
                           ModelSelectionDialog.show(
                             context,
@@ -457,17 +433,16 @@ class AiGenerationProvider extends ChangeNotifier {
                         bool isConnected =
                             await InternetConnection().hasInternetAccess;
                         if (!context.mounted) return;
-                        if (!isConnected && !isFetchData) {
+                        if (!isConnected) {
                           showMessageDialog(
                               context,
                               type: "error",
-                              "Error",
-                              "Please connect to the internet to generate a Quiz.");
+                              "AI is offline",
+                              "Connect to generate from an image. Your saved study library remains available offline.");
 
                           return;
-                        } else {
-                          fetchConfiguration();
                         }
+                        fetchConfiguration();
                         if (!isUnderMaintenance) {
                           ModelSelectionDialog.show(
                             context,

@@ -14,18 +14,20 @@ import 'package:flashi/features/ai/application/ai_generation_provider.dart';
 import 'package:flashi/features/ai/application/generation_config_provider.dart';
 import 'package:flashi/features/dashboard/application/daily_question_provider.dart';
 import 'package:flashi/features/history/application/history_provider.dart';
+import 'package:flashi/features/notes/application/notes_provider.dart';
 import 'package:flashi/features/quiz/application/quiz_provider.dart';
 import 'package:flashi/shared/widgets/app_search_field.dart';
 import 'package:flashi/shared/widgets/app_page_header.dart';
 import 'package:flashi/features/quiz/presentation/widgets/quiz_set_list.dart';
+import 'package:flashi/features/quiz/presentation/dialogs/quiz_set_form_sheet.dart';
 import 'package:flashi/core/ads/ad_manager.dart';
 import 'package:flashi/features/quiz/data/services/quiz_import_export_service.dart';
 import 'package:flashi/features/dashboard/presentation/dialogs/daily_question_dialog.dart';
 import 'package:flashi/features/ai/presentation/dialogs/free_credits_dialog.dart';
 import 'package:flashi/core/updates/presentation/app_update_dialog.dart';
-import 'package:flashi/features/settings/presentation/dialogs/theme_dialog.dart';
 import 'package:flashi/shared/widgets/empty_state_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:flashi/shared/dialogs/app_modal.dart';
 
@@ -39,12 +41,20 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   final AdManager _adManager = AdManager();
   Timer? _dailyRewardTimer;
+  StreamSubscription<InternetStatus>? _connectionSubscription;
+  bool _isOnline = true;
 
   @override
   void initState() {
     super.initState();
     _adManager.loadInterstitialAd();
     _adManager.loadRewardedAd();
+    _checkConnection();
+    _connectionSubscription =
+        InternetConnection().onStatusChange.listen((status) {
+      if (!mounted) return;
+      setState(() => _isOnline = status == InternetStatus.connected);
+    });
 
     final config = context.read<GenerationConfigProvider>();
     final generation = context.read<AiGenerationProvider>();
@@ -63,6 +73,11 @@ class _DashboardPageState extends State<DashboardPage> {
         dailyQuestions,
       );
     });
+  }
+
+  Future<void> _checkConnection() async {
+    final isOnline = await InternetConnection().hasInternetAccess;
+    if (mounted) setState(() => _isOnline = isOnline);
   }
 
   Future<void> _checkForUpdates(AppUpdateProvider updates) async {
@@ -123,6 +138,7 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   void dispose() {
     _dailyRewardTimer?.cancel();
+    _connectionSubscription?.cancel();
     super.dispose();
   }
 
@@ -134,15 +150,22 @@ class _DashboardPageState extends State<DashboardPage> {
     final generation = context.read<AiGenerationProvider>();
     final credits = context.watch<AiCreditProvider>();
     final history = context.read<HistoryProvider>();
+    final notes = context.watch<NotesProvider>();
+    final historyItems = context.watch<HistoryProvider>().history;
     final quizSets = quiz.filteredQuizSets.reversed.toList();
+    final totalCards = quiz.quizSets.fold<int>(
+      0,
+      (total, set) => total + ((set['numberOfQuiz'] as num?)?.toInt() ?? 0),
+    );
 
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
             AppPageHeader(
-              title: 'Learning workspace',
-              description: 'Create a focused study session in a few steps.',
+              title: 'AI learning hub',
+              description:
+                  'Create, memorize, and review faster—with or without internet.',
               leading: MediaQuery.sizeOf(context).width < AppBreakpoints.medium
                   ? const IconButton(
                       tooltip: 'Open navigation',
@@ -176,14 +199,24 @@ class _DashboardPageState extends State<DashboardPage> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
-                                  Text(
-                                    'What will you learn today?',
-                                    style:
-                                        Theme.of(context).textTheme.titleLarge,
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          'Turn anything into a study session',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleLarge,
+                                        ),
+                                      ),
+                                      _ConnectionBadge(isOnline: _isOnline),
+                                    ],
                                   ),
                                   const SizedBox(height: AppSpacing.xs),
                                   Text(
-                                    'Search your library or generate a new quiz.',
+                                    _isOnline
+                                        ? 'AI can build a quiz from a topic, document, or image. Everything you save stays available offline.'
+                                        : 'You are offline. Your saved quizzes, notes, and review modes are still ready to use.',
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodyMedium
@@ -204,21 +237,41 @@ class _DashboardPageState extends State<DashboardPage> {
                                   SizedBox(
                                     width: double.infinity,
                                     child: FilledButton.icon(
-                                      onPressed: () =>
-                                          generation.showFlashcardDialog(
-                                        context,
-                                        quiz,
-                                        Theme.of(context).colorScheme,
-                                        config,
-                                        credits,
-                                        history,
-                                      ),
+                                      onPressed: _isOnline
+                                          ? () =>
+                                              generation.showFlashcardDialog(
+                                                context,
+                                                quiz,
+                                                Theme.of(context).colorScheme,
+                                                config,
+                                                credits,
+                                                history,
+                                              )
+                                          : null,
                                       icon: const Icon(Icons.auto_awesome),
-                                      label: const Text('Generate quiz'),
+                                      label: Text(
+                                        _isOnline
+                                            ? 'Create with AI'
+                                            : 'AI creation needs internet',
+                                      ),
                                     ),
+                                  ),
+                                  const SizedBox(height: AppSpacing.sm),
+                                  Text(
+                                    'Topic  •  PDF or document  •  Image or photo',
+                                    textAlign: TextAlign.center,
+                                    style:
+                                        Theme.of(context).textTheme.labelMedium,
                                   ),
                                 ],
                               ),
+                            ),
+                            const SizedBox(height: AppSpacing.lg),
+                            _LearningOverview(
+                              quizSets: quiz.quizSets.length,
+                              cards: totalCards,
+                              notes: notes.notes.length,
+                              sessions: historyItems.length,
                             ),
                             const SizedBox(height: AppSpacing.lg),
                             _QuickActions(quizProvider: quiz),
@@ -288,6 +341,115 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 }
 
+class _ConnectionBadge extends StatelessWidget {
+  const _ConnectionBadge({required this.isOnline});
+
+  final bool isOnline;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Semantics(
+      label: isOnline ? 'Online, AI available' : 'Offline mode',
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.sm,
+          vertical: AppSpacing.xs,
+        ),
+        decoration: BoxDecoration(
+          color: colors.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(999),
+          border: Border.all(color: colors.outlineVariant),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              isOnline ? Icons.cloud_done_outlined : Icons.cloud_off_outlined,
+              size: 16,
+            ),
+            const SizedBox(width: AppSpacing.xs),
+            Text(isOnline ? 'AI ready' : 'Offline'),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _LearningOverview extends StatelessWidget {
+  const _LearningOverview({
+    required this.quizSets,
+    required this.cards,
+    required this.notes,
+    required this.sessions,
+  });
+
+  final int quizSets;
+  final int cards;
+  final int notes;
+  final int sessions;
+
+  @override
+  Widget build(BuildContext context) {
+    return AppSurface(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Your offline library',
+              style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            'Saved on this device and ready whenever you study.',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Wrap(
+            spacing: AppSpacing.sm,
+            runSpacing: AppSpacing.sm,
+            children: [
+              _Stat(label: 'Quiz sets', value: quizSets),
+              _Stat(label: 'Study cards', value: cards),
+              _Stat(label: 'Notes', value: notes),
+              _Stat(label: 'Sessions', value: sessions),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Stat extends StatelessWidget {
+  const _Stat({required this.label, required this.value});
+
+  final String label;
+  final int value;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Container(
+      constraints: const BoxConstraints(minWidth: 112),
+      padding: const EdgeInsets.all(AppSpacing.sm),
+      decoration: BoxDecoration(
+        color: colors.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: colors.outlineVariant),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('$value', style: Theme.of(context).textTheme.titleLarge),
+          Text(label, style: Theme.of(context).textTheme.labelMedium),
+        ],
+      ),
+    );
+  }
+}
+
 class _QuickActions extends StatelessWidget {
   const _QuickActions({required this.quizProvider});
 
@@ -306,8 +468,19 @@ class _QuickActions extends StatelessWidget {
           children: [
             _ActionCard(
               width: itemWidth,
+              icon: Icons.add_box_outlined,
+              label: 'Create manually',
+              onTap: () => showQuizSetFormSheet(
+                context: context,
+                buttonName: 'Save',
+                isCreate: true,
+                setName: '',
+              ),
+            ),
+            _ActionCard(
+              width: itemWidth,
               icon: Icons.import_export_outlined,
-              label: 'Import',
+              label: 'Import backup',
               onTap: () => QuizImportExportService().importList(
                 context,
                 quizProvider,
@@ -334,12 +507,6 @@ class _QuickActions extends StatelessWidget {
                   builder: (_) => DailyQuestionDialog(questions: questions),
                 );
               },
-            ),
-            _ActionCard(
-              width: itemWidth,
-              icon: Icons.contrast_outlined,
-              label: 'Appearance',
-              onTap: () => openThemeSelector(context),
             ),
           ],
         );
