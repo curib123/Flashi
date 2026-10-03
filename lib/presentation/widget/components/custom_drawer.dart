@@ -106,8 +106,10 @@ class CustomDrawer extends StatelessWidget {
                             icon: Icons.info_outline_rounded,
                             label: 'About',
                             onTap: () {
-                              Navigator.pop(context);
-                              showAnimatedAboutDialog(context);
+                              final navigator = Navigator.of(context);
+                              final hostContext = navigator.context;
+                              navigator.pop();
+                              showAnimatedAboutDialog(hostContext);
                             },
                           ),
                           _DrawerItem(
