@@ -1,5 +1,6 @@
 import 'package:flashi/core/design/flashi_design.dart';
 import 'package:flashi/presentation/screen/main/settings_screen.dart';
+import 'package:flashi/presentation/widget/components/custom_drawer.dart';
 import 'package:flashi/provider/chatbot_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -57,6 +58,7 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
     final colors = Theme.of(context).colorScheme;
 
     return Scaffold(
+      drawer: const CustomDrawer(),
       appBar: AppBar(
         title: const Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -83,7 +85,6 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
       body: Consumer<ChatBotProvider>(
         builder: (context, provider, child) {
           final messages = provider.messages;
-          _scrollToBottom();
 
           return Column(
             children: [
@@ -202,8 +203,9 @@ class _PromptPanel extends StatelessWidget {
       ),
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: colors.primaryContainer.withOpacity(0.5),
+        color: FlashiDesign.primaryFaintOf(context),
         borderRadius: BorderRadius.circular(FlashiDesign.radius),
+        border: Border.all(color: FlashiDesign.primarySoftOf(context)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
