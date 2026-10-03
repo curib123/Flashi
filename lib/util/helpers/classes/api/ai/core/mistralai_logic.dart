@@ -1,8 +1,7 @@
 import 'dart:convert';
-import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flashi/util/helpers/classes/api/ai/core/api_key_secure_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
 
 class MistralAiLogic {
   static Future<List<Map<String, String>>> generateQuestionsFromFile(String content,String modelType,String type,int maxLength) async {
@@ -10,7 +9,7 @@ class MistralAiLogic {
     String? apiKey = await getAPIKey(); // Retrieve stored API key
 
     if (apiKey == null || apiKey.isEmpty) {
-      print("API Key not found!");
+      debugPrint("API Key not found!");
       return [];
     }
 
@@ -32,7 +31,7 @@ class MistralAiLogic {
       switch (type) {
         case 'Identification':
           return """
-      Generate exactly ${maxLength} summarize identification questions and answers from the following text in this format accurately dont put title,heading or guide:
+      Generate exactly $maxLength summarize identification questions and answers from the following text in this format accurately dont put title,heading or guide:
       Question: It is <definition/explanation/short question>.
       Answer: <term/answer>
       TEXT:
@@ -45,7 +44,7 @@ class MistralAiLogic {
       """;
         case 'Fill_In_The_Blank':
           return """
-      Generate exactly ${maxLength} summarize fill-in-the-blank  questions and answers from the following text in this format accurately dont put title,heading or guide:
+      Generate exactly $maxLength summarize fill-in-the-blank  questions and answers from the following text in this format accurately dont put title,heading or guide:
       TEXT:
       "$textChunk"
       Example Output:
@@ -56,7 +55,7 @@ class MistralAiLogic {
       """;
         case 'Definition':
           return """
-      Generate exactly ${maxLength} summarize Definition  questions and answers from the following text in this format accurately dont put title,heading or guide:
+      Generate exactly $maxLength summarize Definition  questions and answers from the following text in this format accurately dont put title,heading or guide:
       TEXT:
       "$textChunk"
       Example Output:
@@ -67,7 +66,7 @@ class MistralAiLogic {
       """;
         case 'Enumeration':
           return """
-      Generate exactly ${maxLength} summarize enumeration-type  questions and answers from the following text in this format accurately dont put title,heading or guide:
+      Generate exactly $maxLength summarize enumeration-type  questions and answers from the following text in this format accurately dont put title,heading or guide:
       TEXT:
       "$textChunk"
       Example Output:
@@ -78,7 +77,7 @@ class MistralAiLogic {
       """;
         case 'True_False':
           return """
-      Generate exactly ${maxLength}  true or false  questions and answers from the following text in this format accurately dont put title,heading or guide:
+      Generate exactly $maxLength  true or false  questions and answers from the following text in this format accurately dont put title,heading or guide:
       TEXT:
       "$textChunk"
       Example Output:
@@ -122,22 +121,22 @@ class MistralAiLogic {
           String aiResponse = responseData['choices'][0]['message']?['content']?.trim() ?? "";
 
           if (aiResponse.isNotEmpty) {
-            print(aiResponse);
+            debugPrint(aiResponse);
             return await parseTextQuestions(aiResponse);
           } else {
-            print("No valid content received from Mistral AI.");
+            debugPrint("No valid content received from Mistral AI.");
             return [];
           }
         } else {
-          print("Unexpected API response structure: ${response.body}");
+          debugPrint("Unexpected API response structure: ${response.body}");
           return [];
         }
       } else {
-        print("Mistral API Error: ${response.statusCode} - ${response.body}");
+        debugPrint("Mistral API Error: ${response.statusCode} - ${response.body}");
         return [];
       }
     } catch (e) {
-      print("Error processing chunk with Mistral: $e");
+      debugPrint("Error processing chunk with Mistral: $e");
       return [];
     }
   }
@@ -186,7 +185,7 @@ class MistralAiLogic {
     String? apiKey = await getAPIKey(); // Retrieve stored API key
 
     if (apiKey == null || apiKey.isEmpty) {
-      print("API Key not found!");
+      debugPrint("API Key not found!");
       return [];
     }
 
@@ -207,7 +206,7 @@ class MistralAiLogic {
       switch (type) {
         case 'Identification':
           return """
-Generate exactly ${maxLength} concise identification questions and answers based on the given Topic: "$topic" and Description: "$description".
+Generate exactly $maxLength concise identification questions and answers based on the given Topic: "$topic" and Description: "$description".
 Each question should ask for a specific term or concept related to the topic.
 Avoid guides,title,heading or extra information.
 
@@ -218,7 +217,7 @@ Answer: Metabolism
 
         case 'Fill_In_The_Blank':
           return """
-Generate exactly ${maxLength} fill-in-the-blank questions and answers based on the given Topic: "$topic" and Description: "$description".
+Generate exactly $maxLength fill-in-the-blank questions and answers based on the given Topic: "$topic" and Description: "$description".
 Each question should have a missing key term related to the topic.
 Avoid guides,title,heading or extra information.
 
@@ -229,7 +228,7 @@ Answer: Metabolism
 
         case 'Definition':
           return """
-Generate exactly ${maxLength} definition-based questions and answers based on the given Topic: "$topic" and Description: "$description".
+Generate exactly $maxLength definition-based questions and answers based on the given Topic: "$topic" and Description: "$description".
 Each question should ask for the meaning of a specific concept.
 Avoid guides,title,heading or extra information.
 
@@ -240,7 +239,7 @@ Answer: Metabolism is the process of converting food into energy.
 
         case 'Enumeration':
           return """
-Generate exactly ${maxLength} enumeration-type questions and answers based on the given Topic: "$topic" and Description: "$description".
+Generate exactly $maxLength enumeration-type questions and answers based on the given Topic: "$topic" and Description: "$description".
 Each question should require listing multiple related items.
 Avoid guides,title,heading or extra information.
 
@@ -251,7 +250,7 @@ Answer: Prophase, Metaphase, Anaphase, Telophase
 
         case 'True_False':
           return """
-Generate exactly ${maxLength} true or false questions and answers based on the given Topic: "$topic" and Description: "$description".
+Generate exactly $maxLength true or false questions and answers based on the given Topic: "$topic" and Description: "$description".
 Each question should be a factual statement that can be answered with "True" or "False."
 Avoid guides,title,heading or extra information.
 
@@ -293,22 +292,22 @@ Answer: True
           String aiResponse = responseData['choices'][0]['message']?['content']?.trim() ?? "";
 
           if (aiResponse.isNotEmpty) {
-            print(aiResponse);
+            debugPrint(aiResponse);
             return await parseTextQuestions(aiResponse);
           } else {
-            print("No valid content received from Mistral AI.");
+            debugPrint("No valid content received from Mistral AI.");
             return [];
           }
         } else {
-          print("Unexpected API response structure: ${response.body}");
+          debugPrint("Unexpected API response structure: ${response.body}");
           return [];
         }
       } else {
-        print("Mistral API Error: ${response.statusCode} - ${response.body}");
+        debugPrint("Mistral API Error: ${response.statusCode} - ${response.body}");
         return [];
       }
     } catch (e) {
-      print("Error processing chunk with Mistral: $e");
+      debugPrint("Error processing chunk with Mistral: $e");
       return [];
     }
   }
