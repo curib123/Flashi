@@ -1,88 +1,97 @@
+import 'package:flashi/core/config/app_env.dart';
+import 'package:flashi/data/services/api_client.dart';
+import 'package:flashi/data/services/startio_service.dart';
 import 'package:flashi/home.dart';
-import 'package:flashi/provider/DailyQuestionProvider.dart';
 import 'package:flashi/provider/ai_credits_provider.dart';
-import 'package:flashi/provider/ai_model_logic_provider.dart';
-import 'package:flashi/provider/chatbot_provider.dart';
-import 'package:flashi/provider/fetch_data_from_json_provider.dart';
+import 'package:flashi/provider/app_config_provider.dart';
+import 'package:flashi/provider/auth_provider.dart';
 import 'package:flashi/provider/bottom_navigation_provider.dart';
-import 'package:flashi/provider/check_version_provider.dart';
+import 'package:flashi/provider/generation_provider.dart';
 import 'package:flashi/provider/history_provider.dart';
-import 'package:flashi/provider/notes_provider.dart';
 import 'package:flashi/provider/onboarding_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flashi/provider/reviewer_settings_provider.dart';
 import 'package:flashi/provider/sort_provider.dart';
 import 'package:flashi/provider/theme_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> main() async {
-
   WidgetsFlutterBinding.ensureInitialized();
-  MobileAds.instance.initialize();
 
-  await Hive.initFlutter(); // Initialize Hive
-// Open different boxes for various settings or data
-  await Hive.openBox('theme'); // Box for theme settings
-  await Hive.openBox('sort'); // Box for sorting preferences
-  await Hive.openBox('reviewer_settings'); // Box for reviewer-related settings
-  await Hive.openBox('quiz'); // Box for quiz data
-  await Hive.openBox('notes'); // Box for storing notes
-  await Hive.openBox('onboarding'); // Box for storing onboarding
+  await Hive.initFlutter();
+  await Hive.openBox('theme');
+  await Hive.openBox('sort');
+  await Hive.openBox('reviewer_settings');
+  await Hive.openBox('quiz');
+  await Hive.openBox('onboarding');
   await Hive.openBox('timerBox');
-  await Hive.openBox('chatMessages');
-  await Hive.openBox('fetchDataFromJson');
-  await Hive.openBox('DailyQuestionProvider');
   await Hive.openBox('history');
 
+  SupabaseClient? supabaseClient;
+  if (AppEnv.supabaseConfigured) {
+    await Supabase.initialize(
+      url: AppEnv.supabaseUrl,
+      publishableKey: AppEnv.supabasePublishableKey,
+    );
+    supabaseClient = Supabase.instance.client;
+  }
+
+  final apiClient = ApiClient(
+    accessTokenProvider: () =>
+        supabaseClient?.auth.currentSession?.accessToken ?? '',
+  );
+  final startIo = StartIoService();
 
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => BottomNavigationProvider()), // Add BottomNavigationProvider
-        ChangeNotifierProvider(create: (_) => ThemeProvider()), // Add ThemeProvider
-        ChangeNotifierProvider(create: (_) => SortProvider()), // Add SortProvider
-        ChangeNotifierProvider(create: (_) => ReviewerSettingsProvider()), // Add SortProvider
-        ChangeNotifierProvider(create: (_) => NotesProvider()), // Add SortProvider
-        ChangeNotifierProvider(create: (_) => OnboardingProvider()), // Add OnboardingProvider
-        ChangeNotifierProvider(create: (_) => FetchDataFromJsonProvider()), // Add TextReaderProvider
-        ChangeNotifierProvider(create: (_) => AiModelLogicProvider()), // Add AiModelLogicProvider
-        ChangeNotifierProvider(create: (_) => CheckVersionProvider()), // Add CheckVersionProvider
-        ChangeNotifierProvider(create: (_) => ChatBotProvider()), // Add CheckVersionProvider
-        ChangeNotifierProvider(create: (_) => AiCreditProvider()), // Add CheckVersionProvider
-        ChangeNotifierProvider(create: (_) => DailyQuestionProvider()), // Add CheckVersionProvider
-        ChangeNotifierProvider(create: (_) => HistoryProvider()), // Add CheckVersionProvider
+        Provider<ApiClient>.value(value: apiClient),
+        Provider<StartIoService>.value(value: startIo),
+        ChangeNotifierProvider(create: (_) => AuthProvider(supabaseClient)),
         ChangeNotifierProvider(
-            create: (context) => QuizProvider(
-                criterionSet: Provider.of<SortProvider>(context,listen: false).dropdownValueSet,
-                criterionCard: Provider.of<SortProvider>(context,listen: false).dropdownValueCard)
-
-        ), // Add QuizProvider
+          create: (_) => AppConfigProvider(apiClient, startIo)..load(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => AiCreditProvider(apiClient, startIo),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => GenerationProvider(apiClient, supabaseClient),
+        ),
+        ChangeNotifierProvider(create: (_) => BottomNavigationProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => SortProvider()),
+        ChangeNotifierProvider(create: (_) => ReviewerSettingsProvider()),
+        ChangeNotifierProvider(create: (_) => OnboardingProvider()),
+        ChangeNotifierProvider(create: (_) => HistoryProvider()),
+        ChangeNotifierProvider(
+          create: (context) => QuizProvider(
+            criterionSet: context.read<SortProvider>().dropdownValueSet,
+            criterionCard: context.read<SortProvider>().dropdownValueCard,
+          ),
+        ),
       ],
       child: const Flashi(),
     ),
   );
-
 }
-
 
 class Flashi extends StatelessWidget {
   const Flashi({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
+    final themeProvider = context.watch<ThemeProvider>();
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: "Flashi Ai",
+      title: 'Flashi',
       home: const Home(),
-      theme:  themeProvider.getLightTheme(),
+      theme: themeProvider.getLightTheme(),
       darkTheme: themeProvider.getDarkTheme(),
       themeMode: themeProvider.themeMode,
     );
   }
 }
-

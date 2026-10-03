@@ -30,10 +30,12 @@ class CustomNavigationBar extends StatelessWidget {
           indicatorColor: Colors.white.withOpacity(.15),
           elevation: 0,
           iconTheme: WidgetStateProperty.resolveWith((states) {
-            if (states.contains(WidgetState.selected)) {
-              return const IconThemeData(color: Colors.white, size: 24);
-            }
-            return IconThemeData(color: inactive, size: 24);
+            return IconThemeData(
+              color: states.contains(WidgetState.selected)
+                  ? Colors.white
+                  : inactive,
+              size: 24,
+            );
           }),
           labelTextStyle: WidgetStateProperty.resolveWith((states) {
             final selected = states.contains(WidgetState.selected);
@@ -49,19 +51,19 @@ class CustomNavigationBar extends StatelessWidget {
         onDestinationSelected: onTap,
         destinations: const [
           NavigationDestination(
-            icon: Icon(Icons.auto_awesome_outlined),
-            selectedIcon: Icon(Icons.auto_awesome_rounded),
-            label: 'Assistant',
-          ),
-          NavigationDestination(
             icon: Icon(Icons.home_outlined),
             selectedIcon: Icon(Icons.home_rounded),
             label: 'Home',
           ),
           NavigationDestination(
-            icon: Icon(Icons.note_alt_outlined),
-            selectedIcon: Icon(Icons.note_alt_rounded),
-            label: 'Notes',
+            icon: Icon(Icons.layers_outlined),
+            selectedIcon: Icon(Icons.layers_rounded),
+            label: 'Library',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.history_outlined),
+            selectedIcon: Icon(Icons.history_rounded),
+            label: 'History',
           ),
         ],
       ),
