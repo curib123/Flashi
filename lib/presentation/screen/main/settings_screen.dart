@@ -1,3 +1,4 @@
+import 'package:flashi/core/design/flashi_design.dart';
 import 'package:flashi/presentation/widget/components/reviewer_settings_alert_content.dart';
 import 'package:flashi/presentation/widget/components/theme_selector_dropdown.dart';
 import 'package:flutter/material.dart';
@@ -7,44 +8,91 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
     return Scaffold(
       appBar: AppBar(
-        leading: GestureDetector(
-          onTap: () => Navigator.pop(context),
-          child: Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: colorScheme.primary,
-          ),
-        ),
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-
-          ),
-        ),
-        backgroundColor: colorScheme.onPrimary,
-        foregroundColor: colorScheme.primary,
-        title: Text("Settings",style: TextStyle(color: colorScheme.primary),),
-        centerTitle: true,
+        title: const Text('Settings'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        child: _settings(context),
+      body: ListView(
+        padding: const EdgeInsets.fromLTRB(
+          FlashiDesign.pagePadding,
+          8,
+          FlashiDesign.pagePadding,
+          40,
+        ),
+        children: [
+          Text(
+            'Personalize Flashi',
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Keep the interface comfortable and your study sessions focused.',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: colors.onSurface.withOpacity(0.65),
+                ),
+          ),
+          const SizedBox(height: 24),
+          _SettingsCard(
+            title: 'Appearance',
+            icon: Icons.palette_outlined,
+            child: const ThemeSelector(isShowCloseBtn: false),
+          ),
+          const SizedBox(height: 16),
+          const _SettingsCard(
+            title: 'Study preferences',
+            icon: Icons.tune_rounded,
+            child: ReviewerSettingsAlertContent(),
+          ),
+        ],
       ),
     );
   }
+}
 
-  Widget _settings(BuildContext context) {
-    return ListView(
-      children: [
-        const SizedBox(height: 30),
-        const ReviewerSettingsAlertContent(),
-        const SizedBox(height: 50),
-        const ThemeSelector(
-          isShowCloseBtn: false,
-        ),
-      ],
+class _SettingsCard extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  final Widget child;
+
+  const _SettingsCard({
+    required this.title,
+    required this.icon,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(FlashiDesign.radius),
+        border: Border.all(color: colors.outline.withOpacity(0.14)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, color: colors.primary),
+              const SizedBox(width: 10),
+              Text(
+                title,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 18),
+          child,
+        ],
+      ),
     );
   }
-  }
+}
