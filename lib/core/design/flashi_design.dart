@@ -196,7 +196,7 @@ class FlashiDesign {
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
       ),
-      dialogTheme: DialogThemeData(
+      dialogTheme: DialogTheme(
         backgroundColor: panel,
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
