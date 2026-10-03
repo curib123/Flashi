@@ -7,7 +7,7 @@ void main() {
   test('Flashi theme uses Material 3 and the brand seed', () {
     final theme = FlashiDesign.light();
     expect(theme.useMaterial3, isTrue);
-    expect(theme.fontFamily, 'Montserrat');
+    expect(theme.textTheme.bodyMedium?.fontFamily, 'Montserrat');
   });
 
   testWidgets('Primary navigation exposes all study destinations',
