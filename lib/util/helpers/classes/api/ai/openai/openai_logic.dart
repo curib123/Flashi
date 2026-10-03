@@ -103,7 +103,9 @@ Ensure the questions are direct and clear. Keep answers concise.
     final chunks = <String>[];
 
     for (var index = 0; index < words.length; index += chunkSize) {
-      final end = (index + chunkSize).clamp(0, words.length);
+      final end = index + chunkSize > words.length
+          ? words.length
+          : index + chunkSize;
       chunks.add(words.sublist(index, end).join(' '));
     }
 
