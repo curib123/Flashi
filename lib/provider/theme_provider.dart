@@ -36,7 +36,7 @@ class ThemeProvider extends ChangeNotifier {
         _settingsBox.get('currentFont', defaultValue: 'Montserrat') as String;
     final storedScale = _settingsBox.get('fontSize', defaultValue: 1.0);
     if (storedScale is num) {
-      _fontScale = storedScale.toDouble().clamp(0.85, 1.25);
+      _fontScale = storedScale.toDouble().clamp(0.85, 1.25).toDouble();
     }
   }
 
@@ -70,7 +70,7 @@ class ThemeProvider extends ChangeNotifier {
   }
 
   void updateFontSize(double value) {
-    _fontScale = value.clamp(0.85, 1.25);
+    _fontScale = value.clamp(0.85, 1.25).toDouble();
     _settingsBox.put('fontSize', _fontScale);
     notifyListeners();
   }

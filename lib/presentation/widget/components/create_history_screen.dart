@@ -1,8 +1,4 @@
-import 'package:elegant_notification/elegant_notification.dart';
-import 'package:elegant_notification/resources/arrays.dart';
-import 'package:elegant_notification/resources/stacked_options.dart';
-import 'package:flashi/presentation/widget/reusable_widgets/reusable_create_set_button_position.dart';
-import 'package:flashi/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
+import 'package:flashi/core/design/flashi_design.dart';
 import 'package:flashi/provider/history_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -15,200 +11,146 @@ class CreateHistoryScreen extends StatelessWidget {
   final DateTime date;
 
   const CreateHistoryScreen({
-    Key? key,
+    super.key,
     required this.isCreate,
     required this.title,
     required this.isRead,
     required this.date,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final historyProvider = Provider.of<HistoryProvider>(context);
-    final size = MediaQuery.of(context).size;
+    final provider = context.watch<HistoryProvider>();
+    final colors = Theme.of(context).colorScheme;
 
     return Scaffold(
-      // Use background from the theme instead of a hard-coded white.
-      backgroundColor: colorScheme.background,
-      appBar: _buildAppBar(colorScheme, context, title),
-      body: Stack(
-        children: [
-          _buildBody(size, historyProvider, colorScheme),
-          _buildTitleInputField(historyProvider, colorScheme),
-          if (!isRead)
-            ReusableCreateSetButtonPosition(
-              icon: Icons.add_circle,
-              colorScheme: colorScheme,
-              name: isCreate ? 'Save' : 'Save Changes',
-              onTap: () {
-                if (historyProvider.titleController.text.isNotEmpty) {
-                  _onSaveTap(context, historyProvider);
-                } else {
-                  ElegantNotification.info(
-                    width: 300,
-                    notificationMargin: 0,
-                    stackedOptions: StackedOptions(
-                      type: StackedType.same,
-                      key: '',
-                    ),
-                    position: Alignment.topCenter,
-                    animation: AnimationType.fromTop,
-                    title: const Text('ALERT'),
-                    description: const Text('REQUIRED TITLE'),
-                    onDismiss: () {},
-                  ).show(context);
-                }
-              },
-            )
-          else
-            const SizedBox.shrink(),
-          ReusableThemeSettingPosition(colorScheme: colorScheme),
-        ],
-      ),
-    );
-  }
-
-  AppBar _buildAppBar(ColorScheme colorScheme, BuildContext context, String title) {
-    return AppBar(
-      leading: IconButton(
-        icon: Icon(Icons.arrow_back_ios_new_rounded, color: colorScheme.primary),
-        onPressed: () => Navigator.of(context).pop(),
-      ),
-      title: !isRead
-          ? Text(
-        isCreate ? "Create History" : "Edit History",
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 20,
-          color: colorScheme.primary,
-        ),
-      )
-          : Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            'View History',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
-              color: colorScheme.primary,
-            ),
-          ),
-          const SizedBox(width: 10),
-          IconButton(
-            icon: Icon(Icons.edit, color: colorScheme.primary),
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => CreateHistoryScreen(
-                  isCreate: false,
-                  title: title,
-                  isRead: false,
-                  date: date,
+      appBar: AppBar(
+        title: Text(isRead ? 'Generated content' : 'Edit generated content'),
+        actions: [
+          if (isRead)
+            IconButton(
+              tooltip: 'Edit',
+              onPressed: () => Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => CreateHistoryScreen(
+                    isCreate: false,
+                    title: title,
+                    isRead: false,
+                    date: date,
+                  ),
                 ),
-              ));
-            },
-          ),
+              ),
+              icon: const Icon(Icons.edit_outlined),
+            ),
+          const SizedBox(width: 8),
         ],
       ),
-      backgroundColor: colorScheme.onPrimary,
-      elevation: 2,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            FlashiDesign.pagePadding,
+            8,
+            FlashiDesign.pagePadding,
+            16,
+          ),
+          child: Column(
+            children: [
+              TextField(
+                readOnly: isRead,
+                controller: provider.titleController,
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.w900,
+                    ),
+                decoration: const InputDecoration(
+                  hintText: 'Title',
+                  border: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  filled: false,
+                  contentPadding: EdgeInsets.symmetric(vertical: 8),
+                ),
+              ),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  DateFormat('MMM d, yyyy · h:mm a').format(date),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: colors.onSurface.withOpacity(0.48),
+                      ),
+                ),
+              ),
+              const SizedBox(height: 14),
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: colors.surface,
+                    borderRadius: BorderRadius.circular(FlashiDesign.radius),
+                    border:
+                        Border.all(color: colors.outline.withOpacity(0.12)),
+                  ),
+                  child: TextField(
+                    readOnly: isRead,
+                    controller: provider.contentController,
+                    expands: true,
+                    maxLines: null,
+                    minLines: null,
+                    textAlignVertical: TextAlignVertical.top,
+                    decoration: const InputDecoration(
+                      hintText: 'Generated questions and answers',
+                      border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      contentPadding: EdgeInsets.all(18),
+                    ),
+                  ),
+                ),
+              ),
+              if (!isRead) ...[
+                const SizedBox(height: 14),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.icon(
+                    onPressed: () => _save(context, provider),
+                    icon: const Icon(Icons.save_outlined),
+                    label: const Text('Save changes'),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
       ),
     );
   }
 
-  Widget _buildBody(Size size, HistoryProvider historyProvider, ColorScheme colorScheme) {
-    String formattedDate = DateFormat('MMM dd, yyyy - hh:mm a').format(date);
-    return ListView(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      children: [
-        const SizedBox(height: 80),
-        // Instead of a fixed Colors.grey, use onSurface with some opacity.
-        Text(
-          'Content',
-          style: TextStyle(color: colorScheme.onSurface.withOpacity(0.6)),
-        ),
-        _buildContentInputField(size, historyProvider, colorScheme),
-        Center(child: Text(formattedDate, style: TextStyle(color: colorScheme.onSurface))),
-      ],
-    );
-  }
-
-  Widget _buildTitleInputField(HistoryProvider historyProvider, ColorScheme colorScheme) {
-    return Container(
-      // Use the surface color for a card-like background.
-      color: colorScheme.surface,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-      child: TextField(
-        readOnly: isRead,
-        controller: historyProvider.titleController,
-        decoration: const InputDecoration(
-          hintText: 'Title Here',
-          border: InputBorder.none,
-        ),
-        // Use onSurface so the text contrasts with the surface color.
-        style: TextStyle(fontSize: 18, color: null),
-      ),
-    );
-  }
-
-  Widget _buildContentInputField(Size size, HistoryProvider historyProvider, ColorScheme colorScheme) {
-    return Container(
-      width: size.width,
-      child: TextField(
-        readOnly: isRead,
-        controller: historyProvider.contentController,
-        maxLines: 21,
-        keyboardType: TextInputType.multiline,
-        decoration: InputDecoration(
-          hintText: 'Type your content here...',
-          border: InputBorder.none,
-          // Fill with the surface color.
-          filled: true,
-          fillColor: colorScheme.surface,
-        ),
-        style: TextStyle(fontSize: 16, color: colorScheme.onSurface),
-      ),
-    );
-  }
-
-  void _onSaveTap(BuildContext context, HistoryProvider historyProvider) {
-    if (isCreate) {
-      historyProvider.addHistory({
-        'title': historyProvider.titleController.text,
-        'content': historyProvider.contentController.text,
-        'created_at': DateTime.now(),
-        'favorite': false,
-      });
+  void _save(BuildContext context, HistoryProvider provider) {
+    final newTitle = provider.titleController.text.trim();
+    final content = provider.contentController.text.trim();
+    if (newTitle.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Successfully Added'),
-          backgroundColor: Colors.green,
-        ),
+        const SnackBar(content: Text('Add a title before saving.')),
       );
-      historyProvider.titleController.clear();
-      historyProvider.contentController.clear();
-      Navigator.pop(context);
-    } else {
-      historyProvider.editHistoryByTitle(
-        title,
-        {
-          'title': historyProvider.titleController.text,
-          'content': historyProvider.contentController.text,
-          'created_at': DateTime.now(),
-          'favorite': false,
-        },
-      );
-      Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Successfully Updated'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      return;
     }
+
+    final existing = provider.history.where((item) => item['title'] == title);
+    final favorite =
+        existing.isNotEmpty ? existing.first['favorite'] == true : false;
+
+    provider.editHistoryByTitle(
+      title,
+      {
+        'title': newTitle,
+        'content': content,
+        'created_at': DateTime.now(),
+        'favorite': favorite,
+      },
+    );
+
+    Navigator.pop(context);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('History item updated.')),
+    );
   }
 }
