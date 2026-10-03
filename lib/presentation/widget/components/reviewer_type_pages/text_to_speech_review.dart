@@ -1,13 +1,14 @@
+import 'package:flashi/core/design/flashi_design.dart';
+import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reviewer_widgets_core/text_to_speech_card_core.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
 import 'package:flashi/util/helpers/classes/ads/ad_unit_id.dart';
 import 'package:flashi/util/helpers/widget/other/highlight_keywords.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reviewer_widgets_core/text_to_speech_card_core.dart';
 
 class TextToSpeechReview extends StatefulWidget {
   final String reviewer;
-  final List<dynamic> cards; // List of cards with 'question' and 'answer'
+  final List<dynamic> cards;
   final String setname;
 
   const TextToSpeechReview({
@@ -18,154 +19,178 @@ class TextToSpeechReview extends StatefulWidget {
   });
 
   @override
-  _TextToSpeechReviewState createState() => _TextToSpeechReviewState();
+  State<TextToSpeechReview> createState() => _TextToSpeechReviewState();
 }
 
 class _TextToSpeechReviewState extends State<TextToSpeechReview> {
-  final FlutterTts _flutterTts = FlutterTts(); // Initialize TTS
-  late final PageController _pageController; // Controller for PageView
-  bool _isSpeaking = false; // Track if TTS is speaking
-  int _currentIndex = 0; // Track current page index
- AdManager adManager = AdManager();
+  final FlutterTts _flutterTts = FlutterTts();
+  final AdManager _adManager = AdManager();
 
+  late final PageController _pageController;
+  bool _isSpeaking = false;
+  int _currentIndex = 0;
+  int _speechSession = 0;
 
   @override
   void initState() {
     super.initState();
-
-    Future.delayed(Duration(minutes: 5),(){
-      adManager.loadInterstitialAd(AdUnitId.interstitialAdUnitId);
-    });
-
-    adManager.showInterstitialAd();
-    _pageController = PageController(initialPage: _currentIndex); // Start at the first card
-
+    _pageController = PageController();
+    _adManager.loadInterstitialAd(AdUnitId.interstitialAdUnitId);
   }
-
-
 
   @override
   void dispose() {
-    _flutterTts.stop(); // Stop TTS when widget is disposed
-    _pageController.dispose(); // Dispose PageController
+    _speechSession++;
+    _flutterTts.stop();
+    _pageController.dispose();
     super.dispose();
   }
 
   Future<void> _speakAndAutoScroll() async {
-    if (_isSpeaking) return;
+    if (_isSpeaking || widget.cards.isEmpty) return;
 
-    setState(() {
-      _isSpeaking = true;
-    });
+    final session = ++_speechSession;
+    await _flutterTts.awaitSpeakCompletion(true);
 
-    for (int i = _currentIndex; i < widget.cards.length; i++) {
-      final card = widget.cards[i];
-      final question = card['question'] ?? 'No question available';
-      final answer = card['answer'] ?? 'No answer available';
+    if (!mounted || session != _speechSession) return;
+    setState(() => _isSpeaking = true);
 
-      // Speak the content
-      await _flutterTts.speak("Question: $question. Answer: $answer.");
+    try {
+      for (var index = _currentIndex; index < widget.cards.length; index++) {
+        if (!mounted || session != _speechSession) return;
 
-      // Wait for the speech to complete
-      await _flutterTts.awaitSpeakCompletion(true);
+        final card = widget.cards[index];
+        final question =
+            (card['question'] ?? 'No question available').toString();
+        final answer = (card['answer'] ?? 'No answer available').toString();
 
-      // Move to the next page if not on the last one
-      if (i < widget.cards.length - 1) {
-        setState(() {
-          _currentIndex = i + 1;
-        });
-        _pageController.nextPage(
-          duration: const Duration(milliseconds: 500),
-          curve: Curves.easeInOut,
-        );
+        await _flutterTts.speak('Question: $question. Answer: $answer.');
+
+        if (!mounted || session != _speechSession) return;
+
+        if (index < widget.cards.length - 1) {
+          final nextIndex = index + 1;
+          setState(() => _currentIndex = nextIndex);
+
+          if (_pageController.hasClients) {
+            await _pageController.animateToPage(
+              nextIndex,
+              duration: const Duration(milliseconds: 360),
+              curve: Curves.easeInOut,
+            );
+          }
+        }
+      }
+    } finally {
+      if (mounted && session == _speechSession) {
+        setState(() => _isSpeaking = false);
       }
     }
+  }
 
+  Future<void> _resetSpeech() async {
+    _speechSession++;
+    await _flutterTts.stop();
+
+    if (!mounted) return;
     setState(() {
       _isSpeaking = false;
+      _currentIndex = 0;
     });
+
+    if (_pageController.hasClients) {
+      _pageController.jumpToPage(0);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     if (widget.cards.isEmpty) {
       return Center(
-        child: Text(
-          "No cards available",
-          style: TextStyle(color: Theme.of(context).colorScheme.primary),
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.record_voice_over_outlined,
+                size: 46,
+                color: FlashiDesign.brand,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'No cards available',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
+              ),
+            ],
+          ),
         ),
       );
     }
-
-    //ads here
 
     return Column(
       children: [
         Expanded(
           child: PageView.builder(
-            physics: const BouncingScrollPhysics(),
+            physics: _isSpeaking
+                ? const NeverScrollableScrollPhysics()
+                : const BouncingScrollPhysics(),
             controller: _pageController,
             itemCount: widget.cards.length,
             onPageChanged: (index) {
-              setState(() {
-                _currentIndex = index;
-              });
+              if (index == _currentIndex) return;
+              setState(() => _currentIndex = index);
             },
             itemBuilder: (context, index) {
               final card = widget.cards[index];
               return TextToSpeechCardCore(
-                question: highlightKeywords( context: context, keyword:  card['keyword'] , text:  card['question'] , fontSize: 22 , fontColor: Theme.of(context).colorScheme.onPrimary, fontSizeKeyword: 17, isCenter: true),
+                question: highlightKeywords(
+                  context: context,
+                  keyword: card['keyword'],
+                  text: card['question'],
+                  fontSize: 22,
+                  fontColor: Theme.of(context).colorScheme.onPrimary,
+                  fontSizeKeyword: 17,
+                  isCenter: true,
+                ),
                 answer: card['answer'] ?? 'No answer available',
               );
             },
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              ElevatedButton(
-                onPressed: _speakAndAutoScroll,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                ),
-                child: Text(
-                  _isSpeaking ? "Speaking..." : "Start Speech",
-                  style: const TextStyle(fontSize: 16),
-                ),
+        SafeArea(
+          top: false,
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+            decoration: BoxDecoration(
+              color: FlashiDesign.surfaceOf(context),
+              border: Border(
+                top: BorderSide(color: FlashiDesign.borderOf(context)),
               ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  // Stop the TTS if it's speaking
-                  if (_isSpeaking) {
-                    _flutterTts.stop();
-                    _speakAndAutoScroll;
-                  }
-
-                  // Reset to the first card and restart the PageView
-                  setState(() {
-                    _currentIndex = 0; // Reset the page to the first one
-                  });
-                  _pageController.jumpToPage(0); // Jump to the first card
-
-                  // Reset the text-to-speech state
-                  setState(() {
-                    _isSpeaking = false; // Ensure speaking is not in progress
-                  });
-                },
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: FilledButton.icon(
+                    onPressed: _isSpeaking ? null : _speakAndAutoScroll,
+                    icon: Icon(
+                      _isSpeaking
+                          ? Icons.graphic_eq_rounded
+                          : Icons.play_arrow_rounded,
+                    ),
+                    label: Text(_isSpeaking ? 'Speaking…' : 'Start speech'),
+                  ),
                 ),
-                child: Icon(Icons.arrow_back,color: Colors.white,),
-              ),
-
-            ],
+                const SizedBox(width: 10),
+                OutlinedButton.icon(
+                  onPressed: _resetSpeech,
+                  icon: const Icon(Icons.replay_rounded),
+                  label: const Text('Reset'),
+                ),
+              ],
+            ),
           ),
         ),
       ],
