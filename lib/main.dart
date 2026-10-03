@@ -13,7 +13,6 @@ import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flashi/provider/reviewer_settings_provider.dart';
 import 'package:flashi/provider/sort_provider.dart';
 import 'package:flashi/provider/theme_provider.dart';
-import 'package:flashi/util/helpers/classes/api/ai/core/api_key_secure_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -38,7 +37,6 @@ Future<void> main() async {
   await Hive.openBox('DailyQuestionProvider');
   await Hive.openBox('history');
 
-  await saveAPIKey('');
 
   runApp(
     MultiProvider(

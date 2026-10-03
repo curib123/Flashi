@@ -1,28 +1,15 @@
-import 'dart:math';
+import 'package:flashi/core/design/flashi_design.dart';
+import 'package:flashi/presentation/screen/main/favorate_screen.dart';
+import 'package:flashi/presentation/screen/main/history_screen.dart';
 import 'package:flashi/presentation/screen/main/settings_screen.dart';
 import 'package:flashi/presentation/widget/components/see_all_quiz_set_list.dart';
-import 'package:flashi/presentation/widget/reusable_widgets/reusable_daily_quest_position.dart';
-import 'package:flashi/presentation/widget/reusable_widgets/reusable_favorate_position.dart';
-import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_search_bar_core.dart';
-import 'package:flashi/presentation/widget/reusable_widgets/reusable_create_set_button_position.dart';
-import 'package:flashi/presentation/widget/reusable_widgets/reusable_import_position.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_quiz_set_list.dart';
-import 'package:flashi/presentation/widget/reusable_widgets/reusable_sort_and_see_all.dart';
-import 'package:flashi/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
-import 'package:flashi/presentation/widget/reusable_widgets/reusable_title_content.dart';
-import 'package:flashi/provider/DailyQuestionProvider.dart';
 import 'package:flashi/provider/ai_credits_provider.dart';
 import 'package:flashi/provider/ai_model_logic_provider.dart';
-import 'package:flashi/provider/fetch_data_from_json_provider.dart';
+import 'package:flashi/provider/bottom_navigation_provider.dart';
 import 'package:flashi/provider/check_version_provider.dart';
+import 'package:flashi/provider/fetch_data_from_json_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
-import 'package:flashi/provider/sort_provider.dart';
-import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
-import 'package:flashi/util/helpers/classes/ads/ad_unit_id.dart';
-import 'package:flashi/util/helpers/classes/ads/app_lifecycle_reactor.dart';
-import 'package:flashi/util/helpers/widget/alert_dialog/showDailyQuestionDialog.dart';
-import 'package:flashi/util/helpers/widget/alert_dialog/show_free_credits_dialog.dart';
-import 'package:flashi/util/helpers/widget/other/empty_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -34,280 +21,443 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
-  AdManager adManager = AdManager();
-  late AppLifecycleReactor appLifecycleReactor;
-
   @override
   void initState() {
     super.initState();
-
-    AdManager adManager = AdManager()..loadOpenAppAd(AdUnitId.appOpenAdUnitId);
-    appLifecycleReactor = AppLifecycleReactor(
-        adManager: adManager);
-    Future.delayed(Duration(minutes: 5),(){
-      adManager.loadInterstitialAd(AdUnitId.interstitialAdUnitId);
-    });
-
-    final fetchDataFromJsonProvider = Provider.of<FetchDataFromJsonProvider>(context,listen: false);
-    final aiModelLogicProvider = Provider.of<AiModelLogicProvider>(context,listen: false);
-    final checkVersionProvider = Provider.of<CheckVersionProvider>(context,listen: false);
-    final aiCreditProvider = Provider.of<AiCreditProvider>(context,listen: false);
-    final dailyQuestionProvider = Provider.of<DailyQuestionProvider>(context,listen: false);
-
-    fetchDataFromJsonProvider.fetchLatestVersion();
-    aiModelLogicProvider.fetchLatestVersion();
-    checkVersionProvider.checkAppVersion(context);
-    dailyQuestionProvider.updateFunFacts(fetchDataFromJsonProvider);
-
-
-
-
-    Future.delayed(Duration(seconds: 5),(){
-      print(dailyQuestionProvider.funFacts);
-      handleFreeCreditsDialog(aiCreditProvider, context);
-      if (dailyQuestionProvider.funFacts.isNotEmpty && !dailyQuestionProvider.isAlreadyShow) {
-          showDialog(
-              context: context,
-              builder: (context) => DailyQuestionDialog(questions: dailyQuestionProvider.funFacts));
-
-        dailyQuestionProvider.toggleFunFacts();
-      }
-    });
-
-  }
-
-
-  void handleFreeCreditsDialog(AiCreditProvider aiCreditProvider,BuildContext context) async{
-        if (await aiCreditProvider.hasInternet()) {
-          final now = await aiCreditProvider.getNetworkTime();
-          final random = Random();
-
-          print(now);
-          print(aiCreditProvider.lastUpdated);
-
-          if (aiCreditProvider.credits <= 10) {
-            aiCreditProvider.updateAddedCredits(random.nextInt(4) + 4);
-          } else if (aiCreditProvider.credits > 10 && aiCreditProvider.credits <= 10) {
-           aiCreditProvider.updateAddedCredits( random.nextInt(3) + 3);
-          } else if (aiCreditProvider.credits > 15 && aiCreditProvider.credits <= 15) {
-           aiCreditProvider.updateAddedCredits(random.nextInt(2) + 2);
-          } else {
-           aiCreditProvider.updateAddedCredits(random.nextInt(1) + 1);
-          }
-
-          if (aiCreditProvider.lastUpdated == null || now.difference(aiCreditProvider.lastUpdated!).inDays > 0) {
-            showFreeCreditsDialog(
-              context: context,
-              rewardText: "You have free ${aiCreditProvider.addedCredits} energy",
-              onClaim: () async {
-                await aiCreditProvider.handleDataChange(now: now);
-              },
-            );
-
-          }
-        };
-
-  }
-
-  void change(QuizProvider quizProvider) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() {
-        quizProvider.updateDefaultMaxCard(
-            quizProvider.searchQuery == "12/15/03" ? 99999 : 20);
-      });
+      if (!mounted) return;
+      context.read<FetchDataFromJsonProvider>().fetchLatestVersion();
+      context.read<AiModelLogicProvider>().fetchLatestVersion();
+      context.read<CheckVersionProvider>().checkAppVersion(context);
     });
   }
 
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-    adManager.showInterstitialAd();
+  void _openGenerator() {
+    final quiz = context.read<QuizProvider>();
+    final data = context.read<FetchDataFromJsonProvider>();
+    final ai = context.read<AiModelLogicProvider>();
+    final credits = context.read<AiCreditProvider>();
+
+    ai.showFlashcardDialog(
+      context,
+      quiz,
+      Theme.of(context).colorScheme,
+      data,
+      credits,
+    );
   }
+
   @override
   Widget build(BuildContext context) {
-
-    // Retrieve the current theme's color scheme
-    final colorScheme = Theme.of(context).colorScheme;
-
-    // Access the QuizProvider and SortProvider from the context
-    final quizProvider = Provider.of<QuizProvider>(context);
-    final fetchDataFromJsonProvider = Provider.of<FetchDataFromJsonProvider>(context);
-    final sortProvider = Provider.of<SortProvider>(context);
-    final aiModelLogicProvider = Provider.of<AiModelLogicProvider>(context);
-    final aiCreditProvider = Provider.of<AiCreditProvider>(context);
-
-    // Reverse the filtered quiz sets for display
-    final filteredQuizSets = quizProvider.filteredQuizSets.reversed.toList();
-
-    AdManager adManager = AdManager();
-
-
-    change(quizProvider);
-
-    // Navigate to the SeeAllQuizSetList screen
-    void gotoSeeAllQuizSetList() {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => SeeAllQuizSetList(
-            name: 'All Quiz Set',
-            colorScheme: colorScheme,
-          ),
-        ),
-      );
-    }
+    final colors = Theme.of(context).colorScheme;
+    final quiz = context.watch<QuizProvider>();
+    final credits = context.watch<AiCreditProvider>();
+    final sets = quiz.filteredQuizSets.reversed.toList();
+    final totalCards = quiz.quizSets.fold<int>(
+      0,
+      (total, item) => total + ((item['cards'] as List?)?.length ?? 0),
+    );
 
     return Scaffold(
-      body: Stack(
-        children: [
-          // Main scrollable content using CustomScrollView
-          RefreshIndicator(
-            onRefresh: () {
-              setState(() {});
-              return Future.delayed(Duration.zero);
-            },
-            child: CustomScrollView(
-              slivers: [
-                // SliverAppBar for a custom collapsing header
-                SliverAppBar(
-                  backgroundColor: colorScheme.primary,
-                  leading: GestureDetector(
-                    onTap: () => Scaffold.of(context).openDrawer(),
-                    child: Icon(
-                      Icons.notes_rounded,
-                      size: 30,
-                      color: colorScheme.onPrimary,
+      body: SafeArea(
+        bottom: false,
+        child: RefreshIndicator(
+          onRefresh: () async {
+            context.read<FetchDataFromJsonProvider>().fetchLatestVersion();
+            context.read<AiModelLogicProvider>().fetchLatestVersion();
+          },
+          child: ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(
+              FlashiDesign.pagePadding,
+              12,
+              FlashiDesign.pagePadding,
+              36,
+            ),
+            children: [
+              _TopBar(credits: credits.credits),
+              const SizedBox(height: 24),
+              Text(
+                'Turn anything into a quiz.',
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.w900,
+                      height: 1.05,
+                    ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Create study sets from a topic, PDF, document, image, or your own questions.',
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: colors.onSurface.withOpacity(0.65),
+                      height: 1.45,
+                    ),
+              ),
+              const SizedBox(height: 20),
+              _GeneratorCard(onGenerate: _openGenerator),
+              const SizedBox(height: 18),
+              Row(
+                children: [
+                  Expanded(
+                    child: _MetricCard(
+                      icon: Icons.layers_outlined,
+                      value: quiz.quizSets.length.toString(),
+                      label: 'Quiz sets',
                     ),
                   ),
-                  pinned: true, // Keeps the header visible when scrolling
-                  floating: true, // Header doesn't float when scrolling
-                  expandedHeight: 190, // Height of the expanded header
-                  title:  ReusableTitleContent(
-                      isEnergyShow: true,
-                      colorScheme: colorScheme, title: "FLASHI", onUpgradePro: () {},
-                      onSettings: () {
-            
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const SettingsScreen()),
-                        );
-            
-                      }),
-                  flexibleSpace: FlexibleSpaceBar(
-                    background: Container(
-                      padding: EdgeInsets.all(10),
-                      alignment: Alignment.bottomCenter,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Align(
-                            alignment: Alignment.center,
-                            child: Text(
-                              "Quiz Maker & Learner",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: colorScheme.onPrimary,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 18,
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 10,),
-                          // Search bar for filtering quiz sets
-                          Container(
-                            height: 75,
-                            child: ReusableSearchBarCore(
-                              colorScheme: colorScheme,
-                              hintText: 'Search Quiz Set',
-                              onChanged: (value) =>
-                                  quizProvider.updateSearchQuery(value),
-                              controller: quizProvider.searchController,
-                            ),
-                          )
-                        ],
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _MetricCard(
+                      icon: Icons.style_outlined,
+                      value: totalCards.toString(),
+                      label: 'Study cards',
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 28),
+              Text(
+                'Quick access',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: _QuickAction(
+                      icon: Icons.auto_awesome,
+                      label: 'Assistant',
+                      onTap: () => context
+                          .read<BottomNavigationProvider>()
+                          .toogleNavigation(0),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: _QuickAction(
+                      icon: Icons.history_rounded,
+                      label: 'History',
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const HistoryScreen(),
+                        ),
                       ),
                     ),
                   ),
-            
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.only(
-                      bottomRight: Radius.circular(35),
-                      bottomLeft: Radius.circular(35),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: _QuickAction(
+                      icon: Icons.favorite_outline_rounded,
+                      label: 'Favorites',
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const FavoriteScreen(),
+                        ),
+                      ),
                     ),
                   ),
-                ),
-            
-                // Content section below the header
-                SliverToBoxAdapter(
-                  child: Container(
-                    padding: const EdgeInsets.only(top: 0, bottom: 300,right: 2,left: 2),
-                    child: Stack(
-                      children: [
-                        Column(
-                          children: [
-                            // Sorting and "See All" button
-                           Column(
-                             children: [
-                               ReusableSortAndSeeAll(
-                                 dropdownValue: sortProvider.dropdownValueSet,
-                                 sortOptions: sortProvider.sortOptionsSet,
-                                 onSortChanged: (newValue) {
-                                   sortProvider.updateSortValueSet(newValue!);
-                                   quizProvider.sortQuizSets(newValue);
-                                 },
-                                 onSeeAllPressed: ()  {
-                                   quizProvider.searchController.text = quizProvider.searchQuery;
-                                   gotoSeeAllQuizSetList();
-                                 },
-                                 isShowSeeAllLink: true,
-                                 isShowReviewLink: false,
-                                 onShowReviewLink: () { },
-                               ),
-                               // Positioned Banner Ads (Floating Above the Content)
-                               adManager.getFirstBannerAdWidget(),
-                             ],
-                           ),
-            
-                            // Quiz set list or message
-                            if (filteredQuizSets.isNotEmpty)
-                              ReusableQuizSetList(quizSets: filteredQuizSets)
-                            else
-                              noSetWidget(context)
-            
-                          ],
-                        ),
-            
-            
-                      ],
-                    )
-            
+                ],
+              ),
+              const SizedBox(height: 30),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Your quiz sets',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.w800,
+                          ),
+                    ),
                   ),
+                  TextButton(
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => SeeAllQuizSetList(
+                          name: 'All Quiz Sets',
+                          colorScheme: colors,
+                        ),
+                      ),
+                    ),
+                    child: const Text('See all'),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: quiz.searchController,
+                onChanged: quiz.updateSearchQuery,
+                decoration: const InputDecoration(
+                  hintText: 'Search quiz sets',
+                  prefixIcon: Icon(Icons.search_rounded),
                 ),
-              ],
+              ),
+              const SizedBox(height: 10),
+              if (sets.isEmpty)
+                _EmptyLibrary(onGenerate: _openGenerator)
+              else
+                ReusableQuizSetList(quizSets: sets),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _TopBar extends StatelessWidget {
+  final int credits;
+
+  const _TopBar({required this.credits});
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Row(
+      children: [
+        Container(
+          width: 42,
+          height: 42,
+          decoration: BoxDecoration(
+            color: colors.primary,
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: Icon(Icons.bolt_rounded, color: colors.onPrimary),
+        ),
+        const SizedBox(width: 12),
+        const Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Flashi AI',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
+              ),
+              Text(
+                'Quiz Maker & Learner',
+                style: TextStyle(fontSize: 12),
+              ),
+            ],
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+          decoration: BoxDecoration(
+            color: colors.primaryContainer,
+            borderRadius: BorderRadius.circular(99),
+          ),
+          child: Row(
+            children: [
+              Icon(Icons.bolt_rounded, size: 17, color: colors.primary),
+              const SizedBox(width: 4),
+              Text(
+                credits.toString(),
+                style: TextStyle(
+                  color: colors.onPrimaryContainer,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 4),
+        IconButton(
+          tooltip: 'Settings',
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const SettingsScreen()),
+          ),
+          icon: const Icon(Icons.settings_outlined),
+        ),
+      ],
+    );
+  }
+}
+
+class _GeneratorCard extends StatelessWidget {
+  final VoidCallback onGenerate;
+
+  const _GeneratorCard({required this.onGenerate});
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: colors.primary,
+        borderRadius: BorderRadius.circular(24),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.auto_awesome_rounded, color: colors.onPrimary, size: 30),
+          const SizedBox(height: 18),
+          Text(
+            'Create with AI',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  color: colors.onPrimary,
+                  fontWeight: FontWeight.w900,
+                ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Choose a source and let Flashi build a focused Q&A set for you.',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: colors.onPrimary.withOpacity(0.82),
+                  height: 1.4,
+                ),
+          ),
+          const SizedBox(height: 18),
+          FilledButton.icon(
+            style: FilledButton.styleFrom(
+              backgroundColor: colors.onPrimary,
+              foregroundColor: colors.primary,
             ),
+            onPressed: onGenerate,
+            icon: const Icon(Icons.add_rounded),
+            label: const Text('Generate quiz'),
           ),
-
-          // Floating "Create Set" button
-          ReusableCreateSetButtonPosition(
-            icon: Icons.add_circle,
-            colorScheme: colorScheme,
-            name: 'Generate Quiz',
-            onTap: ()  {
-              aiModelLogicProvider.showFlashcardDialog(context, quizProvider, colorScheme,fetchDataFromJsonProvider,aiCreditProvider);
-            },
-          ),
-
-          // Floating theme settings button
-          ReusableThemeSettingPosition(colorScheme: colorScheme),
-          ReusableDailyQuestPosition(colorScheme: colorScheme),
-          ReusableImportPosition(colorScheme: colorScheme),
-          ReusableFavoratePosition(colorScheme: colorScheme),
-
         ],
       ),
     );
   }
 }
 
+class _MetricCard extends StatelessWidget {
+  final IconData icon;
+  final String value;
+  final String label;
+
+  const _MetricCard({
+    required this.icon,
+    required this.value,
+    required this.label,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(FlashiDesign.radius),
+        border: Border.all(color: colors.outline.withOpacity(0.13)),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: colors.primary),
+          const SizedBox(width: 12),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: colors.onSurface.withOpacity(0.6),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _QuickAction extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  const _QuickAction({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(FlashiDesign.smallRadius),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
+        decoration: BoxDecoration(
+          color: colors.surface,
+          borderRadius: BorderRadius.circular(FlashiDesign.smallRadius),
+          border: Border.all(color: colors.outline.withOpacity(0.12)),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: colors.primary),
+            const SizedBox(height: 7),
+            Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _EmptyLibrary extends StatelessWidget {
+  final VoidCallback onGenerate;
+
+  const _EmptyLibrary({required this.onGenerate});
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.all(28),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(FlashiDesign.radius),
+        border: Border.all(color: colors.outline.withOpacity(0.12)),
+      ),
+      child: Column(
+        children: [
+          Icon(
+            Icons.layers_outlined,
+            size: 42,
+            color: colors.primary.withOpacity(0.7),
+          ),
+          const SizedBox(height: 12),
+          const Text(
+            'No quiz sets yet',
+            style: TextStyle(fontWeight: FontWeight.w800),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Generate your first quiz and it will appear here.',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: colors.onSurface.withOpacity(0.6)),
+          ),
+          const SizedBox(height: 16),
+          OutlinedButton(
+            onPressed: onGenerate,
+            child: const Text('Create first quiz'),
+          ),
+        ],
+      ),
+    );
+  }
+}

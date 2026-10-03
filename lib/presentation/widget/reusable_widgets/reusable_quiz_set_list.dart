@@ -57,7 +57,7 @@ class ReusableQuizSetList extends StatelessWidget {
 
                     return AnimationConfiguration.staggeredList(
                       position: index,
-                      duration: const Duration(seconds: 2),
+                      duration: const Duration(milliseconds: 280),
                       child: SlideAnimation(
                         curve: Curves.easeInOutCubicEmphasized,
                         verticalOffset: 100.0,
@@ -172,7 +172,7 @@ class ReusableQuizSetList extends StatelessWidget {
     );
 
     // Wait before showing the Create Card modal
-    await Future.delayed(const Duration(seconds: 1));
+    await Future.delayed(const Duration(milliseconds: 250));
 
     CreateCardBottomModal(
       context: context,

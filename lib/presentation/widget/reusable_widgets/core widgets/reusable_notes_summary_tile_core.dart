@@ -1,3 +1,4 @@
+import 'package:flashi/core/design/flashi_design.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -11,9 +12,10 @@ class ReusableNotesSummaryTileCore extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
-  final isHistoryScreen ;
+  final bool isHistoryScreen;
 
-  ReusableNotesSummaryTileCore({
+  const ReusableNotesSummaryTileCore({
+    super.key,
     required this.title,
     required this.content,
     required this.timestamp,
@@ -28,137 +30,73 @@ class ReusableNotesSummaryTileCore extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
+    final date = DateFormat('MMM d, yyyy · h:mm a').format(timestamp);
 
-
-
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: EdgeInsets.symmetric(vertical: 5),
-        decoration: _buildContainerDecoration(colorScheme),
-        child: ListTile(
-          contentPadding: EdgeInsets.symmetric(vertical: 5, horizontal: isHistoryScreen ? 30 : 15),
-          leading: isHistoryScreen ? null : _buildFavoriteButton(colorScheme),
-          title: _buildTitle(colorScheme),
-          subtitle: _buildSubtitle(colorScheme),
-          trailing: _buildPopupMenuButton(colorScheme),
-        ),
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 6),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(FlashiDesign.smallRadius),
+        border: Border.all(color: colors.outline.withOpacity(0.12)),
       ),
-    );
-  }
-
-  BoxDecoration _buildContainerDecoration(ColorScheme colorScheme) {
-    return BoxDecoration(
-      gradient: LinearGradient(
-        colors: isNote
-            ? [
-          colorScheme.primaryContainer,
-          colorScheme.secondaryContainer,
-        ]
-            : [
-          colorScheme.secondaryContainer,
-          colorScheme.tertiaryContainer,
-        ], // Fallback gradient colors
-        begin: Alignment.bottomRight,
-        end: Alignment.topLeft,
-      ),
-      borderRadius: BorderRadius.circular(15),
-    );
-  }
-
-
-  IconButton _buildFavoriteButton(ColorScheme colorScheme) {
-    return  IconButton(
-      icon: Icon(
-        isFavorite ? Icons.star_rounded : Icons.star_border_rounded,
-        color: colorScheme.primary,
-      ),
-      onPressed: onFavorite,
-    );
-  }
-
-  Text _buildTitle(ColorScheme colorScheme) {
-    return Text(
-      title,
-      style: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.bold,
-        color: colorScheme.primary,
-        overflow: TextOverflow.ellipsis
-      ),
-    );
-  }
-  Column _buildSubtitle(ColorScheme colorScheme) {
-    // Formatting date and time to 12-hour format
-    String formattedDate = DateFormat('MMM dd, yyyy - hh:mm a').format(timestamp);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          content,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            fontSize: 14,
-            color: colorScheme.secondary,
-          ),
-        ),
-        const SizedBox(height: 10,),
-        Text(
-          formattedDate,
+      child: ListTile(
+        onTap: onTap,
+        contentPadding: const EdgeInsets.fromLTRB(14, 8, 8, 8),
+        leading: isHistoryScreen
+            ? null
+            : IconButton(
+                tooltip: isFavorite ? 'Remove favorite' : 'Favorite',
+                onPressed: onFavorite,
+                icon: Icon(
+                  isFavorite
+                      ? Icons.favorite_rounded
+                      : Icons.favorite_border_rounded,
+                  color: isFavorite ? colors.error : colors.primary,
+                ),
+              ),
+        title: Text(
+          title,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            fontSize: 10,
-            color: colorScheme.secondary,
+          style: const TextStyle(fontWeight: FontWeight.w800),
+        ),
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 5),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                content,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  height: 1.35,
+                  color: colors.onSurface.withOpacity(0.62),
+                ),
+              ),
+              const SizedBox(height: 7),
+              Text(
+                date,
+                style: TextStyle(
+                  fontSize: 10,
+                  color: colors.onSurface.withOpacity(0.48),
+                ),
+              ),
+            ],
           ),
         ),
-      ],
-    );
-  }
-  PopupMenuButton<String> _buildPopupMenuButton(ColorScheme colorScheme) {
-    return PopupMenuButton<String>(
-      onSelected: (value) {
-        if (value == 'edit') {
-          onEdit();
-        } else if (value == 'delete') {
-          onDelete();
-        }
-      },
-      icon: Icon(
-        Icons.more_vert_rounded,
-        color: colorScheme.primary,
+        trailing: PopupMenuButton<String>(
+          onSelected: (value) {
+            if (value == 'edit') onEdit();
+            if (value == 'delete') onDelete();
+          },
+          itemBuilder: (_) => const [
+            PopupMenuItem(value: 'edit', child: Text('Edit')),
+            PopupMenuItem(value: 'delete', child: Text('Delete')),
+          ],
+        ),
       ),
-      itemBuilder: (context) => [
-        PopupMenuItem<String>(
-          value: 'edit',
-          child: _buildPopupMenuItem(
-            icon: Icons.edit,
-            color: colorScheme.primary,
-            text: 'Edit',
-          ),
-        ),
-        PopupMenuItem<String>(
-          value: 'delete',
-          child: _buildPopupMenuItem(
-            icon: Icons.delete,
-            color: colorScheme.error,
-            text: 'Delete',
-          ),
-        ),
-      ],
-    );
-  }
-
-  Row _buildPopupMenuItem({required IconData icon, required Color color, required String text}) {
-    return Row(
-      children: [
-        Icon(icon, color: color),
-        SizedBox(width: 8),
-        Text(text),
-      ],
     );
   }
 }

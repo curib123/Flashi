@@ -100,7 +100,6 @@ void updateSetToEmpty(){
   // Save quiz sets to Hive storage
   void saveQuizSets() {
     _settingsBox.put('quizSets', _quizSets);
-    loadQuizSets();
   }
 
   // Getter for quiz sets and search query
@@ -136,36 +135,52 @@ void updateSetToEmpty(){
   // Sort quiz sets based on the criterion
   void sortQuizSets(String criterion) {
     if (criterion == 'Alphabetical') {
-      _quizSets.sort((a, b) => (b['name'] ?? '').toLowerCase().compareTo((a['name'] ?? '').toLowerCase()));
+      _quizSets.sort((a, b) => (a['name'] ?? '')
+          .toString()
+          .toLowerCase()
+          .compareTo((b['name'] ?? '').toString().toLowerCase()));
     } else if (criterion == 'Number of Quizzes') {
-      _quizSets.sort((a, b) => (a['numberOfQuiz'] ?? 0).compareTo(b['numberOfQuiz'] ?? 0));
+      _quizSets.sort((a, b) =>
+          (b['numberOfQuiz'] ?? 0).compareTo(a['numberOfQuiz'] ?? 0));
     } else if (criterion == 'Reverse Alphabetical') {
-      _quizSets.sort((a, b) => (a['name'] ?? '').toLowerCase().compareTo((b['name'] ?? '').toLowerCase()));
+      _quizSets.sort((a, b) => (b['name'] ?? '')
+          .toString()
+          .toLowerCase()
+          .compareTo((a['name'] ?? '').toString().toLowerCase()));
     } else if (criterion == 'Newest') {
-      _quizSets.sort((a, b) => (a['timestamp'] ?? DateTime.now()).compareTo(b['timestamp'] ?? DateTime.now()));
+      _quizSets.sort((a, b) => (b['timestamp'] ?? DateTime(1970))
+          .compareTo(a['timestamp'] ?? DateTime(1970)));
     } else if (criterion == 'Oldest') {
-      _quizSets.sort((a, b) => (b['timestamp'] ?? DateTime.now()).compareTo(a['timestamp'] ?? DateTime.now()));
+      _quizSets.sort((a, b) => (a['timestamp'] ?? DateTime(1970))
+          .compareTo(b['timestamp'] ?? DateTime(1970)));
     }
 
     notifyListeners();
   }
 
   // Sort quiz sets based on the criterion
-  List<Map<String, dynamic>>  sortQuizCard({required final  List<Map<String, dynamic>> quizSet }) {
-    String criterion = newValueCard;
+  List<Map<String, dynamic>> sortQuizCard({
+    required List<Map<String, dynamic>> quizSet,
+  }) {
+    final criterion = newValueCard;
     if (criterion == 'Alphabetical') {
-      quizSet.sort((a, b) => (b['question'] ?? '').toLowerCase().compareTo((a['question'] ?? '').toLowerCase()));
-    }  else if (criterion == 'Reverse Alphabetical') {
-      quizSet.sort((a, b) => (a['question'] ?? '').toLowerCase().compareTo((b['question'] ?? '').toLowerCase()));
+      quizSet.sort((a, b) => (a['question'] ?? '')
+          .toString()
+          .toLowerCase()
+          .compareTo((b['question'] ?? '').toString().toLowerCase()));
+    } else if (criterion == 'Reverse Alphabetical') {
+      quizSet.sort((a, b) => (b['question'] ?? '')
+          .toString()
+          .toLowerCase()
+          .compareTo((a['question'] ?? '').toString().toLowerCase()));
     } else if (criterion == 'Newest') {
-      quizSet.sort((a, b) => (a['timestamp'] ?? DateTime.now()).compareTo(b['timestamp'] ?? DateTime.now()));
+      quizSet.sort((a, b) => (b['timestamp'] ?? DateTime(1970))
+          .compareTo(a['timestamp'] ?? DateTime(1970)));
     } else if (criterion == 'Oldest') {
-      quizSet.sort((a, b) => (b['timestamp'] ?? DateTime.now()).compareTo(a['timestamp'] ?? DateTime.now()));
+      quizSet.sort((a, b) => (a['timestamp'] ?? DateTime(1970))
+          .compareTo(b['timestamp'] ?? DateTime(1970)));
     }
-
     return quizSet;
-
-    notifyListeners();
   }
 
   //toggle sort card

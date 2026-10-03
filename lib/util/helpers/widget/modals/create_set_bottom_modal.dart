@@ -1,6 +1,3 @@
-
-import 'package:flashi/presentation/widget/components/create_set_buttons.dart';
-import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_textfield_core.dart';
 import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -11,111 +8,120 @@ void CreateSetBottomModal({
   required bool isCreate,
   required String setName,
 }) {
-  final colorScheme = Theme.of(context).colorScheme;
+  final provider = context.read<QuizProvider>();
+
+  if (isCreate) {
+    provider.nameController.clear();
+    provider.descriptionController.clear();
+  }
 
   showModalBottomSheet(
     context: context,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(
-        top: Radius.circular(20),
-      ),
-    ),
-    backgroundColor: Colors.white,
-    isScrollControlled: true, // Allows controlling the modal's height
-    builder: (BuildContext context) {
-      // Determine the keyboard height to adjust the modal content
-      double keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
-
+    isScrollControlled: true,
+    useSafeArea: true,
+    showDragHandle: true,
+    backgroundColor: Theme.of(context).colorScheme.surface,
+    builder: (sheetContext) {
       return Consumer<QuizProvider>(
-        builder: (context, quizProvider, child) {
-          return Container(
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-            height: 400 + keyboardHeight, // Fixed height, adjusting for the keyboard
-            child: Padding(
-              padding: EdgeInsets.only(bottom: keyboardHeight), // Padding adjusts with keyboard height
+        builder: (context, quiz, child) {
+          final bottom = MediaQuery.of(context).viewInsets.bottom;
+          return AnimatedPadding(
+            duration: const Duration(milliseconds: 180),
+            padding: EdgeInsets.fromLTRB(20, 4, 20, bottom + 20),
+            child: SingleChildScrollView(
               child: Column(
-                mainAxisSize: MainAxisSize.min, // Ensures the modal doesn't stretch more than necessary
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  const SizedBox(height: 10),
-                  Align(
-                    alignment: Alignment.topLeft,
-                    child: Text(
-                      isCreate ? "Generate Quiz Set" : 'Edit the Quiz Set: $setName',
-                      style: TextStyle(
-                        color: colorScheme.primary,
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                        overflow: TextOverflow.ellipsis, // Handles text overflow
-                      ),
-                      maxLines: 1, // Ensures the title doesn't wrap onto multiple lines
+                  Text(
+                    isCreate ? 'Create quiz set' : 'Edit quiz set',
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.w900,
+                        ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    isCreate
+                        ? 'Give the set a clear name so it is easy to find later.'
+                        : 'Update the name or description without changing its cards.',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withOpacity(0.6),
+                        ),
+                  ),
+                  const SizedBox(height: 22),
+                  TextField(
+                    controller: quiz.nameController,
+                    autofocus: isCreate,
+                    textCapitalization: TextCapitalization.sentences,
+                    decoration: const InputDecoration(
+                      labelText: 'Quiz set name',
+                      hintText: 'e.g. Biology Chapter 4',
                     ),
                   ),
-                  const SizedBox(height: 30),
-                  // TextField for Set Name
-                  ReusableTextfieldCore(
-                    name: "Quiz Set Name",
-                    controller: quizProvider.nameController,
-                    isHideName: false,
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: quiz.descriptionController,
+                    minLines: 2,
+                    maxLines: 4,
+                    textCapitalization: TextCapitalization.sentences,
+                    decoration: const InputDecoration(
+                      labelText: 'Description',
+                      hintText: 'Optional study context',
+                    ),
                   ),
                   const SizedBox(height: 20),
-                  // TextField for Description
-                  ReusableTextfieldCore(
-                    isHideName: false,
-                    name: "Description - Optional",
-                    controller: quizProvider.descriptionController,
-                  ),
-                  const SizedBox(height: 30),
-                  // Button to Create Set
-                  CreateSetButtons(
-                    createBtn: () {
-                      // Get the input data from the text controllers
-                      final String name = quizProvider.nameController.text;
-                      final String description = quizProvider.descriptionController.text;
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton.icon(
+                      onPressed: () {
+                        final name = quiz.nameController.text.trim();
+                        final description =
+                            quiz.descriptionController.text.trim();
 
-                      // Add the new set to the provider
-                      if (name.isNotEmpty) {
+                        if (name.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Add a quiz set name first.'),
+                            ),
+                          );
+                          return;
+                        }
+
                         if (isCreate) {
-                          quizProvider.addQuizSet({
+                          quiz.addQuizSet({
                             'name': name,
                             'timestamp': DateTime.now(),
                             'description': description,
-                            'cards': [],
+                            'cards': <Map<String, dynamic>>[],
                             'numberOfQuiz': 0,
-                            'limitNumberOfQuiz': quizProvider.defaultMaxCards,
+                            'limitNumberOfQuiz': quiz.defaultMaxCards,
+                            'favorite': false,
                           });
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('The Quiz Set $name is Generated'),
-                              backgroundColor: Colors.green,
-                            ),
-                          );
-
-                          quizProvider.clearController();
                         } else {
-                          quizProvider.editQuizSet(setName, newName: name, newDescription: description);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('The Quiz Set $name is Updated '),
-                              backgroundColor: Colors.green,
-                            ),
+                          quiz.editQuizSet(
+                            setName,
+                            newName: name,
+                            newDescription: description,
                           );
-
-                          quizProvider.clearController();
                         }
 
-                        // Close the modal
-                        Navigator.pop(context);
-                      } else {
+                        Navigator.pop(sheetContext);
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('Required Question'),
-                            backgroundColor: Colors.red,
+                            content: Text(
+                              isCreate
+                                  ? 'Quiz set created.'
+                                  : 'Quiz set updated.',
+                            ),
                           ),
                         );
-
-                      }
-                    },
-                    buttonName: isCreate ? buttonName : 'Save Changes',
+                      },
+                      icon: Icon(isCreate ? Icons.add_rounded : Icons.save_rounded),
+                      label: Text(isCreate ? buttonName : 'Save changes'),
+                    ),
                   ),
                 ],
               ),
