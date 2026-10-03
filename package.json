@@ -1,0 +1,10 @@
+{
+  "name": "flashi-monorepo",
+  "private": true,
+  "workspaces": ["apps/api"],
+  "scripts": {
+    "api:dev": "npm --workspace apps/api run dev",
+    "api:build": "npm --workspace apps/api run build",
+    "api:typecheck": "npm --workspace apps/api run typecheck"
+  }
+}
