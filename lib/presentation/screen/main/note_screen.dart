@@ -1,6 +1,7 @@
 import 'package:flashi/core/design/flashi_design.dart';
 import 'package:flashi/presentation/screen/main/settings_screen.dart';
 import 'package:flashi/presentation/widget/components/create_note_screen.dart';
+import 'package:flashi/presentation/widget/components/custom_drawer.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_notes_summary_block_core.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_notes_summary_tile_core.dart';
 import 'package:flashi/provider/notes_provider.dart';
@@ -36,6 +37,7 @@ class NoteScreen extends StatelessWidget {
     final isList = sort.dropdownValueNote == 'Tiles';
 
     return Scaffold(
+      drawer: const CustomDrawer(),
       appBar: AppBar(
         title: const Text('Notes'),
         actions: [
@@ -118,8 +120,8 @@ class NoteScreen extends StatelessWidget {
                       : GridView.builder(
                           padding: const EdgeInsets.only(bottom: 100),
                           gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
+                              const SliverGridDelegateWithMaxCrossAxisExtent(
+                            maxCrossAxisExtent: 260,
                             crossAxisSpacing: 10,
                             mainAxisSpacing: 10,
                             childAspectRatio: 0.92,
@@ -221,7 +223,9 @@ class _ViewButton extends StatelessWidget {
           width: 42,
           height: 42,
           decoration: BoxDecoration(
-            color: selected ? colors.primaryContainer : colors.surface,
+            color: selected
+                ? FlashiDesign.primarySoftOf(context)
+                : colors.surface,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: colors.outline.withOpacity(0.12)),
           ),
