@@ -2,6 +2,7 @@ import 'package:flashi/core/design/flashi_design.dart';
 import 'package:flashi/presentation/screen/main/favorate_screen.dart';
 import 'package:flashi/presentation/screen/main/history_screen.dart';
 import 'package:flashi/presentation/screen/main/settings_screen.dart';
+import 'package:flashi/presentation/widget/components/custom_drawer.dart';
 import 'package:flashi/presentation/widget/components/see_all_quiz_set_list.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_quiz_set_list.dart';
 import 'package:flashi/provider/ai_credits_provider.dart';
@@ -59,6 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
 
     return Scaffold(
+      drawer: const CustomDrawer(),
       body: SafeArea(
         bottom: false,
         child: RefreshIndicator(
@@ -218,6 +220,12 @@ class _TopBar extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     return Row(
       children: [
+        IconButton.filledTonal(
+          tooltip: 'Menu',
+          onPressed: () => Scaffold.of(context).openDrawer(),
+          icon: const Icon(Icons.menu_rounded),
+        ),
+        const SizedBox(width: 8),
         Container(
           width: 42,
           height: 42,
@@ -225,7 +233,7 @@ class _TopBar extends StatelessWidget {
             color: colors.primary,
             borderRadius: BorderRadius.circular(14),
           ),
-          child: Icon(Icons.bolt_rounded, color: colors.onPrimary),
+          child: Icon(Icons.auto_awesome_rounded, color: colors.onPrimary),
         ),
         const SizedBox(width: 12),
         const Expanded(
@@ -284,39 +292,46 @@ class _GeneratorCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: colors.primary,
-        borderRadius: BorderRadius.circular(24),
+        color: FlashiDesign.primaryFaintOf(context),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: FlashiDesign.primarySoftOf(context)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.auto_awesome_rounded, color: colors.onPrimary, size: 30),
-          const SizedBox(height: 18),
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: FlashiDesign.primarySoftOf(context),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: const Icon(
+              Icons.auto_awesome_rounded,
+              color: FlashiDesign.brand,
+            ),
+          ),
+          const SizedBox(height: 16),
           Text(
             'Create with AI',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: colors.onPrimary,
                   fontWeight: FontWeight.w900,
+                  letterSpacing: -.3,
                 ),
           ),
           const SizedBox(height: 6),
           Text(
             'Choose a source and let Flashi build a focused Q&A set for you.',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: colors.onPrimary.withOpacity(0.82),
+                  color: FlashiDesign.mutedOf(context),
                   height: 1.4,
                 ),
           ),
           const SizedBox(height: 18),
           FilledButton.icon(
-            style: FilledButton.styleFrom(
-              backgroundColor: colors.onPrimary,
-              foregroundColor: colors.primary,
-            ),
             onPressed: onGenerate,
             icon: const Icon(Icons.add_rounded),
             label: const Text('Generate quiz'),
@@ -340,36 +355,48 @@ class _MetricCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(FlashiDesign.radius),
-        border: Border.all(color: colors.outline.withOpacity(0.13)),
+        color: FlashiDesign.surfaceOf(context),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: FlashiDesign.borderOf(context)),
       ),
       child: Row(
         children: [
-          Icon(icon, color: colors.primary),
-          const SizedBox(width: 12),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                value,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w900,
+          Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              color: FlashiDesign.primarySoftOf(context),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: FlashiDesign.brand, size: 20),
+          ),
+          const SizedBox(width: 11),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  value,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w900,
+                        color: FlashiDesign.brand,
+                      ),
                 ),
-              ),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: colors.onSurface.withOpacity(0.6),
+                Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: FlashiDesign.mutedOf(context),
+                      ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
@@ -390,28 +417,30 @@ class _QuickAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(FlashiDesign.smallRadius),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
-        decoration: BoxDecoration(
-          color: colors.surface,
-          borderRadius: BorderRadius.circular(FlashiDesign.smallRadius),
-          border: Border.all(color: colors.outline.withOpacity(0.12)),
-        ),
-        child: Column(
-          children: [
-            Icon(icon, color: colors.primary),
-            const SizedBox(height: 7),
-            Text(
-              label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
-            ),
-          ],
+    return Material(
+      color: FlashiDesign.brand,
+      borderRadius: BorderRadius.circular(18),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(18),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 8),
+          child: Column(
+            children: [
+              Icon(icon, color: Colors.white, size: 24),
+              const SizedBox(height: 7),
+              Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
