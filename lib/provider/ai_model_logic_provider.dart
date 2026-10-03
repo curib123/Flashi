@@ -282,284 +282,271 @@ class AiModelLogicProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> showFlashcardDialog(BuildContext context,
-      QuizProvider quizProvider,
-      ColorScheme colorScheme,
-      FetchDataFromJsonProvider fetchDataFromJsonProvider,
-      AiCreditProvider aiCreditProvider) async {
-    showDialog(
-      barrierDismissible: true,
+  Future<void> showFlashcardDialog(
+    BuildContext context,
+    QuizProvider quizProvider,
+    ColorScheme colorScheme,
+    FetchDataFromJsonProvider fetchDataFromJsonProvider,
+    AiCreditProvider aiCreditProvider,
+  ) async {
+    await showModalBottomSheet<void>(
       context: context,
-      builder: (BuildContext context) {
-        void _fetchDataFromJson() {
-          fetchLatestVersion();
-          fetchDataFromJsonProvider.fetchLatestVersion();
-        }
-
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            return AlertDialog(
-              backgroundColor: colorScheme.onPrimary,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15.0),
+      isScrollControlled: true,
+      useSafeArea: true,
+      showDragHandle: true,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      builder: (sheetContext) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Create a quiz',
+                style: Theme.of(sheetContext)
+                    .textTheme
+                    .headlineSmall
+                    ?.copyWith(fontWeight: FontWeight.w900),
               ),
-              titlePadding: EdgeInsets.zero,
-              contentPadding: const EdgeInsets.all(10),
-              title: Container(
-                decoration: BoxDecoration(
-                  color: colorScheme.primary,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(15),
-                    topRight: Radius.circular(15),
-                    bottomLeft: Radius.circular(20.0),
-                    bottomRight: Radius.circular(20.0),
-                  ),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 15.0),
-                child: Center(
-                  child: Text(
-                    "Choose Generation Method ",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      color: colorScheme.onPrimary,
+              const SizedBox(height: 6),
+              Text(
+                'Choose where your study material comes from.',
+                style: Theme.of(sheetContext).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(sheetContext)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.6),
                     ),
-                  ),
-                ),
               ),
-              content: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      "Create your own Quiz, let AI generate one for you, or extract from a PDF/Docs file!",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: Colors.grey[700],
+              const SizedBox(height: 18),
+              _generationOption(
+                context: sheetContext,
+                icon: Icons.edit_note_rounded,
+                title: 'Create manually',
+                subtitle: 'Build a quiz set and add your own Q&A cards.',
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  CreateSetBottomModal(
+                    context: context,
+                    buttonName: 'Create set',
+                    isCreate: true,
+                    setName: '',
+                  );
+                },
+              ),
+              _generationOption(
+                context: sheetContext,
+                icon: Icons.auto_awesome_rounded,
+                title: 'Generate from a topic',
+                subtitle: 'Tell Flashi what you want to study and let AI draft the set.',
+                onTap: () async {
+                  if (!await _prepareGeneration(
+                    context,
+                    fetchDataFromJsonProvider,
+                  )) {
+                    return;
+                  }
+                  if (!sheetContext.mounted) return;
+                  Navigator.pop(sheetContext);
+                  ModelSelectionDialog.show(
+                    context,
+                    true,
+                    onTap: () => showTopicDialog(
+                      context,
+                      onTap: () => GenerateFlashCardFromCustomTopic(
+                        context,
+                        quizProvider,
+                        fetchDataFromJsonProvider,
+                        aiCreditProvider,
                       ),
                     ),
-                  ],
-                ),
+                  );
+                },
               ),
-              actions: [
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _buildDialogButton(
-                      icon: Icons.style_rounded,
-                      context,
-                      label: "Create Own Quiz",
-                      gradientColors: [
-                        colorScheme.primary,
-                        colorScheme.primary.withOpacity(0.5)
-                      ],
-                      onPressed: () {
-                        Navigator.pop(context);
-                        CreateSetBottomModal(
-                          context: context,
-                          buttonName: 'Save',
-                          isCreate: true,
-                          setName: '',
-                        );
-                      },
-                    ),
-                    _buildDialogButton(
-                      icon: Icons.auto_awesome,
-                      context,
-                      label: "Ai-Generated Quiz ",
-                      gradientColors: [
-                        colorScheme.secondary,
-                        colorScheme.secondary.withOpacity(0.5)
-                      ],
-                      onPressed: () async {
-                        bool isConnected =
-                        await InternetConnection().hasInternetAccess;
-                        if (!isConnected && !isFetchData) {
-                          showAuthDialog(context,type: "error", "Error",
-                              "Please connect to the internet to generate a Quiz.");
-
-                          return;
-                        } else {
-                          _fetchDataFromJson();
-                        }
-                        if (!isUnderMaintenance) {
-                          ModelSelectionDialog.show(
-                            context,
-                            true,
-                            onTap: () =>
-                                showTopicDialog(context, onTap: () {
-                                  GenerateFlashCardFromCustomTopic(
-                                      context, quizProvider,
-                                      fetchDataFromJsonProvider,
-                                      aiCreditProvider);
-                                }),
-                          );
-                        } else {
-                          showAuthDialog(context,type: "error", "Error",
-                              "Under Maintenance \n  reasonMaintenance");
-                        }
-                      },
-                    ),
-                    _buildDialogButton(
-                      icon: Icons.file_copy_rounded,
-                      context,
-                      label: "Quiz From PDF/Word Docx",
-                      gradientColors: [
-                        colorScheme.tertiary,
-                        colorScheme.tertiary.withOpacity(0.5)
-                      ],
-                      onPressed: () async {
-                        bool isConnected =
-                        await InternetConnection().hasInternetAccess;
-                        if (!isConnected && !isFetchData) {
-                          showAuthDialog(context,type: "error", "Error",
-                              "Please connect to the internet to generate a Quiz.");
-                          return;
-                        } else {
-                          _fetchDataFromJson();
-                        }
-                        if (!isUnderMaintenance) {
-                          ModelSelectionDialog.show(
-                            context,
-                            false,
-                            onTap: () async {
-                              await pickFileAndGenerate(
-                                context,
-                                quizProvider,
-                                fetchDataFromJsonProvider,
-                                aiCreditProvider,
-                                    () async {
-                                  return await FileTextExtractor
-                                      .pickAndExtractText();
-                                },
-                              );
-                            },
-
-                          );
-                        } else {
-                          showAuthDialog(context, type: "error","Error", "Under Maintenance");
-                        }
-                      },
-                    ),
-
-                    _buildDialogButton(
-                      icon: Icons.picture_in_picture,
-                      context,
-                      label: "Quiz From Picture",
-                      gradientColors: [
-                        colorScheme.tertiary,
-                        colorScheme.tertiary.withOpacity(0.5)
-                      ],
-                      onPressed: () async {
-                        bool isConnected =
-                        await InternetConnection().hasInternetAccess;
-                        if (!isConnected && !isFetchData) {
-                          showAuthDialog(context,type: "error", "Error",
-                              "Please connect to the internet to generate a Quiz.");
-
-                          return;
-                        } else {
-                          _fetchDataFromJson();
-                        }
-                        if (!isUnderMaintenance) {
-                          ModelSelectionDialog.show(
-                            context,
-                            false,
-                            onTap: () async {
-                              await pickFileAndGenerate(
-                                context,
-                                quizProvider,
-                                fetchDataFromJsonProvider,
-                                aiCreditProvider,
-                                    () async {
-                                  return await AIQuestionGenerator.analyzeImage(
-                                      FileTextExtractor.pickOrCaptureImage(
-                                          context), "Get the text in image");
-                                },
-                              );
-                            },
-
-                          );
-                        } else {
-                          showAuthDialog(context,type: "error", "Error", "Under Maintenance");
-                        }
-                      },
-                    ),
-                  ],
-                ),
-              ],
-            );
-          },
+              _generationOption(
+                context: sheetContext,
+                icon: Icons.description_outlined,
+                title: 'Import PDF or DOCX',
+                subtitle: 'Extract text from a study file and generate questions automatically.',
+                onTap: () async {
+                  if (!await _prepareGeneration(
+                    context,
+                    fetchDataFromJsonProvider,
+                  )) {
+                    return;
+                  }
+                  if (!sheetContext.mounted) return;
+                  Navigator.pop(sheetContext);
+                  ModelSelectionDialog.show(
+                    context,
+                    false,
+                    onTap: () async {
+                      await pickFileAndGenerate(
+                        context,
+                        quizProvider,
+                        fetchDataFromJsonProvider,
+                        aiCreditProvider,
+                        () => FileTextExtractor.pickAndExtractText(),
+                      );
+                    },
+                  );
+                },
+              ),
+              _generationOption(
+                context: sheetContext,
+                icon: Icons.document_scanner_outlined,
+                title: 'Scan a photo',
+                subtitle: 'Capture or choose a page and turn the visible text into a quiz.',
+                onTap: () async {
+                  if (!await _prepareGeneration(
+                    context,
+                    fetchDataFromJsonProvider,
+                  )) {
+                    return;
+                  }
+                  if (!sheetContext.mounted) return;
+                  Navigator.pop(sheetContext);
+                  ModelSelectionDialog.show(
+                    context,
+                    false,
+                    onTap: () async {
+                      await pickFileAndGenerate(
+                        context,
+                        quizProvider,
+                        fetchDataFromJsonProvider,
+                        aiCreditProvider,
+                        () async => AIQuestionGenerator.analyzeImage(
+                          FileTextExtractor.pickOrCaptureImage(context),
+                          'Get the text in image',
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ],
+          ),
         );
       },
     );
   }
 
-  Widget _buildDialogButton(BuildContext context, {
-    required String label,
-    required List<Color> gradientColors,
-    required VoidCallback onPressed,
-    IconData? icon,
+  Future<bool> _prepareGeneration(
+    BuildContext context,
+    FetchDataFromJsonProvider fetchDataFromJsonProvider,
+  ) async {
+    final connected = await InternetConnection().hasInternetAccess;
+    if (!connected) {
+      if (context.mounted) {
+        showAuthDialog(
+          context,
+          type: 'error',
+          'No connection',
+          'Connect to the internet to generate a quiz with AI.',
+        );
+      }
+      return false;
+    }
+
+    try {
+      await Future.wait([
+        fetchLatestVersion(),
+        fetchDataFromJsonProvider.fetchLatestVersion(),
+      ]);
+    } catch (_) {
+      if (context.mounted) {
+        showAuthDialog(
+          context,
+          type: 'error',
+          'Service unavailable',
+          'Flashi could not refresh the AI configuration. Please try again.',
+        );
+      }
+      return false;
+    }
+
+    if (isUnderMaintenance) {
+      if (context.mounted) {
+        showAuthDialog(
+          context,
+          type: 'warning',
+          'AI is under maintenance',
+          reasonMaintenance.isEmpty
+              ? 'AI generation is temporarily unavailable.'
+              : reasonMaintenance,
+        );
+      }
+      return false;
+    }
+
+    return true;
+  }
+
+  Widget _generationOption({
+    required BuildContext context,
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
   }) {
+    final colors = Theme.of(context).colorScheme;
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: SizedBox(
-        width: double.infinity,
-        child: DecoratedBox(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: gradientColors,
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
             borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.2),
-                blurRadius: 6,
-                offset: const Offset(0, 3),
-              ),
-            ],
+            border: Border.all(color: colors.outline.withOpacity(0.14)),
           ),
-          child: Material(
-            color: Colors.transparent,
-            borderRadius: BorderRadius.circular(16),
-            child: InkWell(
-              onTap: onPressed,
-              borderRadius: BorderRadius.circular(16),
-              splashColor: Colors.white.withOpacity(0.2),
-              highlightColor: Colors.white.withOpacity(0.1),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
+          child: Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: colors.primaryContainer,
+                  borderRadius: BorderRadius.circular(13),
+                ),
+                child: Icon(icon, color: colors.primary),
+              ),
+              const SizedBox(width: 13),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (icon != null) ...[
-                      Icon(icon, color: Colors.white, size: 22),
-                      const SizedBox(width: 12),
-                    ],
                     Text(
-                      label,
-                      style: const TextStyle(
+                      title,
+                      style: const TextStyle(fontWeight: FontWeight.w800),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
                         fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white,
-                        letterSpacing: 0.5,
+                        height: 1.35,
+                        color: colors.onSurface.withOpacity(0.6),
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
+              const SizedBox(width: 8),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: colors.onSurface.withOpacity(0.45),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 }
+
 bool handleExtractedTextError(BuildContext context, String extractedText) {
   final Map<String, Map<String, String>> errorMessages = {
     "Invalid file": {
