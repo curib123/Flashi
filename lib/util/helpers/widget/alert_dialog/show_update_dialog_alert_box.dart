@@ -1,101 +1,75 @@
 import 'package:flashi/util/helpers/classes/other/wepage_launcher.dart';
 import 'package:flutter/material.dart';
 
-void showUpdateDialog(BuildContext context, String currentVersion, String latestVersion, String downloadLink, String patchNote) {
-  final colorScheme = Theme.of(context).colorScheme;
-
+void showUpdateDialog(
+  BuildContext context,
+  String currentVersion,
+  String latestVersion,
+  String downloadLink,
+  String patchNote,
+) {
   showDialog(
     barrierDismissible: false,
     context: context,
-    builder: (BuildContext context) {
-      return WillPopScope(
-        onWillPop: () async => false,
+    builder: (dialogContext) {
+      final colorScheme = Theme.of(dialogContext).colorScheme;
+
+      return PopScope(
+        canPop: false,
         child: AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
+          icon: Icon(
+            Icons.system_update_alt_rounded,
+            color: colorScheme.primary,
+            size: 34,
           ),
-          backgroundColor: colorScheme.surface,
-          titlePadding: EdgeInsets.all(10),
-          contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          actionsPadding: EdgeInsets.only(bottom: 15, right: 15),
-
-          title: Row(
-            children: [
-              Icon(Icons.update_rounded, color: colorScheme.primary, size: 28),
-              SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  "Update Required",
-                  style: TextStyle(
-                    color: colorScheme.primary,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                ),
-              ),
-            ],
+          title: const Text(
+            'Update required',
+            textAlign: TextAlign.center,
           ),
-
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "What's New",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: colorScheme.primary,
-                  fontSize: 13,
-                ),
-              ),
-              SizedBox(height: 8),
-              Container(
-                constraints: BoxConstraints(maxHeight: 150),
-                padding: EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: colorScheme.onSurface.withOpacity(0.05),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: SingleChildScrollView(
-                  child: Text(
-                    patchNote,
-                    style: TextStyle(
-                      color: colorScheme.onSurface,
-                      fontSize: 14,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-          actions: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+          content: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 420),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: colorScheme.primary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                Text(
+                  'Version $currentVersion → $latestVersion',
+                  style: Theme.of(dialogContext).textTheme.labelLarge?.copyWith(
+                        color: colorScheme.primary,
+                        fontWeight: FontWeight.w800,
+                      ),
+                ),
+                const SizedBox(height: 14),
+                Text(
+                  "What's new",
+                  style: Theme.of(dialogContext).textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w800,
+                      ),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  constraints: const BoxConstraints(maxHeight: 180),
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(14),
                   ),
-                  onPressed: () {
-                    WebPageLauncher(downloadLink).launch();
-                  },
-                  child: Text(
-                    "Update Now",
-                    style: TextStyle(
-                      color: colorScheme.onPrimary,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13,
+                  child: SingleChildScrollView(
+                    child: Text(
+                      patchNote,
+                      style: Theme.of(dialogContext).textTheme.bodyMedium,
                     ),
                   ),
                 ),
               ],
+            ),
+          ),
+          actions: [
+            FilledButton.icon(
+              onPressed: () => WebPageLauncher(downloadLink).launch(),
+              icon: const Icon(Icons.download_rounded),
+              label: const Text('Update now'),
             ),
           ],
         ),
