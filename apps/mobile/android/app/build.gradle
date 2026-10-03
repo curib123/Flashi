@@ -10,6 +10,13 @@ if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
 
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(new FileInputStream(localPropertiesFile))
+}
+def startIoAppId = System.getenv("START_IO_APP_ID") ?: localProperties.getProperty("START_IO_APP_ID") ?: "0"
+
 android {
     namespace = "com.curibtech.flashi"
     compileSdk = 35
@@ -30,6 +37,7 @@ android {
         targetSdk = 35
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        manifestPlaceholders["startIoAppId"] = startIoAppId
     }
 
     signingConfigs {

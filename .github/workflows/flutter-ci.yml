@@ -1,23 +1,60 @@
-name: Flutter CI
+name: Monorepo CI
 
 on:
   push:
     branches:
       - current-3.0
       - redesign/**
+      - refactor/**
   pull_request:
     branches:
       - current-3.0
   workflow_dispatch:
 
 concurrency:
-  group: flutter-ci-${{ github.ref }}
+  group: flashi-ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  verify:
+  api:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: apps/api
+    env:
+      OPENAI_API_KEY: sk-test-not-used
+      SUPABASE_URL: https://example.supabase.co
+      SUPABASE_PUBLISHABLE_KEY: sb_publishable_test
+      SUPABASE_SECRET_KEY: sb_secret_test
+      START_IO_APP_ID: "0"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Typecheck API
+        run: npm run typecheck
+
+      - name: Build API
+        run: npm run build
+
+  mobile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: apps/mobile
+    env:
+      START_IO_APP_ID: "0"
 
     steps:
       - name: Checkout
@@ -36,9 +73,6 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Flutter version
-        run: flutter --version
-
       - name: Install dependencies
         run: flutter pub get
 
@@ -49,12 +83,12 @@ jobs:
         run: flutter test
 
       - name: Build Android debug APK
-        run: flutter build apk --debug
+        run: flutter build apk --debug --dart-define=START_IO_APP_ID=0
 
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
         with:
           name: flashi-debug-apk
-          path: build/app/outputs/flutter-apk/app-debug.apk
+          path: apps/mobile/build/app/outputs/flutter-apk/app-debug.apk
           if-no-files-found: error
           retention-days: 7

@@ -29,31 +29,31 @@ class OnboardingScreen extends StatelessWidget {
       globalBackgroundColor: Theme.of(context).scaffoldBackgroundColor,
       pages: [
         PageViewModel(
-          title: 'Create quizzes from anything',
+          title: 'Create study sets your way',
           body:
-              'Start with a topic, PDF, document, or image. Flashi turns the important ideas into focused Q&A.',
+              'Build flashcards manually offline, or generate them from a topic, PDF, document, or notes image.',
           image: _OnboardingVisual(
-            icon: Icons.auto_awesome_rounded,
+            icon: Icons.add_card_rounded,
             colors: colors,
           ),
           decoration: decoration,
         ),
         PageViewModel(
-          title: 'Study your way',
+          title: 'Practice in the format you need',
           body:
-              'Review with flashcards and quiz modes, organize sets, save notes, and keep the material that matters close.',
+              'Use multiple choice, identification, true or false, definition, fill-in-the-blank, enumeration, and flashcard review.',
           image: _OnboardingVisual(
-            icon: Icons.style_rounded,
+            icon: Icons.quiz_outlined,
             colors: colors,
           ),
           decoration: decoration,
         ),
         PageViewModel(
-          title: 'Ask Flashi AI',
+          title: 'Keep studying offline',
           body:
-              'Use the study assistant when a concept is confusing, when you want practice questions, or when you need a quick plan.',
+              'AI generation needs Google sign-in and internet, but generated study sets are saved locally for offline review.',
           image: _OnboardingVisual(
-            icon: Icons.chat_bubble_outline_rounded,
+            icon: Icons.offline_bolt_outlined,
             colors: colors,
           ),
           decoration: decoration,

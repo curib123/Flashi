@@ -1,13 +1,10 @@
 import 'package:flashi/core/design/flashi_design.dart';
 import 'package:flashi/presentation/screen/main/favorate_screen.dart';
-import 'package:flashi/presentation/screen/main/history_screen.dart';
 import 'package:flashi/presentation/screen/main/settings_screen.dart';
-import 'package:flashi/presentation/widget/components/see_all_quiz_set_list.dart';
 import 'package:flashi/provider/ai_credits_provider.dart';
+import 'package:flashi/provider/auth_provider.dart';
 import 'package:flashi/provider/bottom_navigation_provider.dart';
-import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flashi/util/helpers/classes/other/wepage_launcher.dart';
-import 'package:flashi/util/helpers/widget/alert_dialog/about_alert_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -19,14 +16,17 @@ class CustomDrawer extends StatelessWidget {
     return Drawer(
       backgroundColor: Theme.of(context).colorScheme.surface,
       child: SafeArea(
-        child: Consumer3<BottomNavigationProvider, QuizProvider, AiCreditProvider>(
-          builder: (context, navigation, quiz, credits, _) {
+        child: Consumer3<
+            BottomNavigationProvider,
+            AuthProvider,
+            AiCreditProvider>(
+          builder: (context, navigation, auth, credits, _) {
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 14),
               child: Column(
                 children: [
                   const SizedBox(height: 16),
-                  _DrawerHeader(credits: credits.credits),
+                  _DrawerHeader(auth: auth, credits: credits.credits),
                   const SizedBox(height: 18),
                   Expanded(
                     child: SingleChildScrollView(
@@ -37,36 +37,20 @@ class CustomDrawer extends StatelessWidget {
                           _DrawerItem(
                             icon: Icons.home_outlined,
                             label: 'Home',
-                            selected: navigation.currentIndex == 1,
-                            onTap: () => _selectTab(context, navigation, 1),
-                          ),
-                          _DrawerItem(
-                            icon: Icons.auto_awesome_outlined,
-                            label: 'AI Assistant',
                             selected: navigation.currentIndex == 0,
                             onTap: () => _selectTab(context, navigation, 0),
                           ),
                           _DrawerItem(
-                            icon: Icons.note_alt_outlined,
-                            label: 'Notes',
+                            icon: Icons.layers_outlined,
+                            label: 'Study library',
+                            selected: navigation.currentIndex == 1,
+                            onTap: () => _selectTab(context, navigation, 1),
+                          ),
+                          _DrawerItem(
+                            icon: Icons.history_outlined,
+                            label: 'Generation history',
                             selected: navigation.currentIndex == 2,
                             onTap: () => _selectTab(context, navigation, 2),
-                          ),
-                          const SizedBox(height: 14),
-                          const _SectionTitle(title: 'Study library'),
-                          _DrawerItem(
-                            icon: Icons.layers_outlined,
-                            label: 'Quiz sets',
-                            onTap: () {
-                              quiz.searchController.text = quiz.searchQuery;
-                              _push(
-                                context,
-                                SeeAllQuizSetList(
-                                  name: 'All Quiz Sets',
-                                  colorScheme: Theme.of(context).colorScheme,
-                                ),
-                              );
-                            },
                           ),
                           _DrawerItem(
                             icon: Icons.favorite_border_rounded,
@@ -76,14 +60,34 @@ class CustomDrawer extends StatelessWidget {
                               const FavoriteScreen(),
                             ),
                           ),
-                          _DrawerItem(
-                            icon: Icons.history_rounded,
-                            label: 'Generation history',
-                            onTap: () => _push(
-                              context,
-                              const HistoryScreen(),
+                          const SizedBox(height: 14),
+                          const _SectionTitle(title: 'Account'),
+                          if (auth.signedIn)
+                            _DrawerItem(
+                              icon: Icons.logout_rounded,
+                              label: 'Sign out',
+                              onTap: () async {
+                                final navigator = Navigator.of(context);
+                                navigator.pop();
+                                await auth.signOut();
+                              },
+                            )
+                          else
+                            _DrawerItem(
+                              icon: Icons.login_rounded,
+                              label: 'Sign in with Google',
+                              onTap: () async {
+                                final navigator = Navigator.of(context);
+                                final hostContext = navigator.context;
+                                navigator.pop();
+                                final ok = await auth.signInWithGoogle();
+                                if (ok && hostContext.mounted) {
+                                  await hostContext
+                                      .read<AiCreditProvider>()
+                                      .refresh();
+                                }
+                              },
                             ),
-                          ),
                           const SizedBox(height: 14),
                           const _SectionTitle(title: 'App'),
                           _DrawerItem(
@@ -109,7 +113,13 @@ class CustomDrawer extends StatelessWidget {
                               final navigator = Navigator.of(context);
                               final hostContext = navigator.context;
                               navigator.pop();
-                              showAnimatedAboutDialog(hostContext);
+                              showAboutDialog(
+                                context: hostContext,
+                                applicationName: 'Flashi',
+                                applicationVersion: '1.6.3',
+                                applicationLegalese:
+                                    'Offline-first flashcard and quiz maker.',
+                              );
                             },
                           ),
                           _DrawerItem(
@@ -142,14 +152,14 @@ class CustomDrawer extends StatelessWidget {
                     child: Row(
                       children: [
                         Icon(
-                          Icons.shield_outlined,
+                          Icons.offline_bolt_outlined,
                           size: 16,
                           color: FlashiDesign.mutedOf(context),
                         ),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            'Private study data stays on your device.',
+                            'Manual sets and downloaded study content stay available offline.',
                             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                   color: FlashiDesign.mutedOf(context),
                                 ),
@@ -184,12 +194,17 @@ class CustomDrawer extends StatelessWidget {
 }
 
 class _DrawerHeader extends StatelessWidget {
+  final AuthProvider auth;
   final int credits;
 
-  const _DrawerHeader({required this.credits});
+  const _DrawerHeader({
+    required this.auth,
+    required this.credits,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final user = auth.user;
     return Row(
       children: [
         const _FlashiMark(size: 54),
@@ -198,18 +213,18 @@ class _DrawerHeader extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                FlashiDesign.name,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
+              const Text(
+                'Flashi',
+                style: TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.w900,
                 ),
               ),
               const SizedBox(height: 2),
               Text(
-                FlashiDesign.tagline,
+                auth.signedIn
+                    ? (user?.email ?? 'Signed in')
+                    : 'Offline manual mode',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -219,8 +234,10 @@ class _DrawerHeader extends StatelessWidget {
               ),
               const SizedBox(height: 6),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 9,
+                  vertical: 5,
+                ),
                 decoration: BoxDecoration(
                   color: FlashiDesign.primarySoftOf(context),
                   borderRadius: BorderRadius.circular(99),
@@ -228,14 +245,18 @@ class _DrawerHeader extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(
-                      Icons.bolt_rounded,
+                    Icon(
+                      auth.signedIn
+                          ? Icons.bolt_rounded
+                          : Icons.offline_bolt_outlined,
                       size: 15,
                       color: FlashiDesign.brand,
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      '$credits energy',
+                      auth.signedIn
+                          ? credits.toString() + ' energy'
+                          : 'Offline ready',
                       style: const TextStyle(
                         color: FlashiDesign.brand,
                         fontSize: 11,
@@ -269,7 +290,7 @@ class _FlashiMark extends StatelessWidget {
         borderRadius: BorderRadius.circular(size * .30),
       ),
       child: Icon(
-        Icons.auto_awesome_rounded,
+        Icons.style_rounded,
         color: Colors.white,
         size: size * .48,
       ),

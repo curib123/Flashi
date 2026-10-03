@@ -1,17 +1,8 @@
-import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_search_bar_core.dart';
-import 'package:flashi/presentation/widget/reusable_widgets/reusable_create_set_button_position.dart';
-import 'package:flashi/presentation/widget/reusable_widgets/reusable_favorate_position.dart';
-import 'package:flashi/presentation/widget/reusable_widgets/reusable_import_position.dart';
+import 'package:flashi/core/design/flashi_design.dart';
+import 'package:flashi/presentation/widget/components/study_generator_sheet.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/reusable_quiz_set_list.dart';
-import 'package:flashi/presentation/widget/reusable_widgets/reusable_sort_and_see_all.dart';
-import 'package:flashi/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
-import 'package:flashi/provider/ai_credits_provider.dart';
-import 'package:flashi/provider/ai_model_logic_provider.dart';
-import 'package:flashi/provider/fetch_data_from_json_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flashi/provider/sort_provider.dart';
-import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
-import 'package:flashi/util/helpers/widget/other/empty_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -27,109 +18,78 @@ class SeeAllQuizSetList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    // Access both providers directly
-    final quizProvider = Provider.of<QuizProvider>(context);
-
+    final quiz = context.watch<QuizProvider>();
+    final sort = context.watch<SortProvider>();
+    final sets = quiz.filteredQuizSets.reversed.toList();
 
     return Scaffold(
-      appBar: AppBar(
-        foregroundColor: colorScheme.primary, // For text and icons color
-        backgroundColor: colorScheme.onPrimary, // Background color of the app bar
-        title: Text(name),
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-          ),
-        ),
-        // Custom Back Arrow Icon
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios_new, // Custom Icon (back arrow)
-            color: colorScheme.primary, // Custom color for the icon
-          ),
-          onPressed: () {
-
-            Navigator.pop(context); // Go back to the previous screen
-            quizProvider.searchController.text = quizProvider.searchQuery;
-            print(quizProvider.searchQuery);
-          },
-        ),
+      appBar: AppBar(title: Text(name)),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => showStudyGeneratorSheet(context),
+        icon: const Icon(Icons.add_rounded),
+        label: const Text('Create'),
       ),
-      body: _body(context),
-    );
-  }
-
-  Widget _body(BuildContext context) {
-    AdManager adManager = AdManager();
-
-    return Consumer5<QuizProvider, SortProvider,FetchDataFromJsonProvider,AiModelLogicProvider,AiCreditProvider>(
-      builder: (context, quizProvider, sortProvider,fetchDataFromJsonProvider,aiModelLogicProvider,aiCreditProvider, child) {
-        final filteredQuizSets = quizProvider.filteredQuizSets.reversed.toList();
-
-        return Stack(
+      body: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          FlashiDesign.pagePadding,
+          4,
+          FlashiDesign.pagePadding,
+          0,
+        ),
+        child: Column(
           children: [
-            ListView(
+            TextField(
+              controller: quiz.searchController,
+              onChanged: quiz.updateSearchQuery,
+              decoration: const InputDecoration(
+                hintText: 'Search study sets',
+                prefixIcon: Icon(Icons.search_rounded),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Row(
               children: [
-
-                ReusableSortAndSeeAll(
-                  dropdownValue: sortProvider.dropdownValueSet,
-                  sortOptions: sortProvider.sortOptionsSet,
-                  onSortChanged: (newValue) {
-                    if (newValue != null) {
-                      sortProvider.updateSortValueSet(newValue);
-                      quizProvider.sortQuizSets(newValue); // Trigger sorting in the provider
-                    }
-                  },
-                  onSeeAllPressed: () {
-                    // Optional functionality if required
-                  },
-                  isShowSeeAllLink: false,
-                  isShowReviewLink: false,
-                  onShowReviewLink: () {  },
-                ),
-                adManager.getFifthBannerAdWidget(),
-                ReusableSearchBarCore(
-                  colorScheme: colorScheme,
-                  hintText: 'Search Quiz Set ',
-                  onChanged: (value) {
-                    quizProvider.updateSearchQuery(value);
-                  }, controller: quizProvider.searchController,
-                ),
-
-
-        filteredQuizSets.isEmpty
-                    ? noSetWidget(context)
-                    : SizedBox(
-                  width: MediaQuery.sizeOf(context).width,
-                  height: MediaQuery.sizeOf(context).height * 0.60,
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.vertical,
-                    child: ReusableQuizSetList(
-                      quizSets: filteredQuizSets,
-                    ),
+                Expanded(
+                  child: Text(
+                    sets.length == 1
+                        ? '1 study set'
+                        : sets.length.toString() + ' study sets',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w800,
+                        ),
                   ),
                 ),
-
+                DropdownButton<String>(
+                  value: sort.dropdownValueSet,
+                  underline: const SizedBox.shrink(),
+                  items: sort.sortOptionsSet
+                      .map(
+                        (value) => DropdownMenuItem(
+                          value: value,
+                          child: Text(value),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: (value) {
+                    if (value == null) return;
+                    sort.updateSortValueSet(value);
+                    quiz.sortQuizSets(value);
+                  },
+                ),
               ],
-
             ),
-            // Create Button Position
-            ReusableCreateSetButtonPosition(
-              icon: Icons.add_circle,
-              colorScheme: colorScheme,
-              name: 'Generate Quiz Set',
-              onTap: () {
-              aiModelLogicProvider.showFlashcardDialog(context, quizProvider, colorScheme,fetchDataFromJsonProvider,aiCreditProvider);
-              },
+            const SizedBox(height: 8),
+            Expanded(
+              child: sets.isEmpty
+                  ? const Center(child: Text('No study sets yet.'))
+                  : ListView(
+                      padding: const EdgeInsets.only(bottom: 100),
+                      children: [ReusableQuizSetList(quizSets: sets)],
+                    ),
             ),
-
-            ReusableThemeSettingPosition(colorScheme: colorScheme),
-            ReusableImportPosition(colorScheme: colorScheme),
-            ReusableFavoratePosition(colorScheme: colorScheme),
           ],
-        );
-      },
+        ),
+      ),
     );
   }
 }
-

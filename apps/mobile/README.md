@@ -1,31 +1,37 @@
-# Flashi - AI-Powered Flashcard Generator
+# Flashi mobile
 
-Flashi is an advanced AI-powered tool designed to help you create and customize flashcards effortlessly. Enhance your learning experience with intuitive features, a variety of themes, and AI-generated flashcards. You can also generate flashcards from PDF or Docs files and interact with a chatbot for study assistance.
+The Flutter app is an offline-first client.
 
-## Features
-- AI-powered flashcard generation
-- Create and personalize flashcards easily
-- Generate flashcards from PDF or Docs files
-- Multiple color themes, including Light and Dark modes
-- Intuitive and user-friendly interface
-- Customizable learning modes for various study techniques
-- Integrated chatbot for interactive learning assistance
+## Flutter responsibilities
 
-## Installation
-To start using Flashi, follow these steps:
-1. Clone this repository.
-2. Install the required dependencies.
-3. Run the application on your device.
+- local Hive storage for study sets/history/preferences
+- flashcard and quiz review UI
+- Google sign-in client flow
+- upload source files to a backend-issued Supabase signed URL
+- call the protected Next.js generation/credit APIs
+- show Start.io rewarded ads
+- save generated study sets locally for offline review
 
-## License
-This project is proprietary, and all rights are reserved by the author.
+Flutter does **not** contain the OpenAI API key, Supabase secret key, model-selection logic, credit mutation rules, or AI business logic.
 
-Unauthorized use, copying, modification, distribution, or display of this software or its source code is strictly prohibited without explicit written permission from the author.
+## Development config
 
-Legal action will be taken against any unauthorized use, distribution, or modification of this software.
+Run with public/build-time values:
 
-Copyright (c) 2025 . All rights reserved.
+```bash
+flutter run \
+  --dart-define=API_BASE_URL=http://10.0.2.2:3000 \
+  --dart-define=SUPABASE_URL=https://PROJECT.supabase.co \
+  --dart-define=SUPABASE_PUBLISHABLE_KEY=sb_publishable_... \
+  --dart-define=GOOGLE_WEB_CLIENT_ID=YOUR_WEB_CLIENT_ID
+```
 
-## Contact
-For inquiries or permission requests, please contact [curibtech@gmail.com]
+After Vercel deployment, replace `API_BASE_URL` with the production API URL.
 
+### Start.io
+
+Start.io needs the App ID in native metadata at build time. On Android set `START_IO_APP_ID` as an environment variable or add it to local `android/local.properties`. On iOS add the `START_IO_APP_ID` build setting in Xcode. The backend still returns runtime ad enable/test/reward settings.
+
+### Google Auth
+
+Configure the Android OAuth client with package `com.curibtech.flashi` and both debug/release SHA-1 fingerprints. Configure the Google Web client ID in Supabase Google provider settings and pass that web client ID to Flutter.
