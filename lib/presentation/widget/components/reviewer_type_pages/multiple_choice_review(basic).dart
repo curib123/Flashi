@@ -5,7 +5,6 @@ import 'package:flashi/util/helpers/widget/other/highlight_keywords.dart';
 import 'package:flutter/material.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reviewer_widgets_core/multiple_choice_core.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class MultipleChoiceReviewBasic extends StatefulWidget {
   final String reviewer;
