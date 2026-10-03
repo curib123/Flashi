@@ -1,187 +1,337 @@
+import 'package:flashi/core/design/flashi_design.dart';
+import 'package:flashi/presentation/screen/main/favorate_screen.dart';
 import 'package:flashi/presentation/screen/main/history_screen.dart';
+import 'package:flashi/presentation/screen/main/settings_screen.dart';
 import 'package:flashi/presentation/widget/components/see_all_quiz_set_list.dart';
 import 'package:flashi/provider/ai_credits_provider.dart';
-import 'package:flashi/provider/chatbot_provider.dart';
-import 'package:flashi/provider/notes_provider.dart';
-import 'package:flashi/provider/quiz_provider.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:flashi/presentation/screen/main/favorate_screen.dart';
-import 'package:flashi/presentation/screen/main/settings_screen.dart';
 import 'package:flashi/provider/bottom_navigation_provider.dart';
+import 'package:flashi/provider/quiz_provider.dart';
 import 'package:flashi/util/helpers/classes/other/wepage_launcher.dart';
 import 'package:flashi/util/helpers/widget/alert_dialog/about_alert_dialog.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class CustomDrawer extends StatelessWidget {
   const CustomDrawer({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textStyle = TextStyle(color: colorScheme.onSurface, fontSize: 16);
-
-    Widget buildListTile({
-      required IconData icon,
-      required String title,
-      required VoidCallback onTap,
-    }) {
-      return ListTile(
-        leading: Icon(icon, color: colorScheme.primary, size: 26),
-        title: Text(title, style: textStyle),
-        titleAlignment: ListTileTitleAlignment.center,
-        onTap: onTap,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-      );
-    }
-
-    return Consumer5<BottomNavigationProvider,QuizProvider,AiCreditProvider,NotesProvider,ChatBotProvider>(
-      builder: (context, bottomNavProvider,quizProvider, aiCreditProvider,notesProvider,chatBotProvider ,child) {
-        return Drawer(
-          backgroundColor: colorScheme.onPrimary,
-          shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(20),
-                  bottomRight: Radius.circular(20))),
-          child: Column(
-            children: [
-              Container(
-                width: MediaQuery.sizeOf(context).shortestSide,
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                decoration: BoxDecoration(
-                  color: colorScheme.onPrimary,
-                ),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 30),
-                    Container(
-                      padding: const EdgeInsets.all(12),
-
+    return Drawer(
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      child: SafeArea(
+        child: Consumer3<BottomNavigationProvider, QuizProvider, AiCreditProvider>(
+          builder: (context, navigation, quiz, credits, _) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              child: Column(
+                children: [
+                  const SizedBox(height: 16),
+                  _DrawerHeader(credits: credits.credits),
+                  const SizedBox(height: 18),
+                  Expanded(
+                    child: SingleChildScrollView(
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("Flashi",
-                              style:  TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color:colorScheme.primary)),
-                          const SizedBox(height: 5),
-                          Text("Quiz Maker & Learner",
-                              style:  TextStyle(fontSize: 16, color: colorScheme.primary.withOpacity(0.7))),
+                          const _SectionTitle(title: 'Navigate'),
+                          _DrawerItem(
+                            icon: Icons.home_outlined,
+                            label: 'Home',
+                            selected: navigation.currentIndex == 1,
+                            onTap: () => _selectTab(context, navigation, 1),
+                          ),
+                          _DrawerItem(
+                            icon: Icons.auto_awesome_outlined,
+                            label: 'AI Assistant',
+                            selected: navigation.currentIndex == 0,
+                            onTap: () => _selectTab(context, navigation, 0),
+                          ),
+                          _DrawerItem(
+                            icon: Icons.note_alt_outlined,
+                            label: 'Notes',
+                            selected: navigation.currentIndex == 2,
+                            onTap: () => _selectTab(context, navigation, 2),
+                          ),
+                          const SizedBox(height: 14),
+                          const _SectionTitle(title: 'Study library'),
+                          _DrawerItem(
+                            icon: Icons.layers_outlined,
+                            label: 'Quiz sets',
+                            onTap: () {
+                              quiz.searchController.text = quiz.searchQuery;
+                              _push(
+                                context,
+                                SeeAllQuizSetList(
+                                  name: 'All Quiz Sets',
+                                  colorScheme: Theme.of(context).colorScheme,
+                                ),
+                              );
+                            },
+                          ),
+                          _DrawerItem(
+                            icon: Icons.favorite_border_rounded,
+                            label: 'Favorites',
+                            onTap: () => _push(
+                              context,
+                              const FavoriteScreen(),
+                            ),
+                          ),
+                          _DrawerItem(
+                            icon: Icons.history_rounded,
+                            label: 'Generation history',
+                            onTap: () => _push(
+                              context,
+                              const HistoryScreen(),
+                            ),
+                          ),
+                          const SizedBox(height: 14),
+                          const _SectionTitle(title: 'App'),
+                          _DrawerItem(
+                            icon: Icons.settings_outlined,
+                            label: 'Settings',
+                            onTap: () => _push(
+                              context,
+                              const SettingsScreen(),
+                            ),
+                          ),
+                          _DrawerItem(
+                            icon: Icons.mail_outline_rounded,
+                            label: 'Contact us',
+                            onTap: () {
+                              Navigator.pop(context);
+                              WebPageLauncher('').launchEmail();
+                            },
+                          ),
+                          _DrawerItem(
+                            icon: Icons.info_outline_rounded,
+                            label: 'About',
+                            onTap: () {
+                              Navigator.pop(context);
+                              showAnimatedAboutDialog(context);
+                            },
+                          ),
+                          _DrawerItem(
+                            icon: Icons.privacy_tip_outlined,
+                            label: 'Privacy policy',
+                            onTap: () {
+                              Navigator.pop(context);
+                              WebPageLauncher(
+                                'https://curib123.github.io/flashi_/privacy_policy.html',
+                              ).launch();
+                            },
+                          ),
+                          _DrawerItem(
+                            icon: Icons.description_outlined,
+                            label: 'Terms & conditions',
+                            onTap: () {
+                              Navigator.pop(context);
+                              WebPageLauncher(
+                                'https://curib123.github.io/flashi_/terms%26condition.html',
+                              ).launch();
+                            },
+                          ),
                         ],
                       ),
                     ),
-                    // Optional: Add a divider for better separation
-                    Divider(color: colorScheme.primary.withOpacity(0.2), thickness: 1, indent: 20, endIndent: 20),
-                  ],
+                  ),
+                  const Divider(),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 10, 12, 14),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.shield_outlined,
+                          size: 16,
+                          color: FlashiDesign.mutedOf(context),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'Private study data stays on your device.',
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: FlashiDesign.mutedOf(context),
+                                ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  static void _selectTab(
+    BuildContext context,
+    BottomNavigationProvider provider,
+    int index,
+  ) {
+    provider.setIndex(index);
+    Navigator.pop(context);
+  }
+
+  static void _push(BuildContext context, Widget screen) {
+    final navigator = Navigator.of(context);
+    navigator.pop();
+    navigator.push(MaterialPageRoute(builder: (_) => screen));
+  }
+}
+
+class _DrawerHeader extends StatelessWidget {
+  final int credits;
+
+  const _DrawerHeader({required this.credits});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        const _FlashiMark(size: 54),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                FlashiDesign.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w900,
                 ),
               ),
-
-              Expanded(
-                child: ListView(
-                  padding: EdgeInsets.zero,
+              const SizedBox(height: 2),
+              Text(
+                FlashiDesign.tagline,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: FlashiDesign.mutedOf(context),
+                      fontWeight: FontWeight.w600,
+                    ),
+              ),
+              const SizedBox(height: 6),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                decoration: BoxDecoration(
+                  color: FlashiDesign.primarySoftOf(context),
+                  borderRadius: BorderRadius.circular(99),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-
-                    buildListTile(
-                      icon: Icons.layers_rounded,
-                      title: 'Quiz Set',
-                      onTap: () {
-                        Navigator.pop(context);
-                        quizProvider.searchController.text = quizProvider.searchQuery;
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SeeAllQuizSetList(
-                              name: 'All Quiz Set',
-                              colorScheme: colorScheme,
-                            ),
-                          ),
-                        );
-                      },
+                    const Icon(
+                      Icons.bolt_rounded,
+                      size: 15,
+                      color: FlashiDesign.brand,
                     ),
-                    buildListTile(
-                      icon: Icons.favorite_rounded,
-                      title: 'Favorites',
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const FavoriteScreen()));
-                      },
-                    ),
-                    buildListTile(
-                      icon: Icons.settings_rounded,
-                      title: 'Settings',
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const SettingsScreen()));
-                      },
-                    ),
-                    Divider(color: colorScheme.primary.withOpacity(0.2), thickness: 1, indent: 20, endIndent: 20),
-                    buildListTile(
-                      icon: Icons.smart_toy_rounded,
-                      title: 'Chatbot',
-                      onTap: () {
-                        Navigator.pop(context);
-                        bottomNavProvider.toogleNavigation(0);
-                      },
-                    ),
-                    buildListTile(
-                      icon: Icons.history_rounded,
-                      title: 'Quiz Generated History',
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => HistoryScreen()));
-                      },
-                    ),
-
-                    Divider(color: colorScheme.primary.withOpacity(0.2), thickness: 1, indent: 20, endIndent: 20),
-                    buildListTile(
-                      icon: Icons.contact_mail,
-                      title: 'Contact Us',
-                      onTap: () {
-                        Navigator.pop(context);
-                        WebPageLauncher('').launchEmail();
-                      },
-                    ),
-                    buildListTile(
-                      icon: Icons.info_rounded,
-                      title: 'About Us',
-                      onTap: () {
-                        Navigator.pop(context);
-                        showAnimatedAboutDialog(context);
-                      },
-                    ),
-                    buildListTile(
-                      icon: Icons.privacy_tip_rounded,
-                      title: 'Privacy Policy',
-                      onTap: () {
-                        Navigator.pop(context);
-                        WebPageLauncher(
-                            'https://curib123.github.io/flashi_/privacy_policy.html')
-                            .launch();
-                      },
-                    ),
-                    buildListTile(
-                      icon: Icons.info_rounded,
-                      title: 'Terms & Conditions',
-                      onTap: () {
-                        Navigator.pop(context);
-                        WebPageLauncher(
-                            'https://curib123.github.io/flashi_/terms%26condition.html')
-                            .launch();
-                      },
+                    const SizedBox(width: 4),
+                    Text(
+                      '$credits energy',
+                      style: const TextStyle(
+                        color: FlashiDesign.brand,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
                   ],
                 ),
               ),
             ],
           ),
-        );
-      },
+        ),
+      ],
+    );
+  }
+}
+
+class _FlashiMark extends StatelessWidget {
+  final double size;
+
+  const _FlashiMark({required this.size});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: FlashiDesign.brand,
+        borderRadius: BorderRadius.circular(size * .30),
+      ),
+      child: Icon(
+        Icons.auto_awesome_rounded,
+        color: Colors.white,
+        size: size * .48,
+      ),
+    );
+  }
+}
+
+class _SectionTitle extends StatelessWidget {
+  final String title;
+
+  const _SectionTitle({required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(12, 8, 12, 6),
+      child: Text(
+        title.toUpperCase(),
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              fontSize: 11,
+              fontWeight: FontWeight.w800,
+              color: FlashiDesign.mutedOf(context),
+              letterSpacing: .8,
+            ),
+      ),
+    );
+  }
+}
+
+class _DrawerItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+  final bool selected;
+
+  const _DrawerItem({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    this.selected = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      dense: true,
+      selected: selected,
+      selectedTileColor: FlashiDesign.primarySoftOf(context),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      leading: Icon(
+        icon,
+        size: 20,
+        color: selected ? FlashiDesign.brand : FlashiDesign.mutedOf(context),
+      ),
+      title: Text(
+        label,
+        style: TextStyle(
+          fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
+          color: selected ? FlashiDesign.brand : null,
+        ),
+      ),
+      onTap: onTap,
     );
   }
 }
