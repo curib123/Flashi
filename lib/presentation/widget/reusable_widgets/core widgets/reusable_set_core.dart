@@ -1,3 +1,4 @@
+import 'package:flashi/core/design/flashi_design.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -5,7 +6,15 @@ class ReusableSetCore extends StatelessWidget {
   final String name;
   final String description;
   final int numberOfQuiz;
-  final VoidCallback onTap, onAddCard, onReview, onDelete, onEdit, onFavorate, onShare, onExport, onViewAllCards;
+  final VoidCallback onTap;
+  final VoidCallback onAddCard;
+  final VoidCallback onReview;
+  final VoidCallback onDelete;
+  final VoidCallback onEdit;
+  final VoidCallback onFavorate;
+  final VoidCallback onShare;
+  final VoidCallback onExport;
+  final VoidCallback onViewAllCards;
   final DateTime timestamp;
   final bool isFavorate;
 
@@ -29,155 +38,177 @@ class ReusableSetCore extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final String formattedTimestamp = DateFormat('yyyy-MM-dd HH:mm').format(timestamp);
+    final colors = Theme.of(context).colorScheme;
+    final updated = DateFormat('MMM d, yyyy').format(timestamp);
 
     return Container(
+      margin: const EdgeInsets.symmetric(vertical: 7),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20),
-          bottomRight: Radius.circular(20),
-        ),
-        gradient: LinearGradient(
-          colors: [
-            colorScheme.primaryContainer.withOpacity(0.9),
-            colorScheme.primaryContainer.withOpacity(0.1),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 12.0,
-            offset: Offset(4, 4),
-          ),
-
-        ],
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(FlashiDesign.radius),
+        border: Border.all(color: colors.outline.withOpacity(0.13)),
       ),
-      margin: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(18.0),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      color: colorScheme.primary.withOpacity(0.15),
-                      shape: BoxShape.circle,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(FlashiDesign.radius),
+          child: Padding(
+            padding: const EdgeInsets.all(17),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 46,
+                      height: 46,
+                      decoration: BoxDecoration(
+                        color: colors.primaryContainer,
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Icon(Icons.layers_rounded, color: colors.primary),
                     ),
-                    child: Center(
-                      child: Text(
-                        numberOfQuiz.toString(),
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: colorScheme.primary,
-                        ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w900,
+                                ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            description.isEmpty ? 'No description' : description,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: colors.onSurface.withOpacity(0.6),
+                                  height: 1.35,
+                                ),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 16.0),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          name,
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: colorScheme.primary,
-                          ),
-                        ),
-                        Text(
-                          'Last Updated: $formattedTimestamp',
-                          style: TextStyle(
-                            fontSize: 10,
-                            fontStyle: FontStyle.italic,
-                            color: colorScheme.secondary,
-                          ),
-                        ),
-                        Text(
-                          description,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: colorScheme.tertiary,
-                          ),
-                        ),
+                    IconButton(
+                      tooltip: isFavorate ? 'Remove favorite' : 'Favorite',
+                      onPressed: onFavorate,
+                      icon: Icon(
+                        isFavorate
+                            ? Icons.favorite_rounded
+                            : Icons.favorite_border_rounded,
+                        color: isFavorate ? colors.error : colors.onSurfaceVariant,
+                      ),
+                    ),
+                    PopupMenuButton<String>(
+                      onSelected: (value) {
+                        switch (value) {
+                          case 'edit':
+                            onEdit();
+                            break;
+                          case 'view':
+                            onViewAllCards();
+                            break;
+                          case 'export':
+                            onExport();
+                            break;
+                          case 'delete':
+                            onDelete();
+                            break;
+                        }
+                      },
+                      itemBuilder: (_) => const [
+                        PopupMenuItem(value: 'edit', child: Text('Edit set')),
+                        PopupMenuItem(value: 'view', child: Text('View all cards')),
+                        PopupMenuItem(value: 'export', child: Text('Export')),
+                        PopupMenuDivider(),
+                        PopupMenuItem(value: 'delete', child: Text('Delete')),
                       ],
                     ),
-                  ),
-                  PopupMenuButton<String>(
-                    padding: EdgeInsets.zero,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    color: colorScheme.surface,
-                    icon: Icon(Icons.more_vert, color: colorScheme.primary),
-                    onSelected: (String value) {
-                      switch (value) {
-                        case 'favorate': onFavorate(); break;
-                        case 'edit': onEdit(); break;
-                        case 'view_all': onViewAllCards(); break;
-                        case 'export': onExport(); break;
-                        case 'share': onShare(); break;
-                        case 'delete': onDelete(); break;
-                      }
-                    },
-                    itemBuilder: (context) => [
-                      _buildPopupMenuItem('Favorate', isFavorate ? Icons.favorite : Icons.favorite_border, 'favorate', colorScheme.error),
-                      _buildPopupMenuItem('Edit', Icons.edit, 'edit', colorScheme.primary),
-                      _buildPopupMenuItem('View All Pairs', Icons.view_agenda, 'view_all', colorScheme.primary),
-                      _buildPopupMenuItem('Save in Folder', Icons.save, 'export', colorScheme.primary),
-                      _buildPopupMenuItem('Delete', Icons.delete, 'delete', colorScheme.error),
-                    ],
-                  ),
-                ],
-              ),
-              Divider(height: 20.0, color: colorScheme.primary.withOpacity(0.6)),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _buildActionButton('Add Pairs', Icons.add_circle, onAddCard, colorScheme.primary),
-                  _buildActionButton('Quiz Mode', Icons.rate_review, onReview, colorScheme.secondary),
-                ],
-              ),
-            ],
+                  ],
+                ),
+                const SizedBox(height: 14),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    _InfoPill(
+                      icon: Icons.style_outlined,
+                      label: numberOfQuiz.toString() + ' cards',
+                    ),
+                    _InfoPill(
+                      icon: Icons.schedule_rounded,
+                      label: 'Updated ' + updated,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 15),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: onAddCard,
+                        icon: const Icon(Icons.add_rounded),
+                        label: const Text('Add cards'),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: FilledButton.icon(
+                        onPressed: onReview,
+                        icon: const Icon(Icons.play_arrow_rounded),
+                        label: const Text('Review'),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
+}
 
-  PopupMenuItem<String> _buildPopupMenuItem(String text, IconData icon, String value, Color iconColor) {
-    return PopupMenuItem<String>(
-      value: value,
-      child: Row(
-        children: [
-          Icon(icon, color: iconColor),
-          const SizedBox(width: 10),
-          Text(text, style: TextStyle(color: iconColor)),
-        ],
+class _InfoPill extends StatelessWidget {
+  final IconData icon;
+  final String label;
+
+  const _InfoPill({
+    required this.icon,
+    required this.label,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+      decoration: BoxDecoration(
+        color: colors.surfaceVariant.withOpacity(0.45),
+        borderRadius: BorderRadius.circular(99),
       ),
-    );
-  }
-
-  TextButton _buildActionButton(String label, IconData icon, VoidCallback onPressed, Color color) {
-    return TextButton.icon(
-      onPressed: onPressed,
-      icon: Icon(icon, color: color),
-      label: Text(label, style: TextStyle(color: color,fontSize: 15)),
-      style: TextButton.styleFrom(
-        backgroundColor: color.withOpacity(0.1),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 15, color: colors.onSurfaceVariant),
+          const SizedBox(width: 5),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11,
+              color: colors.onSurfaceVariant,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
       ),
     );
   }

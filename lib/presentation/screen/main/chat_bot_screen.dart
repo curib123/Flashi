@@ -1,10 +1,6 @@
+import 'package:flashi/core/design/flashi_design.dart';
 import 'package:flashi/presentation/screen/main/settings_screen.dart';
-import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reusable_typing_animation_core.dart';
-import 'package:flashi/presentation/widget/reusable_widgets/reusable_theme_setting_position.dart';
-import 'package:flashi/presentation/widget/reusable_widgets/reusable_title_content.dart';
 import 'package:flashi/provider/chatbot_provider.dart';
-import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
-import 'package:flashi/util/helpers/classes/ads/ad_unit_id.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -17,238 +13,312 @@ class ChatBotScreen extends StatefulWidget {
 }
 
 class _ChatBotScreenState extends State<ChatBotScreen> {
+  final TextEditingController _messageController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
 
-  late final ScrollController _scrollController;
-  TextEditingController messageController = TextEditingController();
-  AdManager adManager = AdManager();
+  Future<void> _send(ChatBotProvider provider, [String? preset]) async {
+    final text = (preset ?? _messageController.text).trim();
+    if (text.isEmpty || provider.isTyping) return;
 
-  @override
-  void initState() {
-    super.initState();
+    _messageController.clear();
+    provider.setTyping(true);
+    _scrollToBottom();
 
-    _scrollController = ScrollController();
+    try {
+      await provider.sendMessage(text);
+    } finally {
+      provider.setTyping(false);
+      _scrollToBottom();
+    }
   }
 
   void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.minScrollExtent, // Change this
-          duration: Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-      }
+      if (!_scrollController.hasClients) return;
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 260),
+        curve: Curves.easeOutCubic,
+      );
     });
   }
 
-@override
+  String _clean(String text) => text.replaceAll('*', '').replaceAll('#', '');
+
+  @override
   void dispose() {
-    // TODO: implement dispose
+    _messageController.dispose();
+    _scrollController.dispose();
     super.dispose();
-    _scrollController.dispose(); // Prevent memory leak
-    adManager.showInterstitialAd();
   }
 
   @override
   Widget build(BuildContext context) {
-    ColorScheme colorScheme = Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
     return Scaffold(
       appBar: AppBar(
-        leading: GestureDetector(
-          onTap: () => Scaffold.of(context).openDrawer(),
-          child: Icon(
-            Icons.notes_rounded,
-            size: 30,
-            color: colorScheme.primary,
-          ),
+        title: const Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Flashi AI'),
+            Text(
+              'Study assistant',
+              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
+            ),
+          ],
         ),
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-
+        actions: [
+          IconButton(
+            tooltip: 'Settings',
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const SettingsScreen()),
+            ),
+            icon: const Icon(Icons.settings_outlined),
           ),
-        ),
-        backgroundColor: colorScheme.onPrimary,
-        foregroundColor: colorScheme.primary,
-        title: Text("Chatbot",style: TextStyle(color: colorScheme.primary,fontWeight: FontWeight.bold),),
-        centerTitle: false,
+          const SizedBox(width: 8),
+        ],
       ),
-      body: Stack(
-        children: [
-         Positioned(
-           top: MediaQuery.of(context).size.height * 0.3,
-           right: MediaQuery.of(context).size.width * 0.35,
-             child:  Icon(Icons.smart_toy_rounded,size: 100,color: colorScheme.primary.withOpacity(0.3),),),
-          Column(
+      body: Consumer<ChatBotProvider>(
+        builder: (context, provider, child) {
+          final messages = provider.messages;
+          _scrollToBottom();
+
+          return Column(
             children: [
+              if (messages.length <= 1)
+                _PromptPanel(onPrompt: (value) => _send(provider, value)),
               Expanded(
-                child: Consumer<ChatBotProvider>(
-                  builder: (context, chatProvider, child) {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      _scrollToBottom();
-                    });
-                    return ListView.builder(
-                      controller: _scrollController, // Add this
-                      reverse: true,
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                      itemCount: chatProvider.messages.length + (chatProvider.isTyping ? 1 : 0),
-                      itemBuilder: (context, index) {
+                child: ListView.builder(
+                  controller: _scrollController,
+                  padding: const EdgeInsets.fromLTRB(
+                    FlashiDesign.pagePadding,
+                    12,
+                    FlashiDesign.pagePadding,
+                    20,
+                  ),
+                  itemCount: messages.length + (provider.isTyping ? 1 : 0),
+                  itemBuilder: (context, index) {
+                    if (index == messages.length && provider.isTyping) {
+                      return const _TypingBubble();
+                    }
 
-                        if (index == 0 && chatProvider.isTyping) {
-                          return Align(
-                            alignment: Alignment.centerLeft,
-                            child: Container(
-                              margin: const EdgeInsets.symmetric(vertical: 3),
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: colorScheme.secondaryContainer,
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: const ReusableTypingAnimationCore(),
-                            ),
-                          );
-                        }
-                        var message = chatProvider.messages.reversed.toList()[index - (chatProvider.isTyping ? 1 : 0)];
-                        bool isUser = message['sender'] == 'user';
-                        return Align(
-                          alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
-                          child: Stack(
-                            children: [
-                              Container(
-                                margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
-                                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: isUser ? [
-                                      colorScheme.primaryContainer.withOpacity(0.5),
-                                      colorScheme.secondaryContainer.withOpacity(0.1),
-                                    ] :
-                                    [
-                                      colorScheme.primaryContainer.withOpacity(0.2),
-                                      colorScheme.secondaryContainer.withOpacity(0.5),
-                                    ],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                  ),
-                                  borderRadius: BorderRadius.only(
-                                    topLeft: const Radius.circular(18),
-                                    topRight: const Radius.circular(18),
-                                    bottomLeft: isUser ? const Radius.circular(18) : const Radius.circular(4),
-                                    bottomRight: isUser ? const Radius.circular(4) : const Radius.circular(18),
-                                  ),
+                    final message = messages[index];
+                    final isUser = message['sender'] == 'user';
+                    final text = _clean(message['text'] ?? '');
 
+                    return _MessageBubble(
+                      text: text,
+                      isUser: isUser,
+                      onCopy: isUser
+                          ? null
+                          : () {
+                              Clipboard.setData(ClipboardData(text: text));
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Copied to clipboard'),
                                 ),
-
-                                child: Padding(
-                                  padding: const EdgeInsets.only(right: 30), // Space for the copy icon
-                                  child: SelectableText(
-                                    message['text']!.replaceAll('*', '').replaceAll('#', ''), // Removes * and #
-                                    style: TextStyle(
-                                      color: isUser ? colorScheme.onPrimaryContainer : colorScheme.onSecondaryContainer,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              if (!isUser)
-                                Positioned(
-                                  top: 15,
-                                  right: 15,
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      Clipboard.setData(
-                                        ClipboardData(text: message['text']!.replaceAll('*', '').replaceAll('#', '')),
-                                      );
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                          backgroundColor: colorScheme.primary,
-                                          content: Text(
-                                            'Copied to clipboard',
-                                            style: TextStyle(color: colorScheme.onPrimary),
-                                          ),
-                                          duration: Duration(seconds: 2),
-                                        ),
-                                      );
-                                    },
-                                    child: Icon(
-                                      Icons.copy,
-                                      size: 18,
-                                      color: Colors.grey[600],
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          ),
-                        );
-
-
-
-                      },
+                              );
+                            },
                     );
                   },
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: colorScheme.onPrimary,
-                          borderRadius: BorderRadius.circular(30),
-                        ),
+              SafeArea(
+                top: false,
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(14, 10, 14, 12),
+                  decoration: BoxDecoration(
+                    color: colors.surface,
+                    border: Border(
+                      top: BorderSide(color: colors.outline.withOpacity(0.12)),
+                    ),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Expanded(
                         child: TextField(
-                          controller: messageController,
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: colorScheme.primary.withOpacity(0.1),
-                            hintText: "Ask Questions ...",
-                            hintStyle: TextStyle(color: colorScheme.primary),
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                          controller: _messageController,
+                          minLines: 1,
+                          maxLines: 5,
+                          textInputAction: TextInputAction.newline,
+                          decoration: const InputDecoration(
+                            hintText: 'Ask about what you are studying...',
+                            prefixIcon: Icon(Icons.auto_awesome_outlined),
                           ),
-                          style: TextStyle(color: colorScheme.primary,fontWeight: FontWeight.w500),
+                          onSubmitted: (_) => _send(provider),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: colorScheme.primary,
+                      const SizedBox(width: 10),
+                      SizedBox(
+                        width: 52,
+                        height: 52,
+                        child: FilledButton(
+                          onPressed:
+                              provider.isTyping ? null : () => _send(provider),
+                          style: FilledButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                          child: const Icon(Icons.arrow_upward_rounded),
+                        ),
                       ),
-                      child: IconButton(
-                        icon: Icon(Icons.send, color: colorScheme.onPrimary,size: 30,),
-                        onPressed: () {
-                          _scrollToBottom(); // Scroll after sending
-                          if (messageController.text.trim().isNotEmpty) {
-                            // Scroll to the bottom after a short delay
-                            var chatProvider = Provider.of<ChatBotProvider>(context, listen: false);
-                            chatProvider.setTyping(true);
-                            chatProvider.sendMessage(messageController.text).then((_) {
-                              chatProvider.setTyping(false);
-                            });
-                            messageController.clear();
-                          }
-
-
-                        },
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ],
-          ),
-
-        ],
+          );
+        },
       ),
-      backgroundColor: colorScheme.onPrimary,
     );
   }
 }
 
+class _PromptPanel extends StatelessWidget {
+  final ValueChanged<String> onPrompt;
+
+  const _PromptPanel({required this.onPrompt});
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    const prompts = [
+      'Explain this topic simply',
+      'Quiz me with 5 questions',
+      'Make a study plan',
+    ];
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(
+        FlashiDesign.pagePadding,
+        8,
+        FlashiDesign.pagePadding,
+        4,
+      ),
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: colors.primaryContainer.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(FlashiDesign.radius),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Icon(Icons.auto_awesome_rounded),
+              SizedBox(width: 8),
+              Text(
+                'Study faster with Flashi',
+                style: TextStyle(fontWeight: FontWeight.w800),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: prompts
+                .map(
+                  (prompt) => ActionChip(
+                    label: Text(prompt),
+                    onPressed: () => onPrompt(prompt),
+                  ),
+                )
+                .toList(),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MessageBubble extends StatelessWidget {
+  final String text;
+  final bool isUser;
+  final VoidCallback? onCopy;
+
+  const _MessageBubble({
+    required this.text,
+    required this.isUser,
+    required this.onCopy,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Align(
+      alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 520),
+        margin: const EdgeInsets.symmetric(vertical: 6),
+        padding: const EdgeInsets.fromLTRB(14, 12, 10, 12),
+        decoration: BoxDecoration(
+          color: isUser ? colors.primary : colors.surface,
+          borderRadius: BorderRadius.only(
+            topLeft: const Radius.circular(18),
+            topRight: const Radius.circular(18),
+            bottomLeft: Radius.circular(isUser ? 18 : 5),
+            bottomRight: Radius.circular(isUser ? 5 : 18),
+          ),
+          border: isUser
+              ? null
+              : Border.all(color: colors.outline.withOpacity(0.12)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Flexible(
+              child: SelectableText(
+                text,
+                style: TextStyle(
+                  height: 1.45,
+                  color: isUser ? colors.onPrimary : colors.onSurface,
+                ),
+              ),
+            ),
+            if (onCopy != null) ...[
+              const SizedBox(width: 6),
+              IconButton(
+                tooltip: 'Copy',
+                visualDensity: VisualDensity.compact,
+                onPressed: onCopy,
+                icon: const Icon(Icons.copy_rounded, size: 17),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _TypingBubble extends StatelessWidget {
+  const _TypingBubble();
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          color: colors.surface,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: colors.outline.withOpacity(0.12)),
+        ),
+        child: Text(
+          'Flashi is thinking…',
+          style: TextStyle(color: colors.onSurface.withOpacity(0.65)),
+        ),
+      ),
+    );
+  }
+}

@@ -1,3 +1,4 @@
+import 'package:flashi/core/design/flashi_design.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -12,7 +13,8 @@ class ReusableNotesSummaryBlockCore extends StatelessWidget {
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
-  ReusableNotesSummaryBlockCore({
+  const ReusableNotesSummaryBlockCore({
+    super.key,
     required this.title,
     required this.content,
     required this.timestamp,
@@ -26,151 +28,91 @@ class ReusableNotesSummaryBlockCore extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
+    final date = DateFormat('MMM d, yyyy').format(timestamp);
 
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: EdgeInsets.all(5),
-        padding: EdgeInsets.symmetric(horizontal: 10),
-        decoration: _buildContainerDecoration(colorScheme),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildFavoriteButton(colorScheme),
-            Spacer(),
-            _buildTitle(colorScheme),
-            SizedBox(height: 8),
-            _buildSubtitle(colorScheme),
-            Spacer(),
-
-          ],
+    return Material(
+      color: colors.surface,
+      borderRadius: BorderRadius.circular(FlashiDesign.smallRadius),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(FlashiDesign.smallRadius),
+        child: Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(FlashiDesign.smallRadius),
+            border: Border.all(color: colors.outline.withOpacity(0.12)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    isNote ? Icons.note_alt_outlined : Icons.history_rounded,
+                    size: 20,
+                    color: colors.primary,
+                  ),
+                  const Spacer(),
+                  if (isNote)
+                    IconButton(
+                      visualDensity: VisualDensity.compact,
+                      tooltip: isFavorite ? 'Remove favorite' : 'Favorite',
+                      onPressed: onFavorite,
+                      icon: Icon(
+                        isFavorite
+                            ? Icons.favorite_rounded
+                            : Icons.favorite_border_rounded,
+                        size: 20,
+                        color: isFavorite ? colors.error : colors.primary,
+                      ),
+                    ),
+                  PopupMenuButton<String>(
+                    onSelected: (value) {
+                      if (value == 'edit') onEdit();
+                      if (value == 'delete') onDelete();
+                    },
+                    itemBuilder: (_) => const [
+                      PopupMenuItem(value: 'edit', child: Text('Edit')),
+                      PopupMenuItem(value: 'delete', child: Text('Delete')),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Text(
+                title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Expanded(
+                child: Text(
+                  content,
+                  maxLines: 6,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    height: 1.4,
+                    color: colors.onSurface.withOpacity(0.62),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                date,
+                style: TextStyle(
+                  fontSize: 10,
+                  color: colors.onSurface.withOpacity(0.45),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
-    );
-  }
-
-  BoxDecoration _buildContainerDecoration(ColorScheme colorScheme) {
-    return BoxDecoration(
-      gradient: LinearGradient(
-        colors: isNote
-            ? [
-          colorScheme.secondaryContainer.withOpacity(0.2),
-          colorScheme.primaryContainer,
-        ]
-            : [
-          colorScheme.tertiaryContainer.withOpacity(0.2),
-          colorScheme.secondaryContainer,
-        ], // Fallback gradient colors
-        begin: Alignment.bottomCenter,
-        end: Alignment.topLeft,
-      ),
-      borderRadius: BorderRadius.circular(15),
-    );
-  }
-
-
-  Row _buildFavoriteButton(ColorScheme colorScheme) {
-    return Row(
-      children: [
-        IconButton(
-          icon: Icon(
-            isFavorite ? Icons.star_rounded : Icons.star_border_rounded,
-            color: colorScheme.primary,
-          ),
-          onPressed: onFavorite,
-          padding: EdgeInsets.zero,
-          constraints: BoxConstraints(),
-        ),
-        Spacer(),
-        _buildPopupMenuButton(colorScheme)
-      ],
-    );
-  }
-
-  Text _buildTitle(ColorScheme colorScheme) {
-    return Text(
-      title,
-      style: TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.bold,
-        color: colorScheme.primary,
-        overflow: TextOverflow.ellipsis,
-      ),
-    );
-  }
-
-  Column _buildSubtitle(ColorScheme colorScheme) {
-    // Formatting date and time to 12-hour format
-    String formattedDate = DateFormat('MMM dd, yyyy - hh:mm a').format(timestamp);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          content,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            fontSize: 14,
-            color: colorScheme.secondary,
-          ),
-        ),
-        const SizedBox(height: 10,),
-        Text(
-          formattedDate,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            fontSize: 8,
-            color: colorScheme.secondary,
-          ),
-        ),
-      ],
-    );
-  }
-
-  PopupMenuButton<String> _buildPopupMenuButton(ColorScheme colorScheme) {
-    return PopupMenuButton<String>(
-      onSelected: (value) {
-        if (value == 'edit') {
-          onEdit();
-        } else if (value == 'delete') {
-          onDelete();
-        }
-      },
-      icon: Icon(
-        Icons.more_vert_rounded,
-        color: colorScheme.primary,
-      ),
-      itemBuilder: (context) => [
-        PopupMenuItem<String>(
-          value: 'edit',
-          child: _buildPopupMenuItem(
-            icon: Icons.edit,
-            color: colorScheme.primary,
-            text: 'Edit',
-          ),
-        ),
-        PopupMenuItem<String>(
-          value: 'delete',
-          child: _buildPopupMenuItem(
-            icon: Icons.delete,
-            color: colorScheme.error,
-            text: 'Delete',
-          ),
-        ),
-      ],
-    );
-  }
-
-  Row _buildPopupMenuItem({required IconData icon, required Color color, required String text}) {
-    return Row(
-      children: [
-        Icon(icon, color: color),
-        SizedBox(width: 8),
-        Text(text),
-      ],
     );
   }
 }
