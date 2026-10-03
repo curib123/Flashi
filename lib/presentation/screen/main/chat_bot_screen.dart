@@ -187,7 +187,6 @@ class _PromptPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
     const prompts = [
       'Explain this topic simply',
       'Quiz me with 5 questions',
