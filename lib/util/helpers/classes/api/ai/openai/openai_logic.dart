@@ -2,99 +2,111 @@ import 'dart:convert';
 
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flashi/util/helpers/classes/api/ai/core/api_key_secure_storage.dart';
+import 'package:flutter/foundation.dart';
 
-class OpenAiLogic{
+class OpenAiLogic {
+  static Future<List<Map<String, String>>> generateQuestionsOpenAi(
+    String content,
+  ) async {
+    final apiKey = (await getAPIKey())?.trim();
 
-  static Future<List<Map<String, String>>> generateQuestionsOpenAi(String content) async {
-    await saveAPIKey('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');
-
-// Retrieve the stored API key securely
-    String? apiKey = await getAPIKey();
-
-// Ensure the key is not null before assigning
-    if (apiKey != null && apiKey.isNotEmpty) {
-      OpenAI.apiKey = apiKey;
-    } else {
-      print("API Key not found!");
+    if (apiKey == null || apiKey.isEmpty) {
+      debugPrint('OpenAI API key is not configured.');
+      return [];
     }
 
-    List<String> chunks = splitTextIntoChunks(content, 1000);
-    List<Map<String, String>> allQuestions = [];
+    OpenAI.apiKey = apiKey;
 
-    for (String chunk in chunks) {
-      List<Map<String, String>> questions = await processChunkOpenai(chunk);
+    final chunks = splitTextIntoChunks(content, 1000);
+    final allQuestions = <Map<String, String>>[];
+
+    for (final chunk in chunks) {
+      final questions = await processChunkOpenai(chunk);
       allQuestions.addAll(questions);
       if (allQuestions.length >= 20) break;
     }
 
-    return allQuestions.take(20).toList() ?? [];
+    return allQuestions.take(20).toList();
   }
 
-
-  static Future<List<Map<String, String>>> processChunkOpenai(String textChunk) async {
+  static Future<List<Map<String, String>>> processChunkOpenai(
+    String textChunk,
+  ) async {
     final prompt = """
-  Generate 20 identification-type questions and answers from the following text:
+Generate 20 identification-type questions and answers from the following text:
 
-  "$textChunk"
+"$textChunk"
 
-  Format:
-  [
-    {"question": "It is <definition/explanation>.", "answer": "<concept/term>"}
-  ]
-  
-  Ensure the questions are direct and clear. The answers should be concise, ideally within one sentence.
-  """;
+Format:
+[
+  {"question": "It is <definition/explanation>.", "answer": "<concept/term>"}
+]
+
+Ensure the questions are direct and clear. Keep answers concise.
+""";
 
     try {
       final response = await OpenAI.instance.chat.create(
-        model: "gpt-4o-mini",
+        model: 'gpt-4o-mini',
         maxTokens: 400,
         messages: [
           OpenAIChatCompletionChoiceMessageModel(
-              role: OpenAIChatMessageRole.system,
-              content: [OpenAIChatCompletionChoiceMessageContentItemModel.text("You are an expert quiz generator.")]
+            role: OpenAIChatMessageRole.system,
+            content: [
+              OpenAIChatCompletionChoiceMessageContentItemModel.text(
+                'You are an expert quiz generator.',
+              ),
+            ],
           ),
           OpenAIChatCompletionChoiceMessageModel(
-              role: OpenAIChatMessageRole.user,
-              content: [OpenAIChatCompletionChoiceMessageContentItemModel.text(prompt)]
-          )
+            role: OpenAIChatMessageRole.user,
+            content: [
+              OpenAIChatCompletionChoiceMessageContentItemModel.text(prompt),
+            ],
+          ),
         ],
       );
 
-      String aiResponse = response.choices.first.message.content?.first.text ?? "";
-      print(aiResponse);
-      return parseJsonQuestions(aiResponse);
+      final aiResponse =
+          response.choices.first.message.content?.first.text?.trim() ?? '';
 
-    } catch (e) {
-      print("Error processing chunk: $e");
+      if (aiResponse.isEmpty) {
+        debugPrint('OpenAI returned an empty quiz response.');
+        return [];
+      }
+
+      return parseJsonQuestions(aiResponse);
+    } catch (error) {
+      debugPrint('OpenAI quiz generation failed: $error');
       return [];
     }
   }
-
 
   static List<Map<String, String>> parseJsonQuestions(String jsonString) {
     try {
-      final List<dynamic> decodedList = jsonDecode(jsonString);
+      final decoded = jsonDecode(jsonString);
+      if (decoded is! List) return [];
 
-      return decodedList.map((item) {
-        return Map<String, String>.from(
-            item.map((key, value) => MapEntry(key, value.toString()))
+      return decoded.whereType<Map>().map((item) {
+        return item.map(
+          (key, value) => MapEntry(key.toString(), value.toString()),
         );
       }).toList();
-    } catch (e) {
-      print("Error parsing JSON: $e");
+    } catch (error) {
+      debugPrint('OpenAI quiz response could not be parsed: $error');
       return [];
     }
   }
 
-
-  /// Splits large text into smaller chunks (e.g., 1000 words per chunk)
   static List<String> splitTextIntoChunks(String text, int chunkSize) {
-    List<String> words = text.split(' ');
-    List<String> chunks = [];
-    for (int i = 0; i < words.length; i += chunkSize) {
-      chunks.add(words.sublist(i, i + chunkSize > words.length ? words.length : i + chunkSize).join(' '));
+    final words = text.split(RegExp(r'\s+')).where((word) => word.isNotEmpty).toList();
+    final chunks = <String>[];
+
+    for (var index = 0; index < words.length; index += chunkSize) {
+      final end = (index + chunkSize).clamp(0, words.length);
+      chunks.add(words.sublist(index, end).join(' '));
     }
+
     return chunks;
   }
 }
