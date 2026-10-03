@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flashi/util/helpers/classes/ads/ad_manager.dart';
-import 'package:flashi/util/helpers/classes/ads/ad_unit_id.dart';
 import 'package:flashi/util/helpers/widget/other/highlight_keywords.dart';
 import 'package:flutter/material.dart';
 import 'package:flashi/presentation/widget/reusable_widgets/core%20widgets/reviewer_widgets_core/multiple_choice_core.dart';
