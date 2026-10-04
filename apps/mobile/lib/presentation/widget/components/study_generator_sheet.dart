@@ -388,7 +388,7 @@ class _AiGeneratorSheetState extends State<_AiGeneratorSheet> {
 
   void _store(Map<String, dynamic> response) {
     final result = Map<String, dynamic>.from(response['result'] as Map);
-    final items = (result['items'] as List? ?? const [])
+    final items = (result['questions'] as List? ?? const [])
         .map((item) => Map<String, dynamic>.from(item as Map))
         .toList();
 
