@@ -1019,7 +1019,7 @@ class _SetEditorPageState extends State<_SetEditorPage> {
                             if (value == 'duplicate') {
                               setState(() => _questions.insert(
                                     entry.key + 1,
-                                    entry.value.copyWith(id: null),
+                                    entry.value.duplicate(),
                                   ));
                             } else if (value == 'delete') {
                               setState(() => _questions.removeAt(entry.key));
