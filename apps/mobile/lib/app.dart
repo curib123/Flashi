@@ -1,14 +1,18 @@
 import 'dart:io';
 
+import 'package:cross_file/cross_file.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flashi/core/design/flashi_design.dart';
 import 'package:flashi/domain/study.dart';
+import 'package:flashi/domain/study_package.dart';
 import 'package:flashi/features/app_state.dart';
 import 'package:flashi/provider/ai_credits_provider.dart';
 import 'package:flashi/provider/auth_provider.dart';
 import 'package:flashi/provider/generation_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 class FlashiApp extends StatelessWidget {
   final AppState state;
@@ -69,6 +73,32 @@ class _LibraryPage extends StatelessWidget {
           appBar: AppBar(
             title: const Text('Flashi AI'),
             actions: [
+              PopupMenuButton<String>(
+                tooltip: 'Library actions',
+                onSelected: (value) {
+                  if (value == 'import') {
+                    _importPackage(context);
+                  } else if (value == 'backup') {
+                    _shareBackup(context);
+                  }
+                },
+                itemBuilder: (context) => const [
+                  PopupMenuItem(
+                    value: 'import',
+                    child: ListTile(
+                      leading: Icon(Icons.file_open_outlined),
+                      title: Text('Import .flashi'),
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'backup',
+                    child: ListTile(
+                      leading: Icon(Icons.ios_share_rounded),
+                      title: Text('Backup & share'),
+                    ),
+                  ),
+                ],
+              ),
               if (credits != null && auth?.signedIn == true)
                 Padding(
                   padding: const EdgeInsets.only(right: 4),
@@ -221,6 +251,89 @@ class _LibraryPage extends StatelessWidget {
         );
       },
     );
+  }
+
+  Future<void> _shareBackup(BuildContext context) async {
+    try {
+      final package = await state.repository.backup(
+        creator: auth?.user?.name ?? '',
+      );
+      final directory = await getTemporaryDirectory();
+      final timestamp = DateTime.now().toUtc().toIso8601String().replaceAll(':', '-');
+      final file = File('${directory.path}/flashi-backup-$timestamp.flashi');
+      await file.writeAsString(package.encode(), flush: true);
+      await Share.shareXFiles(
+        [XFile(file.path, mimeType: 'application/json')],
+        text: 'Flashi study backup',
+      );
+    } catch (error) {
+      if (context.mounted) _message(context, 'Backup failed: $error');
+    }
+  }
+
+  Future<void> _importPackage(BuildContext context) async {
+    try {
+      final picked = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: const ['flashi'],
+        allowMultiple: false,
+      );
+      final path = picked?.files.single.path;
+      if (path == null) return;
+
+      final raw = await File(path).readAsString();
+      final package = StudyPackage.decode(raw);
+      if (!context.mounted) return;
+
+      final action = await showDialog<ImportBehavior>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: const Text('Import Flashi package?'),
+          content: Text(
+            '${package.sets.length} sets · ${package.questionCount} questions'
+            '${package.attempts.isEmpty ? '' : ' · ${package.attempts.length} attempts'}'
+            '\n\nCreator: ${package.creator.isEmpty ? 'Unknown' : package.creator}',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(
+                dialogContext,
+                ImportBehavior.cancel,
+              ),
+              child: const Text('Cancel'),
+            ),
+            if (package.packageType == 'backup')
+              TextButton(
+                onPressed: () => Navigator.pop(
+                  dialogContext,
+                  ImportBehavior.replace,
+                ),
+                child: const Text('Replace library'),
+              ),
+            FilledButton(
+              onPressed: () => Navigator.pop(
+                dialogContext,
+                ImportBehavior.duplicate,
+              ),
+              child: const Text('Import copy'),
+            ),
+          ],
+        ),
+      );
+
+      if (action == null || action == ImportBehavior.cancel) return;
+      await state.repository.importPackage(
+        package,
+        action,
+        replaceLibrary: action == ImportBehavior.replace,
+      );
+      await state.reload();
+      if (context.mounted) _message(context, 'Flashi package imported.');
+    } on FormatException catch (error) {
+      if (context.mounted) _message(context, 'Invalid Flashi package: ${error.message}');
+    } catch (error) {
+      if (context.mounted) _message(context, 'Import failed: $error');
+    }
   }
 
   Future<void> _showCreate(BuildContext context) {
