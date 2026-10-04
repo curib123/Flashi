@@ -1,31 +1,25 @@
-# Flashi - AI-Powered Flashcard Generator
+# Flashi
 
-Flashi is an advanced AI-powered tool designed to help you create and customize flashcards effortlessly. Enhance your learning experience with intuitive features, a variety of themes, and AI-generated flashcards. You can also generate flashcards from PDF or Docs files and interact with a chatbot for study assistance.
+Flashi is an offline-first flashcard and quiz study app.
 
-## Features
-- AI-powered flashcard generation
-- Create and personalize flashcards easily
-- Generate flashcards from PDF or Docs files
-- Multiple color themes, including Light and Dark modes
-- Intuitive and user-friendly interface
-- Customizable learning modes for various study techniques
-- Integrated chatbot for interactive learning assistance
+## Monorepo
 
-## Installation
-To start using Flashi, follow these steps:
-1. Clone this repository.
-2. Install the required dependencies.
-3. Run the application on your device.
+- `apps/mobile` — Flutter app. Manual study sets and review remain offline.
+- `apps/api` — Next.js API for Vercel. Owns AI generation, auth validation, credits, upload authorization, and runtime ad configuration.
+- `supabase` — Supabase database/storage bootstrap.
 
-## License
-This project is proprietary, and all rights are reserved by the author.
+## Scope
 
-Unauthorized use, copying, modification, distribution, or display of this software or its source code is strictly prohibited without explicit written permission from the author.
+There is no general-purpose AI chat assistant. Flashi supports manual and AI-generated study sets for multiple choice, identification, true/false, definition, fill-in-the-blank, and enumeration. AI sources can be a topic, PDF/DOC/DOCX, or study-note image.
 
-Legal action will be taken against any unauthorized use, distribution, or modification of this software.
+The backend is locked to `gpt-5.6-luna`.
 
-Copyright (c) 2025 . All rights reserved.
+## Development
 
-## Contact
-For inquiries or permission requests, please contact [curibtech@gmail.com]
+1. Copy `apps/api/.env.example` to `apps/api/.env.local`.
+2. Prepare Supabase using `supabase/README.md`.
+3. Never put `OPENAI_API_KEY` or `SUPABASE_SECRET_KEY` in Flutter.
+4. Run `npm install` and `npm run api:dev`.
+5. Run Flutter from `apps/mobile`.
 
+The mobile API URL is a build define. Development defaults to the Android emulator host; later pass the Vercel URL with `--dart-define=API_BASE_URL=https://...`.
