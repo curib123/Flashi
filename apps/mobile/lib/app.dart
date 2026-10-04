@@ -1,86 +1,221 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
+import 'package:flashi/core/design/flashi_design.dart';
 import 'package:flashi/domain/study.dart';
 import 'package:flashi/features/app_state.dart';
+import 'package:flashi/provider/ai_credits_provider.dart';
+import 'package:flashi/provider/auth_provider.dart';
+import 'package:flashi/provider/generation_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class FlashiApp extends StatelessWidget {
   final AppState state;
+  final AuthProvider? auth;
+  final GenerationProvider? generation;
+  final AiCreditProvider? credits;
 
-  const FlashiApp({super.key, required this.state});
+  const FlashiApp({
+    super.key,
+    required this.state,
+    this.auth,
+    this.generation,
+    this.credits,
+  });
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flashi AI',
-      theme: ThemeData(
-        useMaterial3: true,
-        colorSchemeSeed: const Color(0xFF2563EB),
+      theme: FlashiDesign.light(),
+      darkTheme: FlashiDesign.dark(),
+      themeMode: ThemeMode.system,
+      home: _LibraryPage(
+        state: state,
+        auth: auth,
+        generation: generation,
+        credits: credits,
       ),
-      home: _LibraryPage(state: state),
     );
   }
 }
 
 class _LibraryPage extends StatelessWidget {
   final AppState state;
+  final AuthProvider? auth;
+  final GenerationProvider? generation;
+  final AiCreditProvider? credits;
 
-  const _LibraryPage({required this.state});
+  const _LibraryPage({
+    required this.state,
+    this.auth,
+    this.generation,
+    this.credits,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final listenables = <Listenable>[state];
+    if (auth != null) listenables.add(auth!);
+    if (generation != null) listenables.add(generation!);
+    if (credits != null) listenables.add(credits!);
+
     return AnimatedBuilder(
-      animation: state,
+      animation: Listenable.merge(listenables),
       builder: (context, _) {
         return Scaffold(
-          appBar: AppBar(title: const Text('Flashi AI')),
+          appBar: AppBar(
+            title: const Text('Flashi AI'),
+            actions: [
+              if (credits != null && auth?.signedIn == true)
+                Padding(
+                  padding: const EdgeInsets.only(right: 4),
+                  child: Center(
+                    child: Chip(
+                      avatar: const Icon(Icons.bolt_rounded, size: 16),
+                      label: Text('${credits!.credits}'),
+                    ),
+                  ),
+                ),
+              if (auth != null)
+                IconButton(
+                  tooltip: auth!.signedIn ? 'Account' : 'Sign in',
+                  onPressed: () => _showAccount(context),
+                  icon: Icon(
+                    auth!.signedIn
+                        ? Icons.account_circle_rounded
+                        : Icons.login_rounded,
+                  ),
+                ),
+            ],
+          ),
           floatingActionButton: FloatingActionButton.extended(
-            onPressed: () => _createSet(context),
+            onPressed: () => _showCreate(context),
             icon: const Icon(Icons.add_rounded),
             label: const Text('Create'),
           ),
           body: SafeArea(
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 96),
-              children: [
-                Text(
-                  'Turn Notes Into Knowledge.',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.w900,
-                      ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  'Create, practice, and review your study sets offline.',
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-                const SizedBox(height: 24),
-                if (state.sets.isEmpty)
-                  const Card(
-                    child: Padding(
-                      padding: EdgeInsets.all(24),
-                      child: Text(
-                        'No study sets yet. Create one manually or generate one from your notes.',
-                      ),
-                    ),
-                  )
-                else
-                  ...state.sets.map(
-                    (set) => Card(
-                      child: ListTile(
-                        title: Text(set.title),
-                        subtitle: Text(
-                          '${set.questions.length} questions · ${set.kind.name}',
+            child: RefreshIndicator(
+              onRefresh: () async {
+                await state.reload();
+                if (auth?.signedIn == true) await credits?.refresh();
+              },
+              child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 96),
+                children: [
+                  Text(
+                    'Turn Notes Into Knowledge.',
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.w900,
+                          height: 1.05,
                         ),
-                        trailing: const Icon(Icons.chevron_right_rounded),
-                        onTap: () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => _SetPage(state: state, set: set),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Create manually offline, or generate editable practice from your notes with GPT-5.6 Luna.',
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          height: 1.4,
+                        ),
+                  ),
+                  const SizedBox(height: 24),
+                  _SummaryRow(
+                    sets: state.sets.length,
+                    questions: state.sets.fold<int>(
+                      0,
+                      (total, set) => total + set.questions.length,
+                    ),
+                    attempts: state.attempts.length,
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          'Study library',
+                          style:
+                              Theme.of(context).textTheme.titleLarge?.copyWith(
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                        ),
+                      ),
+                      if (state.loading)
+                        const SizedBox.square(
+                          dimension: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  if (state.sets.isEmpty)
+                    _EmptyLibrary(onCreate: () => _showCreate(context))
+                  else
+                    ...state.sets.map(
+                      (set) => Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: Card(
+                          clipBehavior: Clip.antiAlias,
+                          child: ListTile(
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            leading: CircleAvatar(
+                              child: Icon(
+                                set.kind == SetKind.deck
+                                    ? Icons.style_rounded
+                                    : set.kind == SetKind.exam
+                                        ? Icons.assignment_rounded
+                                        : Icons.quiz_rounded,
+                              ),
+                            ),
+                            title: Text(
+                              set.title,
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.w800),
+                            ),
+                            subtitle: Text(
+                              '${set.questions.length} questions · ${set.kind.name}',
+                            ),
+                            trailing:
+                                const Icon(Icons.chevron_right_rounded),
+                            onTap: () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    _SetPage(state: state, set: set),
+                              ),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-              ],
+                  if (state.attempts.isNotEmpty) ...[
+                    const SizedBox(height: 26),
+                    Text(
+                      'Recent results',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.w900,
+                          ),
+                    ),
+                    const SizedBox(height: 10),
+                    ...state.attempts.take(5).map(
+                          (attempt) => ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            leading: CircleAvatar(
+                              child: Text('${attempt.score}'),
+                            ),
+                            title: Text(attempt.title),
+                            subtitle: Text(
+                              '${attempt.score}% · ${attempt.mistakes.length} mistakes',
+                            ),
+                          ),
+                        ),
+                  ],
+                ],
+              ),
             ),
           ),
         );
@@ -88,13 +223,67 @@ class _LibraryPage extends StatelessWidget {
     );
   }
 
-  Future<void> _createSet(BuildContext context) async {
+  Future<void> _showCreate(BuildContext context) {
+    return showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      useSafeArea: true,
+      builder: (sheetContext) => Padding(
+        padding: const EdgeInsets.fromLTRB(18, 4, 18, 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.edit_note_rounded),
+              title: const Text('Create manually'),
+              subtitle: const Text('Works fully offline.'),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                _createManual(context);
+              },
+            ),
+            if (generation != null) ...[
+              ListTile(
+                leading: const Icon(Icons.auto_awesome_rounded),
+                title: const Text('Generate from topic'),
+                subtitle: const Text('Use GPT-5.6 Luna on the Flashi backend.'),
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  _createWithAi(context, _AiSource.topic);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.description_outlined),
+                title: const Text('Generate from PDF or document'),
+                subtitle: const Text('PDF, DOC, DOCX, TXT, RTF, ODT, Markdown.'),
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  _createWithAi(context, _AiSource.document);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.document_scanner_outlined),
+                title: const Text('Generate from notes image'),
+                subtitle: const Text('Photo, screenshot, handwritten or printed notes.'),
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  _createWithAi(context, _AiSource.image);
+                },
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _createManual(BuildContext context) async {
     final title = TextEditingController();
     final question = TextEditingController();
     final answer = TextEditingController();
     final created = await showDialog<StudySet>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: const Text('Create study set'),
         content: SingleChildScrollView(
           child: Column(
@@ -119,7 +308,7 @@ class _LibraryPage extends StatelessWidget {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: const Text('Cancel'),
           ),
           FilledButton(
@@ -130,7 +319,7 @@ class _LibraryPage extends StatelessWidget {
                 return;
               }
               Navigator.pop(
-                context,
+                dialogContext,
                 StudySet(
                   title: title.text.trim(),
                   kind: SetKind.quiz,
@@ -153,6 +342,455 @@ class _LibraryPage extends StatelessWidget {
     question.dispose();
     answer.dispose();
     if (created != null) await state.saveSet(created);
+  }
+
+  Future<void> _createWithAi(
+    BuildContext context,
+    _AiSource source,
+  ) async {
+    if (auth?.signedIn != true) {
+      final signedIn = await auth?.signInWithGoogle() ?? false;
+      if (!signedIn) {
+        if (context.mounted) {
+          _message(context, auth?.error ?? 'Sign in with Google to use AI.');
+        }
+        return;
+      }
+      await credits?.refresh();
+    }
+
+    final result = await showDialog<Map<String, dynamic>>(
+      context: context,
+      builder: (dialogContext) => _AiGenerationDialog(
+        generation: generation!,
+        source: source,
+      ),
+    );
+    if (result == null) return;
+
+    try {
+      final set = _studySetFromGeneration(result);
+      await state.saveSet(set);
+      credits?.applyGenerationBalance(result);
+      if (context.mounted) {
+        _message(context, 'Study set generated and saved offline.');
+      }
+    } catch (error) {
+      if (context.mounted) _message(context, error.toString());
+    }
+  }
+
+  Future<void> _showAccount(BuildContext context) async {
+    final currentAuth = auth!;
+    if (!currentAuth.signedIn) {
+      final ok = await currentAuth.signInWithGoogle();
+      if (ok) await credits?.refresh();
+      if (!ok && context.mounted) {
+        _message(context, currentAuth.error ?? 'Sign-in cancelled.');
+      }
+      return;
+    }
+
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) => Padding(
+        padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.account_circle_rounded),
+              title: Text(currentAuth.user?.name ?? 'Flashi learner'),
+              subtitle: Text(currentAuth.user?.email ?? 'Signed in'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.logout_rounded),
+              title: const Text('Sign out'),
+              onTap: () async {
+                Navigator.pop(sheetContext);
+                await currentAuth.signOut();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  StudySet _studySetFromGeneration(Map<String, dynamic> response) {
+    final rawResult = response['result'];
+    if (rawResult is! Map) throw const FormatException('Invalid generation.');
+    final result = Map<String, dynamic>.from(rawResult);
+    final rawQuestions = result['questions'];
+    if (rawQuestions is! List || rawQuestions.isEmpty) {
+      throw const FormatException('The generated study set is empty.');
+    }
+
+    final questions = rawQuestions.map((item) {
+      if (item is! Map) throw const FormatException('Invalid generated item.');
+      final map = Map<String, dynamic>.from(item);
+      final rawPairs = map['pairs'];
+      return StudyQuestion(
+        id: map['id']?.toString(),
+        type: _questionType(map['type']?.toString() ?? ''),
+        question: map['question']?.toString() ?? '',
+        answer: map['answer']?.toString() ?? '',
+        options: (map['options'] as List? ?? const [])
+            .map((value) => value.toString())
+            .toList(),
+        explanation: map['explanation']?.toString() ?? '',
+        topic: map['topic']?.toString() ?? '',
+        pairs: (rawPairs as List? ?? const [])
+            .whereType<Map>()
+            .map(
+              (pair) => MatchPair(
+                pair['left']?.toString() ?? '',
+                pair['right']?.toString() ?? '',
+              ),
+            )
+            .toList(),
+      );
+    }).toList();
+
+    return StudySet(
+      id: result['id']?.toString(),
+      title: result['title']?.toString() ?? 'Generated study set',
+      subject: result['subject']?.toString() ?? '',
+      creator: result['creator']?.toString() ?? '',
+      kind: _setKind(result['kind']?.toString()),
+      difficulty: _difficulty(result['difficulty']?.toString()),
+      questions: questions,
+      updatedAt: DateTime.tryParse(result['updatedAt']?.toString() ?? ''),
+    );
+  }
+
+  QuestionType _questionType(String value) {
+    switch (value) {
+      case 'flashcard':
+        return QuestionType.flashcard;
+      case 'multiple_choice':
+        return QuestionType.multipleChoice;
+      case 'identification':
+        return QuestionType.identification;
+      case 'true_false':
+        return QuestionType.trueFalse;
+      case 'definition':
+        return QuestionType.definition;
+      case 'fill_blank':
+        return QuestionType.fillBlank;
+      case 'matching':
+        return QuestionType.matching;
+      case 'question_answer':
+        return QuestionType.questionAnswer;
+      case 'enumeration':
+        return QuestionType.enumeration;
+      default:
+        throw const FormatException('Unsupported generated question type.');
+    }
+  }
+
+  SetKind _setKind(String? value) {
+    return SetKind.values.firstWhere(
+      (kind) => kind.name == value,
+      orElse: () => SetKind.quiz,
+    );
+  }
+
+  Difficulty _difficulty(String? value) {
+    return Difficulty.values.firstWhere(
+      (difficulty) => difficulty.name == value,
+      orElse: () => Difficulty.medium,
+    );
+  }
+
+  void _message(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
+}
+
+enum _AiSource { topic, document, image }
+
+class _AiGenerationDialog extends StatefulWidget {
+  final GenerationProvider generation;
+  final _AiSource source;
+
+  const _AiGenerationDialog({
+    required this.generation,
+    required this.source,
+  });
+
+  @override
+  State<_AiGenerationDialog> createState() => _AiGenerationDialogState();
+}
+
+class _AiGenerationDialogState extends State<_AiGenerationDialog> {
+  final topic = TextEditingController();
+  final scope = TextEditingController();
+  String type = 'identification';
+  int count = 10;
+  File? file;
+  String? error;
+
+  static const types = <String, String>{
+    'multiple_choice': 'Multiple choice',
+    'identification': 'Identification',
+    'true_false': 'True or false',
+    'definition': 'Definition',
+    'fill_blank': 'Fill in the blank',
+    'enumeration': 'Enumeration',
+  };
+
+  @override
+  void dispose() {
+    topic.dispose();
+    scope.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: widget.generation,
+      builder: (context, _) => AlertDialog(
+        title: Text(
+          widget.source == _AiSource.topic
+              ? 'Generate from topic'
+              : widget.source == _AiSource.document
+                  ? 'Generate from document'
+                  : 'Generate from notes image',
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (widget.source == _AiSource.topic) ...[
+                TextField(
+                  controller: topic,
+                  decoration: const InputDecoration(
+                    labelText: 'Topic',
+                    hintText: 'Database normalization',
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: scope,
+                  minLines: 3,
+                  maxLines: 5,
+                  decoration: const InputDecoration(
+                    labelText: 'Study scope or notes',
+                  ),
+                ),
+              ] else
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.attach_file_rounded),
+                  title: Text(
+                    file == null
+                        ? 'Choose source'
+                        : file!.uri.pathSegments.last,
+                  ),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                  onTap: widget.generation.busy ? null : _pickSource,
+                ),
+              const SizedBox(height: 12),
+              DropdownButtonFormField<String>(
+                initialValue: type,
+                decoration: const InputDecoration(labelText: 'Question type'),
+                items: types.entries
+                    .map(
+                      (entry) => DropdownMenuItem(
+                        value: entry.key,
+                        child: Text(entry.value),
+                      ),
+                    )
+                    .toList(),
+                onChanged: widget.generation.busy
+                    ? null
+                    : (value) => setState(() => type = value ?? type),
+              ),
+              const SizedBox(height: 12),
+              DropdownButtonFormField<int>(
+                initialValue: count,
+                decoration: const InputDecoration(labelText: 'Questions'),
+                items: const [10, 20, 30, 40, 50]
+                    .map(
+                      (value) => DropdownMenuItem(
+                        value: value,
+                        child: Text('$value questions'),
+                      ),
+                    )
+                    .toList(),
+                onChanged: widget.generation.busy
+                    ? null
+                    : (value) => setState(() => count = value ?? count),
+              ),
+              if (error != null) ...[
+                const SizedBox(height: 12),
+                Text(
+                  error!,
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                ),
+              ],
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed:
+                widget.generation.busy ? null : () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          FilledButton.icon(
+            onPressed: widget.generation.busy ? null : _generate,
+            icon: widget.generation.busy
+                ? const SizedBox.square(
+                    dimension: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.auto_awesome_rounded),
+            label: Text(widget.generation.busy ? 'Generating…' : 'Generate'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _pickSource() async {
+    if (widget.source == _AiSource.image) {
+      final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
+      if (picked != null && mounted) setState(() => file = File(picked.path));
+      return;
+    }
+
+    final picked = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: const ['pdf', 'doc', 'docx', 'txt', 'rtf', 'odt', 'md'],
+    );
+    final path = picked?.files.single.path;
+    if (path != null && mounted) setState(() => file = File(path));
+  }
+
+  Future<void> _generate() async {
+    if (widget.source == _AiSource.topic &&
+        (topic.text.trim().isEmpty || scope.text.trim().length < 10)) {
+      setState(() => error = 'Add a topic and at least 10 characters of notes.');
+      return;
+    }
+    if (widget.source != _AiSource.topic && file == null) {
+      setState(() => error = 'Choose a study source first.');
+      return;
+    }
+
+    try {
+      final response = widget.source == _AiSource.topic
+          ? await widget.generation.generateTopic(
+              topic: topic.text.trim(),
+              description: scope.text.trim(),
+              quizType: type,
+              count: count,
+            )
+          : await widget.generation.generateFromFile(
+              file: file!,
+              quizType: type,
+              count: count,
+              image: widget.source == _AiSource.image,
+            );
+      if (mounted) Navigator.pop(context, response);
+    } catch (exception) {
+      if (mounted) setState(() => error = exception.toString());
+    }
+  }
+}
+
+class _SummaryRow extends StatelessWidget {
+  final int sets;
+  final int questions;
+  final int attempts;
+
+  const _SummaryRow({
+    required this.sets,
+    required this.questions,
+    required this.attempts,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(child: _Metric(value: '$sets', label: 'Sets')),
+        const SizedBox(width: 10),
+        Expanded(child: _Metric(value: '$questions', label: 'Questions')),
+        const SizedBox(width: 10),
+        Expanded(child: _Metric(value: '$attempts', label: 'Attempts')),
+      ],
+    );
+  }
+}
+
+class _Metric extends StatelessWidget {
+  final String value;
+  final String label;
+
+  const _Metric({required this.value, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+        child: Column(
+          children: [
+            Text(
+              value,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w900,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+            ),
+            const SizedBox(height: 2),
+            Text(label, style: Theme.of(context).textTheme.bodySmall),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _EmptyLibrary extends StatelessWidget {
+  final VoidCallback onCreate;
+
+  const _EmptyLibrary({required this.onCreate});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          children: [
+            const Icon(Icons.layers_outlined, size: 42),
+            const SizedBox(height: 12),
+            const Text(
+              'No study sets yet',
+              style: TextStyle(fontWeight: FontWeight.w800),
+            ),
+            const SizedBox(height: 6),
+            const Text(
+              'Create one manually or generate one from your notes.',
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 14),
+            OutlinedButton(
+              onPressed: onCreate,
+              child: const Text('Create first set'),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -177,6 +815,10 @@ class _SetPage extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text('${set.questions.length} questions'),
+          if (set.subject.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Text(set.subject),
+          ],
           const SizedBox(height: 24),
           FilledButton.icon(
             onPressed: set.questions.isEmpty
@@ -284,6 +926,28 @@ class _QuizPageState extends State<_QuizPage> {
           )
           .toList();
     }
+
+    if (question.type == QuestionType.matching) {
+      return [
+        Text(
+          'Matching review: compare each pair, then type any response to self-check.',
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+        ...question.pairs.map(
+          (pair) => ListTile(
+            contentPadding: EdgeInsets.zero,
+            title: Text(pair.left),
+            trailing: Text(pair.right),
+          ),
+        ),
+        TextFormField(
+          enabled: !checked,
+          onChanged: (value) => setState(() => response = value),
+          decoration: const InputDecoration(labelText: 'Self-check note'),
+        ),
+      ];
+    }
+
     return [
       TextFormField(
         enabled: !checked,
@@ -299,11 +963,14 @@ class _QuizPageState extends State<_QuizPage> {
   void _check() {
     setState(() {
       checked = true;
+      final correct = question.type == QuestionType.matching
+          ? true
+          : question.matches(response);
       records.add(
         AnswerRecord(
           question: question,
           response: response,
-          correct: question.matches(response),
+          correct: correct,
         ),
       );
     });
@@ -327,7 +994,7 @@ class _QuizPageState extends State<_QuizPage> {
     );
     await widget.state.saveAttempt(attempt);
     if (!mounted) return;
-    Navigator.of(context).pushReplacement(
+    await Navigator.of(context).pushReplacement(
       MaterialPageRoute(
         builder: (_) => _ResultPage(attempt: attempt),
       ),
@@ -358,7 +1025,32 @@ class _ResultPage extends StatelessWidget {
           const SizedBox(height: 24),
           if (attempt.mistakes.isNotEmpty)
             FilledButton.tonal(
-              onPressed: () {},
+              onPressed: () => showModalBottomSheet<void>(
+                context: context,
+                showDragHandle: true,
+                builder: (context) => ListView(
+                  padding: const EdgeInsets.all(20),
+                  children: [
+                    Text(
+                      'Review Mistakes',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.w900,
+                          ),
+                    ),
+                    const SizedBox(height: 12),
+                    ...attempt.mistakes.map(
+                      (record) => Card(
+                        child: ListTile(
+                          title: Text(record.question.question),
+                          subtitle: Text(
+                            'Your answer: ${record.response}\nCorrect: ${record.question.answer}',
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               child: const Text('Review Mistakes'),
             ),
         ],
