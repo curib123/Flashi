@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cross_file/cross_file.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flashi/core/design/flashi_design.dart';
+import 'package:flashi/data/services/startio_service.dart';
 import 'package:flashi/domain/study.dart';
 import 'package:flashi/domain/study_package.dart';
 import 'package:flashi/features/app_state.dart';
@@ -10,6 +11,7 @@ import 'package:flashi/provider/ai_credits_provider.dart';
 import 'package:flashi/provider/auth_provider.dart';
 import 'package:flashi/provider/generation_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -19,6 +21,7 @@ class FlashiApp extends StatelessWidget {
   final AuthProvider? auth;
   final GenerationProvider? generation;
   final AiCreditProvider? credits;
+  final StartIoService? ads;
 
   const FlashiApp({
     super.key,
@@ -26,6 +29,7 @@ class FlashiApp extends StatelessWidget {
     this.auth,
     this.generation,
     this.credits,
+    this.ads,
   });
 
   @override
@@ -41,6 +45,7 @@ class FlashiApp extends StatelessWidget {
         auth: auth,
         generation: generation,
         credits: credits,
+        ads: ads,
       ),
     );
   }
@@ -51,12 +56,14 @@ class _LibraryPage extends StatelessWidget {
   final AuthProvider? auth;
   final GenerationProvider? generation;
   final AiCreditProvider? credits;
+  final StartIoService? ads;
 
   const _LibraryPage({
     required this.state,
     this.auth,
     this.generation,
     this.credits,
+    this.ads,
   });
 
   @override
@@ -222,6 +229,10 @@ class _LibraryPage extends StatelessWidget {
                         ),
                       ),
                     ),
+                  if (ads != null) ...[
+                    const SizedBox(height: 20),
+                    _LibraryAdCard(ads: ads!),
+                  ],
                   if (state.attempts.isNotEmpty) ...[
                     const SizedBox(height: 26),
                     Text(
@@ -815,6 +826,96 @@ class _AiGenerationDialogState extends State<_AiGenerationDialog> {
     } catch (exception) {
       if (mounted) setState(() => error = exception.toString());
     }
+  }
+}
+
+class _LibraryAdCard extends StatefulWidget {
+  final StartIoService ads;
+
+  const _LibraryAdCard({required this.ads});
+
+  @override
+  State<_LibraryAdCard> createState() => _LibraryAdCardState();
+}
+
+class _LibraryAdCardState extends State<_LibraryAdCard> {
+  static const _storage = FlutterSecureStorage();
+  static const _consentKey = 'flashi_library_ad_consent';
+
+  bool _loadedPreference = false;
+  bool _consented = false;
+  Widget? _banner;
+
+  @override
+  void initState() {
+    super.initState();
+    _restorePreference();
+  }
+
+  Future<void> _restorePreference() async {
+    final value = await _storage.read(key: _consentKey);
+    if (!mounted) return;
+    _consented = value == 'true';
+    _loadedPreference = true;
+    setState(() {});
+    if (_consented) await _loadBanner();
+  }
+
+  Future<void> _setConsent(bool value) async {
+    await _storage.write(key: _consentKey, value: value.toString());
+    if (!mounted) return;
+    setState(() {
+      _consented = value;
+      if (!value) _banner = null;
+    });
+    if (value) await _loadBanner();
+  }
+
+  Future<void> _loadBanner() async {
+    final banner = await widget.ads.loadLibraryBanner(consented: _consented);
+    if (!mounted) return;
+    setState(() => _banner = banner);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_loadedPreference ||
+        !widget.ads.enabled ||
+        !widget.ads.libraryBannerEnabled) {
+      return const SizedBox.shrink();
+    }
+
+    if (!_consented) {
+      return Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              const Icon(Icons.ads_click_outlined),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Text(
+                  'Support Flashi with a small banner on the library screen only.',
+                ),
+              ),
+              TextButton(
+                onPressed: () => _setConsent(true),
+                child: const Text('Enable'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (_banner == null) {
+      return const SizedBox.shrink();
+    }
+
+    return Semantics(
+      label: 'Sponsored banner',
+      child: Center(child: _banner),
+    );
   }
 }
 
