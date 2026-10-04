@@ -1,25 +1,45 @@
-# Flashi
+# Flashi AI
 
-Flashi is an offline-first flashcard and quiz study app.
+**Turn Notes Into Knowledge.**
+
+Flashi AI is a focused study application for turning notes into editable flashcards, quizzes, and mock-exam material.
+
+## Product flow
+
+**Upload → Generate → Practice → Review → Improve → Share**
+
+There is no general-purpose AI chat assistant.
 
 ## Monorepo
 
-- `apps/mobile` — Flutter app. Manual study sets and review remain offline.
-- `apps/api` — Next.js API for Vercel. Owns AI generation, auth validation, credits, upload authorization, and runtime ad configuration.
-- `supabase` — Supabase database/storage bootstrap.
+- `apps/mobile` — Flutter Android app: SQLite offline library, manual creation, practice/results, safe backup/import, Google sign-in client flow, and API consumption.
+- `apps/api` — Next.js backend for Vercel: authentication mediation, GPT-5.6 Luna generation, upload authorization, credits, synchronization, and runtime configuration.
+- `supabase` — PostgreSQL/storage schema and backend bootstrap.
 
-## Scope
+## AI generation
 
-There is no general-purpose AI chat assistant. Flashi supports manual and AI-generated study sets for multiple choice, identification, true/false, definition, fill-in-the-blank, and enumeration. AI sources can be a topic, PDF/DOC/DOCX, or study-note image.
+The server is locked to `gpt-5.6-luna`. Supported study types include flashcards, multiple choice, identification, true/false, definition, fill-in-the-blank, matching, question-and-answer, and enumeration.
 
-The backend is locked to `gpt-5.6-luna`.
+Sources can be typed notes/topics, PDF and supported document files, screenshots, photos, and handwritten/printed note images.
+
+Private credentials stay on the backend. Flutter never receives the OpenAI key or Supabase secret/service key.
+
+## Offline and portability
+
+Manual study works without an account or network connection. Generated study sets are saved to SQLite and remain available offline.
+
+Portable `.flashi` packages are versioned and strictly validated. Users can create backups, share them, import a copy, or transactionally restore a backup.
+
+## Ads
+
+Start.io is configured for non-disruptive monetization only. Return and splash ads are disabled. The Flutter app only supports a server-enabled, user-opted-in banner on the library screen; study, generation, quiz, and result flows stay ad-free.
 
 ## Development
 
 1. Copy `apps/api/.env.example` to `apps/api/.env.local`.
-2. Prepare Supabase using `supabase/README.md`.
-3. Never put `OPENAI_API_KEY` or `SUPABASE_SECRET_KEY` in Flutter.
-4. Run `npm install` and `npm run api:dev`.
-5. Run Flutter from `apps/mobile`.
+2. Prepare Supabase with the files in `supabase/`.
+3. Run `npm ci` and `npm run api:dev`.
+4. Run Flutter from `apps/mobile` with the public `API_BASE_URL` and `GOOGLE_WEB_CLIENT_ID` build defines.
+5. Keep `OPENAI_API_KEY`, Supabase secret/service keys, rate-limit secrets, and cron secrets server-side only.
 
-The mobile API URL is a build define. Development defaults to the Android emulator host; later pass the Vercel URL with `--dart-define=API_BASE_URL=https://...`.
+CI validates API tests/typecheck/build plus Flutter formatting, analysis, tests, and an Android debug APK build.

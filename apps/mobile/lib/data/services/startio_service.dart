@@ -1,64 +1,49 @@
-import 'dart:async';
-
+import 'package:flashi/data/services/api_client.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:startapp_sdk/startapp.dart';
 
 class StartIoService {
   final StartAppSdk _sdk = StartAppSdk();
+  StartAppBannerAd? _libraryBanner;
 
-  Future<void> configure({required bool testMode}) async {
-    await _sdk.setTestAdsEnabled(testMode);
+  bool enabled = false;
+  bool libraryBannerEnabled = false;
+  String? appId;
+
+  Future<void> configureFromBackend(ApiClient api) async {
+    try {
+      final config = await api.get('/api/v1/config');
+      final rawAds = config['ads'];
+      if (rawAds is! Map) return;
+      final ads = Map<String, dynamic>.from(rawAds);
+      enabled = ads['enabled'] == true;
+      libraryBannerEnabled = enabled && ads['libraryBanner'] == true;
+      appId = ads['appId']?.toString();
+      await _sdk.setTestAdsEnabled(ads['testMode'] != false);
+    } catch (error) {
+      enabled = false;
+      libraryBannerEnabled = false;
+      debugPrint('Start.io config unavailable: $error');
+    }
   }
 
-  Future<bool> showRewarded({
-    required Future<void> Function() onReward,
-  }) async {
-    final completion = Completer<bool>();
-    var rewardCompleted = false;
-    StartAppRewardedVideoAd? loadedAd;
-
+  Future<Widget?> loadLibraryBanner({required bool consented}) async {
+    if (!consented || !enabled || !libraryBannerEnabled) return null;
     try {
-      loadedAd = await _sdk.loadRewardedVideoAd(
-        prefs: const StartAppAdPreferences(adTag: 'flashi_energy_reward'),
-        onAdNotDisplayed: () {
-          loadedAd?.dispose();
-          loadedAd = null;
-          if (!completion.isCompleted) completion.complete(false);
-        },
-        onAdHidden: () {
-          loadedAd?.dispose();
-          loadedAd = null;
-          if (!rewardCompleted && !completion.isCompleted) {
-            completion.complete(false);
-          }
-        },
-        onVideoCompleted: () {
-          rewardCompleted = true;
-          Future<void>.sync(onReward).then((_) {
-            if (!completion.isCompleted) completion.complete(true);
-          }).catchError((_) {
-            if (!completion.isCompleted) completion.complete(false);
-          });
-        },
+      _libraryBanner ??= await _sdk.loadBannerAd(
+        StartAppBannerType.BANNER,
+        prefs: const StartAppAdPreferences(adTag: 'flashi_library_banner'),
       );
-
-      final shown = await loadedAd.show();
-      if (!shown && !completion.isCompleted) {
-        loadedAd.dispose();
-        loadedAd = null;
-        completion.complete(false);
-      }
-
-      return completion.future.timeout(
-        const Duration(minutes: 3),
-        onTimeout: () {
-          loadedAd?.dispose();
-          loadedAd = null;
-          return false;
-        },
-      );
-    } catch (_) {
-      loadedAd?.dispose();
-      return false;
+      return StartAppBanner(_libraryBanner!);
+    } catch (error) {
+      debugPrint('Start.io library banner unavailable: $error');
+      return null;
     }
+  }
+
+  void dispose() {
+    _libraryBanner?.dispose();
+    _libraryBanner = null;
   }
 }

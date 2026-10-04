@@ -2,16 +2,16 @@ import 'dart:io';
 
 import 'package:flashi/data/services/api_client.dart';
 import 'package:flutter/foundation.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:uuid/uuid.dart';
 
 class GenerationProvider extends ChangeNotifier {
   final ApiClient _api;
-  final SupabaseClient? _supabase;
+  final Uuid _uuid = const Uuid();
 
   bool _busy = false;
   String? _error;
 
-  GenerationProvider(this._api, this._supabase);
+  GenerationProvider(this._api);
 
   bool get busy => _busy;
   String? get error => _error;
@@ -22,11 +22,15 @@ class GenerationProvider extends ChangeNotifier {
     required String quizType,
     required int count,
   }) {
+    final notes = 'Topic: ${topic.trim()}\nStudy scope: ${description.trim()}';
     return _run({
-      'sourceType': 'topic',
-      'title': topic,
-      'description': description,
-      'quizType': quizType,
+      'sourceType': 'text',
+      'text': notes,
+      'title': topic.trim(),
+      'kind': 'quiz',
+      'difficulty': 'medium',
+      'questionTypes': [quizType],
+      'topics': [topic.trim()],
       'count': count,
     });
   }
@@ -37,14 +41,6 @@ class GenerationProvider extends ChangeNotifier {
     required int count,
     required bool image,
   }) async {
-    if (_supabase == null) {
-      throw const ApiException(
-        statusCode: 503,
-        code: 'supabase_not_configured',
-        message: 'Supabase is not configured yet.',
-      );
-    }
-
     _busy = true;
     _error = null;
     notifyListeners();
@@ -62,29 +58,35 @@ class GenerationProvider extends ChangeNotifier {
           'size': size,
         },
       );
+      final uploadId = upload['uploadId']?.toString();
+      final signedUrl = upload['signedUrl']?.toString();
+      if (uploadId == null ||
+          uploadId.isEmpty ||
+          signedUrl == null ||
+          signedUrl.isEmpty) {
+        throw const ApiException(
+          statusCode: 500,
+          code: 'invalid_upload_authorization',
+          message: 'The server could not authorize this upload.',
+        );
+      }
 
-      final bucket = upload['bucket'].toString();
-      final path = upload['path'].toString();
-      final token = upload['token'].toString();
-
-      await _supabase.storage.from(bucket).uploadToSignedUrl(
-            path,
-            token,
-            file,
-            FileOptions(contentType: mimeType, cacheControl: '0'),
-          );
-
-      return await _api.post(
-        '/api/v1/generate',
-        body: {
-          'sourceType': image ? 'image' : 'file',
-          'storagePath': path,
-          'filename': filename,
-          'mimeType': mimeType,
-          'quizType': quizType,
-          'count': count,
-        },
+      await _api.putSignedFile(
+        signedUrl: signedUrl,
+        file: file,
+        contentType: mimeType,
       );
+
+      return await _generate({
+        'sourceType': image ? 'image' : 'file',
+        'uploadId': uploadId,
+        'title': filename,
+        'kind': 'quiz',
+        'difficulty': 'medium',
+        'questionTypes': [quizType],
+        'topics': const <String>[],
+        'count': count,
+      });
     } catch (error) {
       _error = error.toString();
       rethrow;
@@ -98,9 +100,8 @@ class GenerationProvider extends ChangeNotifier {
     _busy = true;
     _error = null;
     notifyListeners();
-
     try {
-      return await _api.post('/api/v1/generate', body: body);
+      return await _generate(body);
     } catch (error) {
       _error = error.toString();
       rethrow;
@@ -108,6 +109,14 @@ class GenerationProvider extends ChangeNotifier {
       _busy = false;
       notifyListeners();
     }
+  }
+
+  Future<Map<String, dynamic>> _generate(Map<String, dynamic> body) {
+    return _api.post(
+      '/api/v1/generate',
+      body: body,
+      headers: {'idempotency-key': _uuid.v4()},
+    );
   }
 
   String _mimeType(String filename) {
@@ -135,8 +144,13 @@ class GenerationProvider extends ChangeNotifier {
         return 'image/gif';
       case 'jpeg':
       case 'jpg':
-      default:
         return 'image/jpeg';
+      default:
+        throw const ApiException(
+          statusCode: 400,
+          code: 'unsupported_file_type',
+          message: 'That file type is not supported.',
+        );
     }
   }
 }
