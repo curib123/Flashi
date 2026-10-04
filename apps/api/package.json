@@ -1,13 +1,16 @@
 {
   "name": "@flashi/api",
   "private": true,
-  "version": "0.1.0",
-  "engines": {"node": ">=22"},
+  "version": "2.0.0",
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "node --import tsx --test tests/*.test.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.117.1",
@@ -18,9 +21,11 @@
     "zod": "4.6.5"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.3.14",
     "@types/node": "24.10.1",
     "@types/react": "19.2.2",
     "@types/react-dom": "19.2.2",
+    "tsx": "^4.20.6",
     "typescript": "5.9.3"
   }
 }

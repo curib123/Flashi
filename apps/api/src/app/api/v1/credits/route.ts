@@ -1,15 +1,9 @@
-import { NextRequest } from 'next/server';
 import { requireUser } from '@/lib/auth';
-import { getBalance } from '@/lib/credits';
-import { apiError, json } from '@/lib/http';
-
-export const runtime = 'nodejs';
-
-export async function GET(request: NextRequest) {
-  try {
-    const user = await requireUser(request);
-    return json({ credits: await getBalance(user.id) });
-  } catch (error) {
-    return apiError(error);
-  }
-}
+import { getWallet } from '@/lib/credits';
+import { createAdminClient } from '@/lib/supabase';
+import { apiError,json } from '@/lib/http';
+export async function GET(request:Request){try{
+  const user=await requireUser(request);const wallet=await getWallet(user.id);
+  const {data,error}=await createAdminClient().from('credit_ledger').select('id,delta,reason,created_at').eq('user_id',user.id).order('created_at',{ascending:false}).limit(100);if(error)throw error;
+  return json({...wallet,history:data});
+}catch(error){return apiError(error);}}

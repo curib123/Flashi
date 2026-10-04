@@ -1,94 +1,56 @@
-name: Monorepo CI
-
+name: Flashi CI
 on:
   push:
-    branches:
-      - current-3.0
-      - redesign/**
-      - refactor/**
+    branches: [current-3.0, 'refactor/**', 'redesign/**']
   pull_request:
-    branches:
-      - current-3.0
+    branches: [current-3.0]
   workflow_dispatch:
-
+permissions:
+  contents: read
 concurrency:
-  group: flashi-ci-${{ github.ref }}
+  group: flashi-${{ github.ref }}
   cancel-in-progress: true
-
 jobs:
   api:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
-    defaults:
-      run:
-        working-directory: apps/api
-    env:
-      OPENAI_API_KEY: sk-test-not-used
-      SUPABASE_URL: https://example.supabase.co
-      SUPABASE_PUBLISHABLE_KEY: sb_publishable_test
-      SUPABASE_SECRET_KEY: sb_secret_test
-      START_IO_APP_ID: "0"
-
+    timeout-minutes: 15
     steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-
-      - name: Set up Node
-        uses: actions/setup-node@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
         with:
-          node-version: '24'
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Typecheck API
-        run: npm run typecheck
-
-      - name: Build API
-        run: npm run build
-
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run api:typecheck
+      - run: npm run api:build
+        env:
+          NEXT_TELEMETRY_DISABLED: '1'
   mobile:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     defaults:
       run:
         working-directory: apps/mobile
-    env:
-      START_IO_APP_ID: "0"
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-
-      - name: Set up Java
-        uses: actions/setup-java@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
-
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
+      - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.5'
+          flutter-version: '3.38.9'
           channel: stable
           cache: true
-
-      - name: Install dependencies
-        run: flutter pub get
-
-      - name: Analyze
-        run: flutter analyze --no-fatal-infos
-
-      - name: Test
-        run: flutter test
-
-      - name: Build Android debug APK
-        run: flutter build apk --debug --dart-define=START_IO_APP_ID=0
-
-      - name: Upload debug APK
-        uses: actions/upload-artifact@v4
+      - run: flutter pub get
+      - run: dart format lib test
+      - run: flutter analyze
+      - run: flutter test
+      - run: flutter build apk --debug
+      - uses: actions/upload-artifact@v4
         with:
           name: flashi-debug-apk
           path: apps/mobile/build/app/outputs/flutter-apk/app-debug.apk
           if-no-files-found: error
-          retention-days: 7
+          retention-days: 14
