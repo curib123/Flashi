@@ -25,6 +25,10 @@ dependencies:
   flutter_secure_storage: 9.2.4
   google_sign_in: 6.2.2
   startapp_sdk: 1.0.1
+  package_info_plus: 8.2.1
+  url_launcher: 6.3.1
+  flutter_tts: 3.8.5
+  flip_card: 0.7.0
 
 dev_dependencies:
   flutter_test:
