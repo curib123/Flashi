@@ -289,22 +289,28 @@ class StudyRepository {
   }
 
   Future<void> applyRemote({
+    required String id,
     required String entityType,
-    required int revision,
     required bool deleted,
     required Map<String, dynamic>? payload,
   }) async {
-    if (payload == null && !deleted) return;
-    if (entityType == 'set') {
-      if (deleted) {
-        await _db.delete('study_sets', where: 'id=?', whereArgs: [payload?['id']]);
-      } else {
-        await saveSet(StudySet.fromJson(payload!), queueSync: false);
+    if (deleted) {
+      if (entityType == 'set') {
+        await _db.delete('study_sets', where: 'id=?', whereArgs: [id]);
+      } else if (entityType == 'subject') {
+        await _db.delete('subjects', where: 'id=?', whereArgs: [id]);
+      } else if (entityType == 'attempt') {
+        await _db.delete('attempts', where: 'id=?', whereArgs: [id]);
       }
-    } else if (entityType == 'subject' && !deleted) {
-      await saveSubject(Subject.fromJson(payload!), queueSync: false);
-    } else if (entityType == 'attempt' && !deleted) {
-      await saveAttempt(StudyAttempt.fromJson(payload!), queueSync: false);
+      return;
+    }
+    if (payload == null) return;
+    if (entityType == 'set') {
+      await saveSet(StudySet.fromJson(payload), queueSync: false);
+    } else if (entityType == 'subject') {
+      await saveSubject(Subject.fromJson(payload), queueSync: false);
+    } else if (entityType == 'attempt') {
+      await saveAttempt(StudyAttempt.fromJson(payload), queueSync: false);
     }
   }
 
