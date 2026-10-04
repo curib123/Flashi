@@ -1,7 +1,7 @@
 name: flashi
-description: "Offline-first flashcard and quiz maker"
+description: "Flashi AI — offline-first flashcards, quizzes, and mock exams"
 publish_to: 'none'
-version: 2.0.0+13
+version: 2.1.0+14
 
 environment:
   sdk: ^3.10.0
@@ -10,28 +10,24 @@ dependencies:
   flutter:
     sdk: flutter
 
-  provider: 6.1.2
-  sqflite: 2.4.2
-  path: 1.9.1
-  path_provider: 2.1.5
-  uuid: 4.5.1
-  crypto: 3.0.6
-  hive: 2.2.3
-  hive_flutter: 1.1.0
-  http: 1.6.0
+  cross_file: 0.3.4+2
   file_picker: 8.1.7
-  image_picker: 1.1.2
-  share_plus: 10.1.4
   flutter_secure_storage: 9.2.4
   google_sign_in: 6.2.2
+  http: 1.6.0
+  path: 1.9.1
+  path_provider: 2.1.5
+  share_plus: 10.1.4
+  sqflite: 2.4.2
   startapp_sdk: 1.0.1
+  uuid: 4.5.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  sqflite_common_ffi: 2.3.6
   flutter_launcher_icons: 0.14.3
   flutter_lints: 5.0.0
+  sqflite_common_ffi: 2.3.6
 
 flutter_launcher_icons:
   android: "launcher_icon"
@@ -41,7 +37,6 @@ flutter_launcher_icons:
 
 flutter:
   uses-material-design: true
-
   assets:
     - asset/font/Montserrat-Regular.ttf
     - asset/font/Montserrat-Bold.ttf
@@ -50,10 +45,9 @@ flutter:
     - asset/images/onboarding_2.png
     - asset/images/onboarding_3.jpg
     - asset/images/onboarding_4.jpg
-
   fonts:
     - family: Montserrat
       fonts:
         - asset: asset/font/Montserrat-Regular.ttf
         - asset: asset/font/Montserrat-Bold.ttf
-          weight: 500
+          weight: 700
