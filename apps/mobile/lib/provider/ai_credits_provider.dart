@@ -39,7 +39,7 @@ class AiCreditProvider extends ChangeNotifier {
   void applyGenerationBalance(Map<String, dynamic> response) {
     final value = response['credits'];
     if (value is num) {
-      _credits = value.toInt().clamp(0, 1 << 31);
+      _credits = value.toInt().clamp(0, 1 << 31).toInt();
       notifyListeners();
     }
   }
