@@ -28,11 +28,13 @@ Future<void> main() async {
   // Start.io remains centralized. Runtime enable/test/placement flags come from
   // /api/v1/config; the native App ID stays build-time configuration.
   final ads = StartIoService();
+  var showLibraryBanner = false;
   try {
     final config = await api.get('/api/v1/config');
     final adConfig = config['ads'];
     if (adConfig is Map && adConfig['enabled'] == true) {
       await ads.configure(testMode: adConfig['testMode'] != false);
+      showLibraryBanner = adConfig['libraryBanner'] == true;
     }
   } catch (_) {
     // Offline/manual study must never be blocked by remote config.
@@ -45,6 +47,8 @@ Future<void> main() async {
       auth: auth,
       backup: backup,
       sync: sync,
+      ads: ads,
+      showLibraryBanner: showLibraryBanner,
     ),
   );
 }
