@@ -55,12 +55,71 @@ class StudyRepository {
       'id TEXT PRIMARY KEY, set_id TEXT NOT NULL, payload TEXT NOT NULL, finished_at TEXT NOT NULL)',
     );
     await database.execute(
+      'CREATE TABLE IF NOT EXISTS metadata ('
+      'key TEXT PRIMARY KEY, value TEXT NOT NULL)',
+    );
+    await database.execute(
       'CREATE TABLE IF NOT EXISTS pending_changes ('
       'account_id TEXT NOT NULL, entity_id TEXT NOT NULL, entity_type TEXT NOT NULL, '
       'local_version INTEGER NOT NULL, server_revision INTEGER NOT NULL DEFAULT 0, '
       'deleted INTEGER NOT NULL DEFAULT 0, payload TEXT, '
       'PRIMARY KEY(account_id, entity_id))',
     );
+  }
+
+  Future<void> migrateLegacyQuizSets(dynamic raw) async {
+    final migrated = await database.query(
+      'metadata',
+      where: 'key = ?',
+      whereArgs: ['legacy_hive_quiz_migrated'],
+      limit: 1,
+    );
+    if (migrated.isNotEmpty) return;
+
+    await database.transaction((txn) async {
+      if (raw is List) {
+        for (final item in raw) {
+          if (item is! Map) continue;
+          final legacy = Map<String, dynamic>.from(item);
+          final title = (legacy['name'] ?? '').toString().trim();
+          if (title.isEmpty) continue;
+
+          final rawCards = legacy['cards'];
+          final questions = <StudyQuestion>[];
+          if (rawCards is List) {
+            for (final card in rawCards) {
+              if (card is! Map) continue;
+              final map = Map<String, dynamic>.from(card);
+              final question = (map['question'] ?? '').toString().trim();
+              final answer = (map['answer'] ?? '').toString().trim();
+              if (question.isEmpty || answer.isEmpty) continue;
+              questions.add(
+                StudyQuestion(
+                  type: QuestionType.identification,
+                  question: question,
+                  answer: answer,
+                  topic: (map['keyword'] ?? '').toString(),
+                ),
+              );
+            }
+          }
+
+          final set = StudySet(
+            title: title,
+            subject: (legacy['description'] ?? '').toString(),
+            kind: SetKind.quiz,
+            questions: questions,
+          );
+          await _putSet(txn, set);
+        }
+      }
+
+      await txn.insert(
+        'metadata',
+        {'key': 'legacy_hive_quiz_migrated', 'value': '1'},
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    });
   }
 
   Future<List<StudySet>> sets() async {
