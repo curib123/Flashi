@@ -219,16 +219,16 @@ class FlashiDesign {
       Theme.of(context).colorScheme.outlineVariant;
 
   static Color primarySoftOf(BuildContext context) => isDark(context)
-      ? Color.alphaBlend(brand.withOpacity(.20), surfaceOf(context))
+      ? Color.alphaBlend(brand.withValues(alpha: .20), surfaceOf(context))
       : brandSoft;
 
   static Color primaryFaintOf(BuildContext context) => isDark(context)
-      ? Color.alphaBlend(brand.withOpacity(.10), surfaceOf(context))
+      ? Color.alphaBlend(brand.withValues(alpha: .10), surfaceOf(context))
       : brandFaint;
 
   static Color brandSoftOf(Brightness brightness) =>
       brightness == Brightness.dark
-          ? Color.alphaBlend(brand.withOpacity(.20), const Color(0xFF171C26))
+          ? Color.alphaBlend(brand.withValues(alpha: .20), const Color(0xFF171C26))
           : brandSoft;
 }
 
