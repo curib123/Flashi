@@ -43,6 +43,7 @@ Future<void> main() async {
       auth: auth,
       generation: generation,
       credits: credits,
+      ads: ads,
     ),
   );
 }
