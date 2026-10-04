@@ -1,64 +1,48 @@
-import 'dart:async';
-
+import 'package:flutter/material.dart';
 import 'package:startapp_sdk/startapp.dart';
 
 class StartIoService {
   final StartAppSdk _sdk = StartAppSdk();
 
-  Future<void> configure({required bool testMode}) async {
-    await _sdk.setTestAdsEnabled(testMode);
+  Future<void> configure({required bool testMode}) =>
+      _sdk.setTestAdsEnabled(testMode);
+
+  Future<StartAppBannerAd> loadLibraryBanner() => _sdk.loadBannerAd(
+        StartAppBannerType.BANNER,
+        prefs: const StartAppAdPreferences(adTag: 'flashi_library'),
+      );
+}
+
+class StartIoBannerSlot extends StatefulWidget {
+  final StartIoService service;
+  const StartIoBannerSlot({super.key, required this.service});
+
+  @override
+  State<StartIoBannerSlot> createState() => _StartIoBannerSlotState();
+}
+
+class _StartIoBannerSlotState extends State<StartIoBannerSlot> {
+  StartAppBannerAd? _ad;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.service.loadLibraryBanner().then((ad) {
+      if (mounted) {
+        setState(() => _ad = ad);
+      }
+    }).catchError((_) {
+      // Ads are optional and must never block studying.
+    });
   }
 
-  Future<bool> showRewarded({
-    required Future<void> Function() onReward,
-  }) async {
-    final completion = Completer<bool>();
-    var rewardCompleted = false;
-    StartAppRewardedVideoAd? loadedAd;
-
-    try {
-      loadedAd = await _sdk.loadRewardedVideoAd(
-        prefs: const StartAppAdPreferences(adTag: 'flashi_energy_reward'),
-        onAdNotDisplayed: () {
-          loadedAd?.dispose();
-          loadedAd = null;
-          if (!completion.isCompleted) completion.complete(false);
-        },
-        onAdHidden: () {
-          loadedAd?.dispose();
-          loadedAd = null;
-          if (!rewardCompleted && !completion.isCompleted) {
-            completion.complete(false);
-          }
-        },
-        onVideoCompleted: () {
-          rewardCompleted = true;
-          Future<void>.sync(onReward).then((_) {
-            if (!completion.isCompleted) completion.complete(true);
-          }).catchError((_) {
-            if (!completion.isCompleted) completion.complete(false);
-          });
-        },
-      );
-
-      final shown = await loadedAd.show();
-      if (!shown && !completion.isCompleted) {
-        loadedAd.dispose();
-        loadedAd = null;
-        completion.complete(false);
-      }
-
-      return completion.future.timeout(
-        const Duration(minutes: 3),
-        onTimeout: () {
-          loadedAd?.dispose();
-          loadedAd = null;
-          return false;
-        },
-      );
-    } catch (_) {
-      loadedAd?.dispose();
-      return false;
-    }
+  @override
+  Widget build(BuildContext context) {
+    final ad = _ad;
+    if (ad == null) return const SizedBox.shrink();
+    return Semantics(
+      label: 'Advertisement',
+      child: Center(child: StartAppBanner(ad)),
+    );
   }
 }
