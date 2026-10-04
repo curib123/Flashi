@@ -1,9 +1,11 @@
 import 'package:flashi/data/services/api_client.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:startapp_sdk/startapp.dart';
 
 class StartIoService {
   final StartAppSdk _sdk = StartAppSdk();
+  StartAppBannerAd? _libraryBanner;
 
   bool enabled = false;
   bool libraryBannerEnabled = false;
@@ -24,5 +26,24 @@ class StartIoService {
       libraryBannerEnabled = false;
       debugPrint('Start.io config unavailable: $error');
     }
+  }
+
+  Future<Widget?> loadLibraryBanner({required bool consented}) async {
+    if (!consented || !enabled || !libraryBannerEnabled) return null;
+    try {
+      _libraryBanner ??= await _sdk.loadBannerAd(
+        StartAppBannerType.BANNER,
+        prefs: const StartAppAdPreferences(adTag: 'flashi_library_banner'),
+      );
+      return StartAppBanner(_libraryBanner!);
+    } catch (error) {
+      debugPrint('Start.io library banner unavailable: $error');
+      return null;
+    }
+  }
+
+  void dispose() {
+    _libraryBanner?.dispose();
+    _libraryBanner = null;
   }
 }
