@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flashi/data/services/auth_service.dart';
 import 'package:flashi/data/services/backup_service.dart';
 import 'package:flashi/data/services/generation_service.dart';
+import 'package:flashi/data/services/startio_service.dart';
 import 'package:flashi/data/services/sync_service.dart';
 import 'package:flashi/domain/study.dart';
 import 'package:flashi/domain/study_package.dart';
@@ -16,6 +17,8 @@ class FlashiApp extends StatelessWidget {
   final AuthService? auth;
   final BackupService? backup;
   final SyncService? sync;
+  final StartIoService? ads;
+  final bool showLibraryBanner;
 
   const FlashiApp({
     super.key,
@@ -24,6 +27,8 @@ class FlashiApp extends StatelessWidget {
     this.auth,
     this.backup,
     this.sync,
+    this.ads,
+    this.showLibraryBanner = false,
   });
 
   @override
@@ -53,6 +58,8 @@ class FlashiApp extends StatelessWidget {
         auth: auth,
         backup: backup,
         sync: sync,
+        ads: ads,
+        showLibraryBanner: showLibraryBanner,
       ),
     );
   }
@@ -64,6 +71,8 @@ class _HomeShell extends StatefulWidget {
   final AuthService? auth;
   final BackupService? backup;
   final SyncService? sync;
+  final StartIoService? ads;
+  final bool showLibraryBanner;
 
   const _HomeShell({
     required this.state,
@@ -71,6 +80,8 @@ class _HomeShell extends StatefulWidget {
     this.auth,
     this.backup,
     this.sync,
+    this.ads,
+    this.showLibraryBanner = false,
   });
 
   @override
@@ -89,6 +100,8 @@ class _HomeShellState extends State<_HomeShell> {
           _LibraryPage(
             state: widget.state,
             backup: widget.backup,
+            ads: widget.ads,
+            showBanner: widget.showLibraryBanner,
           ),
           _CreatePage(
             state: widget.state,
@@ -169,8 +182,15 @@ class _PageHeader extends StatelessWidget {
 class _LibraryPage extends StatelessWidget {
   final AppState state;
   final BackupService? backup;
+  final StartIoService? ads;
+  final bool showBanner;
 
-  const _LibraryPage({required this.state, this.backup});
+  const _LibraryPage({
+    required this.state,
+    this.backup,
+    this.ads,
+    this.showBanner = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -255,6 +275,13 @@ class _LibraryPage extends StatelessWidget {
                 ),
               ),
             ),
+          if (showBanner && ads != null) ...[
+            const SizedBox(height: 18),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: StartIoBannerSlot(service: ads!),
+            ),
+          ],
         ],
       ),
     );
