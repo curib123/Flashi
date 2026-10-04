@@ -1,97 +1,50 @@
-import 'package:flashi/core/config/app_env.dart';
+import 'package:flashi/app.dart';
 import 'package:flashi/data/services/api_client.dart';
+import 'package:flashi/data/services/auth_service.dart';
+import 'package:flashi/data/services/backup_service.dart';
+import 'package:flashi/data/services/generation_service.dart';
 import 'package:flashi/data/services/startio_service.dart';
-import 'package:flashi/home.dart';
-import 'package:flashi/provider/ai_credits_provider.dart';
-import 'package:flashi/provider/app_config_provider.dart';
-import 'package:flashi/provider/auth_provider.dart';
-import 'package:flashi/provider/bottom_navigation_provider.dart';
-import 'package:flashi/provider/generation_provider.dart';
-import 'package:flashi/provider/history_provider.dart';
-import 'package:flashi/provider/onboarding_provider.dart';
-import 'package:flashi/provider/quiz_provider.dart';
-import 'package:flashi/provider/reviewer_settings_provider.dart';
-import 'package:flashi/provider/sort_provider.dart';
-import 'package:flashi/provider/theme_provider.dart';
+import 'package:flashi/data/services/sync_service.dart';
+import 'package:flashi/data/session_store.dart';
+import 'package:flashi/data/study_repository.dart';
+import 'package:flashi/features/app_state.dart';
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:provider/provider.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Hive.initFlutter();
-  await Hive.openBox('theme');
-  await Hive.openBox('sort');
-  await Hive.openBox('reviewer_settings');
-  await Hive.openBox('quiz');
-  await Hive.openBox('onboarding');
-  await Hive.openBox('timerBox');
-  await Hive.openBox('history');
+  final repository = await StudyRepository.open();
+  final state = AppState(repository);
+  await state.reload();
 
-  SupabaseClient? supabaseClient;
-  if (AppEnv.supabaseConfigured) {
-    await Supabase.initialize(
-      url: AppEnv.supabaseUrl,
-      publishableKey: AppEnv.supabasePublishableKey,
-    );
-    supabaseClient = Supabase.instance.client;
+  final session = SessionStore();
+  await session.load();
+  final api = ApiClient(session);
+  final auth = AuthService(api, session);
+  final generation = GenerationService(api);
+  final backup = BackupService();
+  final sync = SyncService(api, repository);
+
+  // Start.io remains centralized. Runtime enable/test/placement flags come from
+  // /api/v1/config; the native App ID stays build-time configuration.
+  final ads = StartIoService();
+  try {
+    final config = await api.get('/api/v1/config');
+    final adConfig = config['ads'];
+    if (adConfig is Map && adConfig['enabled'] == true) {
+      await ads.configure(testMode: adConfig['testMode'] != false);
+    }
+  } catch (_) {
+    // Offline/manual study must never be blocked by remote config.
   }
-
-  final apiClient = ApiClient(
-    accessTokenProvider: () =>
-        supabaseClient?.auth.currentSession?.accessToken ?? '',
-  );
-  final startIo = StartIoService();
 
   runApp(
-    MultiProvider(
-      providers: [
-        Provider<ApiClient>.value(value: apiClient),
-        Provider<StartIoService>.value(value: startIo),
-        ChangeNotifierProvider(create: (_) => AuthProvider(supabaseClient)),
-        ChangeNotifierProvider(
-          create: (_) => AppConfigProvider(apiClient, startIo)..load(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => AiCreditProvider(apiClient, startIo),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => GenerationProvider(apiClient, supabaseClient),
-        ),
-        ChangeNotifierProvider(create: (_) => BottomNavigationProvider()),
-        ChangeNotifierProvider(create: (_) => ThemeProvider()),
-        ChangeNotifierProvider(create: (_) => SortProvider()),
-        ChangeNotifierProvider(create: (_) => ReviewerSettingsProvider()),
-        ChangeNotifierProvider(create: (_) => OnboardingProvider()),
-        ChangeNotifierProvider(create: (_) => HistoryProvider()),
-        ChangeNotifierProvider(
-          create: (context) => QuizProvider(
-            criterionSet: context.read<SortProvider>().dropdownValueSet,
-            criterionCard: context.read<SortProvider>().dropdownValueCard,
-          ),
-        ),
-      ],
-      child: const Flashi(),
+    FlashiApp(
+      state: state,
+      generation: generation,
+      auth: auth,
+      backup: backup,
+      sync: sync,
     ),
   );
-}
-
-class Flashi extends StatelessWidget {
-  const Flashi({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final themeProvider = context.watch<ThemeProvider>();
-
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flashi',
-      home: const Home(),
-      theme: themeProvider.getLightTheme(),
-      darkTheme: themeProvider.getDarkTheme(),
-      themeMode: themeProvider.themeMode,
-    );
-  }
 }
