@@ -285,8 +285,8 @@ class StudyRepository {
     });
   }
 
-  Future<void> _putSet(DatabaseExecutor db, StudySet set) {
-    return db.insert(
+  Future<void> _putSet(DatabaseExecutor db, StudySet set) async {
+    await db.insert(
       'study_sets',
       {
         'id': set.id,
@@ -297,8 +297,8 @@ class StudyRepository {
     );
   }
 
-  Future<void> _putAttempt(DatabaseExecutor db, StudyAttempt attempt) {
-    return db.insert(
+  Future<void> _putAttempt(DatabaseExecutor db, StudyAttempt attempt) async {
+    await db.insert(
       'attempts',
       {
         'id': attempt.id,
