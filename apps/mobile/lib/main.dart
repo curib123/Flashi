@@ -7,6 +7,7 @@ import 'package:flashi/provider/app_config_provider.dart';
 import 'package:flashi/provider/auth_provider.dart';
 import 'package:flashi/provider/bottom_navigation_provider.dart';
 import 'package:flashi/provider/generation_provider.dart';
+import 'package:flashi/provider/check_version_provider.dart';
 import 'package:flashi/provider/history_provider.dart';
 import 'package:flashi/provider/onboarding_provider.dart';
 import 'package:flashi/provider/quiz_provider.dart';
@@ -16,7 +17,6 @@ import 'package:flashi/provider/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -50,7 +50,7 @@ Future<void> main() async {
       providers: [
         Provider<ApiClient>.value(value: apiClient),
         Provider<StartIoService>.value(value: startIo),
-        ChangeNotifierProvider(create: (_) => AuthProvider(supabaseClient)),
+        ChangeNotifierProvider(create: (_) => AuthProvider(apiClient)..restore()),
         ChangeNotifierProvider(
           create: (_) => AppConfigProvider(apiClient, startIo)..load(),
         ),
@@ -58,9 +58,10 @@ Future<void> main() async {
           create: (_) => AiCreditProvider(apiClient, startIo),
         ),
         ChangeNotifierProvider(
-          create: (_) => GenerationProvider(apiClient, supabaseClient),
+          create: (_) => GenerationProvider(apiClient),
         ),
         ChangeNotifierProvider(create: (_) => BottomNavigationProvider()),
+        ChangeNotifierProvider(create: (_) => CheckVersionProvider()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => SortProvider()),
         ChangeNotifierProvider(create: (_) => ReviewerSettingsProvider()),
