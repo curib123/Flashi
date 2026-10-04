@@ -89,6 +89,16 @@ class StudyQuestion {
     this.pairs = const [],
   }) : id = id ?? _uuid.v4();
 
+  StudyQuestion duplicate() => StudyQuestion(
+        type: type,
+        question: question,
+        answer: answer,
+        options: List<String>.from(options),
+        explanation: explanation,
+        topic: topic,
+        pairs: pairs.map((p) => MatchPair(p.left, p.right)).toList(),
+      );
+
   StudyQuestion copyWith({
     String? id,
     QuestionType? type,
